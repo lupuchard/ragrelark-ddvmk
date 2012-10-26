@@ -1,3 +1,9 @@
+/resources/raw images/
+*~
+test.cpp
+/obj/
+
+
 # Compiled Object files
 *.slo
 *.lo

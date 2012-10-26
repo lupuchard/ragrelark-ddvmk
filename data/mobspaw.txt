@@ -1,0 +1,33 @@
+ITEMSPAW
+
+main{
+candle:common
+blue feather:uncommon
+big heavy rock:uncommon
+steel dagger:rare
+leather armor:rare
+pointy hat:rare
+}
+
+END
+
+MOBSPAW
+
+dungeon{
+mobs[
+0:tslim1*04,pig000*01
+1:sslim1*01
+2:plant1*01,scorp1*01
+3:mslim1*01
+]items[
+main:0,3
+]}
+
+~level goes 0-9
+~10=: 11=; 12=< 13== 14=> 15=? 16=@
+~then A-Z
+~[\]^_`
+~then a-z
+~{|}~
+
+END

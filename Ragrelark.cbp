@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Ragrelark" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/start/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add directory="src" />
+					<Add directory="include" />
+					<Add directory="../Ragrelark" />
+					<Add directory="resources" />
+					<Add directory="data" />
+					<Add directory="../../Desktop/Libraries" />
+				</Compiler>
+				<Linker>
+					<Add library="GL" />
+					<Add library="GLU" />
+					<Add library="SDLmain" />
+					<Add library="SDL" />
+					<Add library="SDL_image" />
+					<Add library="fov" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="Ragrelark" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="cross_windows" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="src" />
+					<Add directory="include" />
+					<Add directory="../Ragrelark" />
+					<Add directory="resources" />
+					<Add directory="data" />
+					<Add directory="../../Desktop/Libraries" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="GL" />
+					<Add library="GLU" />
+					<Add library="SDLmain" />
+					<Add library="SDL" />
+					<Add library="SDL_image" />
+					<Add library="fov" />
+				</Linker>
+			</Target>
+			<Target title="Test">
+				<Option output="bin/Test/Ragrelark" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Test/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add directory="src" />
+					<Add directory="include" />
+					<Add directory="../Ragrelark" />
+					<Add directory="resources" />
+					<Add directory="data" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="cleaner.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/base.txt">
+			<Option virtualFolder="data/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/coins.txt">
+			<Option virtualFolder="data/items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/extraitems.txt">
+			<Option virtualFolder="data/items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/formulas.txt">
+			<Option virtualFolder="data/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/items.txt">
+			<Option virtualFolder="data/items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/map1.txt">
+			<Option virtualFolder="data/maps/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/maps2.txt">
+			<Option virtualFolder="data/maps/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/mobspaw.txt">
+			<Option virtualFolder="data/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/moreitems.txt">
+			<Option virtualFolder="data/items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/units.txt">
+			<Option virtualFolder="data/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="dataLoader.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="formulas.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="generator.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Area.h">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/BagFolder.h">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/EnvironmentManager.h">
+			<Option virtualFolder="code/classes/headers/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/EquipmentFolder.h">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Formula.h">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/FormulaUser.h">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/GroundFolder.h">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Item.h">
+			<Option virtualFolder="code/classes/Items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/ItemFolder.h">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/ItemType.h">
+			<Option virtualFolder="code/classes/Items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Location.h">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Player.h">
+			<Option virtualFolder="code/classes/headers/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/PrimeFolder.h">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Start.h">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Stat.h">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/StatHolder.h">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/StatHolderIntef.h">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Texture.h">
+			<Option virtualFolder="code/classes/headers/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Tile.h">
+			<Option virtualFolder="code/classes/headers/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Unit.h">
+			<Option virtualFolder="code/classes/headers/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/World.h">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Zone.h">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/usefulParsing.h">
+			<Option virtualFolder="code/Helpful Functions/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="initiator.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="logic.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="mobSpawner.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="pather.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Area.cpp">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/BagFolder.cpp">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/EnvironmentManager.cpp">
+			<Option virtualFolder="code/classes/sources/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/EquipmentFolder.cpp">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Formula.cpp">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/FormulaUser.cpp">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/GroundFolder.cpp">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Item.cpp">
+			<Option virtualFolder="code/classes/Items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/ItemFolder.cpp">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/ItemType.cpp">
+			<Option virtualFolder="code/classes/Items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Location.cpp">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Player.cpp">
+			<Option virtualFolder="code/classes/sources/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/PrimeFolder.cpp">
+			<Option virtualFolder="code/classes/Items/Folders/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Start.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Stat.cpp">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/StatHolder.cpp">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/StatHolderIntef.cpp">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Texture.cpp">
+			<Option virtualFolder="code/classes/sources/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Tile.cpp">
+			<Option virtualFolder="code/classes/sources/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Unit.cpp">
+			<Option virtualFolder="code/classes/sources/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/World.cpp">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Zone.cpp">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/events.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/renderer.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/unitHandler.cpp">
+			<Option virtualFolder="code/start/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/usefulParsing.cpp">
+			<Option virtualFolder="code/Helpful Functions/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="test.cpp">
+			<Option virtualFolder="code/" />
+			<Option target="Test" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

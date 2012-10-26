@@ -1,0 +1,244 @@
+TILE
+dfloor
+2,0
+0,0
+END
+
+TILE
+dfloor2
+18,0
+0,0
+END
+
+TILE
+dfloor3
+34,0
+0,0
+END
+
+TILE
+dfloor4
+50,0
+0,0
+END
+
+TILE
+dwall
+3,0
+0,0
+END
+
+TILE
+dwall2
+19,0
+0,0
+END
+
+TILE
+dwall3
+35,0
+0,0
+END
+
+TILE
+dwall4
+51,0
+0,0
+END
+
+TILE
+bluedfloor
+56,0
+0,0
+END
+
+TILE
+bluedwall
+57,0
+0,0
+END
+
+AREA
+foomfield
+2
+8
+END
+
+~abc = dungeon door, def = home door, gh = locked dungeon/home door, ijk = scary door, lmn = stone door,
+~o = boobytrapped door, p = locked scary door
+~q = upstairs, r = downstairs, s = upladder, t = downladder, uv = yellow stairs, w = fountain, x = exit
+~left: yz, &' () *+ ,- ./ 01
+
+MTG
+ruins
+A-dfloor
+B-dfloor2
+C-dfloor3
+D-dfloor4
+E-dwall
+F-dwall2
+G-dwall3
+H-dwall4
+END
+
+MTG
+bruins
+A-bluedfloor
+E-bluedwall
+END
+
+MAP
+down
+>foomfield
+*6
+
+
+:bruins
+
+[
+EV0 EV0 EV0 EV0 EV0 EV0 EV0 EV0
+
+EV0 EV0 EV0 AF0 AF0 EV0 EV0 EV0
+
+EV0 EV0 EV0 AF0 AF0 EV0 EV0 EV0
+
+EV0 EV0 EV0 AF0 AF0 EV0 EV0 EV0
+
+EV0 AF0 AF0 AF0 AFq AF0 AF0 EV0
+
+EV0 AF0 AF0 AF0 AF0 AF0 AF0 EV0
+
+EV0 EV0 EV0 AF0 AF0 EV0 EV0 EV0
+
+EV0 EV0 EV0 AF0 AF0 EV0 EV0 EV0
+
+EV0 EV0 EV0 EV0 EV0 EV0 EV0 EV0
+
+EV0 EV0 EV0 EV0 EV0 EV0 EV0 EV0
+]
+
+$apple
+3,6
+$apple
+3,6
+$apple
+3,6
+$steel dagger
+3,7
+$Mace of Justice
+4,6
+$leather armor
+4,7
+$pointy hat
+1,4
+
+END
+
+MAP
+bestmap
+>foomfield
+:ruins
+*5
+
+[
+EV0 EV0 EV0 EV0 EV0 EV0 EV0 EV0
+
+EV0 AE0 AE0 AE0 EV0 EV0 EV0 EV0
+
+EV0 AE0 AE0 AE0 AL0 AMr EV0 EV0
+
+EV0 AE0 AC0 AJ0 AK0 AL0 EV0 EV0
+
+EV0 AE0 AG0 AI0 AJ0 AE0 AE0 EV0
+
+EV0 AE0 AC0 AG0 AC0 AE0 AE0 EV0
+
+EV0 AE0 AE0 AE0 AE0 AE0 AE0 EV0
+
+EV0 AE0 AE0 AE0 AE0 AE0 AE0 EV0
+
+EV0 AE0 AE0 EV0 EV0 EV0 EV0 EV0
+
+EV0 AE0 EV0 EV0 EV0 EV0 EV0 EV0
+]
+
+@mslim1
+5,2
+
+END
+
+MAP
+map1
+>foomfield
+*7
+
+:ruins
+
+[
+EV0 EV0 EV0 EV0 A00 A00 EV0 EV0
+
+EV0 AF0 AF0 AF0 A00 A00 EV0 EV0
+
+EV0 AF0 AFr AF0 A00 A00 A00 EV0
+
+EV0 AF0 AF0 AF0 EV0 A00 A00 EV0
+
+EV0 AF0 AF0 AF0 EV0 EV0 AF0 AF0
+
+EV0 EV0 EV0 AF0 AF0 EFa AF0 AF0
+
+EV0 AF0 AF0 AF0 AF0 EV0 AF0 AF0
+
+EV0 EV0 EV0 AH0 EV0 EV0 EV0 EV0
+
+EV0 EV0 EV0 AJ0 EV0 EV0 EV0 EV0
+
+EV0 EV0 EV0 AL0 EV0 EV0 EV0 EV0
+
+EV0 EV0 EV0 ALq EV0 EV0 EV0 EV0
+]
+
+END
+
+MAP
+map2
+>foomfield
+*4
+
+:ruins
+
+[
+EV0 AEa EV0 EV0 EV0 EV0 EV0 EV0
+
+EV0 AE0 AF0 AG0 AH0 AG0 EV0 EV0
+
+EV0 AF0 AG0 AH0 AI0 AH0 EV0 EV0
+
+EV0 EV0 EV0 EV0 AJ0 AI0 EV0 EV0
+
+AF0 AH0 AJ0 AL0 AK0 AJ0 EV0 EV0
+
+AF0 AH0 AJ0 AL0 AK0 AJ0 EV0 EV0
+
+AF0 AH0 AJ0 AL0 AK0 AJ0 EV0 EV0
+
+EV0 EV0 EV0 EV0 AJ0 AI0 EV0 EV0
+
+EV0 AF0 AG0 AH0 AI0 AH0 EV0 EV0
+
+EV0 AE0 AF0 AG0 AH0 AG0 EV0 EV0
+
+EV0 AEa EV0 EV0 EV0 EV0 EV0 EV0
+]
+
+END
+
+CONNECTION
+foomfield
+
+bestmap
+5,2
+down
+4,4
+
+END

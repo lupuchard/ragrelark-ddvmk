@@ -1,0 +1,129 @@
+
+ITEM
+cheese
+Ordinary cheddar cheese.
+25
+4
+41
+feed=121
+weight=5
+taste=1
+END
+
+ITEM
+carrot
+The best vegetable.
+28
+6
+41
+feed=30
+weight=4
+taste=2
+END
+
+ITEM
+banana
+Imported all the way from Bananaland.
+24
+6
+41
+feed=105
+weight=4
+taste=1
+END
+
+ITEM
+apple
+A generic tasty fruit. Tastes like fruit.
+25
+6
+41
+feed=91
+weight=4
+taste=2
+END
+
+ITEM
+backpack
+Necessary for aspiring adventurers.
+2
+6
+125
+capacity=20
+weight=20
+END
+
+ITEM
+steel dagger
+Self explanatory.
+112
+6
+83
+damage=2
+weight=32
+damage_type=2
+END
+
+ITEM
+Mace of Justice
+JUSTICE MACE DEMANDS JUSTICE.
+113
+6
+81
+damage=6
+weight=105
+spe=-1
+str=2
+con=1
+damage_type=1
+END
+
+ITEM
+leather armor
+Not for vegans.
+128
+6
+157
+penalty=1
+AC=4
+END
+
+ITEM
+pointy hat
+Having a point on a hat helps channel mystical energy. True science fact.
+129
+6
+110
+weight=1
+AC=1
+aff=1
+END
+
+ITEM
+Speedy Boots
+Speedy Boots of Speed (TM)
+130
+6
+151
+AC=1
+movement_speed=5
+END
+
+ITEM
+big heavy rock
+Useless.
+97
+6
+54
+weight=1000
+END
+
+ITEM
+blue feather
+A shiny blue feather from the rare bluebird.
+96
+6
+61
+weight=1
+value=10
+END

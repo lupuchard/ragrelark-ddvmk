@@ -1,0 +1,237 @@
+
+CONDITIONS
+miss_l_hand
+miss_r_hand
+miss_l_arm
+miss_r_arm
+miss_l_foot
+miss_r_foot
+miss_l_leg
+miss_r_leg
+p_d1
+p_d2
+p_d4
+p_s
+p_c
+p_d
+p_p
+p_i
+p_a
+p_phys
+p_ment
+p_aslow
+p_mslow
+END
+
+
+STATS
+
+-item
+
+weight
+SLF
+value
+SLF
+feed
+SLF
+taste
+SLF
+damage
+SLF
+damage_type
+SLF
+AC
+SLF
+capacity
+SLF
+str
+SLF
+con
+SLF
+aff
+SLF
+int
+SLF
+per
+SLF
+dex
+SLF
+cha
+SLF
+hp_bonus
+SLF
+mana_bonus
+SLF
+acc
+SLF
+eva
+SLF
+luck_bonus
+SLF
+penalty
+SLF
+hp_regen
+(f) SLF
+mana_regen
+(f) SLF
+attack_rate
+SLF
+movement_speed
+SLF
+light
+SLF
+
+~
+~
+
+-unit
+
+experience
+SLF
+level
+SLF
+experience_required
+2 u-level ^ 25 *
+
+graphic_loc
+SLF
+graphic_tex
+SLF
+
+base_str
+SLF
+base_con
+SLF
+base_aff
+SLF
+base_int
+SLF
+base_per
+SLF
+base_dex
+SLF
+base_cha
+SLF
+base_def
+SLF
+base_luck
+SLF
+
+strength
+u-base_str i-str + u|p_s u|p_phys + 2 * -
+constitution
+u-base_con i-con + u|p_c u|p_phys + 2 * -
+affinity
+u-base_aff i-aff + i-penalty - u|p_a u|p_ment + 2 * -
+intelligence
+u-base_int i-int + u|p_i u|p_ment + 2 * -
+perception
+u-base_per i-per + u|p_p u|p_ment + 2 * -
+dexterity
+u-base_dex i-dex + u|p_d u|p_phys + 2 * -
+charisma
+u-base_cha i-cha +
+defense
+u-base_def i-AC +
+luck
+u-base_luck i-luck_bonus +
+
+max_hit_points
+u-constitution 1 + u-level 2 + * 2 / i-hp_bonus +
+hit_points
+SLF 0 MAX u-max_hit_points MIN
+max_mana
+u-affinity 1 + u-level 1 + * 4 / i-mana_bonus +
+mana
+SLF 0 MAX u-max_mana MIN
+
+accuracy
+u-dexterity i-acc + 2 -
+evasion
+u-dexterity i-eva + i-penalty -
+
+megacrit_chance
+(f) 1 E e-evasion u-accuracy - 24 + -2 / ^ 3 * 1 + /
+crit_chance
+(f) 1 E e-evasion u-accuracy - 10 + -2 / ^ 3 * 1 + /
+hit_chance
+(f) 1 E e-evasion u-accuracy - 0 + -2 / ^ 3 * 1 + /
+scrape_chance
+(f) 1 E e-evasion u-accuracy - 2 - -2 / ^ 3 * 1 + /
+melee_damage
+(f) u-strength i-damage + 2 / 0.98 e-defense ^ *
+
+hunger
+SLF
+thirst
+SLF
+stamina
+SLF 0 MAX 10000 MIN
+
+ai
+SLF
+blood_color
+SLF
+splatter
+SLF
+
+split
+SLF
+swarm
+SLF
+unarmed_type
+SLF
+spawn
+SLF
+
+light_load
+150 u-strength *
+
+base_attspe
+SLF
+base_movespe
+SLF
+attack_speed
+u-base_attspe i-attack_rate + u|p_aslow 3 * -
+move_speed
+u-base_movespe i-movement_speed + u|p_mslow 3 * -
+hp_reg
+(f) 0.1 i-hp_regen +
+mana_reg
+(f) 0.1 i-mana_regen +
+metabolism
+20 u-max_hit_points u-hit_points > 5 * + 10000 u-stamina > 5 * + u-max_mana u-mana > 10 * + u-hunger 5000 > 10 * + 2000 u-hunger > 3 * - 750 u-hunger > 6 * - 250 u-hunger > 9 * -
+att_condition
+SLF
+att_condition_chance
+SLF
+poison
+SLF
+
+$$$
+~included in the prototype by default
+strength
+constitution
+affinity
+intelligence
+perception
+dexterity
+charisma
+defense
+max_hit_points
+hit_points
+max_mana
+mana
+accuracy
+evasion
+megacrit_chance
+crit_chance
+hit_chance
+scrape_chance
+melee_damage
+hp_regen
+mana_regen
+poison
+
+
+END
