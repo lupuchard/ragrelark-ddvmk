@@ -72,7 +72,7 @@ JUSTICE MACE DEMANDS JUSTICE.
 81
 damage=6
 weight=105
-spe=-1
+movement_speed=-1
 str=2
 con=1
 damage_type=1

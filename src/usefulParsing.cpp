@@ -29,6 +29,48 @@ pair<int, int> stp(string s) {
     return pair<int, int>(0, 0);
 }
 
+bool isPair(string s) {
+    bool comma = false;
+    for (unsigned int i = 0; i < s.size(); i++) {
+        if (s[i] == ',' || s[i] == ':') {
+            if (comma) {
+                return false;
+            } else {
+                comma = true;
+            }
+        } else if (s[i] < 48 || s[i] >= 58) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool isSPair(string s) {
+    bool comma = false;
+    for (unsigned int i = 0; i < s.size(); i++) {
+        if (s[i] == ',' || s[i] == ':') {
+            if (comma) {
+                return false;
+            } else {
+                comma = true;
+            }
+        }
+    }
+    return true;
+}
+
+bool isNum(string s) {
+    if ((s[0] < 48 || s[0] >= 58) && s[0] != '.' && s[0] != '-') {
+        return false;
+    }
+    for (unsigned int i = 1; i < s.size(); i++) {
+        if ((s[i] < 48 || s[i] >= 58) && (s[i] != '.')) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /*in: string "X:Y"
  *out: pair of strings X and Y*/
 pair<string, string> stps(string s) {

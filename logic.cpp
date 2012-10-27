@@ -62,9 +62,9 @@ void Start::logic() {
         if (i3times > 0) {
             interval3 = interval3 % INTERVAL_3_TIM;
             pUnit->modifyStat(S_HUNGER, -(int)(pUnit->getStatValue(S_METABOLISM) * 1.7361111 * i3times)); //base metabolism is 100 calories per hour
-            cout << "mets " << pUnit->getStatValue(S_METABOLISM) << endl;
+            //cout << "mets " << pUnit->getStatValue(S_METABOLISM) << endl;
         }
-        cout << "mets " << pUnit->getStatValue(S_METABOLISM) << endl;
+        //cout << "mets " << pUnit->getStatValue(S_METABOLISM) << endl;
         //cout << "mets " << pUnit->getStatValue(S_HUNGER) << endl;
         pUnit->modifyStat(S_STAMINA, timePassed);
         world->theTime = pUnit->theTime;

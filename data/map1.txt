@@ -60,8 +60,7 @@ END
 
 AREA
 foomfield
-2
-8
+2,8
 END
 
 ~abc = dungeon door, def = home door, gh = locked dungeon/home door, ijk = scary door, lmn = stone door,

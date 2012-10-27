@@ -75,7 +75,7 @@ void Start::execute() {
         numFrames++;
         double fps = (numFrames / (float)(SDL_GetTicks() - startTime)) * 1000;
         if (numFrames % 200 == 0) {
-            cout << "FPS: " << fps << endl;
+            //cout << "FPS: " << fps << endl;
             numFrames = 0;
             startTime = SDL_GetTicks();
         }

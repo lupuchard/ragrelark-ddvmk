@@ -417,7 +417,7 @@
 1351217829 source:/home/luke/cppworkspace/Ragrelark/mobSpawner.cpp
 	"Start.h"
 
-1349917972 source:/home/luke/cppworkspace/ragrelark-ddvmk/cleaner.cpp
+1351280757 source:/home/luke/cppworkspace/ragrelark-ddvmk/cleaner.cpp
 	"Start.h"
 
 1351216297 /home/luke/cppworkspace/ragrelark-ddvmk/include/Start.h
@@ -470,7 +470,7 @@
 	"usefulParsing.h"
 	"FormulaUser.h"
 
-1347135141 /home/luke/cppworkspace/ragrelark-ddvmk/include/usefulParsing.h
+1351299915 /home/luke/cppworkspace/ragrelark-ddvmk/include/usefulParsing.h
 	<string>
 	<math.h>
 	<cctype>
@@ -548,7 +548,7 @@
 	"EquipmentFolder.h"
 	"BagFolder.h"
 
-1351221852 source:/home/luke/cppworkspace/ragrelark-ddvmk/dataLoader.cpp
+1351300825 source:/home/luke/cppworkspace/ragrelark-ddvmk/dataLoader.cpp
 	"Start.h"
 
 1351216553 source:/home/luke/cppworkspace/ragrelark-ddvmk/formulas.cpp
@@ -610,7 +610,7 @@
 1342810506 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/PrimeFolder.cpp
 	"PrimeFolder.h"
 
-1346034896 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Start.cpp
+1351289688 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Start.cpp
 	"Start.h"
 
 1351217565 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Stat.cpp
@@ -652,6 +652,6 @@
 	"Start.h"
 	"Area.h"
 
-1349923021 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/usefulParsing.cpp
+1351299937 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/usefulParsing.cpp
 	"usefulParsing.h"
 

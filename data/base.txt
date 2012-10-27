@@ -69,8 +69,7 @@ youare
 
 foomfield
 map1
-2
-3
+2,3
 
 -equips
 backpack
