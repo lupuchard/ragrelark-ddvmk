@@ -47,14 +47,11 @@ void Start::statChanged(int stat, StatHolderIntef* statHolder) {
 }
 
 void Start::conditionChanged(int condition, StatHolderIntef* statHolder) {
-    cout << "step 2" << endl;
     vector<completeStat>* affStats = getConAfflictions(condition);
     if (affStats) {
-        cout << "step 3" << endl;
         for (unsigned int i = 0; i < affStats->size(); i++) {
             pair<int, Stat*> cStat = (*affStats)[i];
             StatHolder* foundStatHolder = findStatHolder(cStat.first, (StatHolder*)statHolder);
-            cout << "cStat " << (int)cStat.second->getIndex() << endl;
             foundStatHolder->needToUpdate(cStat.second->getIndex(), cStat.second->isItFloat());
             statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
         }

@@ -846,7 +846,6 @@ void Start::rMoveDir(Unit* unit, int dir, int x, int y) {
 }
 
 void Start::rMoveLoc(Unit* unit, int x, int y, int endX, int endY) {
-    cout << "test " << x << " " << y << " " << endX << " " << endY << endl;
     animation* moveAnim = new animation;
     moveAnim->type = (unsigned short)A_MOVELOC;
     moveAnim->value = (unsigned char)(endX + 1);

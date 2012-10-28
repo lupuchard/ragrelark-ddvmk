@@ -29,10 +29,8 @@ END
 ~  0 - none, 1 - grass
 TILE
 wall
-0
-0
-0
-0
+0,0
+0,0
 END
 
 ~map tile group

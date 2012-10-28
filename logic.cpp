@@ -78,7 +78,7 @@ void Start::logic() {
                     ai(unit, iter->second);
                     if (before == unit->theTime) {
                         unit->theTime++;
-                        cout << "PROBLEMS AI NOT MOVING" << endl;
+                        //cout << "PROBLEMS AI NOT MOVING" << endl;
                     }
                 }
             }

@@ -333,7 +333,6 @@ bool StatHolder::getCondition(int conditionI) {
 
 void StatHolder::setCondition(int conditionI, bool value) {
     conditions[conditionI] = value;
-    cout << "step 1" << endl;
     formUser->conditionChanged(conditionI, aThis);
 }
 

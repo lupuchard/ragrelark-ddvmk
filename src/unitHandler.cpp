@@ -55,7 +55,7 @@ void Start::ai(Unit* unit, Zone* zone) {
                     } else {
                         unit->pointOnPath = -1;
                         unit->theTime += 20;
-                        cout << "mob move mistake " << dir << " " << cx << " " << cy << " " << unit->x << " " << unit->y << endl;
+                        //cout << "mob move mistake " << dir << " " << cx << " " << cy << " " << unit->x << " " << unit->y << endl;
                     }
                 }
             } else {
@@ -411,9 +411,7 @@ void Start::applyPoison(int condition, int duration, Unit* unit) {
         if (weightBefore >= 2) {
             statusString += " " + toRomanNumerals(weightBefore);
         }
-        cout << "happens first of all" << endl;
         if (slow || cripple || paralysis || deathly || befuddle) {
-            cout << "happens " << endl;
             statusString += " (";
             bool start = false;
             if (slow) {
@@ -424,7 +422,6 @@ void Start::applyPoison(int condition, int duration, Unit* unit) {
                 if (start) statusString += ", ";
                 statusString += "cripple";
                 start = true;
-                cout << "happens again" << endl;
             }
             if (befuddle) {
                 if (start) statusString += ", ";
