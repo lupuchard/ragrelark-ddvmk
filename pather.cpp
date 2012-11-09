@@ -1,4 +1,5 @@
 #include "Start.h"
+#include <queue>
 
 /* This file handles the pathing alporithm. At the end it also does the fov stuffs. */
 #define STRUCTURE_TEX 1
@@ -29,6 +30,12 @@ struct node {
         refresh();
     }
     void refresh();
+};
+
+struct CompareNode : public std::binary_function<node*, node*, bool> {
+	bool operator()(const node* lhs, const node* rhs) const {
+		return lhs->f > rhs->f;
+	}
 };
 
 int getG(node* parent, node* n) {
@@ -65,6 +72,8 @@ void node::refresh() {
     f = g + h;
 }
 
+pair<int, node*> arr[64][64];
+
 void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathingType) {
     int add = 0;
     if (xDest == -1) {
@@ -80,17 +89,40 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
     bool considerOtherUnits = pathingType != P_PASSUNITS;
     start = loc(unit->x, unit->y);
     goal = loc(xDest, yDest);
+
+    if (start.x == goal.x && start.y == goal.y) return;
+
     int ai = unit->getStatValue(S_AI);
-    map<loc, node*> open;
-    map<loc, node*> closed;
-    node* current = new node(NULL, start, zone->getLocationAt(start.x, start.y)->height);
+    //map<loc, node*> open;
+    //map<loc, node*> closed;
+    int wid = zone->getWidth();
+    int hei = zone->getHeight();
+    priority_queue<node*, vector<node*>, CompareNode> open;
+    for (int i = 0; i < wid; i++) {
+        for (int j = 0; j < hei; j++) {
+            if (arr[i][j].second) {
+                delete arr[i][j].second;
+            }
+            //int val = map->getValue(i, j);
+            /*if (walkable) {
+                arr[i][j] = pair<int, node*>(2, (node*)NULL);
+                arr[i][j] = pair<int, node*>(0, (node*)NULL);
+            }*/
+            arr[i][j] = pair<int, node*>(3, (node*)NULL);
+        }
+    }
+    arr[goal.x][goal.y].first = 0;
+    open.push(new node(NULL, start, zone->getLocationAt(start.x, start.y)->getTotalHeight()));
+    arr[start.x][start.y] = pair<int, node*>(1, open.top());
+    node* current = NULL;
+    //node* current = new node(NULL, start, zone->getLocationAt(start.x, start.y)->height);
 
     bool done = false;
     bool success = false;
 
     while(!done) {
         if (!open.empty()) {
-            map<loc, node*>::iterator it = open.begin();
+            /*map<loc, node*>::iterator it = open.begin();
             node* temp = NULL;
             int min = 100000;
             for (; it != open.end(); it++) {
@@ -100,20 +132,23 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
                     temp = n;
                 }
             }
-            current = temp;
+            current = temp;*/
+            current = open.top();
+            open.pop();
         }
-        closed[current->l] = current;
-        open.erase(current->l);
+        arr[current->l.x][current->l.y].first = 2;
+        //closed[current->l] = current;
+        //open.erase(current->l);
         for (int i = 1; i < 10; i++) {
             if (i == 5) {
                 i++;
             }
             loc l = loc(xDirs[i] + current->l.x, yDirs[i] + current->l.y);
 
-            if (l.x < 0 || l.x >= zone->getWidth() || l.y < 0 || l.y >= zone->getHeight()) {
+            if (l.x < 0 || l.x >= wid || l.y < 0 || l.y >= hei) {
                 continue;
             }
-            bool canDoor = ai > 1;
+            /*bool canDoor = ai > 1;
             Location* locAt = zone->getLocationAt(l.x, l.y);
             int hei = locAt->getTotalHeight();
             int heightDiff = hei - current->height;
@@ -129,15 +164,45 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
                 }
             } else {
                 open[l] = new node(current, l, hei);
+            }*/
+            int val = arr[l.x][l.y].first;
+            if (val == 3) {
+                bool canDoor = ai > 1;
+                Location* locAt = zone->getLocationAt(l.x, l.y);
+                int hei = locAt->getTotalHeight();
+                int heightDiff = hei - current->height;
+                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || (considerOtherUnits && locAt->hasUnit() && (l.x != xDest || l.y != yDest))) {
+                    val = 2;
+                }
+            }
+            if (val == 2) {
+                continue;
+            } else if (val == 1) {
+                node* n = arr[l.x][l.y].second;
+                if (getG(current, n) < n->g) {
+                    node* temp  = n;
+                    temp->parent = current;
+                    temp->refresh();
+                }
+            } else {
+                arr[l.x][l.y] = pair<int, node*>(1, new node(current, l, zone->getLocationAt(l.x, l.y)->getTotalHeight()));
+                open.push(arr[l.x][l.y].second);
             }
         }
-        if (closed.find(goal) != closed.end()) {
+        /*if (closed.find(goal) != closed.end()) {
             done = true;
             success = true;
         } else if (open.empty()) {
             done = true;
             success = false;
-        }
+        }*/
+        if (arr[goal.x][goal.y].first == 2) {
+			done = true;
+			success = true;
+		} else if (open.empty()) {
+			done = true;
+			success = false;
+		}
     }
     if (success) {
         int len1 = current->n;
@@ -175,7 +240,7 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
         }
         unit->currentPath = p;
         unit->pointOnPath = 0;
-        if (!open.empty()) {
+        /*if (!open.empty()) {
             for (map<loc, node*>::iterator i = open.begin(); i != open.end(); i++) {
                 delete i->second;
             }
@@ -186,7 +251,7 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
                 delete i->second;
             }
             closed.clear();
-        }
+        }*/
     } else {
         unit->currentPath = NULL;
         unit->pointOnPath = -1;

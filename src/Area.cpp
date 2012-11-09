@@ -50,7 +50,7 @@ speLoc Area::moveZones(Zone* z, int x, int y) {
     if (newZone)  {
         if (x < 0) x = newZone->getWidth() - 1;
         if (y < 0) y = newZone->getHeight() - 1;
-        speLoc newSpeLoc = {x, y, newZone};
+        speLoc newSpeLoc = {(short)x, (short)y, newZone};
         return newSpeLoc;
     }
     speLoc nope;

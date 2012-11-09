@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="cleaner.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="29" topLine="0" />
+	<File name="cleaner.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="205" topLine="0" />
 	</File>
 	<File name="data/base.txt" open="0" top="0" tabpos="6">
-		<Cursor position="795" topLine="37" />
+		<Cursor position="882" topLine="40" />
 	</File>
 	<File name="data/coins.txt" open="0" top="0" tabpos="2">
-		<Cursor position="378" topLine="0" />
+		<Cursor position="395" topLine="0" />
 	</File>
 	<File name="data/extraitems.txt" open="0" top="0" tabpos="7">
-		<Cursor position="250" topLine="0" />
+		<Cursor position="206" topLine="0" />
 	</File>
-	<File name="data/formulas.txt" open="1" top="1" tabpos="5">
-		<Cursor position="1857" topLine="165" />
+	<File name="data/formulas.txt" open="0" top="0" tabpos="5">
+		<Cursor position="2354" topLine="194" />
 	</File>
 	<File name="data/items.txt" open="0" top="0" tabpos="1">
-		<Cursor position="807" topLine="65" />
+		<Cursor position="424" topLine="105" />
 	</File>
-	<File name="data/map1.txt" open="0" top="0" tabpos="6">
-		<Cursor position="1557" topLine="208" />
+	<File name="data/map1.txt" open="0" top="0" tabpos="5">
+		<Cursor position="2428" topLine="206" />
 	</File>
-	<File name="data/maps2.txt" open="0" top="0" tabpos="3">
-		<Cursor position="3225" topLine="148" />
+	<File name="data/maps2.txt" open="0" top="0" tabpos="6">
+		<Cursor position="3242" topLine="179" />
 	</File>
-	<File name="data/mobspaw.txt" open="1" top="0" tabpos="1">
-		<Cursor position="93" topLine="0" />
+	<File name="data/mobspaw.txt" open="0" top="0" tabpos="4">
+		<Cursor position="194" topLine="0" />
 	</File>
 	<File name="data/moreitems.txt" open="0" top="0" tabpos="4">
-		<Cursor position="196" topLine="6" />
+		<Cursor position="589" topLine="60" />
 	</File>
 	<File name="data/units.txt" open="0" top="0" tabpos="5">
-		<Cursor position="247" topLine="0" />
+		<Cursor position="1390" topLine="133" />
 	</File>
-	<File name="dataLoader.cpp" open="0" top="0" tabpos="4">
-		<Cursor position="14973" topLine="365" />
+	<File name="dataLoader.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="46397" topLine="956" />
 	</File>
-	<File name="formulas.cpp" open="0" top="0" tabpos="8">
-		<Cursor position="2461" topLine="38" />
+	<File name="formulas.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="395" topLine="0" />
 	</File>
-	<File name="generator.cpp" open="1" top="0" tabpos="3">
+	<File name="generator.cpp" open="0" top="0" tabpos="3">
 		<Cursor position="4625" topLine="142" />
 	</File>
 	<File name="include/Area.h" open="0" top="0" tabpos="7">
@@ -56,7 +56,7 @@
 		<Cursor position="356" topLine="0" />
 	</File>
 	<File name="include/Formula.h" open="0" top="0" tabpos="9">
-		<Cursor position="764" topLine="13" />
+		<Cursor position="571" topLine="0" />
 	</File>
 	<File name="include/FormulaUser.h" open="0" top="0" tabpos="7">
 		<Cursor position="670" topLine="0" />
@@ -65,16 +65,16 @@
 		<Cursor position="99" topLine="0" />
 	</File>
 	<File name="include/Item.h" open="0" top="0" tabpos="8">
-		<Cursor position="308" topLine="0" />
+		<Cursor position="375" topLine="0" />
 	</File>
 	<File name="include/ItemFolder.h" open="0" top="0" tabpos="1">
 		<Cursor position="92" topLine="0" />
 	</File>
-	<File name="include/ItemType.h" open="1" top="0" tabpos="2">
-		<Cursor position="6089" topLine="31" />
+	<File name="include/ItemType.h" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="50" />
 	</File>
 	<File name="include/Location.h" open="0" top="0" tabpos="4">
-		<Cursor position="577" topLine="0" />
+		<Cursor position="577" topLine="23" />
 	</File>
 	<File name="include/Player.h" open="0" top="0" tabpos="7">
 		<Cursor position="542" topLine="0" />
@@ -83,13 +83,13 @@
 		<Cursor position="379" topLine="0" />
 	</File>
 	<File name="include/Start.h" open="0" top="0" tabpos="2">
-		<Cursor position="896" topLine="45" />
+		<Cursor position="7976" topLine="194" />
 	</File>
 	<File name="include/Stat.h" open="0" top="0" tabpos="0">
-		<Cursor position="182" topLine="0" />
+		<Cursor position="341" topLine="5" />
 	</File>
-	<File name="include/StatHolder.h" open="0" top="0" tabpos="6">
-		<Cursor position="2071" topLine="76" />
+	<File name="include/StatHolder.h" open="1" top="0" tabpos="3">
+		<Cursor position="4815" topLine="131" />
 	</File>
 	<File name="include/StatHolderIntef.h" open="0" top="0" tabpos="0">
 		<Cursor position="116" topLine="0" />
@@ -98,34 +98,34 @@
 		<Cursor position="677" topLine="16" />
 	</File>
 	<File name="include/Tile.h" open="0" top="0" tabpos="4">
-		<Cursor position="370" topLine="0" />
+		<Cursor position="73" topLine="0" />
 	</File>
 	<File name="include/Unit.h" open="0" top="0" tabpos="7">
-		<Cursor position="190" topLine="0" />
+		<Cursor position="460" topLine="15" />
 	</File>
 	<File name="include/World.h" open="0" top="0" tabpos="0">
 		<Cursor position="312" topLine="0" />
 	</File>
 	<File name="include/Zone.h" open="0" top="0" tabpos="3">
-		<Cursor position="892" topLine="20" />
+		<Cursor position="53" topLine="0" />
 	</File>
 	<File name="include/usefulParsing.h" open="0" top="0" tabpos="1">
-		<Cursor position="247" topLine="0" />
+		<Cursor position="509" topLine="0" />
 	</File>
 	<File name="initiator.cpp" open="0" top="0" tabpos="2">
 		<Cursor position="463" topLine="0" />
 	</File>
-	<File name="logic.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="2420" topLine="33" />
+	<File name="logic.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="2880" topLine="45" />
 	</File>
-	<File name="mobSpawner.cpp" open="0" top="0" tabpos="3">
-		<Cursor position="6029" topLine="0" />
+	<File name="mobSpawner.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="3658" topLine="82" />
 	</File>
-	<File name="pather.cpp" open="0" top="0" tabpos="1">
-		<Cursor position="424" topLine="0" />
+	<File name="pather.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="3277" topLine="108" />
 	</File>
-	<File name="src/Area.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="1099" topLine="20" />
+	<File name="src/Area.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="1069" topLine="23" />
 	</File>
 	<File name="src/BagFolder.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="786" topLine="14" />
@@ -133,17 +133,17 @@
 	<File name="src/EquipmentFolder.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="899" topLine="23" />
 	</File>
-	<File name="src/Formula.cpp" open="1" top="0" tabpos="8">
-		<Cursor position="1173" topLine="0" />
+	<File name="src/Formula.cpp" open="0" top="0" tabpos="8">
+		<Cursor position="1196" topLine="14" />
 	</File>
 	<File name="src/GroundFolder.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="834" topLine="0" />
 	</File>
-	<File name="src/Item.cpp" open="0" top="0" tabpos="3">
-		<Cursor position="57" topLine="0" />
+	<File name="src/Item.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="160" topLine="0" />
 	</File>
 	<File name="src/ItemType.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="564" topLine="0" />
+		<Cursor position="361" topLine="0" />
 	</File>
 	<File name="src/Location.cpp" open="0" top="0" tabpos="2">
 		<Cursor position="1171" topLine="0" />
@@ -154,41 +154,41 @@
 	<File name="src/PrimeFolder.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="609" topLine="15" />
 	</File>
-	<File name="src/Start.cpp" open="0" top="0" tabpos="3">
-		<Cursor position="351" topLine="27" />
+	<File name="src/Start.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="5047" topLine="141" />
 	</File>
 	<File name="src/Stat.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="203" topLine="0" />
 	</File>
-	<File name="src/StatHolder.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="9630" topLine="301" />
+	<File name="src/StatHolder.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="11741" topLine="388" />
 	</File>
 	<File name="src/Texture.cpp" open="0" top="0" tabpos="5">
 		<Cursor position="552" topLine="9" />
 	</File>
 	<File name="src/Tile.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="271" topLine="0" />
+		<Cursor position="20" topLine="0" />
 	</File>
-	<File name="src/Unit.cpp" open="0" top="0" tabpos="7">
-		<Cursor position="1056" topLine="0" />
+	<File name="src/Unit.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="2551" topLine="60" />
 	</File>
 	<File name="src/World.cpp" open="0" top="0" tabpos="1">
 		<Cursor position="65" topLine="0" />
 	</File>
 	<File name="src/Zone.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="2577" topLine="0" />
+		<Cursor position="484" topLine="3" />
 	</File>
 	<File name="src/events.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="8316" topLine="204" />
 	</File>
-	<File name="src/renderer.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="10268" topLine="326" />
+	<File name="src/renderer.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="9666" topLine="328" />
 	</File>
-	<File name="src/unitHandler.cpp" open="1" top="0" tabpos="6">
-		<Cursor position="19366" topLine="6" />
+	<File name="src/unitHandler.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="19075" topLine="439" />
 	</File>
-	<File name="src/usefulParsing.cpp" open="0" top="0" tabpos="7">
-		<Cursor position="583" topLine="6" />
+	<File name="src/usefulParsing.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="371" topLine="0" />
 	</File>
 	<File name="test.cpp" open="0" top="0" tabpos="4">
 		<Cursor position="19" topLine="0" />

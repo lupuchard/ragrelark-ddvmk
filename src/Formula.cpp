@@ -4,6 +4,20 @@
 int Formula::numFloats = 0;
 float Formula::floats[MAX_FLOATS];
 
+/*
+1 = operator
+2 = 1 byte int
+3 = 2 byte int*
+4 = 4 byte int
+5 = 8 byte int*
+6 = float
+7 = double*
+8 = variable
+
+* = not really
+
+*/
+
 /* Create a formula with an estimated length.
  * A length too low will slow the creation of the formula while a length too high will waste memory.
  * Remember that the length of the formula is not equal to the number of commands but to the number
@@ -17,6 +31,7 @@ Formula::~Formula() { }
 
 /* Pushes an operator onto the stack. A list of the operator definitions is in formula.h. */
 void Formula::pushOperator(FOpr op) {
+    commands.push_back(1);
     commands.push_back(op);
 }
 
@@ -25,7 +40,17 @@ void Formula::pushOperator(FOpr op) {
  * ...2 bytes if it is from -4096 to 4095. (two's comp)
  * ...5 bytes if outside that range. (aka normal int) */
 void Formula::pushInt(int num) {
-    if (num >= -3 && num <= 28) {
+    if (num < 0 || num > 255) {
+        commands.push_back(4);
+        commands.push_back((num >> 24) & 0xFF);
+        commands.push_back((num >> 16) & 0xFF);
+        commands.push_back((num >> 8) & 0xFF);
+        commands.push_back(num & 0xFF);
+    } else {
+        commands.push_back(2);
+        commands.push_back(num);
+    }
+    /*if (num >= -3 && num <= 28) {
         commands.push_back(128 + (num + 3));
     } else if (num >= -4096 && num <= 4095) {
         num += 4096;
@@ -37,24 +62,24 @@ void Formula::pushInt(int num) {
         commands.push_back((num >> 16) & 0xFF);
         commands.push_back((num >> 8) & 0xFF);
         commands.push_back(num & 0xFF);
-    }
+    }*/
 }
 
 /* Pushes a float onto the stack. Can only be a max of MAX_FLOATS different floats among all formulas.
  * Takes up 1 byte in the formula. */
 void Formula::pushFloat(float num) {
-    int val = 192;
+    commands.push_back(6);
     int i;
     for (i = 0; i < Formula::numFloats; i++) {
         if (Formula::floats[i] == num) {
-            commands.push_back(val + i);
+            commands.push_back(i);
             return;
         }
     }
     if (Formula::numFloats == MAX_FLOATS) {
         cout << "maximum float values reached" << endl;
     } else {
-        commands.push_back(val + Formula::numFloats);
+        commands.push_back(Formula::numFloats);
         Formula::floats[numFloats++] = num;
     }
 }
@@ -65,13 +90,14 @@ void Formula::pushFloat(float num) {
  * Detailed info on how targets and types work is in Ragrelark.txt. */
 void Formula::pushVar(int target, int type, int index) {
     //int num = 0x40 | (target << 3) | type;
-    commands.push_back(0x40 | (target << 3) | type);
+    commands.push_back(8);
+    commands.push_back((target << 4) | type);
     commands.push_back(index);
 }
 
-int getNum(unsigned char value1, unsigned char value2) {
+/*int getNum(unsigned char value1, unsigned char value2) {
     return (((value1 & 0x1F) << 8) | value2) - 4096;
-}
+}*/
 
 /* Runs a formula using float maths. Is slower but gets better results than run().
  * The statHolder should have the stat. The user should be the world and the prevVal should be the previous value of the stat that the formula is being run for. */
@@ -82,9 +108,10 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
     int sp = -1; //index of the top of the stack
     while(went < commands.size()) {
         unsigned char value = commands.at(went++);
-        if (value >> 6 == 0) {
+        if (value == 1) {
             //cout << "Operate: " << value << " - " << formulaStack[sp - 1] << ", " << formulaStack[sp] << endl;
-            switch(value) {
+
+            switch(commands.at(went++)) {
                 case O_ADD : sp--;
                 formulaStack[sp] = formulaStack[sp] + formulaStack[sp + 1];
                 break;
@@ -127,7 +154,19 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
                 case O_PIE : formulaStack[++sp] = pi; break;
                 default: cout << "**Error**: Not a valid operator (float)." << endl; break;
             }
-        } else if (value >> 6 == 1) {
+        } else if (value == 2) {
+            formulaStack[++sp] = commands.at(went++);
+        } else if (value == 4) {
+            formulaStack[++sp] = (double)((commands.at(went) << 24) | (commands.at(went + 1) << 16) | (commands.at(went + 2) << 8) | (commands.at(went + 3)));
+            went += 4;
+        } else if (value == 6) {
+            formulaStack[++sp] = floats[commands.at(went++)];
+        } else if (value == 8) {
+            unsigned char c = commands.at(went++);
+            formulaStack[++sp] = user->getVarValueF((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
+        }
+
+        /*else if (value == 2) {
             formulaStack[++sp] = user->getVarValueF((VOwner)((value >> 3) & 7), (VType)(value & 3), commands.at(went++), statHolder);
         } else if (value >> 5 == 4) {
             formulaStack[++sp] = (double)(value % 32 - 3);
@@ -138,7 +177,7 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
         } else if (value >> 5 == 7) {
             formulaStack[++sp] = (double)((commands.at(went) << 24) | (commands.at(went + 1) << 16) | (commands.at(went + 2) << 8) | (commands.at(went + 3)));
             went += 4;
-        } else {
+        }*/ else {
             //cout << "formula error" << endl;
         }
     }
@@ -153,9 +192,9 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
     int sp = -1;
     while(went < commands.size()) {
         unsigned char value = commands.at(went++);
-        if (value >> 6 == 0) {
+        if (value == 1) {
             //cout << "Operate: " << (int)value << " - " << formulaStack[sp - 1] << ", " << formulaStack[sp] << endl;
-            switch(value) {
+            switch(commands.at(went++)) {
                 case O_ADD : sp--;
                 formulaStack[sp] = formulaStack[sp] + formulaStack[sp + 1];
                 break;
@@ -195,7 +234,19 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
                 case O_TIM : formulaStack[++sp] = user->getTime(); break;
                 default: cout << "**Error**: Not a valid operator (int). " << (int)value << endl; break;
             }
-        } else if (value >> 6 == 1) {
+        } else if (value == 2) {
+            formulaStack[++sp] = commands.at(went++);
+        } else if (value == 4) {
+            formulaStack[++sp] = (commands.at(went) << 24) | (commands.at(went + 1) << 16) | (commands.at(went + 2) << 8) | (commands.at(went + 3));
+            went += 4;
+        } else if (value == 6) {
+            cout << "**Error**: need to use runFormulaFloat in formulas with float values " << prevVal << endl;
+        } else if (value == 8) {
+            unsigned char c = commands.at(went++);
+            formulaStack[++sp] = user->getVarValue((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
+        }
+
+        /*else if (value >> 6 == 1) {
             //cout << "Var!" << endl;
             formulaStack[++sp] = user->getVarValue((VOwner)((value >> 3) & 7), (VType)(value & 3), commands.at(went++), statHolder); //step 6
         } else if (value >> 5 == 4) {
@@ -213,7 +264,7 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
             return 0;
         } else {
             cout << "formula error" << endl;
-        }
+        }*/
     }
     //cout << "Formula done " << formulaStack[sp] << endl;
     return formulaStack[sp--]; //step 17

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <bitset>
+#include <unordered_map>
 #include "Stat.h"
 using namespace std;
 
@@ -135,6 +136,9 @@ class StatHolder: StatHolderIntef {
         bool getCondition(int condition);
         void setCondition(int condition, bool value);
         bool hasAnyConditions();
+
+        void makeHashMaps();
+        void removeHashMaps();
     protected:
         StatHolder* aThis;
     private:
@@ -152,9 +156,13 @@ class StatHolder: StatHolderIntef {
         unsigned char numIntStats;
         unsigned char numFloatStats;
         unsigned char owner;
+        bool hashMapped;
 
         int binarySearchInt(int first, int last, int stat);
         int binarySearchFloat(int first, int last, int stat);
+
+        unordered_map<unsigned char, pair<short, bool> >* tempHashMap;
+        unordered_map<unsigned char, pair<float, bool> >* tempFloatHashMap;
 };
 
 #endif // STATHOLDER_H

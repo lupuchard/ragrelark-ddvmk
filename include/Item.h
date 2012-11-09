@@ -11,8 +11,7 @@
 #define I_BAG 23
 #define I_FOOD 41
 
-class Item
-{
+struct Item {
     public:
         Item();
         Item(int itemType);

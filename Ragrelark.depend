@@ -453,16 +453,17 @@
 	"Stat.h"
 	"Tile.h"
 
-1351215307 /home/luke/cppworkspace/ragrelark-ddvmk/include/StatHolder.h
+1352498440 /home/luke/cppworkspace/ragrelark-ddvmk/include/StatHolder.h
 	<iostream>
 	<bitset>
+	<unordered_map>
 	"Stat.h"
 
 1351215913 /home/luke/cppworkspace/ragrelark-ddvmk/include/Stat.h
 	"Formula.h"
 	<string>
 
-1351215447 /home/luke/cppworkspace/ragrelark-ddvmk/include/Formula.h
+1351900495 /home/luke/cppworkspace/ragrelark-ddvmk/include/Formula.h
 	<vector>
 	<math.h>
 	<string>
@@ -481,7 +482,7 @@
 
 1351215254 /home/luke/cppworkspace/ragrelark-ddvmk/include/StatHolderIntef.h
 
-1337436008 /home/luke/cppworkspace/ragrelark-ddvmk/include/Tile.h
+1351391108 /home/luke/cppworkspace/ragrelark-ddvmk/include/Tile.h
 	<string>
 	"StatHolder.h"
 
@@ -502,7 +503,7 @@
 	"Unit.h"
 	"Item.h"
 
-1342977896 /home/luke/cppworkspace/ragrelark-ddvmk/include/Item.h
+1351390893 /home/luke/cppworkspace/ragrelark-ddvmk/include/Item.h
 	"ItemType.h"
 
 1342978185 /home/luke/cppworkspace/ragrelark-ddvmk/include/ItemType.h
@@ -548,7 +549,7 @@
 	"EquipmentFolder.h"
 	"BagFolder.h"
 
-1351389649 source:/home/luke/cppworkspace/ragrelark-ddvmk/dataLoader.cpp
+1351908390 source:/home/luke/cppworkspace/ragrelark-ddvmk/dataLoader.cpp
 	"Start.h"
 
 1351389787 source:/home/luke/cppworkspace/ragrelark-ddvmk/formulas.cpp
@@ -563,13 +564,14 @@
 1351389787 source:/home/luke/cppworkspace/ragrelark-ddvmk/logic.cpp
 	"Start.h"
 
-1351217829 source:/home/luke/cppworkspace/ragrelark-ddvmk/mobSpawner.cpp
+1351908390 source:/home/luke/cppworkspace/ragrelark-ddvmk/mobSpawner.cpp
 	"Start.h"
 
-1342906716 source:/home/luke/cppworkspace/ragrelark-ddvmk/pather.cpp
+1352496729 source:/home/luke/cppworkspace/ragrelark-ddvmk/pather.cpp
 	"Start.h"
+	<queue>
 
-1351216565 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Area.cpp
+1351909351 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Area.cpp
 	"Area.h"
 
 1351222910 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/BagFolder.cpp
@@ -581,7 +583,7 @@
 1351216571 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/EquipmentFolder.cpp
 	"EquipmentFolder.h"
 
-1351216929 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Formula.cpp
+1351905445 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Formula.cpp
 	<iostream>
 	"Formula.h"
 
@@ -597,7 +599,7 @@
 1337964558 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/ItemFolder.cpp
 	"ItemFolder.h"
 
-1351216939 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/ItemType.cpp
+1351908239 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/ItemType.cpp
 	"ItemType.h"
 
 1351223205 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Location.cpp
@@ -610,13 +612,13 @@
 1342810506 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/PrimeFolder.cpp
 	"PrimeFolder.h"
 
-1351289688 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Start.cpp
+1351908200 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Start.cpp
 	"Start.h"
 
 1351217565 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Stat.cpp
 	"Stat.h"
 
-1351389787 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/StatHolder.cpp
+1352497191 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/StatHolder.cpp
 	"StatHolder.h"
 
 1339076808 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/StatHolderIntef.cpp
@@ -625,11 +627,11 @@
 1339430578 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Texture.cpp
 	"Texture.h"
 
-1351217405 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Tile.cpp
+1351391108 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Tile.cpp
 	<iostream>
 	"Tile.h"
 
-1351217440 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Unit.cpp
+1351907939 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Unit.cpp
 	<iostream>
 	"Unit.h"
 
@@ -642,7 +644,7 @@
 1351222876 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/events.cpp
 	"Start.h"
 
-1351217481 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/renderer.cpp
+1352497219 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/renderer.cpp
 	"Start.h"
 
 1351389787 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/unitHandler.cpp
@@ -654,4 +656,10 @@
 
 1351299937 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/usefulParsing.cpp
 	"usefulParsing.h"
+
+1351299937 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/usefulParsing.c
+	"usefulParsing.h"
+
+1343488052 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Item.c
+	"Item.h"
 

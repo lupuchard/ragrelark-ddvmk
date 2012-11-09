@@ -37,6 +37,8 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT) {
 }
 
 Unit::~Unit() {
+    removeHashMaps();
+    unitPrototype->removeHashMaps();
 }
 
 void Unit::setStat(int stat, int value) {
@@ -79,17 +81,17 @@ float Unit::modifyStat(int stat, float amount) {
 
 short Unit::getStatValue(int stat) {
     if (StatHolder::hasStat(stat, false)) {
-        return StatHolder::getStatValue(stat); //step 1
+        return StatHolder::getStatValue(stat);
     } else {
-        return unitPrototype->getStatValue(stat); //step 12
+        return unitPrototype->getStatValue(stat);
     }
 }
 
 float Unit::getStatValueF(int stat) {
     if (StatHolder::hasStat(stat, true)) {
-        return StatHolder::getStatValueF(stat); //step 1
+        return StatHolder::getStatValueF(stat);
     } else {
-        return unitPrototype->getStatValueF(stat); //step 12
+        return unitPrototype->getStatValueF(stat);
     }
 }
 

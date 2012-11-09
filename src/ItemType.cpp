@@ -23,10 +23,11 @@ ItemType::ItemType(string n, string desc, int iI, int tI, int t): StatHolder(V_I
     g.type = 0;
     g.border = 0;
     type = t;
+    makeHashMaps();
 }
 
 ItemType::~ItemType() {
-    //dtor
+    removeHashMaps();
 }
 
 graphic ItemType::getGraphic() {

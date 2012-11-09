@@ -347,7 +347,7 @@ void Start::renderBars() {
     int expReq = pUnit->getStatValue(S_EXPREQ);
     float hun = (float)pUnit->getStatValue(S_HUNGER);
     float sta = (float)pUnit->getStatValue(S_STAMINA);
-    float percents[] = {(float)hp / mhp, (float)mp / mmp, hun / 5000., sta / 10000., (float)exp / expReq};
+    float percents[] = {(float)hp / mhp, (float)mp / mmp, hun / 5000.f, sta / 10000.f, (float)exp / expReq};
     string strings[] = {"HP: " + its(hp) + "/" + its(mhp), "Mana: " + its(mp) + "/" + its(mmp), "Satiety: " + its(hun / 50) + "%", "Stamina: " + its(sta / 100) + "%", "Exp: " + its(exp) + "/" + its(expReq)};
     static bool danger[] = {true, false, true, true, false};
     static short dangerInterval = 0;

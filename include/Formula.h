@@ -9,7 +9,7 @@ using namespace std;
 #ifndef FORMULA_H
 #define FORMULA_H
 
-#define MAX_FLOATS 32
+#define MAX_FLOATS 200
 
 /* A is top, B is under, etc.
 ADD  // B + A (also functions as an 'OR' if TRU is later called)
@@ -47,7 +47,7 @@ const double pi = 3.141592653589793;
  THE FORMULA CLASS
 A formula stores a formula...
 Example formulas can be seen in data/formulas.txt
-Basically, they are stored and executed using reverse polish notation.
+Basically, they are stored and executed using reverse polish notation.ion
 It's not incredibally efficient because bitpacks and takes lost of casting and bitwise operations. I should change this.
 */
 //TODO efficiency>memory
@@ -61,11 +61,10 @@ class Formula {
         /* Push an operator duh. */
         void pushOperator(FOpr op);
 
-        /* Push an integer. The larger the integer the more memory it takes? IDK why I even cared about memory i really need to change all this.*/
+        /* Push an integer.*/
         void pushInt(int num);
 
-        /* Pushes a float: No more than FLOAT_MAX floats can exist in formulas at all in the application.
-            Things that can be written as a set of operations on integers (like a fraction) should not use this. */
+        /* Pushes a float: No more than FLOAT_MAX floats can exist in formulas at all in the application (the same float can be used multiple times and only count as one). */
         void pushFloat(float num);
 
         /* Pushes a var. TODO: more explain on this */

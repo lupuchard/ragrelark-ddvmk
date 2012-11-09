@@ -13,6 +13,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++0x" />
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add directory="src" />
@@ -38,6 +39,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-std=c++0x" />
 					<Add directory="src" />
 					<Add directory="include" />
 					<Add directory="../Ragrelark" />
@@ -314,8 +316,6 @@
 		</Unit>
 		<Unit filename="src/Item.cpp">
 			<Option virtualFolder="code/classes/Items/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/ItemFolder.cpp">
 			<Option virtualFolder="code/classes/Items/Folders/" />
@@ -404,8 +404,6 @@
 		</Unit>
 		<Unit filename="src/usefulParsing.cpp">
 			<Option virtualFolder="code/Helpful Functions/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="test.cpp">
 			<Option virtualFolder="code/" />

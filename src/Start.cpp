@@ -166,6 +166,7 @@ void Start::findAreaUnits() {
                     Location* loc = zone->getLocationAt(j, k);
                     if (loc->hasUnit()) {
                         areaUnits.insert(pair<Unit*, Zone*>(loc->unit, zone));
+                        loc->unit->makeHashMaps();
                     }
                 }
             }

@@ -74,22 +74,6 @@ void addConAffliction(int afflictingCondition, int afflictingConOwner, Stat* aff
     }
 }
 
-/*vector<int> getItemConAfflictions() {
-    return itemConAfflictions;
-}
-vector<int> getEnemyConAfflictions() {
-    return enemyConAfflictions;
-}
-completeCon* getConAfflictions(int condition, int ownerType) {
-    //completeStat cStat = pair<int, Stat*>(ownertype, s);
-    map<completeCon, vector<completeCon>*>::iterator p = afflictions.find(cStat);
-    if (p != afflictions.end()) {
-        return p->second;
-    }
-    return NULL;
-}
-void addConAffliction(vector<int, int> afflictingCon, int afflictedCon, int edOwner);*/
-
 StatHolder::StatHolder(VOwner o) {
     owner = o;
     numIntStats = 0;
@@ -99,6 +83,9 @@ StatHolder::StatHolder(VOwner o) {
     floatStats = new unsigned char[0];
     floatValues = new float[0];
     aThis = this;
+    hashMapped = false;
+    tempHashMap = NULL;
+    tempFloatHashMap = NULL;
 }
 
 StatHolder::~StatHolder() {
@@ -146,6 +133,9 @@ void StatHolder::addStatV(int stat, int value) {
     delete[] intValues;
     intValues = newValues;
     toBeUpdatedInt[i] = true;
+    if (hashMapped) {
+        (*tempHashMap)[(unsigned char)stat] = pair<short, bool>((short)value, true);
+    }
 }
 
 void StatHolder::addStatVF(int stat, float value) {
@@ -178,6 +168,9 @@ void StatHolder::addStatVF(int stat, float value) {
     delete[] floatValues;
     floatValues = newValues;
     toBeUpdatedFloat[i] = true;
+    if (hashMapped) {
+        (*tempFloatHashMap)[stat] = pair<float, bool>(value, true);
+    }
 }
 
 void StatHolder::needToUpdate(int stat, bool isFloat) {
@@ -191,6 +184,20 @@ void StatHolder::needToUpdate(int stat, bool isFloat) {
 }
 
 short StatHolder::getStatValue(int stat) {
+    if (hashMapped) {
+        pair<short, bool> val = (*tempHashMap)[stat];
+        if (val.second) {
+            Stat* s = getStat((VOwner)owner, stat);
+            int temp = val.first;
+            val.first = s->getFormula()->run(formUser, aThis, val.first);
+            if (temp != val.first) {
+                formUser->statChanged(stat, aThis);
+            }
+            val.second = false;
+            (*tempHashMap)[stat] = val;
+        }
+        return val.first;
+    }
     int i = binarySearchInt(0, numIntStats - 1, stat);
     if (i == -1) {
         return 0;
@@ -208,6 +215,20 @@ short StatHolder::getStatValue(int stat) {
 }
 
 float StatHolder::getStatValueF(int stat) {
+    if (hashMapped) {
+        pair<float, bool> val = (*tempFloatHashMap)[stat];
+        if (val.second) {
+            Stat* s = getStat((VOwner)owner, stat);
+            float temp = val.first;
+            val.first = s->getFormula()->runFloat(formUser, aThis, val.first);
+            if (temp != val.first) {
+                formUser->statChanged(stat, aThis);
+            }
+            val.second = false;
+            (*tempFloatHashMap)[stat] = val;
+        }
+        return val.first;
+    }
     int i = binarySearchFloat(0, numFloatStats - 1, stat);
     if (i == -1) {
         return 0;
@@ -257,20 +278,30 @@ VOwner StatHolder::getOwner() {
 }
 
 void StatHolder::setStat(int stat, int value) {
-    int i = binarySearchInt(0, numIntStats - 1, stat);
-    if (i != -1) {
-        intValues[i] = value;
+    if (hashMapped) {
+        (*tempHashMap)[stat] = pair<short, bool>(value, true);
         formUser->statChanged(stat, aThis);
-        toBeUpdatedInt[i] = true;
+    } else {
+        int i = binarySearchInt(0, numIntStats - 1, stat);
+        if (i != -1) {
+            intValues[i] = value;
+            formUser->statChanged(stat, aThis);
+            toBeUpdatedInt[i] = true;
+        }
     }
 }
 
 void StatHolder::setStatF(int stat, float value) {
-    int i = binarySearchFloat(0, numFloatStats - 1, stat);
-    if (i != -1) {
-        floatValues[i] = value;
+    if (hashMapped) {
+        (*tempFloatHashMap)[stat] = pair<float, bool>(value, true);
         formUser->statChanged(stat, aThis);
-        toBeUpdatedFloat[i] = true;
+    } else {
+        int i = binarySearchFloat(0, numFloatStats - 1, stat);
+        if (i != -1) {
+            floatValues[i] = value;
+            formUser->statChanged(stat, aThis);
+            toBeUpdatedFloat[i] = true;
+        }
     }
 }
 
@@ -279,32 +310,55 @@ void StatHolder::statChanged(int stat) {
 }
 
 short StatHolder::modifyStat(int stat, int amount) {
-    int i = binarySearchInt(0, numIntStats - 1, stat);
-    if (i != -1) {
-        intValues[i] = intValues[i] + amount;
-        formUser->statChanged(stat, aThis);
-        toBeUpdatedInt[i] = true;
-        return intValues[i];
+    if (hashMapped) {
+        pair<short, bool> v = (*tempHashMap)[stat];
+        v.first += amount;
+        v.second = true;
+        (*tempHashMap)[stat] = v;
+        return v.first;
+    } else {
+        int i = binarySearchInt(0, numIntStats - 1, stat);
+        if (i != -1) {
+            intValues[i] = intValues[i] + amount;
+            formUser->statChanged(stat, aThis);
+            toBeUpdatedInt[i] = true;
+            return intValues[i];
+        }
     }
     return 0;
 }
 
 float StatHolder::modifyStatF(int stat, float amount) {
-    int i = binarySearchFloat(0, numFloatStats - 1, stat);
-    if (i != -1) {
-        floatValues[i] = floatValues[i] + amount;
-        formUser->statChanged(stat, aThis);
-        toBeUpdatedFloat[i] = true;
-        return floatValues[i];
+    if (hashMapped) {
+        pair<float, bool> v = (*tempFloatHashMap)[stat];
+        v.first += amount;
+        v.second = true;
+        (*tempFloatHashMap)[stat] = v;
+        return v.first;
+    } else {
+        int i = binarySearchFloat(0, numFloatStats - 1, stat);
+        if (i != -1) {
+            floatValues[i] = floatValues[i] + amount;
+            formUser->statChanged(stat, aThis);
+            toBeUpdatedFloat[i] = true;
+            return floatValues[i];
+        }
     }
     return 0;
 }
 
 bool StatHolder::hasStat(int stat, bool isFloat) {
-    if (isFloat) {
-        return (binarySearchFloat(0, numFloatStats - 1, stat) != -1);
+    if (hashMapped) {
+        if (isFloat) {
+            return tempFloatHashMap->count(stat);
+        }
+        return tempHashMap->count(stat);
+    } else {
+        if (isFloat) {
+            return (binarySearchFloat(0, numFloatStats - 1, stat) != -1);
+        }
+        return (binarySearchInt(0, numIntStats - 1, stat) != -1);
     }
-    return (binarySearchInt(0, numIntStats - 1, stat) != -1);
 }
 
 int StatHolder::getNumStats() {
@@ -338,4 +392,34 @@ void StatHolder::setCondition(int conditionI, bool value) {
 
 bool StatHolder::hasAnyConditions() {
     return conditions.any();
+}
+
+void StatHolder::makeHashMaps() {
+    if (!hashMapped) {
+        tempHashMap = new unordered_map<unsigned char, pair<short, bool> >();
+        tempFloatHashMap = new unordered_map<unsigned char, pair<float, bool> >();
+        for (int i = 0; i < numIntStats; i++) {
+            (*tempHashMap)[intStats[i]] = pair<short, bool>(intValues[i], toBeUpdatedInt[i]);
+        }
+        for (int i = 0; i < numFloatStats; i++) {
+            (*tempFloatHashMap)[floatStats[i]] = pair<float, bool>(floatValues[i], toBeUpdatedFloat[i]);
+        }
+        hashMapped = true;
+    }
+}
+
+void StatHolder::removeHashMaps() {
+    if (hashMapped) {
+        hashMapped = false;
+        for (unordered_map<unsigned char, pair<short, bool> >::iterator i = tempHashMap->begin(); i != tempHashMap->end(); ++i) {
+            setStat(i->first, i->second.first);
+            toBeUpdatedInt[i->first] = i->second.second;
+        }
+        for (unordered_map<unsigned char, pair<float, bool> >::iterator i = tempFloatHashMap->begin(); i != tempFloatHashMap->end(); ++i) {
+            setStatF(i->first, i->second.first);
+            toBeUpdatedFloat[i->first] = i->second.second;
+        }
+        delete tempHashMap;
+        delete tempFloatHashMap;
+    }
 }

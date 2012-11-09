@@ -110,6 +110,7 @@ int Start::addMob(string name, string tag, StatHolder* u) {
     } else {
         cout << "HASHMAP ERROR: Collision with tag \"" << tag << "\"into \"" << taggedMobs[num].first << "\"'s " << num << "." << endl;
     }
+    u->makeHashMaps();
     //mobs.push_back(mob);
     //return mobs.size() - 1;
     return 0;
