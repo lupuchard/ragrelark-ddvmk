@@ -4,32 +4,11 @@
 //#include <SDL/SDL.h>
 
 #include "Start.h"
-
-#define TILE_SIZE 32
+#include "graphics.h"
 
 #define IM_WID 200
-
-#define TIME_MOVE_ANIM 10
-#define C1 0.0
-#define TIME_ATTACK_ANIM 20
-
-//#define Z_END 10000
-//#define Z_NEXT 6000
-#define Z_MENU 5000
-#define Z_EFFECT 3000
-#define Z_UNIT 70
-#define Z_ITEM 40
-#define Z_STRUCT 30
-#define Z_SPLAT 20
-#define Z_GROUND 10
-
 #define INTERVAL_MAX 360
-
 #define MAX_MENU_ITEMS 12
-
-#define LEFT 0
-#define CENTER 1
-#define RIGHT 2
 
 const string menuActionNames[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(R)ead", "E(x)amine"};
 
@@ -37,11 +16,7 @@ const char arrowX[] = {0, 16, 32, 48, 64,  0, 16, 32, 48, 64};
 const char arrowY[] = {0,  0,  0,  0,  0, 16, 16, 16, 16, 16};
 
 //miss = charcoal, scrape = salmon, hit = maroon, crit = red, megacrit = crimson
-
-double camX = 0;
-double camY = 0;
 int interval = 0;
-int effectZInterval = 0;
 
 int curArrowY = WIN1_HEIGHT / 2;
 int selectedShift = 0;
@@ -68,26 +43,7 @@ color Start::light(color c) {
     return c;
 }
 
-typedef struct REND_ {
-    animation* anim;
-    int z;
-    REND_(animation* a, int pz): anim(a), z(pz) { }
-    friend bool operator<(const REND_ &a, const REND_ &b) {
-        if (a.z == b.z) {
-            return a.anim < b.anim;
-        }
-        return a.z < b.z;
-    }
-} renderable;
-
-set<renderable> renderables;
-
-double speedAnim(double timeP) {
-    timeP *= 13.302;
-    return (5. * (timeP + 1.) * log(timeP + 1.) - timeP * timeP / 2. - 5 * timeP) / 35.264;
-}
-
-void drawTile(int x, int y, int z, Texture* tex, int loc) {
+void Start::drawTile(int x, int y, int z, Texture* tex, int loc) {
     tex->Bind();
 
     int wid = tex->Width / TILE_SIZE;
@@ -112,7 +68,7 @@ void drawTile(int x, int y, int z, Texture* tex, int loc) {
 
 
 //rot: 0 = 0 deg, 1 = 90 deg, 2 = 180 deg, 3 = 270 deg
-void drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot, bool flip) {
+void Start::drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot, bool flip) {
     tex->Bind();
 
     int wid = tex->Width / TILE_SIZE;
@@ -154,7 +110,7 @@ void drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot, bool flip)
     glEnd();
 }
 
-void drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, int size) {
+void Start::drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, int size) {
     tex->Bind();
 
     double x1d = ((double)x1 / tex->Width);
@@ -174,7 +130,7 @@ void drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, int size) {
     glEnd();
 }
 
-void drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture* tex, int x1, int y1, int wid1, int hei1) {
+void Start::drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture* tex, int x1, int y1, int wid1, int hei1) {
     tex->Bind();
 
     double x1d = ((double)x1 / tex->Width);
@@ -194,7 +150,7 @@ void drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture* tex, int x
     glEnd();
 }
 
-void drawTileFull(int x, int y, int z, int wid, int hei, Texture* tex, int tx, int ty, int rot, bool flip) {
+void Start::drawTileFull(int x, int y, int z, int wid, int hei, Texture* tex, int tx, int ty, int rot, bool flip) {
     tex->Bind();
 
     double x1d = ((double)tx / tex->Width);
@@ -245,67 +201,6 @@ void drawColorBox(int x1, int y1, int z, int x2, int y2, color c) {
     glEnable(GL_TEXTURE_2D);
 }
 
-//miss, scrape, hit, crit, megacrit
-const char hTypeNumFrames[] = {4, 4, 4, 3, 1};
-const char hTypeLocs[] = {0, 0, 0, 16, 28};
-const char dTypeLocs[] = {32, 32, 0, 64, 32};
-const char dirIndices[] = {0, 1, 2, 3, 2, 1};
-const char fwubs[] = {0,  7,  0,  1,  6,  0,  2,  5,  4,  3};
-void Start::drawAnim(animation* anim, int z) {
-    switch(anim->type) {
-        case A_MOVEDIR: {
-            Unit* u = anim->target;
-            double x2 = anim->startX + xDirs[anim->dir] * TILE_SIZE * anim->temp;
-            double y2 = anim->ZY;
-            if (u == player->getUnit()) {
-                camX = x2;
-                camY = y2;
-            }
-            drawUnit((int)x2, (int)y2, u);
-        } break;
-        case A_MOVELOC: {
-            Unit* u = anim->target;
-            double x2 = anim->startX + ((anim->value - 1) * TILE_SIZE - (anim->startX)) * anim->temp;
-            double y2 = anim->ZY;
-            if (u == player->getUnit()) {
-                camX = x2;
-                camY = y2;
-            }
-            drawUnit((int)x2, (int)y2, u);
-        } break;
-        case A_ATTACK: {
-            double prorp = (double)anim->time / (double)anim->end;
-            int dType = anim->value >> 4;
-            int hType = anim->value & 0xF;
-            int numFrames = hTypeNumFrames[hType];
-            int frame = min((int)(prorp * 4 * numFrames), numFrames - 1);
-            double florp = 1 - prorp;
-            if (hType <= 1) {
-                florp /= 2;
-            }
-            if (hType == 0) {
-                glColor4f(0.5, 0.5, 0.5, florp);
-            }
-            glColor4f(1, 1, 1, florp);
-            drawTileRot(anim->startX, anim->startY, z, attackAnimsTex, dTypeLocs[dType] + hTypeLocs[hType] + frame + hTypeNumFrames[hType] * dirIndices[anim->dir % 6],
-                        (anim->dir + 2) / 6, (anim->dir + 2) % 6 > 2);
-            glColor4f(1, 1, 1, 1);
-        } break;
-        case A_UNIT: drawUnit(anim->startX, anim->startY, anim->target); break;
-        default: break;
-    }
-    if (anim->time > anim->end) {
-        delete anim;
-        if (anims.size() == 0) {
-            for (unsigned int i = 0; i < unitDeleteList.size(); i++) {
-                delete unitDeleteList[i];
-                //TODO also on area movements
-            }
-            unitDeleteList.clear();
-        }
-    }
-}
-
 void Start::drawUnit(int x, int y, Unit* unit) {
     graphic g = unit->getGraphic();
     drawTile(x, y, Z_UNIT + y, getTexture(unit->getGraphic().tex), g.loc);
@@ -335,6 +230,7 @@ void Start::render() {
     if (interval == INTERVAL_MAX) {
         interval = 0;
     }
+    frameTime++;
 }
 
 void Start::renderBars() {
@@ -355,7 +251,6 @@ void Start::renderBars() {
     if (dangerInterval == 10) {
         dangerInterval = 0;
     }
-
     static float prevs[] = {percents[0], percents[1], percents[2], percents[3], percents[4]};
     static int prevTims[] = {0, 0, 0, 0, 0};
     for (int i = 0; i < 5; i++) {
@@ -615,7 +510,6 @@ void Start::renderGround() {
 
     camX = x * TILE_SIZE;
     camY = y * TILE_SIZE;
-    renderables.clear();
 
     int maxXTiles = WIN1_WIDTH / TILE_SIZE;
     int maxYTiles = WIN1_HEIGHT / TILE_SIZE;
@@ -624,43 +518,7 @@ void Start::renderGround() {
     int iMax = min(z->getWidth(), x + maxXTiles / 2 + 1);
     int jMax = min(z->getHeight(), y + maxYTiles / 2 + 2);
 
-    for (unsigned int i = 0; i < anims.size(); i++) {
-        animation* anim = anims[i];
-        if (anim->time >= anim->end) {
-            if (anim->nextAnim) {
-                animation* temp = anim;
-                anim = anim->nextAnim;
-                anims[i] = anim;
-                delete temp;
-            } else {
-                delete anim;
-                anims.erase(anims.begin() + i);
-                i--;
-                continue;
-            }
-        }
-        anim->time++;
-        int z = 0;
-        switch(anim->type) {
-            case A_MOVEDIR: {
-                float amount = speedAnim((double)anim->time / (double)anim->end);
-                z = anim->startY + yDirs[anim->dir] * TILE_SIZE * amount;
-                anim->ZY = z; //the y is calculated and stored ahead of time because Z needs to be calculated early for order. X is calculated at the actual rendering
-                anim->temp = amount;
-                z += Z_UNIT;
-            } break;
-            case A_MOVELOC: {
-                float amount = speedAnim((double)anim->time / (double)anim->end);
-                //int y = (anim->value - 1) * TILE_SIZE * amount;
-                z = anim->startY + ((anim->dir - 1) * TILE_SIZE - (anim->startY)) * amount;//(anim->dir - 1) * TILE_SIZE * amount;
-                anim->ZY = z;
-                anim->temp = amount;
-                z += Z_UNIT;
-            } break;
-            default: z = anim->ZY; break;
-        }
-        renderables.insert(renderable(anim, z));
-    }
+    updateAnims();
 
     for (int i = iMin; i < iMax; i++) {
         for (int j = jMin; j < jMax; j++) {
@@ -800,100 +658,15 @@ void Start::renderGround() {
                 glColor4f(1, 1, 1, 1);
 
                 if (loc->hasUnit()) {
-                    bool has = false;
-                    for (unsigned int i = 0; i < anims.size(); i++) {
-                        int animType = anims[i]->type;
-                        if (animType != A_ATTACK && anims[i]->target == loc->unit) {
-                            has = true;
-                            break;
-                        }
-                    }
-                    if (!has) {
-                        animation* newAnim = new animation;
-                        newAnim->type = A_UNIT;
-                        newAnim->target = loc->unit;
-                        newAnim->startX = locX;
-                        newAnim->startY = locY;
-                        newAnim->ZY = Z_UNIT + locY;
-                        newAnim->end = 10;
-                        newAnim->time = 0;
-                        renderables.insert(renderable(newAnim, newAnim->ZY));
-                    }
+                    unitAnimTest(loc->unit, locX, locY);
                 }
             }
         }
     }
     glColor4f(1, 1, 1, 1);
-    for (set<renderable>::iterator i = renderables.begin(); i != renderables.end(); i++) {
-        renderable r = *i;
-        drawAnim(r.anim, r.z);
-        if (r.anim->type < 0) {
-            delete r.anim;
-        }
-    }
-}
-
-void Start::rMoveDir(Unit* unit, int dir, int x, int y) {
-    animation* moveAnim = new animation;
-    moveAnim->type = (unsigned short)A_MOVEDIR;
-    moveAnim->dir = (unsigned char)dir;
-    moveAnim->startX = (unsigned short)(x * TILE_SIZE);
-    moveAnim->startY = (unsigned short)(y * TILE_SIZE);
-    moveAnim->time = 0;
-    moveAnim->end = TIME_MOVE_ANIM;
-    moveAnim->target = unit;
-    addAnim(moveAnim);
-}
-
-void Start::rMoveLoc(Unit* unit, int x, int y, int endX, int endY) {
-    animation* moveAnim = new animation;
-    moveAnim->type = (unsigned short)A_MOVELOC;
-    moveAnim->value = (unsigned char)(endX + 1);
-    moveAnim->dir = (unsigned char)(endY + 1);
-    moveAnim->startX = (unsigned short)(x * TILE_SIZE);
-    moveAnim->startY = (unsigned short)(y * TILE_SIZE);
-    moveAnim->time = 0;
-    moveAnim->end = TIME_MOVE_ANIM;
-    moveAnim->target = unit;
-    addAnim(moveAnim);
-}
-
-void Start::rAttack(int x, int y, int dir, int dType, int hType) {
-    animation* attackAnim = new animation;
-    attackAnim->type = A_ATTACK;
-    attackAnim->dir = fwubs[dir] * 3 + rand() % 5 - 2;
-    if (attackAnim->dir > 24) {
-        attackAnim->dir += 24;
-    }
-    attackAnim->value = (dType << 4) | hType;
-    int boof = 10;
-    if (hType == 0) {
-        boof = 30;
-    }
-    attackAnim->startX = x * TILE_SIZE + rand() % boof - (boof / 2);
-    attackAnim->startY = y * TILE_SIZE + rand() % boof - (boof / 2);
-    attackAnim->time = 0;
-    attackAnim->end = TIME_ATTACK_ANIM;
-    attackAnim->ZY = Z_EFFECT + effectZInterval++;
-    if (effectZInterval >= 1000) {
-        effectZInterval = 0;
-    }
-    addAnim(attackAnim);
-}
-
-void Start::addAnim(animation* anim) {
-    anim->nextAnim = NULL;
-    for (unsigned int i = 0; i < anims.size(); i++) {
-        if (anims[i]->type == anim->type && anims[i]->target == anim->target) {
-            animation* curr = anims[i];
-            while (curr->nextAnim) {
-                curr = curr->nextAnim;
-            }
-            curr->nextAnim = anim;
-            return;
-        }
-    }
-    anims.push_back(anim);
+    drawBox(x + 50, y + 50, Z_UNIT, 4, interval, scarlet);
+    updateEffects(x, y);
+    renderAnims();
 }
 
 void Start::startRenderer() {
@@ -913,6 +686,10 @@ void Start::startRenderer() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(0., 0.1, 0., 0.);
+
+	camX = 0;
+	camY = 0;
+	frameTime = 0;
 }
 
 //0-tiny, 1-small, 2-normal, 3-bold, 4-skinny, 5-large

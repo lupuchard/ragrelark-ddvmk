@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/start/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;" />
+		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -74,8 +74,13 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="animation.cpp">
+			<Option virtualFolder="code/main/graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="cleaner.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -130,17 +135,17 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="dataLoader.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/loading/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="formulas.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="generator.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -210,7 +215,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Start.h">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -254,28 +259,41 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="include/graphics.h">
+			<Option virtualFolder="code/main/graphics/" />
+		</Unit>
 		<Unit filename="include/usefulParsing.h">
 			<Option virtualFolder="code/Helpful Functions/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="initiator.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="logic.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="mobSpawner.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="particles.cpp">
+			<Option virtualFolder="code/main/graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="pather.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="resourceLoader.cpp">
+			<Option virtualFolder="code/main/loading/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -343,7 +361,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Start.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -388,17 +406,17 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/events.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/renderer.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/unitHandler.cpp">
-			<Option virtualFolder="code/start/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

@@ -17,7 +17,7 @@ int altYs[NUM_ALTS] = {0,  1,  0, -1,  0,  1,  1, -1, -1,  2,  0, -2,  0,  2,  2
 typedef set<pair<unsigned short, unsigned short> > itemSpawnSet; //item type, weight
 
 typedef vector<pair<mob, unsigned int> > encounterLevel; //the unsigned char is the weight
-//typedef pair<vector<pair<encounterLevel*, set<itemSpawnSet*> > >*, string> environment;
+
 typedef struct {
     string name;
     vector<encounterLevel*> encounterLevels;
@@ -82,7 +82,6 @@ void Start::addItemsToEncounterLevel(int type, int level, string itemSetName) {
         e->itemSets.push_back(set<itemSpawnSet*>());
         curLevel++;
     }
-    //cout << "foeu " << e->itemSets[level].size() << endl;
     e->itemSets[level].insert(itemSpawnSetNameMap[itemSetName]);
 }
 
@@ -111,29 +110,14 @@ int Start::addMob(string name, string tag, StatHolder* u) {
         cout << "HASHMAP ERROR: Collision with tag \"" << tag << "\"into \"" << taggedMobs[num].first << "\"'s " << num << "." << endl;
     }
     u->makeHashMaps();
-    //mobs.push_back(mob);
-    //return mobs.size() - 1;
     return 0;
 }
-
-/*pair<string, StatHolder*> Start::getMob(int i) {
-    return mobs[i];
-}*/
 
 pair<string, StatHolder*> Start::getMob(string tag) {
     mob theMob = taggedMobs[hashMob(tag)];
     if (theMob.first == "x") cout << "HASHMAP ERROR: Mob with tag \"" << tag << "\" does not exist." << endl;
     return theMob;
 }
-
-//not very efficient, only used during loading
-/*int Start::findMob(string s) {
-    for (unsigned int i = 0; i < mobs.size(); i++) {
-        if (mobs[i].first == s) return i;
-    }
-    cout << "boop boop!! find mob failure" << endl;
-    return -1;
-}*/
 
 bool Start::placeMob(Unit* mob, Zone* z, int x, int y, bool allowAlt, int anim) {
     Location* loc = z->getLocationAt(x, y);
@@ -162,6 +146,7 @@ bool Start::placeMob(Unit* mob, Zone* z, int x, int y, bool allowAlt, int anim) 
     }
     return false;
 }
+
 bool Start::spawnMobSpeTag(int mobTag, Zone* z, int x, int y, bool allowAlt, int anim) {
     return spawnMobSpe(taggedMobs[mobTag], z, x, y, allowAlt, anim);
 }

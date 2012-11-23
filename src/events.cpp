@@ -97,7 +97,7 @@ void Start::events() {
                     case SDLK_LSHIFT: shiftIsDown = true; break;
                     case SDLK_RSHIFT: shiftIsDown = true; break;
                     case SDLK_ESCAPE: menuUp = 0; selected = 0; break;
-                    case SDLK_SPACE:  enterCommand(); break;
+                    case SDLK_SPACE:  enterCommand(); createEffect(P_DARKDUST, 100, 100); break;
                     case SDLK_RETURN: enterCommand(); break;
                     case SDLK_LCTRL: backCommand(); break;
                     case SDLK_RCTRL: backCommand(); break;
@@ -134,9 +134,7 @@ void Start::closeDoors() {
     }
     if (dir == 0) {
         addMessage("There are no open doors around to close.", gray);
-    } else if (dir == -1) {
-
-    } else {
+    } else if (dir != -1) {
         closeDoor(u, zone, dir, true);
     }
 }

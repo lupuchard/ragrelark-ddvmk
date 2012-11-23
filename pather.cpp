@@ -93,8 +93,6 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
     if (start.x == goal.x && start.y == goal.y) return;
 
     int ai = unit->getStatValue(S_AI);
-    //map<loc, node*> open;
-    //map<loc, node*> closed;
     int wid = zone->getWidth();
     int hei = zone->getHeight();
     priority_queue<node*, vector<node*>, CompareNode> open;
@@ -103,11 +101,6 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
             if (arr[i][j].second) {
                 delete arr[i][j].second;
             }
-            //int val = map->getValue(i, j);
-            /*if (walkable) {
-                arr[i][j] = pair<int, node*>(2, (node*)NULL);
-                arr[i][j] = pair<int, node*>(0, (node*)NULL);
-            }*/
             arr[i][j] = pair<int, node*>(3, (node*)NULL);
         }
     }
@@ -115,30 +108,16 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
     open.push(new node(NULL, start, zone->getLocationAt(start.x, start.y)->getTotalHeight()));
     arr[start.x][start.y] = pair<int, node*>(1, open.top());
     node* current = NULL;
-    //node* current = new node(NULL, start, zone->getLocationAt(start.x, start.y)->height);
 
     bool done = false;
     bool success = false;
 
     while(!done) {
         if (!open.empty()) {
-            /*map<loc, node*>::iterator it = open.begin();
-            node* temp = NULL;
-            int min = 100000;
-            for (; it != open.end(); it++) {
-                node* n = it->second;
-                if (n->f < min) {
-                    min = n->f;
-                    temp = n;
-                }
-            }
-            current = temp;*/
             current = open.top();
             open.pop();
         }
         arr[current->l.x][current->l.y].first = 2;
-        //closed[current->l] = current;
-        //open.erase(current->l);
         for (int i = 1; i < 10; i++) {
             if (i == 5) {
                 i++;
@@ -148,23 +127,6 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
             if (l.x < 0 || l.x >= wid || l.y < 0 || l.y >= hei) {
                 continue;
             }
-            /*bool canDoor = ai > 1;
-            Location* locAt = zone->getLocationAt(l.x, l.y);
-            int hei = locAt->getTotalHeight();
-            int heightDiff = hei - current->height;
-            if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || (closed.find(l) != closed.end()) || (considerOtherUnits && locAt->hasUnit() && (l.x != xDest || l.y != yDest))) {
-                continue;
-            }
-            map<loc, node*>::iterator openLocIt = open.find(l);
-            if (openLocIt != open.end()) {
-                if (getG(current, open[l]) < open[l]->g) {
-                    node* temp = openLocIt->second;
-                    temp->parent = current;
-                    temp->refresh();
-                }
-            } else {
-                open[l] = new node(current, l, hei);
-            }*/
             int val = arr[l.x][l.y].first;
             if (val == 3) {
                 bool canDoor = ai > 1;
@@ -189,13 +151,6 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
                 open.push(arr[l.x][l.y].second);
             }
         }
-        /*if (closed.find(goal) != closed.end()) {
-            done = true;
-            success = true;
-        } else if (open.empty()) {
-            done = true;
-            success = false;
-        }*/
         if (arr[goal.x][goal.y].first == 2) {
 			done = true;
 			success = true;
@@ -240,18 +195,6 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
         }
         unit->currentPath = p;
         unit->pointOnPath = 0;
-        /*if (!open.empty()) {
-            for (map<loc, node*>::iterator i = open.begin(); i != open.end(); i++) {
-                delete i->second;
-            }
-            open.clear();
-        }
-        if (!closed.empty()) {
-            for (map<loc, node*>::iterator i = closed.begin(); i != closed.end(); i++) {
-                delete i->second;
-            }
-            closed.clear();
-        }*/
     } else {
         unit->currentPath = NULL;
         unit->pointOnPath = -1;
@@ -400,6 +343,5 @@ void Start::initFieldOfView() {
 }
 
 void Start::cleanFov() {
-    //fov_free(); //TODO this in more places
     fov_settings_free(&fovSettings);
 }

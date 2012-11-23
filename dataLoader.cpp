@@ -24,7 +24,6 @@
 #define ITEMSPAW 1900
 
 #define FIRST_FILE "data/base.txt"
-#define RESOURCES_LOC "resources/"
 
 #define DEBUG false
 #define ERRCHECK true
@@ -32,23 +31,6 @@
 int getStructIntFromChar(int c) {
     if (c < 50) return (c - 38) / 2 + 26;
     else        return c - 97;
-}
-
-void Start::buildFont() {
-    Display *dpy;
-    XFontStruct *fontInfo;
-    base = glGenLists(96);
-    dpy = XOpenDisplay(NULL);
-    fontInfo = XLoadQueryFont(dpy, "-adobe-helvetica-medium-r-normal--18-*-*-*-p-*-iso8859-1" );
-    if (fontInfo == NULL) {
-        fontInfo = XLoadQueryFont(dpy, "fixed");
-        if (fontInfo == NULL) {
-            cout << "no X font avaliable?" << endl;
-        }
-    }
-    glXUseXFont(fontInfo->fid, 32, 96, base);
-    XFreeFont(dpy, fontInfo);
-    XCloseDisplay(dpy);
 }
 
 /* Loads ALL the data. */
@@ -73,10 +55,7 @@ void Start::loadData(World* w, Player* p) {
     }
 
     spawnPrototypes.clear();
-    //mobMap.clear();
-
     buildFont();
-
     cout << "All done with data loading." << endl;
 }
 
@@ -85,7 +64,6 @@ void Start::finishDataSetup() {
     for (unsigned int i = 0; i < itemsToEquip.size(); i++) {
         equipItem(itemsToEquip[i]);
     }
-    //retrieveAfflictions();
 
     tileGroups.clear();
     areaZones.clear();
@@ -93,34 +71,6 @@ void Start::finishDataSetup() {
     itemsToEquip.clear();
     statMap.clear();
     conditionMap.clear();
-}
-
-Texture* Start::getTexture(int i) {
-    return textures[i];
-}
-
-void Start::loadImage(string filename) {
-    cout << " -Loading " << filename << "..." << endl;
-
-    Texture* newTexture = new Texture();
-    newTexture->OnLoad("resources/" + filename);
-    if (filename == "structures.png") {
-        structureTex = newTexture;
-        gotsStructureTex = true;
-    } else if (filename == "menu.png") {
-        menuTex = newTexture;
-        gotsMenuTex = true;
-    } else if (filename == "font.png") {
-        fontTex = newTexture;
-        gotsFontTex = true;
-    } else if (filename == "splatters.png") {
-        splatterTex = newTexture;
-        gotsSplatterTex = true;
-    } else if (filename == "attackAnims.png") {
-        attackAnimsTex = newTexture;
-        gotsAttackAnimsTex = true;
-    }
-    textures.push_back(newTexture);
 }
 
 int stringToStatus(string line) {
@@ -167,14 +117,14 @@ int stringToStatus(string line) {
     }
 }
 
-void printFileErr(string said, int line) {
+void Start::printFileErr(string said, int line) {
     cout << "FILE SYNTAX (line " << line << ") " << said << endl;
 }
-void printFileProb(string said, int line) {
+void Start::printFileProb(string said, int line) {
     cout << "FILE READPROB (line " << line << ") " << said << endl;
 }
 
-bool errorChecker(string filename) {
+bool Start::errorChecker(string filename) {
     int lineNum = 0;
 
     ifstream fin;
@@ -441,7 +391,6 @@ void Start::openFile(string fileName, World* w, Player* p) {
     int status = BETWEEN; // The status determine what the loader is looking for next. BETWEEN means it has no particular goal at the moment.
     while(getline(fin, line)) {
         lineNum++;
-        //cout << "  --Interpreting \"" << line << "\"" << endl;
         //if this line is empty of a comment, it skips to the next line
 
         boost::algorithm::trim(line);
@@ -456,7 +405,6 @@ void Start::openFile(string fileName, World* w, Player* p) {
         }
         if (line == "END") {
             status = BETWEEN; //if this line is the end, it skips to the next line and reverts to the main status
-            //cout << "    ---ENDING" << endl;
             continue;
         }
         if (DEBUG) {
@@ -466,7 +414,6 @@ void Start::openFile(string fileName, World* w, Player* p) {
         switch(status) {
             case BETWEEN:
                 status = stringToStatus(line);
-                //cout << "  --Now doing \"" << line << "\"." << endl;
                 continue;
             case MTG:
                 tempMap = new map<char, string>;
@@ -869,102 +816,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     status = STATS + 1;
                 } continue;
             case (STATS + 1): {
-                Formula* newFormula = new Formula(1);
-                vector<pair<int, Stat*> > statsForFormula;
-                ///aoeu
-                vector<pair<int, int> > conditionsForFormula;
-                bool isFloat = false;
-                int start = 0;
-                line = line + " ";
-                unsigned int i = 0;
-                if (line[0] == '(') {
-                    if (line[1] == 'f') {
-                        isFloat = true;
-                    } else if (line[1] == 'i') {
-                        isFloat = false;
-                    }
-                    i = 4;
-                    start = 4;
-                }
-                bool tempIsFloat = false;
-                for (; i < line.size(); i++) {
-                    if (line[i] == '.') {
-                        //isFloat = true;
-                        tempIsFloat = true;
-                    } else if (line[i] == ' ') {
-                        string s = line.substr(start, i - start);
-                        if ((s[0] >= 48 && s[0] < 58) || (s[0] == '-' && s.size() > 1) || (s[0] == '.' && s.size() > 1)) {
-                            if (tempIsFloat) {
-                                newFormula->pushFloat(stf(s));
-                                tempIsFloat = false;
-                            } else {
-                                newFormula->pushInt(sti(s));
-                            }
-                        } else if (s == "+" || s == "ADD")  {newFormula->pushOperator(O_ADD); }
-                        else if (s == "-" || s == "SUB")    {newFormula->pushOperator(O_SUB); }
-                        else if (s == "*" || s == "MUL")    {newFormula->pushOperator(O_MUL); }
-                        else if (s == "/" || s == "DIV")    {newFormula->pushOperator(O_DIV); }
-                        else if (s == "%" || s == "MOD")    {newFormula->pushOperator(O_MOD); }
-                        else if (s == "^" || s == "POW")    {newFormula->pushOperator(O_POW); }
-                        else if (s == "SWP" || s == "SWAP") {newFormula->pushOperator(O_SWP); }
-                        else if (s == "MAX")                {newFormula->pushOperator(O_MAX); }
-                        else if (s == "MIN")                {newFormula->pushOperator(O_MIN); }
-                        else if (s == "!" || s == "NOT")    {newFormula->pushOperator(O_NOT); }
-                        else if (s == "=" || s == "IFE")    {newFormula->pushOperator(O_IFE); }
-                        else if (s == ">" || s == "IFG")    {newFormula->pushOperator(O_IFG); }
-                        else if (s == "TRU" || s == "TRUE") {newFormula->pushOperator(O_TRU); }
-                        else if (s == "SLF" || s == "SELF") {newFormula->pushOperator(O_SLF); }
-                        else if (s == "TIM" || s == "TIME") {newFormula->pushOperator(O_TIM); }
-                        else if (s == "E" || s == "EEE")    {newFormula->pushOperator(O_EEE); }
-                        else if (s == "PI" || s == "PIE")   {newFormula->pushOperator(O_PIE); }
-                        else {
-                            VOwner target = V_WORLD;
-                            switch(s[0]) {
-                                case 'u': target = V_UNIT; break;
-                                case 'w': target = V_WORLD; break;
-                                case 'i': target = V_ITEM; break;
-                                case 'z': target = V_ZONE; break;
-                                case 't': target = V_TILE; break;
-                                case 'a': target = V_AREA; break;
-                                case 'e': target = V_ENEMY; break;
-                                default: if (ERRCHECK) {printFileErr("There is something WRONG with this formula!", lineNum);} break;
-                            }
-                            VType type = V_STAT;
-                            int aStatConSkill = 0;
-                            switch(s[1]) {
-                                case '-': {
-                                    type = V_STAT;
-                                    map<string, int>::iterator it = statMap.find(s.substr(2, 100));
-                                    if (it == statMap.end()) printFileErr("There is an ISSUE with a stat in this formula!", lineNum);
-                                    aStatConSkill = it->second;
-                                    statsForFormula.push_back(pair<int, Stat*>(target, getStat(target, aStatConSkill)));
-                                } break;
-                                case '|': {
-                                    type = V_CONDITION;
-                                    map<string, int>::iterator it = conditionMap.find(s.substr(2, 100));
-                                    if (it == conditionMap.end()) printFileErr("There is an ISSUE with a condition in this formula!", lineNum);
-                                    aStatConSkill = it->second;
-                                    conditionsForFormula.push_back(pair<int, int>(target, aStatConSkill));
-                                } break;
-                                case '~': type = V_SKILL; break;
-                                default: if (ERRCHECK) {printFileErr("There is something INCORRECT about this formula!", lineNum);} break;
-                            }
-                            newFormula->pushVar(target, type, aStatConSkill);
-                        }
-                        start = i + 1;
-                    }
-                }
-                Stat* newStat = new Stat(tempStr, newFormula, getNumStats((VOwner)tempValues[0]), isFloat);
-                for (unsigned int i = 0; i < statsForFormula.size(); i++) {
-                    addAffliction(statsForFormula[i], newStat, tempValues[0]);
-                }
-                for (unsigned int i = 0; i < conditionsForFormula.size(); i++) {
-                    addConAffliction(conditionsForFormula[i].second, conditionsForFormula[i].first, newStat, tempValues[0]);
-                }
-                statMap[tempStr] = addStat((VOwner)tempValues[0], newStat);
-                statsForFormula.clear();
-                conditionsForFormula.clear();
-
+                parseFormula(line, ERRCHECK, lineNum);
                 status = STATS;
             } continue;
             case UNIT: {
@@ -972,10 +824,8 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 tempStr = strs.second;
                 StatHolder* newUnit = new StatHolder(V_UNIT);
                 addMob(strs.first, strs.second, newUnit);
-                //mobMap[strs.second] = index;
             } break;
             case (UNIT + 1): {
-                //int mobI = mobMap[tempStr];
                 StatHolder* unitPrototype = getMob(tempStr).second;
                 if (line[0] == '*') {
                     for (unsigned int i = 0; i < defaultStats.size(); i++) {
@@ -1009,7 +859,6 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 }
             } continue;
             case (UNIT + 2):
-                //getMob(mobMap[tempStr]).second->addStatV(S_SPAWN, findMob(line));
                 getMob(tempStr).second->addStatV(S_SPAWN, hashMob(line));
                 status = UNIT + 1;
             continue;
@@ -1093,7 +942,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     int itemTypeI = itemTypeMap[s];
                     addItemToSpawnSet(itemTypeI, weight, tempValues[0]);
                 }
-                } continue;
+            } continue;
         }
         status++;
     }

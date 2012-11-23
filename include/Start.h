@@ -19,6 +19,7 @@
 #include "GroundFolder.h"
 #include "EquipmentFolder.h"
 #include "PrimeFolder.h"
+#include "graphics.h"
 
 #define NUM_UNIT_STATS 5
 
@@ -64,49 +65,6 @@
 #define INTERVAL_3_TIM 5000
 
 using namespace std;
-//using namespace boost::algorithm;
-
-typedef struct ANMAT_ {
-    short type;
-    unsigned char value;
-    unsigned char dir;
-    unsigned short time;
-    unsigned short end;
-    short startX;
-    short startY;
-    int ZY;
-    float temp;
-    Unit* target;
-    ANMAT_* nextAnim;
-} animation; //28 bytes
-
-typedef struct {
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
-    unsigned char alpha;
-} color;
-
-const color red        = {255,   0,   0, 0};  const color scarlet    = {255,  63,   0, 0};  const color orange     = {255, 127,   0, 0};
-const color amber      = {255, 191,   0, 0};  const color yellow     = {255, 255,   0, 0};  const color lime       = {191, 255,   0, 0};
-const color chartreuse = {127, 255,   0, 0};  const color harlequin  = { 63, 255,   0, 0};  const color green      = {  0, 255,   0, 0};
-const color jade       = {  0, 255,  63, 0};  const color spring     = {  0, 255, 127, 0};  const color turquoise  = {  0, 255, 191, 0};
-const color cyan       = {  0, 255, 255, 0};  const color aqua       = {  0, 191, 255, 0};  const color azure      = {  0, 127, 255, 0};
-const color cobalt     = {  0,  63, 255, 0};  const color blue       = {  0,   0, 255, 0};  const color iris       = { 63,   0, 255, 0};
-const color violet     = {127,   0, 255, 0};  const color amethyst   = {191,   0, 255, 0};  const color magenta    = {255,   0, 255, 0};
-const color fuchsia    = {255,   0, 191, 0};  const color rose       = {255,   0, 127, 0};  const color crimson    = {255,   0,  63, 0};
-
-const color maroon     = {127,   0,   0, 0};  const color brick      = {191,   0,   0, 0};  const color pink       = {255, 127, 127, 0};  const color salmon     = {191,  63,  63, 0};
-const color olive      = {127, 127,   0, 0};  const color cream      = {255, 255, 127, 0};  const color olivine    = {191, 191,  63, 0};
-const color forest     = {  0, 127,   0, 0};  const color grass      = {127, 255, 127, 0};  const color fern       = { 63, 191,  63, 0};
-const color teal       = {  0, 127, 127, 0};  const color celeste    = {127, 255, 255, 0};  const color aquamarine = { 63, 191, 191, 0};
-const color navy       = {  0,   0, 127, 0};  const color sky        = {127, 127, 255, 0};  const color glaucous   = { 63,  63, 191, 0};
-const color purple     = {127,   0, 127, 0};  const color thistle    = {255, 127, 255, 0};  const color lavender   = {191,  63, 191, 0};
-
-const color brown      = {127,  63,   0, 0};  const color swamp      = {  0, 127,  63, 0};  const color indigo     = { 63,   0, 127, 0};  const color tann       = {223, 191, 127, 0};
-
-const color white      = {255, 255, 255, 0};  const color shine      = {223, 223, 223, 0};  const color silver     = {191, 191, 191, 0};  const color gray       = {127, 127, 127, 0};
-const color grey       = { 63,  63,  63, 0};  const color charcoal   = { 31,  31,  31, 0};  const color tar        = { 15,  15,  15, 0};  const color black      = {  0,   0,   0, 255};
 
 typedef pair<string, StatHolder*> mob;
 
@@ -120,20 +78,43 @@ class Start: FormulaUser, EnvironmentManager {
 
         void prepare();
         void execute();
-        bool init();
-        void logic();
 
+        void addMessage(string message, color c);
+
+        /* --initiator.cpp-- */
+        bool init();
+        /* --- */
+
+        /* --logic.cpp-- */
+        void logic();
+        /* --- */
+
+        /* --events.cpp-- */
         void events();
         void directionPress(int dir);
         void action(int action, Unit* unit, int value1, int value2, int value3);
+        void openInventory();
+        void openBag();
+        void openEquipment();
+        void openGround();
+        void groundGrab();
+        bool equipItem(Item item);
+        void enterCommand();
+        void backCommand();
+        void closeDoors();
+        void itemRemovalCheck();
+        /* --- */
 
+        /* --pather.cpp-- */
         void makePath(Unit* unit, short xDest, short yDest, Zone* zone, int special);
-
         void initFieldOfView();
         void playerFieldOfView(bool isNew);
         void myFovCircle(Zone* zone, void* source, int x, int y, int radius);
         void myFovCirclePerm(Zone* zone, int x, int y, int radius, int mod);
+        void cleanFov();
+        /* --- */
 
+        /* --renderer.cpp-- */
         void render();
         void renderGround();
         void renderMenu();
@@ -142,16 +123,38 @@ class Start: FormulaUser, EnvironmentManager {
         void renderBars();
         void renderText(string text, int size, int x, int y, int z, int align, color c);
         void drawUnit(int x, int y, Unit* unit);
-        void drawAnim(animation* anim, int z);
         void startRenderer();
-        void rMoveDir(Unit* unit, int dir, int x, int y);
-        void rMoveLoc(Unit* unit, int x, int y, int endX, int endY);
-        void rAttack(int x, int y, int dir, int dType, int hType);
         void addAnim(animation* anim);
         void makeSplatter(Unit* unit, int x, int y);
         void addStatus(string name, color c, int type);
         void removeStatus(int type);
 
+        void drawTile(int x, int y, int z, Texture* tex, int loc);
+        void drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot, bool flip);
+        void drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, int size);
+        void drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture* tex, int x1, int y1, int wid1, int hei1);
+        void drawTileFull(int x, int y, int z, int wid, int hei, Texture* tex, int tx, int ty, int rot, bool flip);
+        /* --- */
+
+        /* --animation.cpp-- */
+        void updateAnims();
+        void drawAnim(animation* anim, int z);
+        void unitAnimTest(Unit* u, int x, int y);
+        void renderAnims();
+        void rMoveDir(Unit* unit, int dir, int x, int y);
+        void rMoveLoc(Unit* unit, int x, int y, int endX, int endY);
+        void rAttack(int x, int y, int dir, int dType, int hType);
+        /* --- */
+
+        /* --particles.cpp-- */
+        void createEffect(peType type, int x, int y);
+        void updateEffects(int xShift, int yShift);
+        void addProj(int x0, int y0, int x1, int y1, int length, int ind);
+        void drawCirc(int x, int y, int z, int size, int fade, int rot, color c);
+        void drawBox(int x, int y, int z, int size, int rote, color c);
+        /* --- */
+
+        /* --unitHandler.cpp-- */
         void ai(Unit* unit, Zone* zone);
         void moveUnit(Unit* unit, Zone* zone, int dir);
         void playerWalkStaminaDrain(int* movSpeed, int time, Unit* unit);
@@ -165,67 +168,65 @@ class Start: FormulaUser, EnvironmentManager {
         void changeLoc(Unit* unit, Zone* zone, int x, int y);
         void changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, int x, int y);
         void applyPoison(int poison, int duration, Unit* unit);
+        /* --- */
 
-        void addItemToPlace(int x, int y, Zone* z, Item item);
-        Item removeItemFromPlace(int x, int y, Zone* z, int index);
-
-        //Unit* createUnit(StatHolder* prototype, string name, int x, int y, Zone* zone);
-
+        /* --generator.cpp-- */
         void generateZone(Zone* zone, int tilesetType, int zoneType, int x1, int y1, int x2, int y2);
+        /* --- */
 
         color dark(color c);
         color light(color c);
-
-        void openInventory();
-        void openBag();
-        void openEquipment();
-        void openGround();
-        void groundGrab();
-        bool equipItem(Item item);
-        void enterCommand();
-        void backCommand();
-        void closeDoors();
 
         ItemFolder* getItemFolder(Item item);
         void createItemFolder(Item* item);
         void putItemFolder(Item* item, ItemFolder* folder);
 
+        void addItemToPlace(int x, int y, Zone* z, Item item);
+        Item removeItemFromPlace(int x, int y, Zone* z, int index);
+
+        /* --dataLoader.cpp-- */
         void loadData(World* w, Player* p);
+        void openFile(string fileName, World* w, Player* p);
         void loadImage(string filename);
         void buildFont();
         void finishDataSetup();
         void deleteData();
         Texture* getTexture(int i);
+        bool errorChecker(string filename);
+        void printFileErr(string said, int line);
+        void printFileProb(string said, int line);
+        /* --- */
 
-        void cleanup();
-        void cleanFov();
-
-        void addMessage(string message, color c);
-
+        /* --formulas.cpp-- */
         int getVarValue(VOwner target, VType type, int index, StatHolderIntef* sh);
         float getVarValueF(VOwner target, VType type, int index, StatHolderIntef* sh);
         void statChanged(int stat, StatHolderIntef* statHolder);
         void conditionChanged(int condition, StatHolderIntef* statHolder);
         int getTime();
         StatHolder* findStatHolder(int target, StatHolder* statHolder);
+        void parseFormula(string line, bool errCheck, int lineNum);
+        /* --- */
 
+        /* --mobSpawner.cpp */
         int addMob(string s, string tag, StatHolder* u);
-        //pair<string, StatHolder*> getMob(int i);
         pair<string, StatHolder*> getMob(string tag);
         bool placeMob(Unit* unit, Zone* z, int x, int y, bool allowAlt, int anim);
         bool spawnMobSpeTag(int mobI, Zone* z, int x, int y, bool allowAlt, int anim);
         bool spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt, int anim);
         int hashMob(string tag);
-        //int findMob(string s);
         int addEnvironment(string name);
         void addEncounters(int type, int level, vector<pair<pair<string, StatHolder*>, unsigned int> >* encounters);
         void createEncounters(Zone* z, int howMany, vector<pair<int, int> > possibleLocs);
         void addItemsToEncounterLevel(int type, int level, string itemSetName);
-
         void cleanSpawnData();
         int addItemSpawnSet(string name);
         void createItems(Zone* z, int howMany, vector<pair<int, int> > possibleLocs);
         void addItemToSpawnSet(unsigned short item, unsigned short weight, int itemSpawnSet);
+        /* --- */
+
+        /* --cleaner.cpp-- */
+        void cleanup();
+        /* --- */
 
         static const char xDirs[10];
         static const char yDirs[10];
@@ -245,7 +246,6 @@ class Start: FormulaUser, EnvironmentManager {
         PrimeFolder* primeFolder;
         map<unsigned short, vector<ItemFolder*> > folders;
 
-        void openFile(string fileName, World* w, Player* p);
         map<string, Tile*> tiles;
         map<string, map<char, string>*> tileGroups;
         map<string, Area*> areas;
@@ -257,7 +257,6 @@ class Start: FormulaUser, EnvironmentManager {
 
         map<string, int> statMap;
         map<string, int> conditionMap;
-        //map<string, int> mobMap;
         vector<pair<StatHolder*, string> > spawnPrototypes;
         vector<int> defaultStats;
         vector<Unit*> unitDeleteList;
@@ -298,8 +297,6 @@ class Start: FormulaUser, EnvironmentManager {
         unsigned char splatters[MAX_ZONE_SIZE];
         unsigned char visibilities[MAX_ZONE_SIZE]; //0 = nope, 1 = LOS, 2 = lit
 
-        void itemRemovalCheck();
-
         int interval0;
         int interval1;
         int interval2;
@@ -307,6 +304,10 @@ class Start: FormulaUser, EnvironmentManager {
 
         set<pair<Unit*, Zone*> > areaUnits; //the zone is the zone the unit is in the zone is where the unit is
         void findAreaUnits();
+
+        double camX;
+        double camY;
+        long frameTime;
 };
 
 #endif // START_H

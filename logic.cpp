@@ -28,7 +28,6 @@ void Start::logic() {
 
         if (i0times > 0) {
             int poisonLeft = pUnit->getStatValue(S_POISON);
-            //cout << "happens1 " << poisonLeft << endl;
             if (poisonLeft > 0) {
                 int poisoning = 0;
                 if (pUnit->getCondition(8)) {
@@ -38,7 +37,6 @@ void Start::logic() {
                 } if (pUnit->getCondition(10)) {
                     poisoning += 4;
                 }
-                //cout << "happens2 " << poisoning << endl;
                 if (poisoning > 0) {
                     pUnit->modifyStat(S_HP, -poisoning);
                 }
@@ -62,10 +60,7 @@ void Start::logic() {
         if (i3times > 0) {
             interval3 = interval3 % INTERVAL_3_TIM;
             pUnit->modifyStat(S_HUNGER, -(int)(pUnit->getStatValue(S_METABOLISM) * 1.7361111 * i3times)); //base metabolism is 100 calories per hour
-            //cout << "mets " << pUnit->getStatValue(S_METABOLISM) << endl;
         }
-        //cout << "mets " << pUnit->getStatValue(S_METABOLISM) << endl;
-        //cout << "mets " << pUnit->getStatValue(S_HUNGER) << endl;
         pUnit->modifyStat(S_STAMINA, timePassed);
         world->theTime = pUnit->theTime;
 

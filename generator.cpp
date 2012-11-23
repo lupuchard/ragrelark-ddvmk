@@ -422,9 +422,6 @@ vector<pair<int, int> > gZoneRec(Zone* zone, int tilesetType, int genType, int s
             dooors(sx, sy, ex, ey, zone, 2);
         } break;
         case G_DUNGEON: {
-
-            cout << "***dungeon happen" << endl;
-
             int num = rand() % 9;
             if (num) {
                 vector<pair<int, int> > moreLocs;
@@ -453,8 +450,5 @@ void Start::generateZone(Zone* zone, int tilesetType, int zoneType, int sx, int 
     createEncounters(zone, numEncounters, possibleLocs);
     int numItems = zone->getWidth() * zone->getHeight() / 100 + rand() % 3;
     createItems(zone, numItems, possibleLocs);
-    /*for (int i = 0; i < numEncounters; i++) {
-        createEncounter(zone->getMobSpawnLevel(), zone);
-    }*/
     zone->becomeGenned();
 }
