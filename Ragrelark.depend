@@ -454,7 +454,7 @@
 	"Stat.h"
 	"Tile.h"
 
-1352498440 /home/luke/cppworkspace/ragrelark-ddvmk/include/StatHolder.h
+1353727565 /home/luke/cppworkspace/ragrelark-ddvmk/include/StatHolder.h
 	<iostream>
 	<bitset>
 	<unordered_map>
@@ -507,7 +507,7 @@
 1351390893 /home/luke/cppworkspace/ragrelark-ddvmk/include/Item.h
 	"ItemType.h"
 
-1342978185 /home/luke/cppworkspace/ragrelark-ddvmk/include/ItemType.h
+1354380812 /home/luke/cppworkspace/ragrelark-ddvmk/include/ItemType.h
 	"Tile.h"
 
 1338475998 /home/luke/cppworkspace/ragrelark-ddvmk/include/World.h
@@ -584,7 +584,7 @@
 1351216571 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/EquipmentFolder.cpp
 	"EquipmentFolder.h"
 
-1351905445 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Formula.cpp
+1354321963 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Formula.cpp
 	<iostream>
 	"Formula.h"
 
@@ -600,7 +600,7 @@
 1337964558 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/ItemFolder.cpp
 	"ItemFolder.h"
 
-1351908239 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/ItemType.cpp
+1354242555 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/ItemType.cpp
 	"ItemType.h"
 
 1351223205 source:/home/luke/cppworkspace/ragrelark-ddvmk/src/Location.cpp
@@ -677,4 +677,96 @@
 1353458102 source:/home/luke/cppworkspace/ragrelark-ddvmk/particles.cpp
 	"Start.h"
 	<list>
+
+1351299915 /home/luke/cppworkspace/ragrelark-ddvmk/util/usefulParsing.h
+	<string>
+	<math.h>
+	<cctype>
+	<iostream>
+
+1352668242 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/Start.cpp
+	"Start.h"
+
+1354321777 /home/luke/cppworkspace/ragrelark-ddvmk/main/Start.h
+	<fstream>
+	<iomanip>
+	<stack>
+	<set>
+	<deque>
+	<cstdlib>
+	<SDL/SDL.h>
+	<SDL/SDL_image.h>
+	<GL/glx.h>
+	<algorithm>
+	<boost/algorithm/string.hpp>
+	"fov.h"
+	"Player.h"
+	"World.h"
+	"Texture.h"
+	"FormulaUser.h"
+	"usefulParsing.h"
+	"BagFolder.h"
+	"GroundFolder.h"
+	"EquipmentFolder.h"
+	"PrimeFolder.h"
+	"graphics.h"
+
+1353545107 /home/luke/cppworkspace/ragrelark-ddvmk/main/graphics.h
+
+1353124787 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/animation.cpp
+	"Start.h"
+	"graphics.h"
+
+1351280757 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/cleaner.cpp
+	"Start.h"
+
+1354244713 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/dataLoader.cpp
+	"Start.h"
+
+1352668178 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/formulas.cpp
+	"Start.h"
+
+1352666868 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/generator.cpp
+	"Start.h"
+
+1342451693 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/initiator.cpp
+	"Start.h"
+
+1352666921 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/logic.cpp
+	"Start.h"
+
+1353809055 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/mobSpawner.cpp
+	"Start.h"
+
+1354341059 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/particles.cpp
+	"Start.h"
+	<list>
+
+1354321762 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/pather.cpp
+	"Start.h"
+	<queue>
+
+1354243961 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/resourceLoader.cpp
+	"Start.h"
+
+1351389787 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/unitHandler.cpp
+	<math.h>
+	"Unit.h"
+	"Zone.h"
+	"Start.h"
+	"Area.h"
+
+1354341326 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/events.cpp
+	"Start.h"
+
+1351299937 source:/home/luke/cppworkspace/ragrelark-ddvmk/util/usefulParsing.cpp
+	"usefulParsing.h"
+
+1354339958 source:/home/luke/cppworkspace/ragrelark-ddvmk/main/renderer.cpp
+	"Start.h"
+	"graphics.h"
+
+1253405532 /home/luke/cppworkspace/ragrelark-ddvmk/depenencies/fov.h
+	<stdbool.h>
+	<stddef.h>
 

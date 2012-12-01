@@ -15,7 +15,6 @@ const string menuActionNames[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "
 const char arrowX[] = {0, 16, 32, 48, 64,  0, 16, 32, 48, 64};
 const char arrowY[] = {0,  0,  0,  0,  0, 16, 16, 16, 16, 16};
 
-//miss = charcoal, scrape = salmon, hit = maroon, crit = red, megacrit = crimson
 int interval = 0;
 
 int curArrowY = WIN1_HEIGHT / 2;
@@ -209,6 +208,55 @@ void Start::drawUnit(int x, int y, Unit* unit) {
         drawTileSuperSpe(x, y + TILE_SIZE - 4, Z_UNIT + y + 1, wid - 1, 4, menuTex, 96, 0, wid - 1, 4);
         drawTileSuperSpe(x + wid - 1, y + TILE_SIZE - 4, Z_UNIT + y + 1, 2, 4, menuTex, 126, 0, 2, 4);
     }
+    if (unit == player->getUnit()) {
+        Item* items = primeFolder->getEquips()->getItems();
+        for (int i = 0; i < primeFolder->getEquips()->getNumItems(); i++) {
+            ItemType* item = getItemType(items[i].itemType);
+            bool gendered = false;
+            int wid = 0;
+            int hei = 0;
+            switch(item->getEquipGType()) {
+                case EQG_NONE: break;
+                case EQG_NORM: wid = 32; hei = 32; break;
+                case EQG_GNORM: wid = 32; hei = 32; gendered = true; break;
+                case EQG_SMALL: wid = 16; hei = 16; break;
+                case EQG_GSMALL: wid = 16; hei = 16; gendered = true; break;
+                case EQG_TALL: wid = 16; hei = 32; break;
+                case EQG_GTALL: wid = 16; hei = 32; gendered = true; break;
+                case EQG_LONG: wid = 32; hei = 16; break;
+                case EQG_GLONG: wid = 32; hei = 16; gendered = true; break;
+                default: break;
+            }
+            if (wid) {
+                int xMid = 0;
+                int yMid = 0;
+                switch(i) {
+                    case E_HEAD: xMid = 16; yMid = 8; break;
+                    case E_FACE: xMid = 16; yMid = 8; break;
+                    case E_BACK: xMid = 16; yMid = 16; break;
+                    case E_BAG: xMid = 16; yMid = 16; break;
+                    case E_NECK: xMid = 16; yMid = 8; break;
+                    case E_BODY: xMid = 16; yMid = 16; break;
+                    case E_LHAND: xMid = 24; yMid = 16; break;
+                    case E_RHAND: xMid = 8; yMid = 16; break;
+                    case E_HANDS: xMid = 16; yMid = 16; break;
+                    case E_WAIST: xMid = 16; yMid = 16; break;
+                    case E_WRIST: xMid = 16; yMid = 16; break;
+                    case E_FEET: xMid = 16; yMid = 24; break;
+                    case E_RING1: xMid = 8; yMid = 16; break;
+                    case E_RING2: xMid = 24; yMid = 16; break;
+                    default: break;
+                }
+                int num = item->getEquipGLoc();
+                //if (gendered) etc.
+                int x0 = xMid - wid / 2 + x;
+                int y0 = yMid - hei / 2 + y;
+                int x1 = (num * 16) % playerTex->Width;
+                int y1 = (num * 256) / playerTex->Width;
+                drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, playerTex, x1, y1, wid, hei);
+            }
+        }
+    }
 }
 
 void Start::render() {
@@ -363,7 +411,7 @@ void Start::renderMenu() {
         for (int i = 0; i < numDisplayedItems; i++) {
             int k = i + selectedShift;
             ItemType* itemType = getItemType(items[k].itemType);
-            graphic g = itemType->getGraphic();
+            graphic g = itemType->getGraphic(items[k].quantityCharge);
             int d = offset + 64 + 28 * i;
             drawTile(28 + 8 * (k % 2), d, Z_MENU + i + 1, textures[g.tex], g.loc);
             renderText(capitalize(itemType->getName()), 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, black);
@@ -642,21 +690,21 @@ void Start::renderGround() {
                 if (struc != S_NONE) {
                     drawTile(locX, locY, Z_STRUCT, structureTex, struc);
                 }
-                if (loc->hasItems()) {
-                    Item* items = &(*loc->items)[0];
-                    int numItems = loc->items->size();
-                    for (int k = 0; k < numItems; k++) {
-                        ItemType* itemType = getItemType(items[k].itemType);
-                        drawTile(locX, locY, Z_ITEM + k, getTexture(itemType->getGraphic().tex), itemType->getGraphic().loc);
-                    }
-                }
 
                 glColor4f(1, 1, 1, 0.5);
                 if (splatters[i + j * z->getWidth()] < 255) {
                     drawTile(locX, locY, Z_SPLAT, splatterTex, splatters[i + j * z->getWidth()]);
                 }
                 glColor4f(1, 1, 1, 1);
-
+                if (loc->hasItems()) {
+                    Item* items = &(*loc->items)[0];
+                    int numItems = loc->items->size();
+                    for (int k = 0; k < numItems; k++) {
+                        ItemType* itemType = getItemType(items[k].itemType);
+                        graphic g = itemType->getGraphic(items[k].quantityCharge);
+                        drawTile(locX, locY, Z_ITEM + k, getTexture(g.tex), g.loc);
+                    }
+                }
                 if (loc->hasUnit()) {
                     unitAnimTest(loc->unit, locX, locY);
                 }
@@ -664,9 +712,9 @@ void Start::renderGround() {
         }
     }
     glColor4f(1, 1, 1, 1);
-    drawBox(x + 50, y + 50, Z_UNIT, 4, interval, scarlet);
-    updateEffects(x, y);
     renderAnims();
+    drawBox(x + 50, y + 50, Z_EFFECT, 4, interval, scarlet);
+    updateEffects(x, y);
 }
 
 void Start::startRenderer() {
@@ -690,6 +738,8 @@ void Start::startRenderer() {
 	camX = 0;
 	camY = 0;
 	frameTime = 0;
+
+	createEffect(P_ARROW, 0, 0);
 }
 
 //0-tiny, 1-small, 2-normal, 3-bold, 4-skinny, 5-large

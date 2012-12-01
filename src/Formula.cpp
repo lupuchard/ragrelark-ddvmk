@@ -245,28 +245,7 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
             unsigned char c = commands.at(went++);
             formulaStack[++sp] = user->getVarValue((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
         }
-
-        /*else if (value >> 6 == 1) {
-            //cout << "Var!" << endl;
-            formulaStack[++sp] = user->getVarValue((VOwner)((value >> 3) & 7), (VType)(value & 3), commands.at(went++), statHolder); //step 6
-        } else if (value >> 5 == 4) {
-            formulaStack[++sp] = value % 32 - 3;
-            //cout << "Int " << (value % 32 - 3) << endl;
-        } else if (value >> 5 == 5) {
-            formulaStack[++sp] = getNum(value, commands.at(went++));
-            //cout << "Int2 " << getNum(value, commands.at(went - 1)) << endl;
-        } else if (value >> 5 == 7) {
-            formulaStack[++sp] = (commands.at(went) << 24) | (commands.at(went + 1) << 16) | (commands.at(went + 2) << 8) | commands.at(went + 3);
-            went += 4;
-        } else if (value >> 5 == 6) {
-            cout << (int)value << endl;
-            cout << "**Error**: need to use runFormulaFloat in formulas with float values " << prevVal << endl;
-            return 0;
-        } else {
-            cout << "formula error" << endl;
-        }*/
     }
-    //cout << "Formula done " << formulaStack[sp] << endl;
     return formulaStack[sp--]; //step 17
 }
 

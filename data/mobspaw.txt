@@ -1,26 +1,80 @@
 ITEMSPAW
-
 main{
-candle:common
-blue feather:uncommon
-big heavy rock:uncommon
-steel dagger:rare
-leather armor:rare
-pointy hat:rare
+candle:uncommon
+blue feather:very rare
+big heavy rock:extremely rare
 }
-
+lv1{
+shirt:rare
+club:rare
+leather gloves:very rare
+gold pens(1-4):rare
+}
+lv2{
+round wooden shield:very rare
+leather cap:rare
+steel dagger:rare
+gold pens(5-8):rare
+}
+lv3{
+clogs:rare
+pointy hat:rare
+leather armor:rare
+gold pens(9-12):rare
+}
+lv4{
+adventure clothes:rare
+ring of accuracy:rare
+reinforced shield:rare
+gold pens(13-16):rare
+}
+lv5{
+amulet of intelligence:rare
+archery gloves:rare
+simple mace:rare
+gold pens(17-20):rare
+}
+lv6{
+ring of regeneration:rare
+obsidian dagger:rare
+Speedy Boots:very rare
+gold pens(21-24):rare
+}
+lv7{
+magma armor:rare
+Mace of Justice:very rare
+amulet of super sexiness:extremely rare
+gold pens(25-30):rare
+}
+food{
+apple:very rare
+cheese:extremely rare
+carrot:extremely rare
+banana:extremely rare
+}
 END
 
 MOBSPAW
-
 dungeon{
 mobs[
 0:tslim1*04,pig000*01
-1:sslim1*01
-2:plant1*01,scorp1*01
-3:mslim1*01
+1:sslim1*08,tslim1*04,pig000*01
+2:sslim1*02,scorp1*01
+3:plant1*02,scorp1*02,sslim1*01
+4:mslim1*01,plant1*04,scorp1*04,tslim1*01
+5:mslim1*01,plant1*02,scorp1*02
+6:mslim1*01,plant1*01
+7:mslim1*01
 ]items[
-main:0,3
+main:0,7
+food:0,7
+lv1:0,1
+lv2:1,2
+lv3:2,3
+lv4:3,4
+lv5:4,5
+lv6:5,6
+lv7:6,7
 ]}
 
 ~level goes 0-9
@@ -29,5 +83,4 @@ main:0,3
 ~[\]^_`
 ~then a-z
 ~{|}~
-
 END

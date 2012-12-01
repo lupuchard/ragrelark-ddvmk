@@ -43,6 +43,9 @@ void Start::loadImage(string filename) {
     } else if (filename == "attackAnims.png") {
         attackAnimsTex = newTexture;
         gotsAttackAnimsTex = true;
+    } else if (filename == "player.png") {
+        playerTex = newTexture;
+        gotsPlayerTex = true;
     }
     textures.push_back(newTexture);
 }

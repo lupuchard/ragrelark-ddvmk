@@ -195,7 +195,7 @@ ge 10
 50,50
 
 ~num floors and num stairs per floor
-10,6
+24,6
 END
 
 CONNECTION

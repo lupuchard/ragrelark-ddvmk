@@ -14,7 +14,28 @@
 int altXs[NUM_ALTS] = {0,  0,  1,  0, -1, -1,  1,  1, -1,  0,  2,  0, -2, -1,  1,  2,  2,  1, -1, -2, -2, -2,  2,  2, -2,  0,  3,  0, -3, -1,  1,  3,  3,  1, -1, -3, -3};
 int altYs[NUM_ALTS] = {0,  1,  0, -1,  0,  1,  1, -1, -1,  2,  0, -2,  0,  2,  2,  1, -1, -2, -2, -1,  1,  2,  2, -2, -2,  3,  0, -3,  0,  3,  3,  1, -1, -3, -3, -1,  1};
 
-typedef set<pair<unsigned short, unsigned short> > itemSpawnSet; //item type, weight
+typedef struct {
+    unsigned short itemTypeI;
+    unsigned char stackMin;
+    unsigned char stackMax;
+    unsigned int weight;
+} spawningItem;
+bool operator<(const spawningItem& left, const spawningItem& right) {
+    if (left.itemTypeI < right.itemTypeI) {
+        return true;
+    } else if (left.itemTypeI > right.itemTypeI) {
+        return false;
+    } else if (left.stackMin < right.stackMin) {
+        return true;
+    } else if (left.stackMin > right.stackMin) {
+        return false;
+    } else if (left.stackMax < right.stackMax) {
+        return true;
+    }
+    return false;
+    //unfu
+}
+typedef set<spawningItem> itemSpawnSet; //item type, weight
 
 typedef vector<pair<mob, unsigned int> > encounterLevel; //the unsigned char is the weight
 
@@ -52,8 +73,13 @@ int Start::addItemSpawnSet(string name) {
     return num;
 }
 
-void Start::addItemToSpawnSet(unsigned short item, unsigned short weight, int itemSpawnSet) {
-    itemSpawnSets[itemSpawnSet]->insert(pair<unsigned short, unsigned short>(item, weight));
+void Start::addItemToSpawnSet(unsigned short item, unsigned int weight, int itemSpawnSetI) {
+    spawningItem si = {item, 1, 1, weight};
+    itemSpawnSets[itemSpawnSetI]->insert(si);
+}
+void Start::addItemToSpawnSet(unsigned short item, unsigned int weight, unsigned char stackMin, unsigned char stackMax, int itemSpawnSetI) {
+    spawningItem si = {item, stackMin, stackMax, weight};
+    itemSpawnSets[itemSpawnSetI]->insert(si);
 }
 
 int Start::addEnvironment(string name) {
@@ -190,20 +216,26 @@ void Start::createItems(Zone* z, int howMany, vector<pair<int, int> > possibleLo
         allItems.insert(val->begin(), val->end());
     }
     for (itemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); i++) {
-        total += i->second;
+        total += i->weight;
     }
     for (int j = 0; j < howMany; j++) {
         double r = (double)rand() / (double)RAND_MAX;
         int totalSoFar = 0;
         for (itemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); i++) {
-            totalSoFar += i->second;
+            totalSoFar += i->weight;
             double p = (double)totalSoFar / total;
             if (r < p) {
                 pair<int, int> coords = possibleLocs[rand() %  possibleLocs.size()]; //fooey
-                //Location* location = z->getLocationAt(coords.first, coords.second);
-                Item item = Item(i->first);
+                Item item = Item(i->itemTypeI);
+                if (i->stackMin > 1 && i->stackMax > 1) {
+                    if (i->stackMin == i->stackMax) {
+                        item.quantityCharge = i->stackMin;
+                    } else {
+                        int num = rand() % (i->stackMax - i->stackMin + 1) + i->stackMin;
+                        item.quantityCharge = num;
+                    }
+                }
                 addItemToPlace(coords.first, coords.second, z, item);
-                //location->addItem(item);
                 break;
             }
         }

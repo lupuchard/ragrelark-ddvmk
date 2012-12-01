@@ -80,6 +80,8 @@ movement_speed
 SLF
 light
 SLF
+g_stack
+SLF
 
 ~
 ~

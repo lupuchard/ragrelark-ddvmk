@@ -9,10 +9,16 @@
 ~It's pretty shiny. One is worth 50 cp.
 ~END
 
-~ITEM
-~gold pens
-~A valuble currency and a favorite among adventurers. One is worth 30 sp.
-~END
+ITEM
+gold pens
+A valuble currency and a favorite among adventurers. One is worth 30 sp.
+16
+6
+47
+weight=0
+value=150
+g_stack=1
+END
 
 ~ITEM
 ~platinum pens

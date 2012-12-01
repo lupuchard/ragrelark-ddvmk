@@ -21,7 +21,8 @@ union ParticleLL {
         short y1;
         int timStart;
         short len;
-        short ind;
+        unsigned char ind;
+        unsigned char rotFlip;
     } proj;
 };
 struct ParticleEffectS {
@@ -45,7 +46,25 @@ void Start::addProj(int x0, int y0, int x1, int y1, int length, int ind) {
     foon.proj.x0 = x0; foon.proj.y0 = y0;
     foon.proj.x1 = x1; foon.proj.y1 = y1;
     foon.proj.len = length;
-    foon.proj.ind = ind;
+    int rotation = (int)(atan2(y1 - y0, x1 - x0) / 3.14 * 180 + 367) % 360;
+    if (rotation > 270 || (rotation >= 90 && rotation < 180)) {
+        rotation = (rotation + 180) % 360;
+    }
+    int rotX;
+    bool rotF;
+    int rotZ;
+    if (rotation % 90 < 45) {
+        rotX = (rotation % 45) / 15;
+        rotF = true;
+        rotZ = rotation / 90;
+    } else {
+        rotX = 3 - (rotation % 45) / 15;
+        rotF = false;
+        rotZ = 3 - ((rotation / 90) % 4);
+    }
+    foon.proj.ind = ind * 4 + rotX;
+    foon.proj.rotFlip = rotZ;
+    if (rotF) foon.proj.rotFlip += 4;
     foon.proj.timStart = frameTime;
     arrow->particles.push_back(foon);
 }
@@ -95,11 +114,29 @@ void Start::updateEffects(int xCam, int yCam) {
                     color c = black;
                     c.alpha = 255 - 12 * timePassed;
                     drawCirc(x + (int)(timePassed * cos(part.b.b1 / 3.14) * f),
-                             y + (int)(timePassed * sin(part.b.b1 / 3.14) * f), Z_UNIT + i, 2, 0, 0, c);
+                             y + (int)(timePassed * sin(part.b.b1 / 3.14) * f), Z_EFFECT + i, 2, 0, 0, c);
                 }
             } break;
             case P_ARROW: {
                 ParticleEffectPerm* arrows = (ParticleEffectPerm*)(it->second);
+                int iv = 0;
+                for (list<ParticleLL>::iterator i = arrows->particles.begin(); i != arrows->particles.end(); ) {
+                    if (frameTime >= i->proj.timStart + i->proj.len) {
+                        arrows->particles.erase(i++);
+                    } else {
+                        float timePassed = (frameTime - i->proj.timStart) / (float)i->proj.len;
+                        int xChange = (int)((i->proj.x1 - i->proj.x0) * timePassed);
+                        int yChange = (int)((i->proj.y1 - i->proj.y0) * timePassed);
+
+                        int x = i->proj.x0 + xChange;
+                        int y = i->proj.y0 + yChange;
+                        color c = black;
+                        c.alpha = 255 - 12 * timePassed;
+                        drawTileFull(x, y, Z_EFFECT + iv, 32, 32, attackAnimsTex, 32 * i->proj.ind, 992, i->proj.rotFlip % 4, i->proj.rotFlip / 4);
+                        i++;
+                    }
+                    iv++;
+                }
             } break;
             default: break;
         }

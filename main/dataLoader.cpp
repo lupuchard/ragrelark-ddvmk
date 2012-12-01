@@ -48,6 +48,8 @@ void Start::loadData(World* w, Player* p) {
         cout << "WARNING: No font.png was loaded!" << endl;
     } if (!gotsSplatterTex) {
         cout << "WARNING: No splatters.png was loaded!" << endl;
+    } if (!gotsPlayerTex) {
+        cout << "WARNING: No player.png was loaded!" << endl;
     }
 
     for (map<string, vector<Zone*>*>::iterator i = areaZones.begin(); i != areaZones.end(); i++) {
@@ -215,19 +217,30 @@ bool Start::errorChecker(string filename) {
                 if (!isNum(line)) printFileErr("Fifth line of ITEM must be an integer (ItemType type).", lineNum);
                 finished = true; break;
             case (ITEM + 5): {
-                unsigned int i = 0;
-                while(line[i] != '=') {
-                    i++;
-                    if (line[i] == ' ') {
-                        printFileErr("No spaces please (i).", lineNum);
-                        break;
-                    } else if (i + 1 == line.size()) {
-                        printFileErr("There has to be an equals (i).", lineNum);
-                        return false;
+                if (line[0] == '*') {
+                    unsigned int i = 1;
+                    while(line[i] != ',') {
+                        i++;
+                        if (i == line.size()) {
+                            printFileErr("Where's the comma?", lineNum);
+                            break;
+                        }
                     }
-                }
-                if (!isNum(line.substr(i + 1, 100))) printFileErr("The right side of the equals must be an integer (i).", lineNum);
-                } continue;
+                    if (!isNum(line.substr(1, i - 1))) printFileErr("After the asterisk must be a number (and then a comma and then a word)!", lineNum);
+                } else {
+                    unsigned int i = 0;
+                    while(line[i] != '=') {
+                        i++;
+                        if (line[i] == ' ') {
+                            printFileErr("No spaces please (i).", lineNum);
+                            break;
+                        } else if (i + 1 == line.size()) {
+                            printFileErr("There has to be an equals (i).", lineNum);
+                            return false;
+                        }
+                    }
+                    if (!isNum(line.substr(i + 1, 100))) printFileErr("The right side of the equals must be an integer (i).", lineNum);
+                } } continue;
             case (STATS + 1): finished = true; continue;
             case (CONDITIONS + 1): finished = true; continue;
             case UNIT: {
@@ -782,17 +795,34 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 itemTypeMap[tempStr] = addItemType(newItem);
                 } break;
             case (ITEM + 5): {
-                int i = 0;
-                while(line[i] != '=') {
-                    i++;
-                }
-                string s = line.substr(0, i);
-                if (ERRCHECK && statMap.find(s) == statMap.end()) printFileProb("That is not an existing stat >:(.", lineNum);
-                int stat = statMap[s];
                 ItemType* itemType = getItemType(itemTypeMap[tempStr]);
-                int num = sti(line.substr(i + 1, 100));
-                itemType->addStatV(stat, num);
-                } continue;
+                if (line[0] == '*') {
+                    unsigned int i = 1;
+                    while(line[i] != ',') i++;
+                    int num = sti(line.substr(1, i - 1));
+                    string s = line.substr(i + 1, 100);
+                    EquipGType t = EQG_NONE;
+                    if (s == "NORM") t = EQG_NORM;
+                    else if (s == "LONG") t = EQG_LONG;
+                    else if (s == "TALL") t = EQG_TALL;
+                    else if (s == "SMALL") t = EQG_SMALL;
+                    else if (s == "GNORM") t = EQG_GNORM;
+                    else if (s == "GLONG") t = EQG_GLONG;
+                    else if (s == "GTALL") t = EQG_GTALL;
+                    else if (s == "GSMALL") t = EQG_GSMALL;
+                    else printFileProb("That is not an avaliable item equip graphic shape type form condition.", lineNum);
+                    itemType->setEquipGraphic(t, num);
+                } else {
+                    int i = 0;
+                    while(line[i] != '=') {
+                        i++;
+                    }
+                    string s = line.substr(0, i);
+                    if (ERRCHECK && statMap.find(s) == statMap.end()) printFileProb("That is not an existing stat >:(.", lineNum);
+                    int stat = statMap[s];
+                    int num = sti(line.substr(i + 1, 100));
+                    itemType->addStatV(stat, num);
+                }}  continue;
             case (STATS + 2):
                 if (line[0] != '-') {
                     if (ERRCHECK && statMap.find(line) == statMap.end()) printFileProb("That is not an existing stat >:O.", lineNum);
@@ -910,10 +940,36 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 if (line[0] == '}') {
                     status = ITEMSPAW;
                 } else {
+                    int minS = 1;
+                    int maxS = 1;
                     int c = 0;
-                    while (line[c] != ':') c++;
-                    string s = line.substr(0, c);
-                    string s2 = line.substr(c + 1, 100);
+                    bool done = false;
+                    string s;
+                    while (!done) {
+                        if (line[c] == ':') {
+                            s = line.substr(0, c);
+                            done = true;
+                        } else if (line[c] == '(') {
+                            s = line.substr(0, c);
+                            int d = c + 1;
+                            while(!done) {
+                                if (line[c] == ')') {
+                                    minS = sti(line.substr(d, c - d));
+                                    maxS = minS;
+                                    done = true;
+                                } else if (line[c] == '-') {
+                                    minS = sti(line.substr(d, c - d));
+                                    d = c + 1;
+                                    while(line[c] != ')') c++;
+                                    maxS = sti(line.substr(d, c - d));
+                                    done = true;
+                                }
+                                c++;
+                            }
+                        }
+                        c++;
+                    }
+                    string s2 = line.substr(c, 100);
                     int weight = 0;
                     if (s2 == "eeverywhere") {
                         weight = 10000;
@@ -940,7 +996,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     }
                     if (ERRCHECK && itemTypeMap.find(s) == itemTypeMap.end()) printFileProb("This item does not exist.", lineNum);
                     int itemTypeI = itemTypeMap[s];
-                    addItemToSpawnSet(itemTypeI, weight, tempValues[0]);
+                    addItemToSpawnSet(itemTypeI, weight, minS, maxS, tempValues[0]);
                 }
             } continue;
         }

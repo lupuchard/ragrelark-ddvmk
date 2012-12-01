@@ -134,6 +134,11 @@ END
 ~next will be all the stats
 ~
 FILES
+food
+weapons
+armor
+jewlery
+
 moreitems
 extraitems
 coins

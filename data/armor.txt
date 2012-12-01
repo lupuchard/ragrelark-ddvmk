@@ -1,0 +1,141 @@
+ITEM
+shirt
+A cure for nudity.
+133
+6
+157
+*64,GSMALL
+weight=9
+AC=1
+END
+
+ITEM
+leather armor
+Not for vegans.
+149
+6
+157
+*66,TALL
+weight=9
+penalty=1
+AC=4
+END
+
+ITEM
+adventure clothes
+A high quality silk shirt, some pants, and a cape.
+165
+6
+157
+*67,TALL
+weight=9
+AC=3
+hp_bonus=6
+END
+
+ITEM
+magma armor
+What the hell.
+181
+6
+157
+*68,TALL
+weight=99
+penalty=3
+AC=10
+light=2
+str=2
+END
+
+ITEM
+leather gloves
+These are actually for gardening.
+132
+6
+135
+*256,LONG
+weight=9
+AC=1
+END
+
+ITEM
+archery gloves
+Gloves of archery.
+148
+6
+135
+*288,LONG
+weight=9
+AC=1
+per=1
+accuracy=2
+END
+
+ITEM
+leather cap
+I don't know whether to call this a helmet or a hat.
+150
+6
+110
+*128,SMALL
+weight=9
+AC=2
+END
+
+ITEM
+pointy hat
+Having a point on a hat helps channel mystical energy. True science fact.
+134
+6
+110
+*129,SMALL
+weight=9
+AC=1
+aff=1
+END
+
+ITEM
+clogs
+These are terrible.
+164
+6
+151
+*192,LONG
+AC=1
+movement_speed=-1
+END
+
+ITEM
+Speedy Boots
+Speedy Boots of Speed (TM)
+180
+6
+151
+*224,LONG
+AC=1
+movement_speed=5
+END
+
+ITEM
+round wooden shield
+Haha who just leaves things like this lying around in a dungeon.
+135
+6
+115
+*320,TALL
+AC=1
+evasion=1
+penalty=1
+END
+
+ITEM
+reinforced shield
+A wooden shield that has been improved with iron stuff.
+151
+6
+115
+*321,TALL
+AC=1
+evasion=2
+penalty=1
+END

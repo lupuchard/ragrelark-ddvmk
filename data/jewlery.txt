@@ -1,0 +1,40 @@
+ITEM
+ring of regeneration
+Increases your hit point and mana regeneration.
+140
+6
+32
+weight=9
+hp_regen=2
+mana_regen=1
+END
+
+ITEM
+ring of accuracy
+Helps you hit things.
+156
+6
+32
+weight=9
+accuracy=1
+END
+
+ITEM
+amulet of intelligence
+Makes you smarter.
+141
+6
+131
+weight=9
+int=4
+END
+
+ITEM
+amulet of super sexiness
+Makes you super sexier.
+157
+6
+131
+weight=9
+cha=10
+END

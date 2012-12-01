@@ -21,6 +21,7 @@ using namespace std;
 #define S_CAPACITY 7
 #define S_PENALTY 20
 #define S_LIGHT 25
+#define S_GSTACK 26
 
 #define S_EXP 0
 #define S_LEVEL 1

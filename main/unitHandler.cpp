@@ -563,7 +563,6 @@ void Start::changeLoc(Unit* unit, Zone* zone, int x, int y) {
 }
 
 void Start::changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, int x, int y) {
-    //cout << "capooee " << newZone << endl;
     if (!newZone->isFilled()) {
         generateZone(newZone, 0, newZone->getGenType(), 0, 0, newZone->getWidth(), newZone->getHeight());
     }

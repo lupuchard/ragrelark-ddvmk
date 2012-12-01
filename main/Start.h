@@ -9,7 +9,8 @@
 #include <GL/glx.h>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include <fov/fov.h>
+//#include <fov/fov.h>
+#include "fov.h"
 #include "Player.h"
 #include "World.h"
 #include "Texture.h"
@@ -221,7 +222,8 @@ class Start: FormulaUser, EnvironmentManager {
         void cleanSpawnData();
         int addItemSpawnSet(string name);
         void createItems(Zone* z, int howMany, vector<pair<int, int> > possibleLocs);
-        void addItemToSpawnSet(unsigned short item, unsigned short weight, int itemSpawnSet);
+        void addItemToSpawnSet(unsigned short item, unsigned int weight, int itemSpawnSet);
+        void addItemToSpawnSet(unsigned short item, unsigned int weight, unsigned char stackMin, unsigned char stackMax, int itemSpawnSet);
         /* --- */
 
         /* --cleaner.cpp-- */
@@ -267,11 +269,13 @@ class Start: FormulaUser, EnvironmentManager {
         Texture* fontTex;
         Texture* splatterTex;
         Texture* attackAnimsTex;
+        Texture* playerTex;
         bool gotsStructureTex;
         bool gotsMenuTex;
         bool gotsFontTex;
         bool gotsSplatterTex;
         bool gotsAttackAnimsTex;
+        bool gotsPlayerTex;
 
         char tempChar;
         unsigned char loadStatus;

@@ -2,7 +2,7 @@
 *~
 test.cpp
 /obj/
-
+/bin/
 
 # Compiled Object files
 *.slo

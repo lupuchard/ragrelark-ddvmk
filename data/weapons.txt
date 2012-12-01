@@ -1,0 +1,83 @@
+ITEM
+club
+A log carved in the shape of a short fat oar.
+137
+6
+89
+*384,TALL
+damage=1
+weight=9
+damage_type=1
+END
+
+ITEM
+simple mace
+The most ordinary of maces. If you took the average of all maces ever it would look like this mace.
+153
+6
+81
+*385,TALL
+damage=4
+weight=99
+attack_speed=-1
+damage_type=1
+END
+
+ITEM
+Mace of Justice
+JUSTICE MACE DEMANDS JUSTICE.
+169
+6
+81
+*386,TALL
+damage=6
+weight=105
+attack_speed=-1
+str=2
+con=1
+damage_type=1
+END
+
+ITEM
+steel dagger
+Self explanatory.
+152
+6
+83
+*448,TALL
+damage=2
+weight=32
+damage_type=2
+END
+
+ITEM
+obsidian dagger
+Very very sharp.
+168
+6
+83
+*449,TALL
+damage=3
+accuracy=1
+weight=9
+damage_type=2
+END
+
+ITEM
+longbow
+It's more useful at long distances outdoors or in tall towers but you can use it in the middle of a cramped dungeon I SUPPOSE.
+138
+6
+82
+*512,TALL
+damage=1
+weight=9
+range=16
+END
+
+ITEM
+arrow
+Intended to be fired with a bow.
+139
+6
+106

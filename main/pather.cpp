@@ -272,7 +272,7 @@ void Start::playerFieldOfView(bool isNew) {
             Item* items = &(*loc->items)[0];
             int numItems = loc->items->size();
             for (int j = numItems - 1; j >= 0 && v < 2; j--) {
-                graphic g = getItemType(items[j].itemType)->getGraphic();
+                graphic g = getItemType(items[j].itemType)->getGraphic(items[j].quantityCharge);
                 texs[v] = g.tex;
                 locs[v] = g.loc;
                 v++;

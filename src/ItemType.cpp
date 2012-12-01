@@ -22,6 +22,7 @@ ItemType::ItemType(string n, string desc, int iI, int tI, int t): StatHolder(V_I
     g.tex = tI;
     g.type = 0;
     g.border = 0;
+    equipGType = EQG_NONE;
     type = t;
     makeHashMaps();
 }
@@ -32,6 +33,43 @@ ItemType::~ItemType() {
 
 graphic ItemType::getGraphic() {
     return g;
+}
+
+graphic ItemType::getGraphic(int gStack) {
+    int foo = getStatValue(S_GSTACK);
+    if (foo == 1) {
+        graphic g2 = g;
+        if (gStack < 3) {
+            return g;
+        } else if (gStack < 7) {
+            g2.loc += 1;
+        } else if (gStack < 16) {
+            g2.loc += 2;
+        } else if (gStack < 40) {
+            g2.loc += 3;
+        } else if (gStack < 100) {
+            g2.loc += 4;
+        } else if (gStack < 250) {
+            g2.loc += 5;
+        } else {
+            g2.loc += 6;
+        }
+        return g2;
+    } else {
+        return g;
+    }
+}
+
+void ItemType::setEquipGraphic(EquipGType gType, int eqGLoc) {
+    equipGType = gType;
+    equipGLoc = eqGLoc;
+}
+
+unsigned char ItemType::getEquipGType() {
+    return equipGType;
+}
+unsigned short ItemType::getEquipGLoc() {
+    return equipGLoc;
 }
 
 unsigned char ItemType::getType() {

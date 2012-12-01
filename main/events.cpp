@@ -1,6 +1,6 @@
 #include "Start.h"
 
-string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible"};
+string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible."};
 
 void Start::directionPress(int direction) {
     if (!menuUp) {
@@ -97,7 +97,7 @@ void Start::events() {
                     case SDLK_LSHIFT: shiftIsDown = true; break;
                     case SDLK_RSHIFT: shiftIsDown = true; break;
                     case SDLK_ESCAPE: menuUp = 0; selected = 0; break;
-                    case SDLK_SPACE:  enterCommand(); createEffect(P_DARKDUST, 100, 100); break;
+                    case SDLK_SPACE:  enterCommand(); /*createEffect(P_DARKDUST, 100, 100);*/ addProj(200, 200, player->getUnit()->x * 32, player->getUnit()->y * 32, 60, 0); break;
                     case SDLK_RETURN: enterCommand(); break;
                     case SDLK_LCTRL: backCommand(); break;
                     case SDLK_RCTRL: backCommand(); break;

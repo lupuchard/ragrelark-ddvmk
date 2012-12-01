@@ -1,0 +1,43 @@
+ITEM
+apple
+A generic tasty fruit. Tastes like fruit.
+25
+6
+41
+feed=91
+weight=4
+taste=2
+END
+
+ITEM
+cheese
+Ordinary cheddar cheese.
+25
+4
+41
+feed=121
+weight=5
+taste=1
+END
+
+ITEM
+carrot
+The best vegetable.
+28
+6
+41
+feed=30
+weight=4
+taste=2
+END
+
+ITEM
+banana
+Imported all the way from Bananaland.
+24
+6
+41
+feed=105
+weight=4
+taste=1
+END

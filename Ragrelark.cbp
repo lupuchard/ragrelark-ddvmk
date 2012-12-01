@@ -45,7 +45,9 @@
 					<Add directory="../Ragrelark" />
 					<Add directory="resources" />
 					<Add directory="data" />
-					<Add directory="../../Desktop/Libraries" />
+					<Add directory="util" />
+					<Add directory="main" />
+					<Add directory="depenencies" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -74,78 +76,50 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="animation.cpp">
-			<Option virtualFolder="code/main/graphics/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="cleaner.cpp">
-			<Option virtualFolder="code/main/main main/" />
-			<Option target="Debug" />
-			<Option target="Release" />
+		<Unit filename="data/armor.txt">
+			<Option virtualFolder="data/items/" />
 		</Unit>
 		<Unit filename="data/base.txt">
 			<Option virtualFolder="data/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="data/coins.txt">
 			<Option virtualFolder="data/items/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="data/extraitems.txt">
 			<Option virtualFolder="data/items/" />
-			<Option target="Debug" />
-			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/food.txt">
+			<Option virtualFolder="data/items/" />
 		</Unit>
 		<Unit filename="data/formulas.txt">
 			<Option virtualFolder="data/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="data/items.txt">
 			<Option virtualFolder="data/items/" />
-			<Option target="Debug" />
-			<Option target="Release" />
+		</Unit>
+		<Unit filename="data/jewlery.txt">
+			<Option virtualFolder="data/items/" />
 		</Unit>
 		<Unit filename="data/map1.txt">
 			<Option virtualFolder="data/maps/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="data/maps2.txt">
 			<Option virtualFolder="data/maps/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="data/mobspaw.txt">
 			<Option virtualFolder="data/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="data/moreitems.txt">
 			<Option virtualFolder="data/items/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="data/units.txt">
 			<Option virtualFolder="data/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
-		<Unit filename="dataLoader.cpp">
-			<Option virtualFolder="code/main/loading/" />
-			<Option target="Debug" />
-			<Option target="Release" />
+		<Unit filename="data/weapons.txt">
+			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="formulas.cpp">
-			<Option virtualFolder="code/main/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="generator.cpp">
-			<Option virtualFolder="code/main/" />
+		<Unit filename="depenencies/fov.h">
+			<Option virtualFolder="code/Helpful Functions/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -214,11 +188,6 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="include/Start.h">
-			<Option virtualFolder="code/main/main main/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="include/Stat.h">
 			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
 			<Option target="Debug" />
@@ -259,41 +228,97 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="include/graphics.h">
-			<Option virtualFolder="code/main/graphics/" />
-		</Unit>
-		<Unit filename="include/usefulParsing.h">
-			<Option virtualFolder="code/Helpful Functions/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="initiator.cpp">
+		<Unit filename="main/Start.cpp">
 			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="logic.cpp">
+		<Unit filename="main/Start.h">
 			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="mobSpawner.cpp">
-			<Option virtualFolder="code/main/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="particles.cpp">
+		<Unit filename="main/animation.cpp">
 			<Option virtualFolder="code/main/graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="pather.cpp">
-			<Option virtualFolder="code/main/" />
+		<Unit filename="main/cleaner.cpp">
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="resourceLoader.cpp">
+		<Unit filename="main/dataLoader.cpp">
 			<Option virtualFolder="code/main/loading/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/events.cpp">
+			<Option virtualFolder="code/main/main main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/formulas.cpp">
+			<Option virtualFolder="code/main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/generator.cpp">
+			<Option virtualFolder="code/main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/graphics.h">
+			<Option virtualFolder="code/main/graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/initiator.cpp">
+			<Option virtualFolder="code/main/main main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/logic.cpp">
+			<Option virtualFolder="code/main/main main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/mobSpawner.cpp">
+			<Option virtualFolder="code/main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/particles.cpp">
+			<Option virtualFolder="code/main/graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/pather.cpp">
+			<Option virtualFolder="code/main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/renderer.cpp">
+			<Option virtualFolder="code/main/graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/resourceLoader.cpp">
+			<Option virtualFolder="code/main/loading/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/test.cpp">
+			<Option virtualFolder="code/main/" />
+			<Option target="Test" />
+		</Unit>
+		<Unit filename="main/unitHandler.cpp">
+			<Option virtualFolder="code/main/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/unitHandler.h">
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -334,6 +359,8 @@
 		</Unit>
 		<Unit filename="src/Item.cpp">
 			<Option virtualFolder="code/classes/Items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/ItemFolder.cpp">
 			<Option virtualFolder="code/classes/Items/Folders/" />
@@ -357,11 +384,6 @@
 		</Unit>
 		<Unit filename="src/PrimeFolder.cpp">
 			<Option virtualFolder="code/classes/Items/Folders/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/Start.cpp">
-			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -405,27 +427,15 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="src/events.cpp">
-			<Option virtualFolder="code/main/main main/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/renderer.cpp">
-			<Option virtualFolder="code/main/graphics/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/unitHandler.cpp">
-			<Option virtualFolder="code/main/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/usefulParsing.cpp">
+		<Unit filename="util/usefulParsing.cpp">
 			<Option virtualFolder="code/Helpful Functions/" />
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
-		<Unit filename="test.cpp">
-			<Option virtualFolder="code/" />
-			<Option target="Test" />
+		<Unit filename="util/usefulParsing.h">
+			<Option virtualFolder="code/Helpful Functions/" />
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
 		<Extensions>
 			<code_completion />
