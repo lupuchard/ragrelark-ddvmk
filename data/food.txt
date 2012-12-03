@@ -41,3 +41,80 @@ feed=105
 weight=4
 taste=1
 END
+
+ITEM
+grapes
+Tasty.
+23
+6
+41
+feed=4
+weight=0
+taste=1
+END
+
+ITEM
+lemon
+Sour.
+25
+6
+41
+feed=20
+weight=3
+taste=6
+END
+
+ITEM
+citris fruit
+It's like a clementine or an orange or something, you don't actually know the difference.
+39
+6
+41
+feed=60
+weight=4
+taste=2
+END
+
+ITEM
+broccoli
+They say these are healthy but it's been lying on the floor of a dungeon so I dunno.
+29
+6
+41
+feed=30
+weight=3
+taste=5
+END
+
+ITEM
+ice cream
+YOU HAVE FOUND THE LEGENDARY CREAM OF ICE YOU MAY MAKE ONE WISH AS LONG AS THAT WISH IS TO EAT THIS ICE CREAM.
+77
+6
+41
+feed=200
+weight=5
+taste=7
+END
+
+ITEM
+pear
+If apple is Mario then pear is Luigi, true story.
+87
+6
+41
+feed=96
+weight=4
+taste=1
+END
+
+ITEM
+mango
+The tropical fruit. When someone thinks of "tropical fruit" they think of this, unless they are thinking of pineapple.
+71
+6
+41
+feed=140
+weight=4
+taste=7
+END

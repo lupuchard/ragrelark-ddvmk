@@ -14,7 +14,8 @@ Start::Start() {
     gotsAttackAnimsTex = false;
 
     selected = 0;
-    menuUp = 0;
+    state = STATE_PLAY;
+    stateAction = SA_NONE;
 
     interval1 = 0;
     interval2 = 0;

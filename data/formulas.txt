@@ -162,6 +162,10 @@ scrape_chance
 (f) 1 E e-evasion u-accuracy - 2 - -2 / ^ 3 * 1 + /
 melee_damage
 (f) u-strength i-damage + 2 / 0.98 e-defense ^ *
+ranged_damage
+(f) 4 i-damage + 2 / .98 u-defense ^ *
+spell_damage
+(f) u-affinity
 
 hunger
 SLF

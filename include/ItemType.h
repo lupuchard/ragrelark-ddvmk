@@ -4,20 +4,19 @@
 #define ITEMTYPE_H
 
 #define E_NONE -1
-enum {E_HEAD, E_FACE, E_BACK, E_BAG, E_NECK, E_BODY, E_LHAND, E_RHAND, E_HANDS, E_WAIST, E_WRIST, E_FEET, E_RING1, E_RING2};
+enum {E_HEAD, E_FACE, E_BACK, E_BAG, E_NECK, E_BODY, E_LHAND, E_RHAND, E_HANDS, E_WAIST, E_WRIST, E_FEET, E_RING1, E_RING2, E_AMMO};
 #define E_RING 20
 #define E_BHANDS 21
 #define E_BBHANDS 22
 #define E_CG 23
-#define E_AMMO 24
 
-const string typeNames[] = {"none", "anon", "", "slot", "", "", "", "", "", "fdr", "ground fdr", "equip fdr", "bag fdr", "prime fdr", "", "", //0-15
+const string typeNames[] = {"none", "anon", "rem", "slot", "", "", "", "", "", "fdr", "ground fdr", "equip fdr", "bag fdr", "prime fdr", "", "", //0-15
     "", "", "", "", "headgear", "face", "back", "bag", "neck", "body", "left hand", "right hand", "hands", "waist", "wrist", "feet",    //16-31
     "ring", "", "", "", "", "", "", "", "", "food", "", "liquid", "", "potion", "", "coin",                                             //32-47
     "", "tool", "", "furniture", "", "ore", "resource", "seed", "", "book", "", "map", "", "monster part", "", "lighter",                    //48-63
     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",                                                                     //64-79
     "axe", "mace", "bow", "dagger", "dart", "sling", "crossbow", "spear", "staff", "club", "hammer", "large hammer", "knife", "javelin", "trident", "scythe", //80-95
-    "whip", "flail", "sword", "greatsword", "gun", "automatic gun", "cordumned gommer", "icg", "lance", "ammo", "arrow", "bolt", "bullet", "", "hat", "helm", //96-111
+    "whip", "flail", "sword", "greatsword", "gun", "automatic gun", "cordumbed gommer", "icg", "lance", "ammo", "arrow", "bolt", "bullet", "", "hat", "helm", //96-111
     "bandana", "", "", "shield", "spellbook", "orb", "", "", "cape", "", "", "", "", "backpack", "quiver", "",                          //112-127
     "", "", "necklace", "amulet", "", "", "", "gloves", "gauntlets", "mittens", "", "", "belt", "", "", "",                             //128-143
     "", "bracelet", "watch", "", "", "", "shoes", "boots", "", "", "", "clothes", "cloth armor", "light armor", "heavy armor", "",      //144-159
@@ -43,11 +42,19 @@ const int typeSlots[] = {E_NONE, E_NONE, E_NONE, E_NONE, E_NONE, E_NONE, E_NONE,
 const int typeStacks[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   //0-31
     1, 1, 1, 1, 1, 1, 1, 1, 1, 250, 1, 15, 1, 15, 1, 250, 1, 15, 1, 250, 1, 15, 250, 250, 1, 15, 1, 1, 1, 250, 1, 250,        //32-63
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                         //64-95
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                         //96-127
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 250, 250, 250, 250, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                         //96-127
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                         //128-159
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                         //160-191
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,                         //192-223
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};                        //224-255
+const int typeRanges[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //32-63
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 106, 0, 0, 105, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, //64-95
+0, 0, 0, 0, 108, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //128-159
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 enum EquipGType{EQG_NONE, EQG_NORM, EQG_SMALL, EQG_TALL, EQG_LONG, EQG_GNORM, EQG_GSMALL, EQG_GTALL, EQG_GLONG};
 

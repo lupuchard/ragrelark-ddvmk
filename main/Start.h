@@ -65,6 +65,9 @@
 #define INTERVAL_2_TIM 500
 #define INTERVAL_3_TIM 5000
 
+enum{STATE_PLAY, STATE_MENU, STATE_DIR, STATE_TARGET};
+enum{SA_NONE, SA_ATTACK, SA_FIRE, SA_OPENDOOR, SA_CLOSEDOOR};
+
 using namespace std;
 
 typedef pair<string, StatHolder*> mob;
@@ -104,6 +107,7 @@ class Start: FormulaUser, EnvironmentManager {
         void backCommand();
         void closeDoors();
         void itemRemovalCheck();
+        void enterTargetMode();
         /* --- */
 
         /* --pather.cpp-- */
@@ -159,7 +163,9 @@ class Start: FormulaUser, EnvironmentManager {
         void ai(Unit* unit, Zone* zone);
         void moveUnit(Unit* unit, Zone* zone, int dir);
         void playerWalkStaminaDrain(int* movSpeed, int time, Unit* unit);
-        void attackUnit(Unit* unit, Zone* zone, int dir, bool safe);
+        void hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& verb);
+        void strikeUnit(Unit* unit, Zone* zone, int dir, bool safe);
+        void shootUnit(Unit* attacker, Unit* defender, Zone* zone);
         void killUnit(Unit* unit, Zone* zone);
         void goTheStairs(Unit* unit, Zone* zone);
         void openDoor(Unit* unit, Zone* zone, int dir, bool safe);
@@ -241,12 +247,18 @@ class Start: FormulaUser, EnvironmentManager {
         Area* activeArea;
 
         bool done;
-        unsigned char menuUp;
+        unsigned char state;
         unsigned char selected;
         unsigned char menuAction;
         stack<ItemFolder*> folderStack;
         PrimeFolder* primeFolder;
         map<unsigned short, vector<ItemFolder*> > folders;
+
+        /*target & dir*/
+        vector<Unit*> unitsInRange;
+        short stIndex;
+        unsigned short stateAction;
+        /*endt*/
 
         map<string, Tile*> tiles;
         map<string, map<char, string>*> tileGroups;

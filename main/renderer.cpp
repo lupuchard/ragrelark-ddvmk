@@ -1,8 +1,3 @@
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-//#include <GL/glext.h>
-//#include <SDL/SDL.h>
-
 #include "Start.h"
 #include "graphics.h"
 
@@ -381,7 +376,7 @@ void Start::renderMenu() {
     static const color weightColors[] = {tar, black, black, dark(dark(purple)), dark(purple), purple};
     static const color valueColors[] = {tar, black, dark(brown), dark(amber), olive, yellow};
     static const string dTypeNames[] = {"none", "bludgeon", "slashing", "piercing"};
-    if (menuUp) {
+    if (state == STATE_MENU) {
         if (selected >= MAX_MENU_ITEMS + selectedShift) {
             selectedShift = selected - MAX_MENU_ITEMS + 1;
         } else if (selected < selectedShift) {
@@ -715,6 +710,12 @@ void Start::renderGround() {
     renderAnims();
     drawBox(x + 50, y + 50, Z_EFFECT, 4, interval, scarlet);
     updateEffects(x, y);
+    if (state == STATE_TARGET) {
+        int num = (interval % 40) / 4;
+        if (num >= 5) num += 30;
+        else num += 27;
+        drawTile(unitsInRange[stIndex]->x * TILE_SIZE, unitsInRange[stIndex]->y * TILE_SIZE, Z_MENU, menuTex, num);
+    }
 }
 
 void Start::startRenderer() {

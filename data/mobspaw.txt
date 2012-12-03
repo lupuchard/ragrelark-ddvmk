@@ -3,24 +3,30 @@ main{
 candle:uncommon
 blue feather:very rare
 big heavy rock:extremely rare
+arrow(1-2):rare
+arrow(3-10):very rare
+arrow(11-40):extremely rare
 }
 lv1{
 shirt:rare
 club:rare
 leather gloves:very rare
 gold pens(1-4):rare
+longbow:extremely rare
 }
 lv2{
 round wooden shield:very rare
 leather cap:rare
 steel dagger:rare
 gold pens(5-8):rare
+longbow:very rare
 }
 lv3{
 clogs:rare
 pointy hat:rare
 leather armor:rare
 gold pens(9-12):rare
+longbow:rare
 }
 lv4{
 adventure clothes:rare
@@ -51,6 +57,13 @@ apple:very rare
 cheese:extremely rare
 carrot:extremely rare
 banana:extremely rare
+pear:extremely rare
+citris fruit:extremely rare
+lemon:extremely rare
+grapes(5-20):extremely rare
+broccoli:extremely rare
+mango:rrare
+ice cream:rrare
 }
 END
 

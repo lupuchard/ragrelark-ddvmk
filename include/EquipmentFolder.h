@@ -4,6 +4,8 @@
 #include "ItemFolder.h"
 #define NUM_EQUIP_SLOTS 14
 
+#define SECRET_AMMO_INDEX 15
+
 class EquipmentFolder : public ItemFolder, public StatHolder {
     public:
         EquipmentFolder();

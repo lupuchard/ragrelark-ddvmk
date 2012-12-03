@@ -130,8 +130,6 @@ void Start::updateEffects(int xCam, int yCam) {
 
                         int x = i->proj.x0 + xChange;
                         int y = i->proj.y0 + yChange;
-                        color c = black;
-                        c.alpha = 255 - 12 * timePassed;
                         drawTileFull(x, y, Z_EFFECT + iv, 32, 32, attackAnimsTex, 32 * i->proj.ind, 992, i->proj.rotFlip % 4, i->proj.rotFlip / 4);
                         i++;
                     }

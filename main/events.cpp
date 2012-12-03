@@ -1,16 +1,16 @@
 #include "Start.h"
 
-string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible."};
+string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear."};
 
 void Start::directionPress(int direction) {
-    if (!menuUp) {
+    if (state == STATE_PLAY) {
         if (direction == 5) {
             player->getUnit()->theTime += 5;
         } else {
             moveUnit(player->getUnit(), player->getZone(), direction);
             primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
         }
-    } else {
+    } else if (state == STATE_MENU) {
         switch (direction) {
             case 2:
                 selected++;
@@ -33,6 +33,20 @@ void Start::directionPress(int direction) {
                 } else {
                     selected--;
                 } break;
+        }
+    } else if (state == STATE_TARGET) {
+        switch (direction) {
+            case 6:
+                stIndex++;
+                if (stIndex >= (int)unitsInRange.size()) {
+                    stIndex = 0;
+                } break;
+            case 4:
+                stIndex--;
+                if (stIndex < 0) {
+                    stIndex = unitsInRange.size() - 1;
+                } break;
+            default: break;
         }
     }
 }
@@ -94,10 +108,19 @@ void Start::events() {
                     case SDLK_d:      openBag();       menuAction = MA_DROP;    break;
                     case SDLK_e:      openBag();       menuAction = MA_EAT;     break;
 
+                    case SDLK_f:
+                        if (state == STATE_TARGET) {
+                            state = STATE_PLAY;
+                        } else {
+                            stateAction = SA_FIRE;
+                            enterTargetMode();
+                        }
+                        break;
+
                     case SDLK_LSHIFT: shiftIsDown = true; break;
                     case SDLK_RSHIFT: shiftIsDown = true; break;
-                    case SDLK_ESCAPE: menuUp = 0; selected = 0; break;
-                    case SDLK_SPACE:  enterCommand(); /*createEffect(P_DARKDUST, 100, 100);*/ addProj(200, 200, player->getUnit()->x * 32, player->getUnit()->y * 32, 60, 0); break;
+                    case SDLK_ESCAPE: state = STATE_PLAY; selected = 0; break;
+                    case SDLK_SPACE:  enterCommand(); break;
                     case SDLK_RETURN: enterCommand(); break;
                     case SDLK_LCTRL: backCommand(); break;
                     case SDLK_RCTRL: backCommand(); break;
@@ -159,7 +182,7 @@ void Start::openInventory() {
     while(folderStack.top() != primeFolder) {
         folderStack.pop();
     }
-    menuUp = 1;
+    state = STATE_MENU;
 }
 
 void Start::openBag() {
@@ -168,7 +191,7 @@ void Start::openBag() {
             folderStack.pop();
         }
         folderStack.push(primeFolder->getBag());
-        menuUp = 1;
+        state = STATE_MENU;
     }
 }
 
@@ -177,7 +200,7 @@ void Start::openEquipment() {
         folderStack.pop();
     }
     folderStack.push(primeFolder->getEquips());
-    menuUp = 1;
+    state = STATE_MENU;
 }
 
 void Start::openGround() {
@@ -186,7 +209,29 @@ void Start::openGround() {
             folderStack.pop();
         }
         folderStack.push(primeFolder->getGround());
-        menuUp = 1;
+        state = STATE_MENU;
+    }
+}
+
+void Start::enterTargetMode() {
+    unitsInRange.clear();
+    Zone* z = player->getZone();
+    for (int i = 0; i < z->getWidth(); i++) {
+        for (int j = 0; j < z->getHeight(); j++) {
+            int v = i + j * z->getWidth();
+            if (visibilities[v] == 2) {
+                Location* loc = z->getLocationAt(i, j);
+                if (loc->hasUnit() && loc->unit != player->getUnit()) {
+                    unitsInRange.push_back(loc->unit);
+                }
+            }
+        }
+    }
+    if (!unitsInRange.empty()) {
+        state = STATE_TARGET;
+        stIndex = 0;
+    } else {
+        addMessage("There are no targets in range!", black);
     }
 }
 
@@ -201,9 +246,13 @@ void Start::action(int action, Unit* unit, int value1, int value2, int value3) {
 
 bool Start::equipItem(Item item) {
     ItemType* itemType = getItemType(item.itemType);
-    if (typeSlots[itemType->getType()] != E_NONE) {
+    int typeSlot = typeSlots[itemType->getType()];
+    if (typeSlot != E_NONE && typeSlot != E_AMMO) {
         Item oldItem = primeFolder->getEquips()->equipItem(item, itemType->getType());
         int oldItemTypeType = getItemType(oldItem.itemType)->getType();
+        if (oldItemTypeType == 2) {
+            return false;
+        }
         if (!(oldItemTypeType == 0 || oldItemTypeType == I_SLOT)) {
             if (!primeFolder->getBag()->addItem(&oldItem)) {
                 primeFolder->getGround()->addItem(&oldItem);
@@ -251,7 +300,7 @@ void Start::itemRemovalCheck() {
 }
 
 void Start::enterCommand() {
-    if (menuUp) {
+    if (state == STATE_MENU) {
         Item selectedItem = *folderStack.top()->getItem(selected);
         int itemTypeType = getItemType(selectedItem.itemType)->getType();
         if (itemTypeType <= 14 && itemTypeType >= 10) {
@@ -276,7 +325,6 @@ void Start::enterCommand() {
                     Item item = folderStack.top()->removeItem(selected);
                     int itemTypeType = getItemType(item.itemType)->getType();
                     if (!(itemTypeType == 0 || itemTypeType == I_SLOT)) {
-                        //primeFolder->getGround()->addItem(&item);
                         addItemToPlace(player->getUnit()->x, player->getUnit()->y, player->getZone(), item);
                     }
                     itemRemovalCheck();
@@ -297,13 +345,13 @@ void Start::enterCommand() {
                         if (player->getUnit()->getStatValue(S_HUNGER) > MAX_HUNGER) {
                             addMessage("You are way too full to eat right now!", gray);
                         } else {
-                            if (item->quantityCharge > 1) {
+                            if (item->quantityCharge > 1) { //m17
                                 item->quantityCharge--;
                             } else {
                                 folderStack.top()->removeItem(selected);
+                                itemRemovalCheck();
                             }
                             eatFood(player->getUnit(), itemType);
-                            itemRemovalCheck();
                             addMessage("You eat the " + itemType->getName() + ". " + foodTastes[itemType->getStatValue(S_TASTE)], black);
                         }
                     } else {
@@ -313,15 +361,47 @@ void Start::enterCommand() {
                 default: break;
             }
         }
+    } else if (state == STATE_TARGET) {
+        switch(stateAction) {
+            case SA_FIRE: {
+            int range = typeRanges[getItemType(primeFolder->getEquips()->getItem(E_RHAND)->itemType)->getType()];
+            cout << "okayy " << range << endl;
+            if (range) {
+                Item* items = primeFolder->getBag()->getItems();
+                for (int i = 0; i < primeFolder->getBag()->getNumItems(); i++) {
+                    ItemType* itemType = getItemType(items[i].itemType);
+                    cout << "okay " << itemType->getType() << " " << range << endl;
+                    if (itemType->getType() == range) {
+                        primeFolder->getEquips()->equipItem(items[i], itemType->getType());
+                        Item item = items[i];
+                        if (items[i].quantityCharge > 1) { //m17
+                            items[i].quantityCharge--;
+                        } else {
+                            primeFolder->getBag()->removeItem(i);
+                            itemRemovalCheck();
+                        }
+                        item.quantityCharge = 1;
+                        Unit* enemy = unitsInRange[stIndex];
+                        addItemToPlace(enemy->x, enemy->y, player->getZone(), item);
+                        addProj(player->getUnit()->x * TILE_SIZE, player->getUnit()->y * TILE_SIZE, enemy->x * TILE_SIZE, enemy->y * TILE_SIZE, 10, 0);
+                        shootUnit(player->getUnit(), unitsInRange[stIndex], player->getZone());
+                        primeFolder->getEquips()->removeItem(SECRET_AMMO_INDEX);
+                        break;
+                    }
+                }
+            } } break;
+            default: break;
+        }
+        state = STATE_PLAY;
     }
 }
 
 void Start::backCommand() {
-    if (menuUp) {
+    if (state == STATE_MENU) {
         if (folderStack.top() != primeFolder) {
             folderStack.pop();
         } else {
-            menuUp = 0;
+            state = STATE_PLAY;
         }
         selected = 0;
     }

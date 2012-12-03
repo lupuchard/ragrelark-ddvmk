@@ -107,7 +107,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
             Location* nextLoc = zone->getLocationAt(newX, newY);
             if (nextLoc->hasUnit()) {
                 if (unit == player->getUnit() || nextLoc->unit == player->getUnit()) {
-                    attackUnit(unit, zone, dir, true);
+                    strikeUnit(unit, zone, dir, true);
                 } else {
                     unit->theTime += 2;
                     //makePath(unit, player->getUnit()->x, player->getUnit()->y, zone, true);
@@ -245,7 +245,26 @@ void Start::goTheStairs(Unit* unit, Zone* zone) {
     }
 }
 
-void Start::attackUnit(Unit* unit, Zone* zone, int dir, bool safe) {
+void Start::hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& verb) {
+    float howLuckyAreYou = (float)rand() / RAND_MAX;
+    if (howLuckyAreYou > unit->getStatValueF(S_MCRITC)) {
+        damage *= 5;
+        verb = "megacrit"; hitType = 4; c = red;
+    } else if (howLuckyAreYou > unit->getStatValueF(S_CRITC)) {
+        damage *= 2;
+        verb = "crit";     hitType = 3; c = brick;
+    } else if (howLuckyAreYou > unit->getStatValueF(S_HITC)) {
+        verb = "hit";      hitType = 2; c = maroon;
+    } else if (howLuckyAreYou > unit->getStatValueF(S_SCRAPEC)) {
+        damage /= 2;
+        verb = "scrape";   hitType = 1; c = dark(maroon);
+    } else {
+        damage = 0;
+        verb = "miss";     hitType = 0; c = dark(salmon);
+    }
+}
+
+void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
     if (unit == player->getUnit() && unit->getStatValue(S_STAMINA) < 2000) {
         addMessage("You are too exausted to attack!", gray);
     } else {
@@ -263,26 +282,11 @@ void Start::attackUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 string u1name;
                 string u2name;
 
-                float damage = unit->getStatValueF(S_DAMAGE);
+                float damage = unit->getStatValueF(S_MELDAMAGE);
                 damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
                 int hitType;
-                float howLuckyAreYou = (float)rand() / RAND_MAX;
                 color c;
-                if (howLuckyAreYou > unit->getStatValueF(S_MCRITC)) {
-                    damage *= 5;
-                    verb = "megacrit"; hitType = 4; c = red;
-                } else if (howLuckyAreYou > unit->getStatValueF(S_CRITC)) {
-                    damage *= 2;
-                    verb = "crit";     hitType = 3; c = brick;
-                } else if (howLuckyAreYou > unit->getStatValueF(S_HITC)) {
-                    verb = "hit";      hitType = 2; c = maroon;
-                } else if (howLuckyAreYou > unit->getStatValueF(S_SCRAPEC)) {
-                    damage /= 2;
-                    verb = "scrape";   hitType = 1; c = dark(maroon);
-                } else {
-                    damage = 0;
-                    verb = "miss";     hitType = 0; c = dark(salmon);
-                }
+                hitCMod(unit, damage, c, hitType, verb);
 
                 if (unit == player->getUnit()) {
                     u1name = "you";
@@ -313,7 +317,7 @@ void Start::attackUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 string extra;
                 rAttack(enemy->x, enemy->y, dir, damageType, hitType);
 
-                unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(S_MOVESPEED));
+                unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(S_ATTACKSPEED));
                 if (unit == player->getUnit()) {
                     unit->modifyStat(S_STAMINA, -T_ATTACK);
                 }
@@ -361,6 +365,74 @@ void Start::attackUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
             }
         }
+    }
+}
+
+void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
+    if (attacker == player->getUnit() && attacker->getStatValue(S_STAMINA) < 1500) {
+        addMessage("You are too exausted to shoot!", gray);
+    } else {
+        attacker->setEnemy(defender);
+
+        string verb;
+        string u1name;
+        string u2name;
+
+        float damage = attacker->getStatValueF(S_RANDAMAGE);
+        damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
+        int hitType;
+        color c;
+        hitCMod(attacker, damage, c, hitType, verb);
+
+        if (attacker == player->getUnit()) {
+            u1name = "you fire and";
+        } else {
+            u1name = "the " + attacker->name + " shoots and";
+            c.green += c.red / 2;
+            verb = pluralize(verb);
+        }
+        if (defender == player->getUnit()) {
+            if (defender == attacker) u2name = "yourself";
+            else u2name = "you";
+        } else {
+            if (defender == attacker) u2name = "itself";
+            else u2name = "the " + defender->name;
+        }
+
+        /*int damageType = -1;
+        if (attacker == player->getUnit()) {
+            Item* item = primeFolder->getEquips()->getItem(E_RHAND);
+            ItemType* itemType = getItemType(item->itemType);
+            damageType = itemType->getStatValue(S_DTYPE);
+        }*/
+        string extra;
+
+        attacker->theTime += actionTimePassed(T_ATTACK, attacker->getStatValue(S_ATTACKSPEED));
+        if (attacker == player->getUnit()) {
+            attacker->modifyStat(S_STAMINA, -(T_ATTACK / 2));
+        }
+
+        if (damage) {
+            int hp = defender->modifyStat(S_HP, -(int)damage);
+            int splatterChance;
+            if (hp <= 0) {
+                splatterChance = 10;
+            } else {
+                splatterChance = 5 * damage / hp;
+            }
+            splatterChance *= defender->getStatValue(S_SPLATTER);
+            if (rand() % 200 < splatterChance) {
+                makeSplatter(defender, defender->x, defender->y);
+            }
+
+            if (hp <= 0) {
+                if (attacker == player->getUnit()) {
+                    attacker->modifyStat(S_EXP, (defender->getStatValue(S_LEVEL) + 2) * 4);
+                }
+                killUnit(defender, zone);
+            }
+        }
+        addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
     }
 }
 

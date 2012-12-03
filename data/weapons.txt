@@ -72,7 +72,7 @@ It's more useful at long distances outdoors or in tall towers but you can use it
 *512,TALL
 damage=1
 weight=9
-range=16
+~range=16
 END
 
 ITEM
@@ -81,3 +81,5 @@ Intended to be fired with a bow.
 139
 6
 106
+damage=1
+END
