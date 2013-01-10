@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;" />
+		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/main/generation/;code/main/activity/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -21,7 +21,9 @@
 					<Add directory="../Ragrelark" />
 					<Add directory="resources" />
 					<Add directory="data" />
-					<Add directory="../../Desktop/Libraries" />
+					<Add directory="util" />
+					<Add directory="main" />
+					<Add directory="depenencies" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
@@ -52,7 +54,6 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="GL" />
-					<Add library="GLU" />
 					<Add library="SDLmain" />
 					<Add library="SDL" />
 					<Add library="SDL_image" />
@@ -106,6 +107,9 @@
 		<Unit filename="data/maps2.txt">
 			<Option virtualFolder="data/maps/" />
 		</Unit>
+		<Unit filename="data/maptiles.txt">
+			<Option virtualFolder="data/maps/" />
+		</Unit>
 		<Unit filename="data/mobspaw.txt">
 			<Option virtualFolder="data/" />
 		</Unit>
@@ -118,10 +122,17 @@
 		<Unit filename="data/weapons.txt">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="depenencies/fov.h">
+		<Unit filename="depenencies/base64/base64.cpp">
 			<Option virtualFolder="code/Helpful Functions/" />
-			<Option target="Debug" />
-			<Option target="Release" />
+		</Unit>
+		<Unit filename="depenencies/base64/base64.h">
+			<Option virtualFolder="code/Helpful Functions/" />
+		</Unit>
+		<Unit filename="depenencies/tinyxml2/tinyxml2.cpp">
+			<Option virtualFolder="code/Helpful Functions/" />
+		</Unit>
+		<Unit filename="depenencies/tinyxml2/tinyxml2.h">
+			<Option virtualFolder="code/Helpful Functions/" />
 		</Unit>
 		<Unit filename="include/Area.h">
 			<Option virtualFolder="code/classes/Places/" />
@@ -132,6 +143,9 @@
 			<Option virtualFolder="code/classes/Items/Folders/" />
 			<Option target="Debug" />
 			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Blobber.h">
+			<Option virtualFolder="code/classes/headers/" />
 		</Unit>
 		<Unit filename="include/EnvironmentManager.h">
 			<Option virtualFolder="code/classes/headers/" />
@@ -188,6 +202,11 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="include/RandItemType.h">
+			<Option virtualFolder="code/classes/Items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="include/Stat.h">
 			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
 			<Option target="Debug" />
@@ -209,7 +228,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Tile.h">
-			<Option virtualFolder="code/classes/headers/" />
+			<Option virtualFolder="code/classes/Places/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -229,12 +248,12 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/Start.cpp">
-			<Option virtualFolder="code/main/main main/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/Start.h">
-			<Option virtualFolder="code/main/main main/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -253,18 +272,28 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="main/dataLoader.h">
+			<Option virtualFolder="code/main/loading/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="main/dataLoaderError.cpp">
+			<Option virtualFolder="code/main/loading/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="main/events.cpp">
 			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/formulas.cpp">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/activity/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/generator.cpp">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -284,7 +313,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/mobSpawner.cpp">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -294,7 +323,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/pather.cpp">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/activity/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -309,16 +338,16 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/test.cpp">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Test" />
 		</Unit>
-		<Unit filename="main/unitHandler.cpp">
-			<Option virtualFolder="code/main/" />
+		<Unit filename="main/tiledLoader.cpp">
+			<Option virtualFolder="code/main/loading/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="main/unitHandler.h">
-			<Option virtualFolder="code/main/" />
+		<Unit filename="main/unitHandler.cpp">
+			<Option virtualFolder="code/main/activity/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -331,6 +360,9 @@
 			<Option virtualFolder="code/classes/Items/Folders/" />
 			<Option target="Debug" />
 			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Blobber.cpp">
+			<Option virtualFolder="code/classes/sources/" />
 		</Unit>
 		<Unit filename="src/EnvironmentManager.cpp">
 			<Option virtualFolder="code/classes/sources/" />
@@ -387,6 +419,11 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="src/RandItemType.cpp">
+			<Option virtualFolder="code/classes/Items/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/Stat.cpp">
 			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
 			<Option target="Debug" />
@@ -408,7 +445,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Tile.cpp">
-			<Option virtualFolder="code/classes/sources/" />
+			<Option virtualFolder="code/classes/Places/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

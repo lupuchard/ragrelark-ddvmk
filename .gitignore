@@ -3,6 +3,7 @@
 test.cpp
 /obj/
 /bin/
+*.layout
 
 # Compiled Object files
 *.slo

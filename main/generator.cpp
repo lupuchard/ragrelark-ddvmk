@@ -242,14 +242,16 @@ void fooey(Zone* zone, bspGenNode* next, int left, vector<zoneNode>* nodes) {
     }
 }
 
-vector<pair<int, int> > gZoneRec(Zone* zone, int tilesetType, int genType, int sx, int sy, int ex, int ey) {
+Blobber blobber;
+
+vector<pair<int, int> > gZoneRec(Zone* zone, int tilesetType, GenType genType, int sx, int sy, int ex, int ey) {
     zone->fill();
     int wid = ex - sx;
     int hei = ey - sy;
     vector<zoneNode> nodes;
     vector<pair<int, int> > possibleLocs;
     switch(genType) {
-        case G_NONE: {
+        case GEN_NONE: {
             for (int i = sx; i < ex; i++) {
                 for (int j = sy; j < ey; j++) {
                     Location* loc = zone->getLocationAt(i, j);
@@ -269,7 +271,7 @@ vector<pair<int, int> > gZoneRec(Zone* zone, int tilesetType, int genType, int s
                 }
             }
         } break;
-        case G_MYDUN: {
+        case GEN_MYDUN: {
             for (int x = sx; x < ex; x++) {
                 for (int y = sy; y < ey; y++) {
                     Location* loc = zone->getLocationAt(x, y);
@@ -367,7 +369,7 @@ vector<pair<int, int> > gZoneRec(Zone* zone, int tilesetType, int genType, int s
 
             dooors(sx, sy, ex, ey, zone, 5);
         } break;
-        case G_BSP: {
+        case GEN_BSP: {
             for (int x = sx; x < ex; x++) {
                 for (int y = sy; y < ey; y++) {
                     Location* loc = zone->getLocationAt(x, y);
@@ -421,21 +423,21 @@ vector<pair<int, int> > gZoneRec(Zone* zone, int tilesetType, int genType, int s
 
             dooors(sx, sy, ex, ey, zone, 2);
         } break;
-        case G_DUNGEON: {
+        case GEN_DUNGEON: {
             int num = rand() % 9;
             if (num) {
                 vector<pair<int, int> > moreLocs;
                 if (num % 2) {
-                    moreLocs = gZoneRec(zone, tilesetType, G_MYDUN, sx, sy, ex, ey);
+                    moreLocs = gZoneRec(zone, tilesetType, GEN_MYDUN, sx, sy, ex, ey);
                 } else {
-                    moreLocs = gZoneRec(zone, tilesetType, G_BSP, sx, sy, ex, ey);
+                    moreLocs = gZoneRec(zone, tilesetType, GEN_BSP, sx, sy, ex, ey);
                 }
                 possibleLocs.insert(possibleLocs.end(), moreLocs.begin(), moreLocs.end());
             } else {
                 int mx = (ex - sx) / 2 + sx;
-                vector<pair<int, int> > moreLocs = gZoneRec(zone, tilesetType, G_MYDUN, sx, sy, mx, ey);
+                vector<pair<int, int> > moreLocs = gZoneRec(zone, tilesetType, GEN_MYDUN, sx, sy, mx, ey);
                 possibleLocs.insert(possibleLocs.end(), moreLocs.begin(), moreLocs.end());
-                moreLocs = gZoneRec(zone, tilesetType, G_BSP, mx, sy, ex, ey);
+                moreLocs = gZoneRec(zone, tilesetType, GEN_BSP, mx, sy, ex, ey);
                 possibleLocs.insert(possibleLocs.end(), moreLocs.begin(), moreLocs.end());
             }
         } break;
@@ -444,10 +446,39 @@ vector<pair<int, int> > gZoneRec(Zone* zone, int tilesetType, int genType, int s
     return possibleLocs;
 }
 
-void Start::generateZone(Zone* zone, int tilesetType, int zoneType, int sx, int sy, int ex, int ey) {
+void Start::overgrowth(Zone* zone, GenType genType, int sx, int sy, int ex, int ey) {
+    static const int plantTag = hashMob("2growt");
+    if (genType == GEN_DUNGEON) {
+        int num = (ex - sx) * (ey - sy) / 1000;
+        for (int i = 0; i < num; i++) {
+            int x = rand() % zone->getWidth();
+            int y = rand() % zone->getHeight(); //random location
+            int rad = rand() % 4 + 2; //random size
+            blobber.makeCircle(rad);
+            const bool** circle = blobber.getBlob();
+            for (int i = 0; i < blobber.getWidth(); i++) {
+                for (int j = 0; j < blobber.getHeight(); j++) {
+                    if (circle[i][j]) {
+                        int xi = x + i - rad;
+                        int yj = y + j - rad;
+                        if (xi >= sx && xi < ex && yj >= sy && yj < ey) {
+                            Location* locAt = zone->getLocationAt(xi, yj);
+                            if (locAt->height != MAX_HEIGHT && !locAt->hasUnit() && locAt->structure == S_NONE) {
+                                spawnMobSpeTag(plantTag, zone, xi, yj, true, A_NONE);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Start::generateZone(Zone* zone, int tilesetType, GenType zoneType, int sx, int sy, int ex, int ey) {
     vector<pair<int, int> > possibleLocs = gZoneRec(zone, tilesetType, zoneType, sx, sy, ex, ey);
     int numEncounters = zone->getWidth() * zone->getHeight() / 200 + rand() % 3;
     createEncounters(zone, numEncounters, possibleLocs);
+    overgrowth(zone, zoneType, sx, sy, ex, ey);
     int numItems = zone->getWidth() * zone->getHeight() / 100 + rand() % 3;
     createItems(zone, numItems, possibleLocs);
     zone->becomeGenned();

@@ -8,6 +8,8 @@
 #define MAX_ZONE_SIZE 4096
 #define MAX_ZONE_WIDHEI 256
 
+enum GenType{GEN_NONE = 0, GEN_MYDUN = 1, GEN_BSP = 2, GEN_DUNGEON = 10};
+
 //takes up 16 bytes when not filled
 
 typedef struct {
@@ -27,6 +29,7 @@ class Zone: public StatHolder {
         Tile* getTileAt(int x, int y);
         Tile* safeGetTileAt(int x, int y);
         Location* getLocationAt(int x, int y);
+        Location* getLocationAt(int i);
         Location* safeGetLocationAt(int x, int y);
 
         int addTile(Tile* t);
@@ -42,7 +45,7 @@ class Zone: public StatHolder {
         int isFilled();
         void addModification(int x, int y, char type, int value);
 
-        int getGenType();
+        GenType getGenType();
         int getMobType();
         unsigned char getMobSpawnLevel();
         void setMobSpawnLevel(unsigned char mobSpawnLevel);

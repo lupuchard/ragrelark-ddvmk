@@ -9,14 +9,13 @@ void setFormUser(FormulaUser* fUser) {
 
 map<completeStat, vector<completeStat>*> afflictions;
 map<int, vector<completeStat>*> conAfflictions;
-vector<Stat*> itemAfflictions;
-vector<Stat*> enemyAfflictions;
-//vector<int> itemConAfflictions;
-//vector<int> enemyConAfflictions;
-vector<Stat*> getItemAfflictions() {
+set<Stat*> itemAfflictions;
+set<Stat*> enemyAfflictions;
+
+set<Stat*> getItemAfflictions() {
     return itemAfflictions;
 }
-vector<Stat*> getEnemyAfflictions() {
+set<Stat*> getEnemyAfflictions() {
     return enemyAfflictions;
 }
 vector<completeStat>* getAfflictions(Stat* s, int ownertype) {
@@ -38,8 +37,8 @@ vector<completeStat>* getConAfflictions(int condition){
 void addAffliction(completeStat afflictingStat, Stat* afflictedStat, int edOwner) {
     if (edOwner == V_UNIT) {
         switch(afflictingStat.first) {
-            case V_ITEM: itemAfflictions.push_back(afflictedStat); break;
-            case V_ENEMY: enemyAfflictions.push_back(afflictedStat); break;
+            case V_ITEM: itemAfflictions.insert(afflictedStat); break;
+            case V_ENEMY: enemyAfflictions.insert(afflictedStat); break;
             default: {
                 if (afflictions.find(afflictingStat) == afflictions.end()) {
                     afflictions[afflictingStat] = new vector<completeStat>;
@@ -58,12 +57,12 @@ void addAffliction(completeStat afflictingStat, Stat* afflictedStat, int edOwner
 void addConAffliction(int afflictingCondition, int afflictingConOwner, Stat* afflictedStat, int edOwner) {
     if (edOwner == V_UNIT) {
         switch(afflictingConOwner) {
-            case V_ENEMY: enemyAfflictions.push_back(afflictedStat); break;
+            case V_ENEMY: enemyAfflictions.insert(afflictedStat); break;
             default: {
                 if (conAfflictions.find(afflictingCondition) == conAfflictions.end()) {
-            conAfflictions[afflictingCondition] = new vector<completeStat>;
-        }
-        conAfflictions[afflictingCondition]->push_back(completeStat(edOwner, afflictedStat));
+                    conAfflictions[afflictingCondition] = new vector<completeStat>;
+                }
+                conAfflictions[afflictingCondition]->push_back(completeStat(edOwner, afflictedStat));
             }
         }
     } else {

@@ -9,8 +9,7 @@
 #include <GL/glx.h>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
-//#include <fov/fov.h>
-#include "fov.h"
+#include "fov/fov.h"
 #include "Player.h"
 #include "World.h"
 #include "Texture.h"
@@ -20,14 +19,13 @@
 #include "GroundFolder.h"
 #include "EquipmentFolder.h"
 #include "PrimeFolder.h"
+#include "RandItemType.h"
 #include "graphics.h"
+#include "Blobber.h"
+
+#define BOOST_IOSTREAMS_NO_LIB
 
 #define NUM_UNIT_STATS 5
-
-#define WIN1_HEIGHT 600
-#define WIN1_WIDTH 640
-#define CWIN_HEIGHT 100
-#define CWIN_WIDTH 640
 
 #define MA_EXAMINE 0
 #define MA_GRAB 1
@@ -43,10 +41,6 @@
 #define A_MOVELOC 2
 #define A_ATTACK 3
 
-#define G_NONE 0
-#define G_MYDUN 1
-#define G_BSP 2
-#define G_DUNGEON 10
 #define GA_NONE 0
 #define GA_MOVE 1
 
@@ -67,6 +61,8 @@
 
 enum{STATE_PLAY, STATE_MENU, STATE_DIR, STATE_TARGET};
 enum{SA_NONE, SA_ATTACK, SA_FIRE, SA_OPENDOOR, SA_CLOSEDOOR};
+
+enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, AI_NEUTRAL = 4};
 
 using namespace std;
 
@@ -111,7 +107,7 @@ class Start: FormulaUser, EnvironmentManager {
         /* --- */
 
         /* --pather.cpp-- */
-        void makePath(Unit* unit, short xDest, short yDest, Zone* zone, int special);
+        void makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType special);
         void initFieldOfView();
         void playerFieldOfView(bool isNew);
         void myFovCircle(Zone* zone, void* source, int x, int y, int radius);
@@ -123,6 +119,7 @@ class Start: FormulaUser, EnvironmentManager {
         void render();
         void renderGround();
         void renderMenu();
+        void renderSidePanels();
         void drawMenuBox(int x1, int y1, int x2, int y2);
         void renderMessages();
         void renderBars();
@@ -167,6 +164,8 @@ class Start: FormulaUser, EnvironmentManager {
         void strikeUnit(Unit* unit, Zone* zone, int dir, bool safe);
         void shootUnit(Unit* attacker, Unit* defender, Zone* zone);
         void killUnit(Unit* unit, Zone* zone);
+        void followPath(Unit* unit, Zone* zone);
+        void reactToAttack(Unit* unit, Unit* attacker, Zone* zone);
         void goTheStairs(Unit* unit, Zone* zone);
         void openDoor(Unit* unit, Zone* zone, int dir, bool safe);
         void closeDoor(Unit* unit, Zone* zone, int dir, bool safe);
@@ -178,7 +177,8 @@ class Start: FormulaUser, EnvironmentManager {
         /* --- */
 
         /* --generator.cpp-- */
-        void generateZone(Zone* zone, int tilesetType, int zoneType, int x1, int y1, int x2, int y2);
+        void generateZone(Zone* zone, int tilesetType, GenType zoneType, int x1, int y1, int x2, int y2);
+        void overgrowth(Zone* zone, GenType zoneType, int sx, int sy, int ex, int ey);
         /* --- */
 
         color dark(color c);
@@ -194,14 +194,18 @@ class Start: FormulaUser, EnvironmentManager {
         /* --dataLoader.cpp-- */
         void loadData(World* w, Player* p);
         void openFile(string fileName, World* w, Player* p);
-        void loadImage(string filename);
-        void buildFont();
+        Zone* loadTileFile(string fileName);
         void finishDataSetup();
         void deleteData();
-        Texture* getTexture(int i);
         bool errorChecker(string filename);
         void printFileErr(string said, int line);
         void printFileProb(string said, int line);
+        /* --- */
+
+        /* --resourceLoader.cpp-- */
+        void loadImage(string filename);
+        void buildFont();
+        Texture* getTexture(int i);
         /* --- */
 
         /* --formulas.cpp-- */
@@ -282,7 +286,7 @@ class Start: FormulaUser, EnvironmentManager {
         Texture* splatterTex;
         Texture* attackAnimsTex;
         Texture* playerTex;
-        bool gotsStructureTex;
+        bool gotsStructureTex; //TODO arrayify (with enum)
         bool gotsMenuTex;
         bool gotsFontTex;
         bool gotsSplatterTex;
@@ -313,10 +317,14 @@ class Start: FormulaUser, EnvironmentManager {
         unsigned char splatters[MAX_ZONE_SIZE];
         unsigned char visibilities[MAX_ZONE_SIZE]; //0 = nope, 1 = LOS, 2 = lit
 
-        int interval0;
+        int interval0;//TODO an array
         int interval1;
         int interval2;
         int interval3;
+
+        map<unsigned int, Tile*> tiledTiles;
+        map<unsigned int, RandItemType*> tiledItems;
+        map<unsigned int, int> tiledMobs;
 
         set<pair<Unit*, Zone*> > areaUnits; //the zone is the zone the unit is in the zone is where the unit is
         void findAreaUnits();

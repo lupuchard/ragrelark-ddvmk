@@ -7,9 +7,7 @@ using namespace std;
 #ifndef UNIT_H
 #define UNIT_H
 
-#define P_NORMAL 0
-#define P_PASSUNITS 1
-#define P_STAIRS 2
+enum PathType{P_NORMAL, P_PASSUNITS, P_STAIRS, P_FLEE};
 
 typedef struct {
     int len;
@@ -17,6 +15,8 @@ typedef struct {
     short* pathYs;
     bool cUnits;
 } path;
+
+enum MobActionState{MAS_NONE, MAS_ATTACK, MAS_FLEE};
 
 class Unit: public StatHolder {
     public:
@@ -27,8 +27,10 @@ class Unit: public StatHolder {
         short y;
         int theTime;
         string name;
+
         path* currentPath;
         short pointOnPath;
+        unsigned short actionState;
 
         void setStat(int stat, int value);
         short getStatValue(int stat);

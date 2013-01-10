@@ -66,7 +66,7 @@ END
 
 ITEM
 citris fruit
-It's like a clementine or an orange or something, you don't actually know the difference.
+It's like a clementine or an orange or something. They all look the same to you.
 39
 6
 41
@@ -78,7 +78,7 @@ END
 ITEM
 broccoli
 They say these are healthy but it's been lying on the floor of a dungeon so I dunno.
-29
+30
 6
 41
 feed=30
@@ -88,8 +88,8 @@ END
 
 ITEM
 ice cream
-YOU HAVE FOUND THE LEGENDARY CREAM OF ICE YOU MAY MAKE ONE WISH AS LONG AS THAT WISH IS TO EAT THIS ICE CREAM.
-77
+YOU HAVE FOUND THE LEGENDARY CREAM OF ICE YOU MAY MAKE ONE WISH AS LONG AS THAT WISH IS TO EAT IT
+78
 6
 41
 feed=200
@@ -99,7 +99,7 @@ END
 
 ITEM
 pear
-If apple is Mario then pear is Luigi, true story.
+Apple's less popular sibling.
 87
 6
 41
@@ -111,7 +111,7 @@ END
 ITEM
 mango
 The tropical fruit. When someone thinks of "tropical fruit" they think of this, unless they are thinking of pineapple.
-71
+72
 6
 41
 feed=140

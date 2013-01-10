@@ -164,21 +164,8 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
         } else if (value == 8) {
             unsigned char c = commands.at(went++);
             formulaStack[++sp] = user->getVarValueF((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
-        }
-
-        /*else if (value == 2) {
-            formulaStack[++sp] = user->getVarValueF((VOwner)((value >> 3) & 7), (VType)(value & 3), commands.at(went++), statHolder);
-        } else if (value >> 5 == 4) {
-            formulaStack[++sp] = (double)(value % 32 - 3);
-        } else if (value >> 5 == 5) {
-            formulaStack[++sp] = (double)getNum(value, commands.at(went++));
-        } else if (value >> 5 == 6) {
-            formulaStack[++sp] = floats[value % 32];
-        } else if (value >> 5 == 7) {
-            formulaStack[++sp] = (double)((commands.at(went) << 24) | (commands.at(went + 1) << 16) | (commands.at(went + 2) << 8) | (commands.at(went + 3)));
-            went += 4;
-        }*/ else {
-            //cout << "formula error" << endl;
+        } else {
+            cout << "formula error" << endl;
         }
     }
     return formulaStack[sp--];
@@ -192,6 +179,7 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
     int sp = -1;
     while(went < commands.size()) {
         unsigned char value = commands.at(went++);
+        //if (watIWant) cout << "next " << formulaStack[sp] << " " << (int)value << endl;
         if (value == 1) {
             //cout << "Operate: " << (int)value << " - " << formulaStack[sp - 1] << ", " << formulaStack[sp] << endl;
             switch(commands.at(went++)) {
@@ -244,6 +232,11 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
         } else if (value == 8) {
             unsigned char c = commands.at(went++);
             formulaStack[++sp] = user->getVarValue((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
+            if ((VOwner)(c >> 4) == V_ITEM) {
+                //cout << "NOODLES " << (int)commands.at(went - 1) << " " << (int)formulaStack[sp] << endl;
+            }
+        } else {
+            cout << "formula error" << endl;
         }
     }
     return formulaStack[sp--]; //step 17

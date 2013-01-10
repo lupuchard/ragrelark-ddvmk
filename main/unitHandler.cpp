@@ -22,12 +22,11 @@ int actionTimePassed(int time, int speed) {
 //this method runs to tell the unit in the zone what to do, it chooses it's action
 void Start::ai(Unit* unit, Zone* zone) {
     int ai = unit->getStatValue(S_AI); //the type of AI the monster uses, currently only two.
-    //0 = stand still, 1 = mindless hostile, 2 = intelligent hostile
     bool inZone = zone == player->getZone(); //whether the player is in this zone or not. monsters outside the zone will always just sit still
     Unit* target = player->getUnit();
     switch(ai) {
-        case 0: unit->theTime += 10; break;//just stands still
-        case 1: {
+        case AI_STILL: unit->theTime += 10; break;//just stands still
+        case AI_HOSTILE: {
             if (inZone && unit->pointOnPath == -1) { //this means that a path does not exist so one needs to be created first
                 if (visibilities[unit->x + zone->getWidth() * unit->y]) {
                     makePath(unit, target->x, target->y, zone, P_NORMAL);
@@ -37,30 +36,55 @@ void Start::ai(Unit* unit, Zone* zone) {
                 }
             }
             if (unit->pointOnPath > -1) { //it performs the check again because a path may have failed to be created (player inaccessable or something)
-                path* thePath = unit->currentPath;
-                unit->pointOnPath++;
-                if (thePath->pathXs[unit->pointOnPath] == -P_STAIRS) {
-                    goTheStairs(unit, zone);
-                } else {
-                    int dir = 1;
-                    int cx = thePath->pathXs[unit->pointOnPath] - unit->x;
-                    int cy = thePath->pathYs[unit->pointOnPath] - unit->y;
-                    for (; dir <= 9; dir++) { //this loop is used to determine the direction so that moveUnit needs one
-                        if (xDirs[dir] == cx && yDirs[dir] == cy) {
-                            break;
-                        }
-                    }
-                    if (dir < 10) {
-                        moveUnit(unit, zone, dir);
-                    } else {
-                        unit->pointOnPath = -1;
-                        unit->theTime += 20;
-                        //cout << "mob move mistake " << dir << " " << cx << " " << cy << " " << unit->x << " " << unit->y << endl;
-                    }
-                }
+                followPath(unit, zone);
             } else {
                 unit->theTime += 20;
             }
+        } break;
+        case AI_HOSTILESMART: unit->theTime += 10; break;
+        case AI_PASSIVE: {
+            if (inZone) {
+                if (unit->pointOnPath > -1) {
+                    followPath(unit, zone);
+                } else {
+                    int foon = rand() % 20;
+                    if (foon >= 10) unit->theTime += 100;
+                    else {
+                        int tx = unit->x + xDirs[foon];
+                        int ty = unit->y + yDirs[foon];
+                        if (tx >= 0 && ty >= 0 && tx < zone->getWidth() && ty < zone->getHeight() && !zone->getLocationAt(tx, ty)->hasUnit()) {
+                            moveUnit(unit, zone, foon);
+                        } else {
+                            unit->theTime += 10;
+                        }
+                    }
+                }
+            }
+        } break;
+        default: unit->theTime += 10; break;
+    }
+}
+
+void Start::followPath(Unit* unit, Zone* zone) {
+    path* thePath = unit->currentPath;
+    unit->pointOnPath++;
+    if (thePath->pathXs[unit->pointOnPath] == -P_STAIRS) {
+        goTheStairs(unit, zone);
+    } else {
+        int dir = 1;
+        int cx = thePath->pathXs[unit->pointOnPath] - unit->x;
+        int cy = thePath->pathYs[unit->pointOnPath] - unit->y;
+        for (; dir <= 9; dir++) { //this loop is used to determine the direction so that moveUnit needs one
+            if (xDirs[dir] == cx && yDirs[dir] == cy) {
+                break;
+            }
+        }
+        if (dir < 10) {
+            moveUnit(unit, zone, dir);
+        } else {
+            unit->pointOnPath = -1;
+            unit->theTime += 20;
+            //cout << "mob move mistake " << dir << " " << cx << " " << cy << " " << unit->x << " " << unit->y << endl;
         }
     }
 }
@@ -110,10 +134,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                     strikeUnit(unit, zone, dir, true);
                 } else {
                     unit->theTime += 2;
-                    //makePath(unit, player->getUnit()->x, player->getUnit()->y, zone, true);
-                    //if (unit->pointOnPath == -1) {
-                        makePath(unit, player->getUnit()->x, player->getUnit()->y, zone, P_NORMAL);
-                    //}
+                    makePath(unit, player->getUnit()->x, player->getUnit()->y, zone, P_NORMAL);
                 }
                 if (unit->pointOnPath > 0) {
                     unit->pointOnPath--;
@@ -123,36 +144,33 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                 int prevHeight = prevLoc->getTotalHeight();
                 int height = nextLoc->getTotalHeight();
                 if (nextLoc->isOpen()) {
-                    if (prevHeight == height) {
-                        normalMove = true;
-                        changeLoc(unit, zone, newX, newY);
-                        int tim;
-                        int movSpeed = unit->getStatValue(S_MOVESPEED);
-                        if (diags) tim = T_WALK_DI;
-                        else tim = T_WALK_ST;
-                        if (unit == player->getUnit()) {
-                            playerWalkStaminaDrain(&movSpeed, tim, unit);
-                        }
-                        tim = actionTimePassed(tim, movSpeed);
-                        unit->theTime += tim;
-                    } else if (fabs(prevHeight - height) <= 2) {
-                        normalMove = true;
-                        changeLoc(unit, zone, newX, newY);
-                        int tim;
-                        int movSpeed = unit->getStatValue(S_MOVESPEED) - 1;
-                        if (diags) tim = T_WALK_DI;
-                        else tim = T_WALK_ST;
-                        if (unit == player->getUnit()) {
-                            playerWalkStaminaDrain(&movSpeed, tim, unit);
-                        }
-                        tim = actionTimePassed(tim, movSpeed);
-                        unit->theTime += tim;
-                    } else {
-                        if (prevHeight < height && nextLoc->structure == S_ROCK) {
-                            pushRock(unit, zone, dir);
+                    //cout << "aouau" << endl;
+                    int movSpeed = unit->getStatValue(S_MOVESPEED);
+                    normalMove = true;
+                    if (prevHeight != height) {
+                        if (fabs(prevHeight - height) <= 2) {
+                            if (prevHeight < height) movSpeed--;
                         } else {
-                            openDoor(unit, zone, dir, true);
+                            if (prevHeight < height && nextLoc->structure == S_ROCK) {
+                                pushRock(unit, zone, dir);
+                            } else {
+                                openDoor(unit, zone, dir, true);
+                            }
+                            normalMove = false;
                         }
+                    }
+                    if (normalMove) {
+                        changeLoc(unit, zone, newX, newY);
+                        int tim;
+                        if (diags) tim = T_WALK_DI;
+                        else tim = T_WALK_ST;
+                        if (unit == player->getUnit()) {
+                            playerWalkStaminaDrain(&movSpeed, tim, unit);
+                        }
+                        //cout << unit->getStatValue(S_BMOVESPEED) << " what " << movSpeed << " " << tim << endl;
+                        tim = actionTimePassed(tim, movSpeed);
+                        //cout << "whaat " << tim << endl;
+                        unit->theTime += tim;
                     }
                 } else {
                     openDoor(unit, zone, dir, true);
@@ -360,6 +378,8 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                             unit->modifyStat(S_EXP, (enemy->getStatValue(S_LEVEL) + 2) * 4);
                         }
                         killUnit(enemy, zone);
+                    } else {
+                        reactToAttack(enemy, unit, zone);
                     }
                 }
                 addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
@@ -430,9 +450,22 @@ void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
                     attacker->modifyStat(S_EXP, (defender->getStatValue(S_LEVEL) + 2) * 4);
                 }
                 killUnit(defender, zone);
+            } else {
+                reactToAttack(defender, attacker, zone);
             }
         }
         addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
+    }
+}
+
+void Start::reactToAttack(Unit* unit, Unit* attacker, Zone* zone) {
+    int ai = unit->getStatValue(S_AI);
+    switch(ai) {
+        case AI_PASSIVE: {
+            makePath(unit, attacker->x, attacker->y, zone, P_FLEE);
+            unit->theTime = attacker->theTime - T_WALK_ST;
+            } break;
+        default: break;
     }
 }
 

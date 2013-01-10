@@ -1,7 +1,5 @@
 #include "Start.h"
 
-
-
 //  TPU
 // LD9EM
 //#K516FV
@@ -14,28 +12,21 @@
 int altXs[NUM_ALTS] = {0,  0,  1,  0, -1, -1,  1,  1, -1,  0,  2,  0, -2, -1,  1,  2,  2,  1, -1, -2, -2, -2,  2,  2, -2,  0,  3,  0, -3, -1,  1,  3,  3,  1, -1, -3, -3};
 int altYs[NUM_ALTS] = {0,  1,  0, -1,  0,  1,  1, -1, -1,  2,  0, -2,  0,  2,  2,  1, -1, -2, -2, -1,  1,  2,  2, -2, -2,  3,  0, -3,  0,  3,  3,  1, -1, -3, -3, -1,  1};
 
-typedef struct {
-    unsigned short itemTypeI;
-    unsigned char stackMin;
-    unsigned char stackMax;
-    unsigned int weight;
-} spawningItem;
-bool operator<(const spawningItem& left, const spawningItem& right) {
-    if (left.itemTypeI < right.itemTypeI) {
+bool operator<(const RandItemType& left, const RandItemType& right) {
+    if (left.getItemBase() < right.getItemBase()) {
         return true;
-    } else if (left.itemTypeI > right.itemTypeI) {
+    } else if (left.getItemBase() > right.getItemBase()) {
         return false;
-    } else if (left.stackMin < right.stackMin) {
+    } else if (left.getMin() < right.getMin()) {
         return true;
-    } else if (left.stackMin > right.stackMin) {
+    } else if (left.getMin() > right.getMin()) {
         return false;
-    } else if (left.stackMax < right.stackMax) {
+    } else if (left.getMax() < right.getMax()) {
         return true;
     }
     return false;
-    //unfu
 }
-typedef set<spawningItem> itemSpawnSet; //item type, weight
+typedef set<RandItemType> itemSpawnSet;
 
 typedef vector<pair<mob, unsigned int> > encounterLevel; //the unsigned char is the weight
 
@@ -74,11 +65,11 @@ int Start::addItemSpawnSet(string name) {
 }
 
 void Start::addItemToSpawnSet(unsigned short item, unsigned int weight, int itemSpawnSetI) {
-    spawningItem si = {item, 1, 1, weight};
+    RandItemType si = RandItemType(item, 1, 1, weight);
     itemSpawnSets[itemSpawnSetI]->insert(si);
 }
 void Start::addItemToSpawnSet(unsigned short item, unsigned int weight, unsigned char stackMin, unsigned char stackMax, int itemSpawnSetI) {
-    spawningItem si = {item, stackMin, stackMax, weight};
+    RandItemType si = RandItemType(item, stackMin, stackMax, weight);
     itemSpawnSets[itemSpawnSetI]->insert(si);
 }
 
@@ -181,7 +172,7 @@ bool Start::spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt, int anim) {
     Unit* newUnit = new Unit(m.first, m.second);
     newUnit->x = x;
     newUnit->y = y;
-    newUnit->theTime = player->getUnit()->theTime;
+    newUnit->theTime = world->theTime;//player->getUnit()->theTime;
     areaUnits.insert(pair<Unit*, Zone*>(newUnit, z));
     return placeMob(newUnit, z, x, y, allowAlt, anim);
 }
@@ -210,31 +201,23 @@ void Start::createItems(Zone* z, int howMany, vector<pair<int, int> > possibleLo
     environment* e = &spawnings[z->getMobType()];
     int level = z->getMobSpawnLevel();
     itemSpawnSet allItems;
-    int total = 0;
+    unsigned int total = 0;
     for (set<itemSpawnSet*>::iterator i = e->itemSets[level].begin(); i != e->itemSets[level].end(); i++) {
         itemSpawnSet* val = *i;
         allItems.insert(val->begin(), val->end());
     }
     for (itemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); i++) {
-        total += i->weight;
+        total += i->getWeight();
     }
     for (int j = 0; j < howMany; j++) {
         double r = (double)rand() / (double)RAND_MAX;
         int totalSoFar = 0;
         for (itemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); i++) {
-            totalSoFar += i->weight;
+            totalSoFar += i->getWeight();
             double p = (double)totalSoFar / total;
             if (r < p) {
                 pair<int, int> coords = possibleLocs[rand() %  possibleLocs.size()]; //fooey
-                Item item = Item(i->itemTypeI);
-                if (i->stackMin > 1 && i->stackMax > 1) {
-                    if (i->stackMin == i->stackMax) {
-                        item.quantityCharge = i->stackMin;
-                    } else {
-                        int num = rand() % (i->stackMax - i->stackMin + 1) + i->stackMin;
-                        item.quantityCharge = num;
-                    }
-                }
+                Item item = i->genItem();
                 addItemToPlace(coords.first, coords.second, z, item);
                 break;
             }

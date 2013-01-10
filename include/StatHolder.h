@@ -4,10 +4,11 @@
 #include <iostream>
 #include <bitset>
 #include <unordered_map>
+#include <set>
 #include "Stat.h"
 using namespace std;
 
-#define MAX_HUNGER 10000
+#define MAX_HUNGER 5000
 #define MAX_STAMINA 10000
 
 //I don's use enums for these because they have strict indices
@@ -26,8 +27,7 @@ using namespace std;
 #define S_EXP 0
 #define S_LEVEL 1
 #define S_EXPREQ 2
-#define S_LOC 3
-#define S_TEX 4
+
 #define S_BSTR 5
 #define S_BCON 6
 #define S_BAFF 7
@@ -67,6 +67,8 @@ using namespace std;
 #define S_UNARMED 44
 #define S_SPAWN 45
 #define S_LOAD 46
+#define S_BATTACKSPEED 47
+#define S_BMOVESPEED 48
 #define S_ATTACKSPEED 49
 #define S_MOVESPEED 50
 #define S_HPREGEN 51
@@ -75,6 +77,10 @@ using namespace std;
 #define S_ATTCOND 54
 #define S_ATTCONDCHANCE 55
 #define S_POISON 56
+
+#define S_GLOC 57
+#define S_GTEX 58
+#define S_GTYPE 59
 
 #define C_POISON 8
 #define C_CONFUSION 34
@@ -85,9 +91,9 @@ typedef pair<int, Stat*> completeStat;
 void setFormUser(FormulaUser* formUser);
 
 /* Returns every stat whose formula contains an item. */
-vector<Stat*> getItemAfflictions();
+set<Stat*> getItemAfflictions();
 /* Returns every stat whose formula contains an enemy. */
-vector<Stat*> getEnemyAfflictions();
+set<Stat*> getEnemyAfflictions();
 
 vector<completeStat>* getAfflictions(Stat* s, int ownerType);
 vector<completeStat>* getConAfflictions(int condition);

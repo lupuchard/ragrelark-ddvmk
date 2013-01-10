@@ -12,8 +12,10 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT) {
         }
     }
     if (prototype) {
-        g.loc = prototype->getStatValue(S_LOC);
-        g.tex = prototype->getStatValue(S_TEX);
+        g.loc = prototype->getStatValue(S_GLOC);
+        int spe = prototype->getStatValue(S_GTYPE);
+        if (spe) g.loc += rand() % spe;
+        g.tex = prototype->getStatValue(S_GTEX);
         unsigned char* stats = prototype->getIntStats();
         for (int i = 0; i < prototype->getNumIntStats(); i++) {
             if (getStat(V_UNIT, stats[i])->getFormula()->getLength() > 1) {
@@ -100,8 +102,7 @@ void Unit::needToUpdate(int stat, bool isFloat) {
         if (isFloat) {
             StatHolder::addStatVF(stat, unitPrototype->getStatValueF(stat));
         } else {
-            StatHolder::addStatV(stat,
-                                 unitPrototype->getStatValue(stat));
+            StatHolder::addStatV(stat, unitPrototype->getStatValue(stat));
         }
     } else {
         StatHolder::needToUpdate(stat, isFloat);
@@ -112,8 +113,8 @@ void Unit::setEnemy(Unit* enemy) {
     bool toUpdate = enemy != currentEnemy;
     currentEnemy = enemy;
     if (toUpdate) {
-        vector<Stat*> enemyAfflictions = getEnemyAfflictions();
-        for (vector<Stat*>::iterator i = enemyAfflictions.begin(); i != enemyAfflictions.end(); i++) {
+        set<Stat*> enemyAfflictions = getEnemyAfflictions();
+        for (set<Stat*>::iterator i = enemyAfflictions.begin(); i != enemyAfflictions.end(); i++) {
             Stat* theStat = (Stat*)*i;
             needToUpdate(theStat->getIndex(), theStat->isItFloat());
         }

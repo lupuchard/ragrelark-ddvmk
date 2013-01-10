@@ -95,9 +95,9 @@ SLF
 experience_required
 2 u-level ^ 25 *
 
-graphic_loc
+placeholder_1
 SLF
-graphic_tex
+placeholder_2
 SLF
 
 base_str
@@ -214,6 +214,13 @@ SLF
 poison
 SLF
 
+graphic_loc
+SLF
+graphic_tex
+SLF
+graphic_type
+SLF
+
 $$$
 ~included in the prototype by default
 strength
@@ -238,6 +245,8 @@ melee_damage
 hp_regen
 mana_regen
 poison
+attack_speed
+move_speed
 
 
 END

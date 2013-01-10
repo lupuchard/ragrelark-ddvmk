@@ -1,7 +1,7 @@
 #include "Location.h"
 #include "Unit.h"
 
-Unit* none = new Unit("not a fucking unit", NULL);
+Unit* none = new Unit("not a unit", NULL);
 vector<Item> genericBlankVector;
 
 bool opens[] = {false, true, true, false, true, true, false, false, false, true, true, false, true, true, false, false,

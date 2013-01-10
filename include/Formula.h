@@ -50,7 +50,6 @@ Example formulas can be seen in data/formulas.txt
 Basically, they are stored and executed using reverse polish notation.ion
 It's not incredibally efficient because bitpacks and takes lost of casting and bitwise operations. I should change this.
 */
-//TODO efficiency>memory
 class Formula {
     public:
         /*"length" is not a strict length, but the closer it is the more efficient it will be when constructing.

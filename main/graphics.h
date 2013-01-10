@@ -1,6 +1,13 @@
 #ifndef GRAPHICS_H_INCLUDED
 #define GRAPHICS_H_INCLUDED
 
+#define WIN1_HEIGHT 600
+#define WIN1_WIDTH 640
+#define CWIN_HEIGHT 100
+#define CWIN_WIDTH 640
+#define SWIN_WIDTH 260
+#define SWIN_HEIGHT 700
+
 #define TILE_SIZE 32
 
 #define Z_MENU 5000

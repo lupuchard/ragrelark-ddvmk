@@ -14,6 +14,11 @@ void Start::cleanup() {
     delete world;
     //delete display;
     delete primeFolder;
+    for (map<unsigned int, RandItemType*>::iterator i = tiledItems.begin(); i != tiledItems.end(); i++) {
+        delete i->second;
+    }
+    tiledItems.clear();
+    tiledTiles.clear();
     cleanSpawnData();
     folders.clear();
     formulas.clear();

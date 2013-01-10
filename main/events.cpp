@@ -2,6 +2,14 @@
 
 string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear."};
 
+/*
+ok here is list
+
+libsdl-image1.2
+libsdl1.2debian
+
+*/
+
 void Start::directionPress(int direction) {
     if (state == STATE_PLAY) {
         if (direction == 5) {
@@ -261,11 +269,12 @@ bool Start::equipItem(Item item) {
         if (typeSlots[itemType->getType()] == E_BAG) {
             primeFolder->getBag()->setCapacity(itemType->getStatValue(S_CAPACITY));
         }
-        vector<Stat*> itemAfflictions = getItemAfflictions();
-        for (vector<Stat*>::iterator i = itemAfflictions.begin(); i != itemAfflictions.end(); i++) {
+        set<Stat*> itemAfflictions = getItemAfflictions();
+        for (set<Stat*>::iterator i = itemAfflictions.begin(); i != itemAfflictions.end(); i++) {
             Stat* theStat = (Stat*)*i;
             player->getUnit()->needToUpdate(theStat->getIndex(), theStat->isItFloat());
         }
+        cout << "ham is with all the cats? " << player->getUnit()->getStatValue(S_MOVESPEED) << " " << player->getUnit()->getStatValue(S_DEFENSE) << " " << player->getUnit()->getStatValue(S_MELDAMAGE) << endl;
         return true;
     }
     return false;

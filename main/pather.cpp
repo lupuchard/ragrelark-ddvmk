@@ -17,6 +17,7 @@ struct loc {
 
 loc start = loc(0, 0);
 loc goal  = loc(0, 0);
+PathType pType;
 
 struct node {
     unsigned short g;
@@ -48,7 +49,20 @@ int getG(node* parent, node* n) {
     return g;
 }
 
+int getHFlee(loc l) {
+    int x = l.x - goal.x;
+    int y = l.y - goal.y;
+    if (x < 0) x = -x;
+    if (y < 0) y = -y;
+    if (x > y) {
+        return -(y * 14 + (x - y) * 10);
+    } else {
+        return -(x * 14 + (y - x) * 10);
+    }
+}
+
 int getH(loc l) {
+    if (pType == P_FLEE) return getHFlee(l);
     int x = l.x - goal.x;
     int y = l.y - goal.y;
     if (x < 0) x = -x;
@@ -74,7 +88,7 @@ void node::refresh() {
 
 pair<int, node*> arr[64][64];
 
-void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathingType) {
+void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType pathingType) {
     int add = 0;
     if (xDest == -1) {
         xDest = 0; add = 1;
@@ -86,6 +100,7 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
         yDest = zone->getHeight() - 1; add = 4;
     }
 
+    pType = pathingType;
     bool considerOtherUnits = pathingType != P_PASSUNITS;
     start = loc(unit->x, unit->y);
     goal = loc(xDest, yDest);
@@ -111,6 +126,7 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
 
     bool done = false;
     bool success = false;
+    int iterations = 0;
 
     while(!done) {
         if (!open.empty()) {
@@ -129,11 +145,12 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
             }
             int val = arr[l.x][l.y].first;
             if (val == 3) {
-                bool canDoor = ai > 1;
+                bool canDoor = ai == AI_HOSTILESMART;
                 Location* locAt = zone->getLocationAt(l.x, l.y);
                 int hei = locAt->getTotalHeight();
                 int heightDiff = hei - current->height;
-                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || (considerOtherUnits && locAt->hasUnit() && (l.x != xDest || l.y != yDest))) {
+                bool isGoal = l.x == xDest && l.y == yDest;
+                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || (considerOtherUnits && locAt->hasUnit() && !(((pathingType != P_FLEE) && isGoal)))) {
                     val = 2;
                 }
             }
@@ -151,13 +168,21 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, int pathi
                 open.push(arr[l.x][l.y].second);
             }
         }
-        if (arr[goal.x][goal.y].first == 2) {
-			done = true;
-			success = true;
-		} else if (open.empty()) {
-			done = true;
-			success = false;
-		}
+        iterations++;
+        if (pathingType == P_FLEE) {
+            if (iterations >= 50 || open.empty()) {
+                done = true;
+                success = true;
+            }
+        } else {
+            if (arr[goal.x][goal.y].first == 2) {
+                done = true;
+                success = true;
+            } else if (open.empty()) {
+                done = true;
+                success = false;
+            }
+        }
     }
     if (success) {
         int len1 = current->n;

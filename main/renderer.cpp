@@ -265,6 +265,7 @@ void Start::render() {
     renderMenu();
     renderMessages();
     renderBars();
+    renderSidePanels();
 
     glFlush();
     SDL_GL_SwapBuffers();
@@ -288,7 +289,7 @@ void Start::renderBars() {
     float sta = (float)pUnit->getStatValue(S_STAMINA);
     float percents[] = {(float)hp / mhp, (float)mp / mmp, hun / 5000.f, sta / 10000.f, (float)exp / expReq};
     string strings[] = {"HP: " + its(hp) + "/" + its(mhp), "Mana: " + its(mp) + "/" + its(mmp), "Satiety: " + its(hun / 50) + "%", "Stamina: " + its(sta / 100) + "%", "Exp: " + its(exp) + "/" + its(expReq)};
-    static bool danger[] = {true, false, true, true, false};
+    static const bool danger[] = {true, false, true, true, false};
     static short dangerInterval = 0;
     dangerInterval++;
     if (dangerInterval == 10) {
@@ -335,6 +336,29 @@ void Start::renderBars() {
         renderText(strings[k], 4, i + 53, WIN1_HEIGHT - 20, Z_MENU + 5, CENTER, black);
         k++;
     }
+}
+
+void Start::renderSidePanels() {
+    int hei = SWIN_HEIGHT / 2 - 30;
+    drawTileSuperSpe(WIN1_WIDTH, 30                  , Z_MENU, SWIN_WIDTH, hei, menuTex, 252, 192, SWIN_WIDTH, hei);
+    drawTileSuperSpe(WIN1_WIDTH, 30 + SWIN_HEIGHT / 2, Z_MENU, SWIN_WIDTH, hei, menuTex, 252, 192, SWIN_WIDTH, hei);
+
+    static const string statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
+    int toff = 50;
+    int loff = 20;
+    Unit* p = player->getUnit();
+    renderText("  HP: " + its(p->getStatValue(S_HP)) + "/" + its(p->getStatValue(S_MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, forest);
+    renderText("  MANA: " + its(p->getStatValue(S_MANA)) + "/" + its(p->getStatValue(S_MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, navy);
+    for (int i = S_STR; i <= S_CHA; i++) {
+        int base = p->getStatValue(i - 9);
+        int main = p->getStatValue(i);
+        string s;
+        if (main != base) s = statNames[i - S_STR] + "\\p" + its(main) + "\\z(" + its(base) + ")";
+        else s = statNames[i - S_STR] + "\\z" + its(main);
+        renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, black);
+    }
+    renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, black);
+
 }
 
 void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
@@ -582,7 +606,7 @@ void Start::renderGround() {
             if (loc->isOpenDoor() || loc->isClosedDoor()) {
                 h = MAX_HEIGHT;
             }
-            float darkness = (double)(h + 8) / (MAX_HEIGHT + 8) / 2;
+            float darkness = (double)(h*2 + 16) / (MAX_HEIGHT*3);
 
             if (isMemory) {
                 darkness /= 2;
@@ -728,7 +752,7 @@ void Start::startRenderer() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, WIN1_WIDTH, WIN1_HEIGHT + CWIN_HEIGHT, 0, -10000, 10000);
+	glOrtho(0, WIN1_WIDTH + SWIN_WIDTH, WIN1_HEIGHT + CWIN_HEIGHT, 0, -10000, 10000);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
@@ -750,6 +774,8 @@ int offX[] = {  0, 132, 0, 128, 132, 266};
 int offY[] = {192,   0, 0, 157, 72 ,   0};
 int numX[] = {32, 16, 16, 16, 20, 16};
 
+//                    a      b     c     d           e       f        g      h          i       j     k     l     m        n     o       p       q      r    s       t     u     v       w      x     y       z
+color textColors[] = {azure, blue, cyan, chartreuse, forest, fuchsia, green, harlequin, indigo, jade, rose, lime, magenta, navy, orange, purple, brown, red, salmon, tann, gray, violet, white, grey, yellow, black};
 void Start::renderText(string text, int size, int x, int y, int z, int align, color c) {
     int a = 0;
     if (align == CENTER) {
@@ -761,8 +787,15 @@ void Start::renderText(string text, int size, int x, int y, int z, int align, co
     int w = fontWid[size];
     int h = fontHei[size];
     glColor3f(c.red / 255., c.green / 255., c.blue / 255.);
-    for (unsigned int i = 0; i < text.size(); i++) {
-        drawTileSuperSpe(x + i * w - a, y, z, w, h, fontTex, offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
+    int j = 0;
+    for (unsigned int i = 0; i < text.size(); i++, j++) {
+        if (text[i] == '\\') {
+            i++; j--;
+            color newC = textColors[text[i] - 'a'];
+            glColor3f(newC.red / 255., newC.green / 255., newC.blue / 255.);
+        } else {
+            drawTileSuperSpe(x + j * w - a, y, z, w, h, fontTex, offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
+        }
     }
 
     glColor3f(1, 1, 1);

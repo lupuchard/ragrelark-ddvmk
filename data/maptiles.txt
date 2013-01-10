@@ -1,0 +1,169 @@
+TILE
+dfloor
+2,0
+0,0
+END
+
+TILE
+dfloor2
+18,0
+0,0
+END
+
+TILE
+dfloor3
+34,0
+0,0
+END
+
+TILE
+dfloor4
+50,0
+0,0
+END
+
+TILE
+dwall
+3,0
+0,0
+END
+
+TILE
+dwall2
+19,0
+0,0
+END
+
+TILE
+dwall3
+35,0
+0,0
+END
+
+TILE
+dwall4
+51,0
+0,0
+END
+
+TILE
+bluedfloor
+56,0
+0,0
+END
+
+TILE
+bluedwall
+57,0
+0,0
+END
+
+TILE
+grass
+0,2
+0,1
+END
+
+TILE
+bushygrass
+50,2
+1,1
+END
+
+TILE
+dirt
+52,2
+1,1
+END
+
+TILE
+path
+4,2
+1,1
+END
+
+TILE
+darkgrass
+96,2
+1,1
+END
+
+TILE
+flowers
+48,2
+1,1
+END
+
+TILE
+hill
+98,2
+2,1
+END
+
+TILEDMAPSREFER
+-tiles
+0,0->grass
+1,0->flowers
+2,0->dirt
+0,1->darkgrass
+1,1->bushygrass
+2,1->path
+0,2->hill
+
+6,0->dfloor
+6,1->dfloor2
+6,2->dfloor3
+6,3->dfloor4
+7,0->dwall
+7,1->dwall2
+7,2->dwall3
+7,3->dwall4
+
+-items
+0,0->gold pens(1-2)
+1,0->gold pens(3-6)
+2,0->gold pens(7-15)
+3,0->gold pens(16-39)
+4,0->gold pens(40-99)
+5,0->gold pens(100-249)
+6,0->gold pens(250)
+0,1->silver pens(1-2)
+1,1->silver pens(3-6)
+2,1->silver pens(7-15)
+3,1->silver pens(16-39)
+4,1->silver pens(40-99)
+5,1->silver pens(100-249)
+6,1->silver pens(250)
+0,2->copper pens(1-2)
+1,2->copper pens(3-6)
+2,2->copper pens(7-15)
+3,2->copper pens(16-39)
+4,2->copper pens(40-99)
+5,2->copper pens(100-249)
+6,2->copper pens(250)
+7,0->grapes(10-15)
+8,0->banana
+9,0->apple
+10,0->lemon
+12,0->carrot
+14,0->broccoli
+7,1->citris fruit
+14,3->ice cream
+7,4->pear
+8,3->mango
+
+0,5->blue feather
+1,5->big heavy rock
+0,6->candle
+
+22,0->longbow
+23,0->arrow
+
+-mobs
+0,0->tslim1
+0,1->sslim1
+0,2->mslim1
+1,3->scorp1
+3,3->plant1
+0,4->pig000
+END

@@ -4,13 +4,13 @@ player:youare
 level=4
 experience=0
 experience_required=0
-base_str=8
-base_con=8
-base_aff=8
-base_int=8
-base_per=8
+base_str=10
+base_con=9
+base_aff=6
+base_int=5
+base_per=7
 base_dex=8
-base_cha=8
+base_cha=11
 ~base_def=0
 base_attspe=8
 base_movespe=8
@@ -36,8 +36,8 @@ base_per=2
 base_dex=4
 base_cha=2
 base_def=0
-base_attspe=6
-base_movespe=6
+base_attspe=5
+base_movespe=5
 
 graphic_loc=0
 graphic_tex=8
@@ -59,8 +59,8 @@ base_per=2
 base_dex=8
 base_cha=2
 base_def=0
-base_attspe=7
-base_movespe=7
+base_attspe=6
+base_movespe=6
 
 graphic_loc=16
 graphic_tex=8
@@ -86,8 +86,8 @@ base_per=4
 base_dex=4
 base_cha=2
 base_def=0
-base_attspe=7
-base_movespe=7
+base_attspe=5
+base_movespe=5
 
 graphic_loc=32
 graphic_tex=8
@@ -114,12 +114,13 @@ base_dex=4
 base_cha=2
 base_def=0
 base_attspe=7
-base_movespe=7
+base_movespe=14
 
 graphic_loc=64
 graphic_tex=8
 blood_color=0
 splatter=3
+ai=3
 unarmed_type=4
 *
 END
@@ -170,5 +171,29 @@ att_condition=12
 att_condition_chance=100
 ai=1
 
+*
+END
+
+UNIT
+plant:1growt
+level=0
+base_con=14
+base_def=1
+
+graphic_loc=252
+graphic_tex=8
+graphic_type=4
+*
+END
+
+UNIT
+cave_plant:2growt
+level=0
+base_con=10
+base_def=1
+
+graphic_loc=248
+graphic_tex=8
+graphic_type=4
 *
 END

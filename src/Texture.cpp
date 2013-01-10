@@ -1,7 +1,5 @@
-//=============================================================================
 #include "Texture.h"
 
-//=============================================================================
 Texture::Texture() {
     TextureID = 0;
 
@@ -9,15 +7,12 @@ Texture::Texture() {
     Height  = 0;
 }
 
-//=============================================================================
 bool Texture::OnLoad(string File) {
     SDL_Surface* tempSurf = NULL;
-
     if((tempSurf = IMG_Load(File.c_str())) == NULL) {
         cout << "Unable to load file : " << File << endl;
         return false;
     }
-
     OnLoad(tempSurf);
 
     SDL_FreeSurface(tempSurf);
@@ -25,7 +20,6 @@ bool Texture::OnLoad(string File) {
     return true;
 }
 
-//-----------------------------------------------------------------------------
 bool Texture::OnLoad(SDL_Surface* Surface) {
     OnCleanup();
 
@@ -55,7 +49,6 @@ bool Texture::OnLoad(SDL_Surface* Surface) {
     return true;
 }
 
-//-----------------------------------------------------------------------------
 void Texture::OnCleanup() {
     if(TextureID > 0) {
         glDeleteTextures(1, &TextureID);
@@ -63,23 +56,16 @@ void Texture::OnCleanup() {
     }
 }
 
-//=============================================================================
 void Texture::Bind() {
     glBindTexture(GL_TEXTURE_2D, TextureID);
 }
 
-//=============================================================================
 void Texture::RenderQuad(int X, int Y) {
     RenderQuad(X, Y, Width, Height);
 }
 
-//------------------------------------------------------------------------------
 void Texture::RenderQuad(int X, int Y, int Width, int Height) {
     Bind();
-
-    //This combination is matched with the current Ortho view
-    //Don't change the Ortho view, otherwise textures will be flipped
-    //or rotated
     glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f(X, Y, 0);
         glTexCoord2f(1, 0); glVertex3f(X + Width, Y, 0);
@@ -87,5 +73,3 @@ void Texture::RenderQuad(int X, int Y, int Width, int Height) {
         glTexCoord2f(0, 1); glVertex3f(X, Y + Height, 0);
     glEnd();
 }
-
-//=============================================================================

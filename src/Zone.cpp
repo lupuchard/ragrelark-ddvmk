@@ -42,8 +42,8 @@ int Zone::isFilled() {
     return filled > 0;
 }
 
-int Zone::getGenType() {
-    return -filled;
+GenType Zone::getGenType() {
+    return (GenType)-filled;
 }
 
 int Zone::getMobType() {
@@ -135,6 +135,10 @@ Tile* Zone::safeGetTileAt(int x, int y) {
 
 Location* Zone::getLocationAt(int x, int y) {
     return &locs[x + y * width];
+}
+
+Location* Zone::getLocationAt(int i) {
+    return &locs[i];
 }
 
 Location* Zone::safeGetLocationAt(int x, int y) {
