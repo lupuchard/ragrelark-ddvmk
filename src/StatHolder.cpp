@@ -173,13 +173,22 @@ void StatHolder::addStatVF(int stat, float value) {
 }
 
 void StatHolder::needToUpdate(int stat, bool isFloat) {
-    if (isFloat) {
-        int i = binarySearchFloat(0, numFloatStats - 1, stat);
-        toBeUpdatedFloat[i] = true;
+    if (hashMapped) {
+        if (isFloat) {
+            (*tempFloatHashMap)[stat].second = true;
+        } else {
+            (*tempHashMap)[stat].second = true;
+        }
     } else {
-        int i = binarySearchInt(0, numIntStats - 1, stat);
-        toBeUpdatedInt[i] = true;
+        if (isFloat) {
+            int i = binarySearchFloat(0, numFloatStats - 1, stat);
+            toBeUpdatedFloat[i] = true;
+        } else {
+            int i = binarySearchInt(0, numIntStats - 1, stat);
+            toBeUpdatedInt[i] = true;
+        }
     }
+    statChanged(stat);
 }
 
 short StatHolder::getStatValue(int stat) {
@@ -202,6 +211,9 @@ short StatHolder::getStatValue(int stat) {
         return 0;
     }
     if (toBeUpdatedInt[i]) {
+        if (stat == S_DEFENSE) {
+            cout << "well then all the hats" << endl;
+        }
         Stat* s = getStat((VOwner)owner, stat);
         int temp = intValues[i];
         intValues[i] = s->getFormula()->run(formUser, aThis, intValues[i]);

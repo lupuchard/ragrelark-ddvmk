@@ -358,7 +358,6 @@ void Start::renderSidePanels() {
         renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, black);
     }
     renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, black);
-
 }
 
 void Start::drawMenuBox(int x1, int y1, int x2, int y2) {

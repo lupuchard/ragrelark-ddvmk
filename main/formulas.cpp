@@ -41,7 +41,7 @@ void Start::statChanged(int stat, StatHolderIntef* statHolder) {
             StatHolder* foundStatHolder = findStatHolder(cStat.first, (StatHolder*)statHolder);
             //foundStatHolder->needToUpdate(stat, theStat->isItFloat());
             foundStatHolder->needToUpdate(cStat.second->getIndex(), cStat.second->isItFloat());
-            statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
+            //statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
         }
     }
 }
@@ -53,7 +53,7 @@ void Start::conditionChanged(int condition, StatHolderIntef* statHolder) {
             pair<int, Stat*> cStat = (*affStats)[i];
             StatHolder* foundStatHolder = findStatHolder(cStat.first, (StatHolder*)statHolder);
             foundStatHolder->needToUpdate(cStat.second->getIndex(), cStat.second->isItFloat());
-            statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
+            //statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
         }
     }
 }
@@ -128,8 +128,8 @@ int Start::getTime() {
 
 void Start::parseFormula(string line, bool errCheck, int lineNum) {
     Formula* newFormula = new Formula(1);
-    vector<pair<int, Stat*> > statsForFormula;
-    vector<pair<int, int> > conditionsForFormula;
+    vector<pair<VOwner, Stat*> > statsForFormula;
+    vector<pair<VOwner, int> > conditionsForFormula;
     bool isFloat = false;
     int start = 0;
     line = line + " ";
@@ -193,14 +193,14 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
                         map<string, int>::iterator it = statMap.find(s.substr(2, 100));
                         if (it == statMap.end()) printFileErr("There is an ISSUE with a stat in this formula!", lineNum);
                         aStatConSkill = it->second;
-                        statsForFormula.push_back(pair<int, Stat*>(target, getStat(target, aStatConSkill)));
+                        statsForFormula.push_back(pair<VOwner, Stat*>(target, getStat(target, aStatConSkill)));
                     } break;
                     case '|': {
                         type = V_CONDITION;
                         map<string, int>::iterator it = conditionMap.find(s.substr(2, 100));
                         if (it == conditionMap.end()) printFileErr("There is an ISSUE with a condition in this formula!", lineNum);
                         aStatConSkill = it->second;
-                        conditionsForFormula.push_back(pair<int, int>(target, aStatConSkill));
+                        conditionsForFormula.push_back(pair<VOwner, int>(target, aStatConSkill));
                     } break;
                     case '~': type = V_SKILL; break;
                     default: if (errCheck) {printFileErr("There is something INCORRECT about this formula!", lineNum);} break;
@@ -212,6 +212,8 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
     }
     Stat* newStat = new Stat(tempStr, newFormula, getNumStats((VOwner)tempValues[0]), isFloat);
     for (unsigned int i = 0; i < statsForFormula.size(); i++) {
+        //VOwner onw = statsForFormula[i].first;
+        //if (true || onw == V_ITEM) cout << "i hope so " << (int)onw << " " << (int)newStat->getIndex() << endl;
         addAffliction(statsForFormula[i], newStat, tempValues[0]);
     }
     for (unsigned int i = 0; i < conditionsForFormula.size(); i++) {

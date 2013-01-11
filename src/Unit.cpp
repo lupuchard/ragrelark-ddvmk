@@ -111,12 +111,12 @@ void Unit::needToUpdate(int stat, bool isFloat) {
 
 void Unit::setEnemy(Unit* enemy) {
     bool toUpdate = enemy != currentEnemy;
-    currentEnemy = enemy;
     if (toUpdate) {
+        currentEnemy = enemy;
         set<Stat*> enemyAfflictions = getEnemyAfflictions();
         for (set<Stat*>::iterator i = enemyAfflictions.begin(); i != enemyAfflictions.end(); i++) {
             Stat* theStat = (Stat*)*i;
-            needToUpdate(theStat->getIndex(), theStat->isItFloat());
+            StatHolder::statChanged(theStat->getIndex());
         }
     }
 }

@@ -25,7 +25,7 @@
 
 #define BOOST_IOSTREAMS_NO_LIB
 
-#define NUM_UNIT_STATS 5
+//#define NUM_UNIT_STATS 5
 
 #define MA_EXAMINE 0
 #define MA_GRAB 1
