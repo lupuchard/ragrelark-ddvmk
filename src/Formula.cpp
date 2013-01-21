@@ -232,9 +232,6 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
         } else if (value == 8) {
             unsigned char c = commands.at(went++);
             formulaStack[++sp] = user->getVarValue((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
-            if ((VOwner)(c >> 4) == V_ITEM) {
-                //cout << "NOODLES " << (int)commands.at(went - 1) << " " << (int)formulaStack[sp] << endl;
-            }
         } else {
             cout << "formula error" << endl;
         }

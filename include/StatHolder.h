@@ -85,8 +85,7 @@ using namespace std;
 #define C_POISON 8
 #define C_CONFUSION 34
 
-typedef pair<int, Stat*> completeStat;
-//typedef pair<int, int> completeCon;
+typedef pair<VOwner, Stat*> completeStat;
 
 void setFormUser(FormulaUser* formUser);
 
@@ -95,10 +94,13 @@ set<Stat*> getItemAfflictions();
 /* Returns every stat whose formula contains an enemy. */
 set<Stat*> getEnemyAfflictions();
 
-vector<completeStat>* getAfflictions(Stat* s, int ownerType);
+set<Stat*> getSkillAfflictions(SkillType skill);
+
+vector<completeStat>* getAfflictions(Stat* s, VOwner ownerType);
 vector<completeStat>* getConAfflictions(int condition);
-void addAffliction(completeStat afflictingStat, Stat* afflictedStat, int edOwner);
-void addConAffliction(int afflictingCon, int afflictingConOwner, Stat* afflictedStat, int edOwner);
+void addAffliction(completeStat afflictingStat, Stat* afflictedStat, VOwner edOwner);
+void addConAffliction(int afflictingCon, VOwner afflictingConOwner, Stat* afflictedStat, VOwner edOwner);
+void addSkillAffliction(SkillType afflictionSkill, Stat* afflictedStat);
 
 /* A StatHolder has and a manages a bunch of stats and values for them. */
 /* This class was constructed with only memory in mind, so it's not necessarily as fast as it could be. */

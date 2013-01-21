@@ -144,7 +144,6 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                 int prevHeight = prevLoc->getTotalHeight();
                 int height = nextLoc->getTotalHeight();
                 if (nextLoc->isOpen()) {
-                    //cout << "aouau" << endl;
                     int movSpeed = unit->getStatValue(S_MOVESPEED);
                     normalMove = true;
                     if (prevHeight != height) {
@@ -199,7 +198,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
             }
         }
         if (normalMove && zone == player->getZone()) {
-            action(A_MOVEDIR, unit, dir, x, y);
+            rMoveDir(unit, dir, x, y);
         }
     }
 }
@@ -230,7 +229,7 @@ void Start::pushRock(Unit* unit, Zone* zone, int dir) {
                     }
                     tim = actionTimePassed(tim, movSpeed);
                     unit->theTime += T_ROCK + diff + tim;
-                    action(A_MOVEDIR, unit, dir, unit->x, unit->y);
+                    rMoveDir(unit, dir, unit->x, unit->y);
                     changeLoc(unit, zone, unit->x + xDirs[dir], unit->y + yDirs[dir]);
                 }
             }
@@ -268,17 +267,22 @@ void Start::hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& v
     if (howLuckyAreYou > unit->getStatValueF(S_MCRITC)) {
         damage *= 5;
         verb = "megacrit"; hitType = 4; c = red;
+        sapExp(unit, unit->getEnemy(), SKL_CRIT, 3);
     } else if (howLuckyAreYou > unit->getStatValueF(S_CRITC)) {
         damage *= 2;
         verb = "crit";     hitType = 3; c = brick;
+        sapExp(unit, unit->getEnemy(), SKL_CRIT, 1);
     } else if (howLuckyAreYou > unit->getStatValueF(S_HITC)) {
         verb = "hit";      hitType = 2; c = maroon;
     } else if (howLuckyAreYou > unit->getStatValueF(S_SCRAPEC)) {
         damage /= 2;
         verb = "scrape";   hitType = 1; c = dark(maroon);
+        sapExp(unit, unit->getEnemy(), SKL_CRIT, 1);
+        sapExp(unit->getEnemy(), unit, SKL_DODGE, 1);
     } else {
         damage = 0;
         verb = "miss";     hitType = 0; c = dark(salmon);
+        sapExp(unit->getEnemy(), unit, SKL_DODGE, 1);
     }
 }
 
@@ -304,6 +308,7 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
                 int hitType;
                 color c;
+
                 hitCMod(unit, damage, c, hitType, verb);
 
                 if (unit == player->getUnit()) {
@@ -332,6 +337,7 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 if (damageType == -1) {
                     damageType = unarmedDamageTypes[unit->getStatValue(S_UNARMED)];
                 }
+
                 string extra;
                 rAttack(enemy->x, enemy->y, dir, damageType, hitType);
 
@@ -362,6 +368,8 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                             }
                         }
                     }
+                    sapExp(unit, enemy, SKL_MELEE, 1);
+                    sapExp(enemy, unit, SKL_FORT, 1);
                     int splatterChance;
                     if (hp <= 0) {
                         splatterChance = 10;
@@ -374,9 +382,6 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                     }
 
                     if (hp <= 0) {
-                        if (unit == player->getUnit()) {
-                            unit->modifyStat(S_EXP, (enemy->getStatValue(S_LEVEL) + 2) * 4);
-                        }
                         killUnit(enemy, zone);
                     } else {
                         reactToAttack(enemy, unit, zone);
@@ -434,6 +439,10 @@ void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
 
         if (damage) {
             int hp = defender->modifyStat(S_HP, -(int)damage);
+
+            sapExp(attacker, defender, SKL_RANGE, 1);
+            sapExp(defender, attacker, SKL_FORT, 1);
+
             int splatterChance;
             if (hp <= 0) {
                 splatterChance = 10;
@@ -446,9 +455,6 @@ void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
             }
 
             if (hp <= 0) {
-                if (attacker == player->getUnit()) {
-                    attacker->modifyStat(S_EXP, (defender->getStatValue(S_LEVEL) + 2) * 4);
-                }
                 killUnit(defender, zone);
             } else {
                 reactToAttack(defender, attacker, zone);
@@ -560,14 +566,18 @@ void Start::makeSplatter(Unit* unit, int x, int y) {
 }
 
 void Start::killUnit(Unit* unit, Zone* zone) {
-    zone->getLocationAt(unit->x, unit->y)->removeUnit();
+    Location* locOfDeath = zone->getLocationAt(unit->x, unit->y);
+    locOfDeath->removeUnit();
     areaUnits.erase(pair<Unit*, Zone*>(unit, zone));
+    if (unit->equipment) {
+        for (int i = 0; i < unit->equipment->len; i++) {
+            locOfDeath->addItem(unit->equipment->equips[i]);
+        }
+    }
     int split = unit->getStatValue(S_SPLIT);
     if (split) {
         for (int i = 0; i < split; i++) {
-            if (spawnMobSpeTag(unit->getStatValue(S_SPAWN), zone, unit->x, unit->y, true, A_MOVELOC)) {
-
-            } else break;
+            if (!mobSpawner->spawnMobSpeTag(unit->getStatValue(S_SPAWN), zone, unit->x, unit->y, world->theTime)) break;
         }
     }
     unitDeleteList.push_back(unit);
@@ -669,7 +679,24 @@ void Start::changeLoc(Unit* unit, Zone* zone, int x, int y) {
 
 void Start::changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, int x, int y) {
     if (!newZone->isFilled()) {
-        generateZone(newZone, 0, newZone->getGenType(), 0, 0, newZone->getWidth(), newZone->getHeight());
+
+        Area* area = player->getArea();
+        pair<int, int> stackTag = newZone->dungeonTag();
+        DungeonStack* dungeonStack = area->getDungeonStack(stackTag.first);
+        vector<pair<Unit*, Zone*> >* units = new vector<pair<Unit*, Zone*> >;
+        dungeonStack->genLevel(stackTag.second + 1, units);
+        for (unsigned int i = 0; i < units->size(); i++) {
+            (*units)[i].first->theTime = world->theTime;
+            areaUnits.insert((*units)[i]);
+        }
+        if (stackTag.second + 1 < dungeonStack->getDepth()) {
+            int numStairs = dungeonStack->getNumStairs(stackTag.second);
+            for (int i = 0; i < numStairs; i++) {
+                pair<short, short> coords = dungeonStack->getStairLoc(stackTag.second, i);
+                area->addConnection(connection{coords.first, coords.second, coords.first, coords.second, newZone, dungeonStack->getZone(stackTag.second + 1)});
+            }
+        }
+        delete units;
     }
 
     Location* newLoc = newZone->getLocationAt(x, y);

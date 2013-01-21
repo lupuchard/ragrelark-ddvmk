@@ -27,8 +27,8 @@ int stringToStatus(string line) {
         return MONSTER;
     } else if (line == "RESOURCES") {
         return RESOURCES;
-    } else if (line == "CONNECTION") {
-        return CONNECTION;
+    } else if (line == "STAIRS") {
+        return STAIRS;
     } else if (line == "MAPSPACE") {
         return MAPSPACE;
     } else if (line == "ITEM") {
@@ -39,9 +39,7 @@ int stringToStatus(string line) {
         return UNIT;
     } else if (line == "MAPSTACK") {
         return MAPSTACK;
-    } else if (line == "FEATURE") {
-        return FEATURE;
-    } else if (line == "CONDITIONS") {
+    }else if (line == "CONDITIONS") {
         return CONDITIONS;
     } else if (line == "MOBSPAW") {
         return MOBSPAW;
@@ -51,6 +49,10 @@ int stringToStatus(string line) {
         return TILEDMAPS;
     } else if (line == "TILEDMAPSREFER") {
         return TILEDMAPSREFER;
+    } else if (line == "SKILLS") {
+        return SKILLS;
+    } else if (line == "MOBEQUIPS") {
+        return MOBEQUIPS;
     } else {
         return -1;
     }
@@ -76,7 +78,9 @@ void Start::loadData(World* w, Player* p) {
     }
 
     for (map<string, vector<Zone*>*>::iterator i = areaZones.begin(); i != areaZones.end(); i++) {
-        areas[i->first]->setZones(&(*(i->second))[0], i->second->size());
+        for (vector<Zone*>::iterator j = i->second->begin(); j != i->second->end(); j++) {
+            areas[i->first]->addZone(*j);
+        }
     }
 
     spawnPrototypes.clear();
@@ -114,6 +118,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
     int status = BETWEEN; // The status determine what the loader is looking for next. BETWEEN means it has no particular goal at the moment.
     while(getline(fin, line)) {
         lineNum++;
+        //cout << "aou" << lineNum << endl;
         //if this line is empty of a comment, it skips to the next line
 
         boost::algorithm::trim(line);
@@ -162,85 +167,107 @@ void Start::openFile(string fileName, World* w, Player* p) {
             case FILES: {
                 string fName = "data/" + line + ".txt";
                 openFile(fName, w, p);
-                continue; }
+                } continue;
             case AREA: tempStr = line; break;
             case (AREA + 1): {
-                pair<int, int> nums = stp(line);
-                Area* newArea = new Area(nums.first, nums.second);
+                Area* newArea = new Area(sti(line));
                 areas[tempStr] = newArea;
                 areaZones[tempStr] = new vector<Zone*>;
                 w->addArea(newArea);
-                }tempValues[0] = sti(line); break;
-            case MAPSTACK:
-                tempStr = line;
-                tempMap = new map<char, string>;
-                break;
+                tempValues[0] = sti(line);
+                } break;
+            case MAPSTACK: {
+                int c = 0;
+                while (line[c] != ' ') c++;
+                string name = line.substr(0, c);
+                pair<int, int> nums = stp(line.substr(c + 1, 100));
+                DungeonStack* dungeonStack = new DungeonStack(name, nums.first, (GenType)nums.second);
+                dungeons[name] = dungeonStack;
+                tempDun = dungeonStack;
+                } break;
             case (MAPSTACK + 1): {
-                string s = line.substr(3, 100);
-                if (ERRCHECK && areaZones.find(s) == areaZones.end()) printFileProb("That area simply does not exist.", lineNum);
-                tempStr2 = s;
+                tempArea = areas[line.substr(1, 100)];
                 } break;
-            case (MAPSTACK + 2): tempValues[2] = sti(line.substr(3, 100)); break;
-            case (MAPSTACK + 3): tempValues[3] = sti(line.substr(3, 100)); break;
-            case (MAPSTACK + 4): {
-                pair<int, int> nums = stp(line.substr(3, 100));
-                tempValues[6] = nums.first;
-                tempValues[7] = nums.second;
-                } break;
-            case (MAPSTACK + 5): tempValues[4] = sti(line.substr(3, 100)); break;
-            case (MAPSTACK + 6):
+            case (MAPSTACK + 2): {
+                string typ = line.substr(0, 3);
+                unsigned int b = 3;
+                while (line[b] != ' ') b++;
+                b++;
+                unsigned int c = 0;
                 if (line[0] == ':') {
                     string s = line.substr(1, 100);
                     if (ERRCHECK && tileGroups.find(s) == tileGroups.end()) printFileProb("That tile group simply does not exist.", lineNum);
                     map<char, string>* temp = tileGroups[s];
-                    tempMap->insert(temp->begin(),temp->end());
-                    continue;
-                } else if (line[1] == '-') {
-                    (*tempMap)[line[0]] = line.substr(2, 100);
-                     continue;
-                } else {
-                    pair<int, int> nums = stp(line);
-                    tempValues[0] = nums.first;
-                    tempValues[1]= nums.second;
-                    break;
+                    for (map<char, string>::iterator i = temp->begin(); i != temp->end(); i++) {
+                        for (int j = 0; j < tempDun->getDepth(); j++) {
+                            tempDun->getZone(j)->addTile(tiles[i->second]);
+                        }
+                    }
+                } else if (typ == "lig") {
+                    while (c + b < line.size() && line[c + b] != '+') c++;
+                    int light = sti(line.substr(b, c));
+                    float change = 0.f;
+                    if (c + b < line.size()) {
+                        b += c + 1; c = 0;
+                        while (c + b < line.size()) c++;
+                        change = stf(line.substr(b, c));
+                    }
+                    tempDun->setLight(light, change);
+                } else if (typ == "spa") {
+                    vector<short> environments;
+                    int i = 0;
+                    while(line[c] != ' ') c++;
+                    int d = ++c;
+                    while (c < line.size()) {
+                        while (line[c] != ',' && c < line.size()) c++;
+                        environments.push_back(sti(line.substr(d, c - d)));
+                        d = ++c; i++;
+                    }
+                    tempDun->setEnvironments(environments.size(), &environments[0]);
+                } else if (typ == "lev") {
+                    while (c + b < line.size() && line[c + b] != '+') c++;
+                    int level = sti(line.substr(b, c));
+                    float change = 0.f;
+                    if (c + b < line.size()) {
+                        b += c + 1; c = 0;
+                        while (c + b < line.size()) c++;
+                        change = stf(line.substr(b, c));
+                    }
+                    tempDun->setDifficulty(level, change);
+                } else if (typ == "dim") {
+                    while (line[c + b] != ',' && line[c + b] != '+') c++;
+                    int width = sti(line.substr(b, c));
+                    float wChange = 0.f;
+                    if (line[c + b] == '+') {
+                        b += c + 1; c = 0;
+                        while (line[c + b] != ',') c++;
+                        wChange = stf(line.substr(b, c));
+                    }
+                    b += c + 1; c = 0;
+                    while (c + b < line.size() && line[c + b] != '+') c++;
+                    int height = sti(line.substr(b, c));
+                    float hChange = 0.f;
+                    if (c + b < line.size()) {
+                        b += c + 1; c = 0;
+                        while (c + b < line.size()) c++;
+                        hChange = stf(line.substr(b, c));
+                    }
+                    tempDun->setDimensions(width, height, wChange, hChange);
+                } else if (typ == "sta") {
+                    while (c + b < line.size() && line[c + b] != '+') c++;
+                    int stairs = sti(line.substr(b, c));
+                    float change = 0.f;
+                    if (c + b < line.size()) {
+                        b += c + 1; c = 0;
+                        while (c + b < line.size()) c++;
+                        change = stf(line.substr(b, c));
+                    }
+                    tempDun->setNumStairs(stairs, change);
+                } else if (typ == "!!!") {
+                    tempDun->createZones();
+                    tempArea->addDungeonStack(tempDun);
                 }
-            case (MAPSTACK + 7): {
-                pair<int, int> nums = stp(line);
-                int stairXs[nums.second];
-                int stairYs[nums.second];
-                int currMobSpawnLevel = tempValues[6] - 1;
-                for (int i = 0; i < nums.first; i++) {
-                    if (!(i % tempValues[7])) {
-                        currMobSpawnLevel++;
-                    }
-                    Zone* newZone = new Zone(tempValues[0], tempValues[1], tempMap->size(), tempValues[2], -tempValues[4], tempValues[3]);
-                    newZone->setMobSpawnLevel(currMobSpawnLevel);
-                    for (map<char, string>::iterator it = tempMap->begin(); it != tempMap->end(); it++) {
-                        newZone->addTile(tiles[it->second]);
-                    }
-                    areaZones[tempStr2]->push_back(newZone);
-                    string zoneName = tempStr + its(i + 1);
-                    zones[zoneName] = newZone;
-                    for (int j = 0; j < nums.second; j++) {
-                        if (i > 0) {
-                            connection c;
-                            int x = stairXs[j]; int y = stairYs[j];
-                            c.x1 = x; c.y1 = y;
-                            c.x2 = x; c.y2 = y;
-                            c.z1 = tempZone; c.z2 = newZone;
-                            areas[tempStr2]->addConnection(c);
-                            newZone->addModification(x, y, '<', S_STAIRUP);
-                        }
-                        if (i < nums.first - 1) {
-                            int x = rand() % (tempValues[0] - 4) + 2;
-                            int y = rand() % (tempValues[1]- 4) + 2;
-                            stairXs[j] = x; stairYs[j] = y;
-                            newZone->addModification(x, y, '<', S_STAIRDOWN);
-                        }
-                    }
-                    status = MAP + 12;
-                    tempZone = newZone;
-                } } break;
+            } continue;
             case MAP:
                 tempStr = line;
                 tempValues[3] = 0;
@@ -274,9 +301,6 @@ void Start::openFile(string fileName, World* w, Player* p) {
                         if (ERRCHECK && num <= 0) printFileErr("Light level must be positive.", lineNum);
                         tempValues[0] = sti(s);
                         } continue;
-                    case '@': if (line[1] == '@') {
-                        tempValues[3] = sti(line.substr(2, 100)); continue;
-                    }
                     default:
                         if (line[1] == '-') {
                             (*tempMap)[line[0]] = line.substr(2, 100);
@@ -297,7 +321,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                             }
                         }
                         int hei = tempVect.size();
-                        Zone* newZone = new Zone(wid, hei, tempMap->size(), tempValues[0], true, tempValues[3]);
+                        Zone* newZone = new Zone(tempStr, wid, hei, tempValues[0], true);
                         int* heights = new int[wid * hei];
                         int* ntiles = new int[wid * hei];
                         int* structs = new int[wid * hei];
@@ -352,10 +376,6 @@ void Start::openFile(string fileName, World* w, Player* p) {
                         tempChar = line[1];
                         status = MAP + 7;
                         break;
-                    case '.': //floor
-                        tempStr = line.substr(1, 100);
-                        status = MAP + 8;
-                        break;
                     default: break;
                 } continue;
             case (MAP + 4): {
@@ -367,7 +387,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 } continue;
             case (MAP + 5): {
                 pair<int, int> nums = stp(line);
-                Unit* newUnit = new Unit(tempStr, getMob(tempStr).second);
+                Unit* newUnit = new Unit(tempStr, mobSpawner->getMob(tempStr).second);
                 newUnit->x = nums.first;
                 newUnit->y = nums.second;
                 tempZone->getLocationAt(nums.first, nums.second)->unit = newUnit;
@@ -383,59 +403,13 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 tempZone->getLocationAt(nums.first, nums.second)->structure = getStructIntFromChar(tempChar);
                 status = MAP + 3;
                 } continue;
-            case (MAP + 8): {
-                //pair<int, int> nums = stp(line);
-                if (tempZone->getNumTiles() == 0) {
-                    printFileProb("Hmm, I don't like that.", lineNum);
-                } else {
-                    //tempZone->getLocationAt(nums.first, nums.second)->tile = //TODO this
-                }
-                status = MAP + 3;
-                } continue;
             case (MAP + 10): {
                 pair<int, int> nums = stp(line);
-                tempZone = new Zone(nums.first, nums.second, tempMap->size(), tempValues[0], false, tempValues[3]);
+                tempZone = new Zone(tempStr, nums.first, nums.second, tempValues[0], false);
                 } break;
-            case (MAP + 11):
-                if (line == "]]") {
-                    for (map<char, string>::iterator i = tempMap->begin(); i != tempMap->end(); i++) {
-                        tempZone->addTile(tiles[i->second]);
-                    }
-                    areaZones[tempStr2]->push_back(tempZone);
-                    zones[tempStr] = tempZone;
-                    status = MAP + 12;
-                } else {
-                    pair<int, int> nums = stp(line);
-                    tempZone->addModification(nums.first, nums.second, '0', 0);
-                } continue;
-            case (MAP + 12):
-                tempChar = line[0];
-                tempStr = line.substr(1, 100);
-                break;
-            case (MAP + 13): {
-                pair<int, int> nums = stp(line);
-                switch(tempChar) {
-                    case '$': tempZone->addModification(nums.first, nums.second, tempChar, itemTypeMap[tempStr]); break;
-                    case '@': /*TODO this*/ break;
-                    case '^': tempZone->addModification(nums.first, nums.second, tempChar, sti(tempStr)); break;
-                    case '<': tempZone->addModification(nums.first, nums.second, tempChar, getStructIntFromChar(tempStr[0])); break;
-                    case '.': /*TODO this*/ break;
-                    default: break;
-                }
-                status = MAP + 12;
-                } continue;
-            case FEATURE:
-                if (ERRCHECK && zones.find(line) == zones.end()) {
-                    printFileProb("No zone with that name has been defined yet.", lineNum);
-                    break;
-                } else {
-                    tempZone = zones[line];
-                    status = MAP + 12;
-                    continue;
-                }
             case PLAYER: p->setName(line); break;
             case (PLAYER + 1): {
-                mob unitProto = getMob(line);
+                mob unitProto = mobSpawner->getMob(line);
                 if (ERRCHECK && unitProto.first == "x") printFileProb("That unit does not seem to exist.", lineNum);
                 p->setUnitProto(unitProto.second);
                 } break;
@@ -469,31 +443,40 @@ void Start::openFile(string fileName, World* w, Player* p) {
             case MAPSPACE:
                 if (ERRCHECK && areaZones.find(line) == areaZones.end()) printFileProb("Nope!", lineNum);
                 areaZones[line]->push_back(NULL); break;
-            case CONNECTION:
+            case STAIRS:
                 if (ERRCHECK && areas.find(line) == areas.end()) printFileProb("No area with that name has been defined.", lineNum);
                 tempArea = areas[line]; break;
-            case (CONNECTION + 1):
+            case (STAIRS + 1):
                 if (ERRCHECK && zones.find(line) == zones.end()) printFileProb("No zone with that name has been defined.", lineNum);
                 tempZone = zones[line]; break;
-            case (CONNECTION + 2): {
+            case (STAIRS + 2): {
                 pair<int, int> nums = stp(line);
                 tempValues[0] = nums.first;
-                tempValues[1]= nums.second;
+                tempValues[1] = nums.second;
                 } break;
-            case (CONNECTION + 3):
-                if (ERRCHECK && zones.find(line) == zones.end()) printFileProb("No zone with that name has been defined.", lineNum);
-                tempZone2 = zones[line]; break;
-            case (CONNECTION + 4): {
-                pair<int, int> nums = stp(line);
+            case (STAIRS + 3): {
+                map<string, Zone*>::iterator zi = zones.find(line);
+                if (zi == zones.end()) {
+                    map<string, DungeonStack*>::iterator di = dungeons.find(line);
+                    if (ERRCHECK && di == dungeons.end()) printFileProb("No zone or dungeon with that name has been defined.", lineNum);
+                    DungeonStack* dungeonStack = di->second;
+                    pair<short, short> coords = dungeonStack->addEntryStairs();
+                    tempArea->addConnection(connection{tempValues[0], tempValues[1], coords.first, coords.second, tempZone, dungeonStack->getZone(0)});
+                    status = STAIRS + 5;
+                } else {
+                    tempZone2 = zi->second;
+                } } break;
+            case (STAIRS + 4): {
                 connection c;
                 c.x1 = tempValues[0];
                 c.y1 = tempValues[1];
-                c.x2 = nums.first;
-                c.y2 = nums.second;
                 c.z1 = tempZone;
                 c.z2 = tempZone2;
+                pair<int, int> nums = stp(line);
+                c.x2 = nums.first;
+                c.y2 = nums.second;
                 tempArea->addConnection(c);
-                status = CONNECTION + 1;
+                status = STAIRS + 1;
                 } continue;
             case ITEM: tempStr = line; break;
             case (ITEM + 1): tempStr2 = line; break;
@@ -562,10 +545,10 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 pair<string, string> strs = stps(line);
                 tempStr = strs.second;
                 StatHolder* newUnit = new StatHolder(V_UNIT);
-                addMob(strs.first, strs.second, newUnit);
+                mobSpawner->addMob(strs.first, strs.second, newUnit);
             } break;
             case (UNIT + 1): {
-                StatHolder* unitPrototype = getMob(tempStr).second;
+                StatHolder* unitPrototype = mobSpawner->getMob(tempStr).second;
                 if (line[0] == '*') {
                     for (unsigned int i = 0; i < defaultStats.size(); i++) {
                         int theStatI = defaultStats[i];
@@ -598,7 +581,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 }
             } continue;
             case (UNIT + 2):
-                getMob(tempStr).second->addStatV(S_SPAWN, hashMob(line));
+                mobSpawner->getMob(tempStr).second->addStatV(S_SPAWN, mobSpawner->hashMob(line));
                 status = UNIT + 1;
             continue;
             case CONDITIONS:
@@ -609,27 +592,50 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 tempValues[0]++;
                 conditionMap[line] = tempValues[0];
                 continue;
-            case MOBSPAW: tempValues[0] = addEnvironment(line.substr(0, line.size() - 1)); break;
+            case MOBSPAW: tempValues[0] = mobSpawner->addEnvironment(line.substr(0, line.size() - 1)); break;
             case (MOBSPAW + 1): break;
             case (MOBSPAW + 2): {
                 if (line[0] == ']') {
                     if (line[1] == 'i') status = MOBSPAW + 3;
                     else status = MOBSPAW;
                 } else {
-                    vector<pair<mob, unsigned int> >* encounters = new vector<pair<mob, unsigned int> >;
+                    encounterLevel* encounters = new encounterLevel;
                     int level = cti(line[0]);
                     int mon = 0;
                     while ((mon + 1) * 10 < (signed int)line.size()) {
                         string monName = line.substr(mon * 10 + 2, 6);
                         int weight = sti(line.substr(mon * 10 + 9, 2));
-                        mob theMob = getMob(monName);
+                        mob theMob = mobSpawner->getMob(monName);
                         if (ERRCHECK && theMob.first == "x") printFileProb("This mob does not exist.", lineNum);
-                        encounters->push_back(pair<mob, unsigned int>(getMob(monName), weight));
+                        encounters->push_back(EncLevelEnc{mobSpawner->getMob(monName), weight, MobMod{1, 1, -3, 0, NULL}});
                         mon++;
+                        if (line[mon * 10 + 1] == '(') {
+                            int min = line[mon * 10 + 2] - 48;
+                            if (min > 10) min -= 7;
+                            int max = line[mon * 10 + 4] - 48;
+                            if (max > 10) max -= 7;
+                            int disp = 0;
+                            char c = line[mon * 10 + 3];
+                            if (c == '_') disp = 0;
+                            else if (c == '-') disp = 1;
+                            else if (c == '~') disp = 2;
+                            int index = 0;
+                            MobEquipSet* ridiculous = mobEquipsMap[line.substr(mon * 10 + 6, 3)];
+                            c = line[mon * 10 + 9];
+                            if (c == '!') index = -2;
+                            else if (c == '?') index = -1;
+                            else index = cti(c);
+                            if (index > 10) index -= 7;
+                            MobMod* relevent = &(encounters->at(encounters->size() - 1).mobMod);
+                            relevent->min = min; relevent->max = max;
+                            relevent->dispersion = disp;
+                            relevent->mobEquipSet = ridiculous;
+                            relevent->equipsInEquipsType = index;
+                            mon++;
+                        }
                     }
-                    addEncounters(tempValues[0], level, encounters);
-                } continue;
-            }
+                    mobSpawner->addEncounters(tempValues[0], level, encounters);
+            } } continue;
             case (MOBSPAW + 3): {
                 if (line[0] == ']') {
                     status = MOBSPAW;
@@ -639,11 +645,11 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     string s = line.substr(0, c);
                     pair<int, int> nums = stp(line.substr(c + 1, 100));
                     for (int i = nums.first; i <= nums.second; i++) {
-                        addItemsToEncounterLevel(tempValues[0], i, s);
+                        mobSpawner->addItemsToEncounterLevel(tempValues[0], i, s);
                     }
                 } continue;
             }
-            case ITEMSPAW: tempValues[0] = addItemSpawnSet(line.substr(0, line.size() - 1)); break;
+            case ITEMSPAW: tempValues[0] = mobSpawner->addItemSpawnSet(line.substr(0, line.size() - 1)); break;
             case (ITEMSPAW + 1): {
                 if (line[0] == '}') {
                     status = ITEMSPAW;
@@ -704,7 +710,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     }
                     if (ERRCHECK && itemTypeMap.find(s) == itemTypeMap.end()) printFileProb("This item does not exist.", lineNum);
                     int itemTypeI = itemTypeMap[s];
-                    addItemToSpawnSet(itemTypeI, weight, minS, maxS, tempValues[0]);
+                    mobSpawner->addItemToSpawnSet(itemTypeI, weight, minS, maxS, tempValues[0]);
                 }
             } continue;
             case TILEDMAPS: tempStr = line.substr(1, 100); break;
@@ -769,9 +775,46 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 while (line[c] != '-') c++;
                 pair<int, int> nums = stp(line.substr(0, c));
                 int ind = nums.second * 32 + nums.first;
-                int tag = hashMob(line.substr(c + 2, 100));
+                int tag = mobSpawner->hashMob(line.substr(c + 2, 100));
                 tiledMobs[ind] = tag;
             } continue;
+            case SKILLS:
+                tempValues[0] = 0;
+                status++;
+            case (SKILLS + 1): {
+                unsigned int c = 0;
+                int d = 0;
+                while (c < line.size()) {
+                    if (line[c] == ',') {
+                        skillMap[line.substr(d, c - d)] = tempValues[0];
+                        tempValues[0]++;
+                        d = -1;
+                    } else if (d == -1 && line[c] != ' ') {
+                        d = c;
+                    }
+                    c++;
+            } } continue;
+            case MOBEQUIPS:
+                mobEquipsMap[line] = new MobEquipSet();
+                tempStr = line;
+                break;
+            case (MOBEQUIPS + 1): {
+                MobEquipSet* mobEquipSet = mobEquipsMap[tempStr];
+                unsigned int c = 0;
+                while (line[c] != ':') c++;
+                int weight = sti(line.substr(0, c));
+                int v = mobEquipSet->addEquips(weight);
+                c++;
+                if (line[c] != 'X') {
+                    int d = c;
+                    while (c < line.size()) {
+                        while (line[c] != ',' && c < line.size()) c++;
+                        string s = line.substr(d, c - d);
+                        mobEquipSet->addEquipToEquips(v, itemTypeMap[s]);
+                        c += 2;
+                        d = c;
+                    }
+            } } continue;
             default: status = BETWEEN; break;
         }
         status++;

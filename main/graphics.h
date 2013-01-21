@@ -20,6 +20,7 @@
 
 enum peType{P_NONE, P_DARKDUST, P_ARROW};
 enum align{LEFT, CENTER, RIGHT};
+enum animType{ANIM_NONE, ANIM_UNIT, ANIM_MOVEDIR, ANIM_MOVELOC, ANIM_ATTACK};
 
 typedef struct ANMAT_ {
     short type;
@@ -42,6 +43,7 @@ typedef struct {
     unsigned char alpha;
 } color;
 
+//it may be worth noting that all these colors are fully transparent
 const color red        = {255,   0,   0, 0};  const color scarlet    = {255,  63,   0, 255};  const color orange     = {255, 127,   0, 0};
 const color amber      = {255, 191,   0, 0};  const color yellow     = {255, 255,   0, 0};  const color lime       = {191, 255,   0, 0};
 const color chartreuse = {127, 255,   0, 0};  const color harlequin  = { 63, 255,   0, 0};  const color green      = {  0, 255,   0, 0};
@@ -58,8 +60,9 @@ const color teal       = {  0, 127, 127, 0};  const color celeste    = {127, 255
 const color navy       = {  0,   0, 127, 0};  const color sky        = {127, 127, 255, 0};  const color glaucous   = { 63,  63, 191, 0};
 const color purple     = {127,   0, 127, 0};  const color thistle    = {255, 127, 255, 0};  const color lavender   = {191,  63, 191, 0};
 
-const color brown      = {127,  63,   0, 0};  const color swamp      = {  0, 127,  63, 0};  const color indigo     = { 63,   0, 127, 0};  const color tann       = {223, 191, 127, 0};
-
+const color brown      = {127,  63,   0, 0};  const color swamp      = {  0, 127,  63, 0};  const color indigo     = { 63,   0, 127, 0};
+const color coral      = {255, 127,  63, 0};  const color blellow    = { 63, 255, 127, 0};  const color slue       = {127,  63, 255, 0};
+const color tann       = {223, 191, 127, 0};  const color orchid     = {218, 127, 218, 0};
 const color white      = {255, 255, 255, 0};  const color shine      = {223, 223, 223, 0};  const color silver     = {191, 191, 191, 0};  const color gray       = {127, 127, 127, 0};
 const color grey       = { 63,  63,  63, 0};  const color charcoal   = { 31,  31,  31, 0};  const color tar        = { 15,  15,  15, 255};  const color black      = {  0,   0,   0, 255};
 

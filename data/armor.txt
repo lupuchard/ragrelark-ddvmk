@@ -139,3 +139,25 @@ AC=1
 evasion=2
 penalty=1
 END
+
+ITEM
+goblin shield
+A heavy shield made of hard wood.
+167
+6
+115
+*322,TALL
+AC=2
+penalty=2
+END
+
+ITEM
+wooden board
+Gnolls use these as shields, because they're poor?
+183
+6
+115
+*323,TALL
+AC=1
+penalty=2
+END

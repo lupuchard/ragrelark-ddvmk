@@ -26,7 +26,7 @@ void Blobber::makeCircle(int rad) {
             int x = rad - i;
             int y = rad - j;
             double dist = sqrt(x * x + y * y);
-            if (dist <= rad) {
+            if (dist <= rad - .5) {
                 blobArr[i][j] = true;
                 blobArr[i][blobHeight - j - 1] = true;
                 blobArr[blobWidth - i - 1][j] = true;

@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/main/generation/;code/main/activity/;" />
+		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/main/activity/;code/classes/Mobs/;code/classes/Generation/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -95,6 +95,9 @@
 		<Unit filename="data/formulas.txt">
 			<Option virtualFolder="data/" />
 		</Unit>
+		<Unit filename="data/humanoids.txt">
+			<Option virtualFolder="data/" />
+		</Unit>
 		<Unit filename="data/items.txt">
 			<Option virtualFolder="data/items/" />
 		</Unit>
@@ -145,10 +148,20 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Blobber.h">
-			<Option virtualFolder="code/classes/headers/" />
+			<Option virtualFolder="code/classes/Generation/" />
+		</Unit>
+		<Unit filename="include/DungeonStack.h">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/EnemyEquipStatHolder.h">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/EnvironmentManager.h">
-			<Option virtualFolder="code/classes/headers/" />
+			<Option virtualFolder="code/classes/Places/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -164,6 +177,11 @@
 		</Unit>
 		<Unit filename="include/FormulaUser.h">
 			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/Generator.h">
+			<Option virtualFolder="code/classes/Generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -192,8 +210,18 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="include/MobEquipSet.h">
+			<Option virtualFolder="code/classes/Mobs/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/MobSpawner.h">
+			<Option virtualFolder="code/classes/Generation/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="include/Player.h">
-			<Option virtualFolder="code/classes/headers/" />
+			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -228,12 +256,12 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Tile.h">
-			<Option virtualFolder="code/classes/Places/" />
+			<Option virtualFolder="code/classes/Generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Unit.h">
-			<Option virtualFolder="code/classes/headers/" />
+			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -292,11 +320,6 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="main/generator.cpp">
-			<Option virtualFolder="code/main/generation/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="main/graphics.h">
 			<Option virtualFolder="code/main/graphics/" />
 			<Option target="Debug" />
@@ -309,11 +332,6 @@
 		</Unit>
 		<Unit filename="main/logic.cpp">
 			<Option virtualFolder="code/main/main main/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="main/mobSpawner.cpp">
-			<Option virtualFolder="code/main/generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -362,10 +380,20 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Blobber.cpp">
-			<Option virtualFolder="code/classes/sources/" />
+			<Option virtualFolder="code/classes/Generation/" />
+		</Unit>
+		<Unit filename="src/DungeonStack.cpp">
+			<Option virtualFolder="code/classes/Places/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/EnemyEquipStatHolder.cpp">
+			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/EnvironmentManager.cpp">
-			<Option virtualFolder="code/classes/sources/" />
+			<Option virtualFolder="code/classes/Places/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -381,6 +409,11 @@
 		</Unit>
 		<Unit filename="src/FormulaUser.cpp">
 			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Generator.cpp">
+			<Option virtualFolder="code/classes/Generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -409,8 +442,18 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="src/MobEquipSet.cpp">
+			<Option virtualFolder="code/classes/Mobs/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/MobSpawner.cpp">
+			<Option virtualFolder="code/classes/Generation/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/Player.cpp">
-			<Option virtualFolder="code/classes/sources/" />
+			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -445,12 +488,12 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Tile.cpp">
-			<Option virtualFolder="code/classes/Places/" />
+			<Option virtualFolder="code/classes/Generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Unit.cpp">
-			<Option virtualFolder="code/classes/sources/" />
+			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

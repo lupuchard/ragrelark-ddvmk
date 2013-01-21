@@ -11,6 +11,19 @@ damage_type=1
 END
 
 ITEM
+huge club
+Way too big.
+185
+6
+91
+*576,TALL
+damage=6
+weight=99
+damage_type=1
+penalty=5
+END
+
+ITEM
 simple mace
 The most ordinary of maces. If you took the average of all maces ever it would look like this mace.
 153
@@ -39,6 +52,18 @@ damage_type=1
 END
 
 ITEM
+dagger
+A simple dagger with an iron blade.
+136
+6
+83
+*448,TALL
+damage=2
+weight=35
+damage_type=2
+END
+
+ITEM
 steel dagger
 Self explanatory.
 152
@@ -46,6 +71,7 @@ Self explanatory.
 83
 *448,TALL
 damage=2
+acc=1
 weight=32
 damage_type=2
 END

@@ -23,6 +23,13 @@ p_aslow
 p_mslow
 END
 
+SKILLS
+athl, melee, unarm, lift, fort, rpois, rburn, rcold, chann, qcast, conc, aff4,
+learn, knowl, knows, knowi, searc, sight, hear, farsh, dodge, range, throw, crit,
+bart, intim, kind, cha4, armor, shld, def3, def4,
+bash, pierc, slash, spec, water, fire, air, earth, necro, illus, summ, ench,
+axe, sword, scyth, hamac, staff, flip, bow, cross, firem, spear, dagge, trid,
+END
 
 STATS
 
@@ -139,7 +146,7 @@ luck
 u-base_luck i-luck_bonus +
 
 max_hit_points
-u-constitution 1 + u-level 2 + * 2 / i-hp_bonus +
+u-constitution 1 + u-level 2 + * 2 / i-hp_bonus + $fort 2 / +
 hit_points
 SLF 0 MAX u-max_hit_points MIN
 max_mana
@@ -150,20 +157,20 @@ SLF 0 MAX u-max_mana MIN
 accuracy
 u-dexterity i-acc + 2 -
 evasion
-u-dexterity i-eva + i-penalty -
+u-dexterity i-eva + i-penalty - $dodge 5 / +
 
 megacrit_chance
-(f) 1 E e-evasion u-accuracy - 24 + -2 / ^ 3 * 1 + /
+(f) 1 E e-evasion u-accuracy - 24 + $crit 200 / - -2 / ^ 3 * 1 + /
 crit_chance
-(f) 1 E e-evasion u-accuracy - 10 + -2 / ^ 3 * 1 + /
+(f) 1 E e-evasion u-accuracy - 10 + $crit 100 / - -2 / ^ 3 * 1 + /
 hit_chance
 (f) 1 E e-evasion u-accuracy - 0 + -2 / ^ 3 * 1 + /
 scrape_chance
 (f) 1 E e-evasion u-accuracy - 2 - -2 / ^ 3 * 1 + /
 melee_damage
-(f) u-strength i-damage + 2 / 0.98 e-defense ^ *
+(f) u-strength i-damage + $melee + 2 / 0.98 e-defense ^ *
 ranged_damage
-(f) 4 i-damage + 2 / .98 u-defense ^ *
+(f) 4 i-damage + $range + 2 / 0.98 u-defense ^ *
 spell_damage
 (f) u-affinity
 
@@ -191,7 +198,7 @@ spawn
 SLF
 
 light_load
-150 u-strength *
+150 $lift + u-strength *
 
 base_attspe
 SLF
@@ -204,7 +211,7 @@ u-base_movespe i-movement_speed + u|p_mslow 3 * -
 hp_reg
 (f) 0.1 i-hp_regen +
 mana_reg
-(f) 0.1 i-mana_regen +
+(f) 0.1 i-mana_regen + $chann 100 / +
 metabolism
 20 u-max_hit_points u-hit_points > 5 * + 10000 u-stamina > 5 * + u-max_mana u-mana > 10 * + u-hunger 5000 > 10 * + 2000 u-hunger > 3 * - 750 u-hunger > 6 * - 250 u-hunger > 9 * -
 att_condition
@@ -219,6 +226,11 @@ SLF
 graphic_tex
 SLF
 graphic_type
+SLF
+
+equip_num
+SLF
+equip_type
 SLF
 
 $$$

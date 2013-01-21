@@ -1,30 +1,12 @@
 AREA
 foomfield
-2,9
+2
 END
 
 ~abc = dungeon door, def = home door, gh = locked dungeon/home door, ijk = scary door, lmn = stone door,
 ~o = boobytrapped door, p = locked scary door
 ~q = upstairs, r = downstairs, s = upladder, t = downladder, uv = yellow stairs, w = fountain, x = exit
 ~left: yz, &' () *+ ,- ./ 01
-
-MTG
-ruins
-A-dfloor
-B-dfloor2
-C-dfloor3
-D-dfloor4
-E-dwall
-F-dwall2
-G-dwall3
-H-dwall4
-END
-
-MTG
-bruins
-A-bluedfloor
-E-bluedwall
-END
 
 MAP
 down
@@ -172,7 +154,7 @@ EV0 AEa EV0 EV0 EV0 EV0 EV0 EV0
 
 END
 
-CONNECTION
+STAIRS
 foomfield
 
 bestmap

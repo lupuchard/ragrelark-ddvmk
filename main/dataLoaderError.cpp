@@ -71,7 +71,6 @@ bool Start::errorChecker(string filename) {
                 if (!isPair(line)) printFileErr("Second line of AREA must be a pair (the dimensions).", lineNum);
                 finished = true; break;
             case (AREA + 2): printFileErr("AREA only needs 2 lines.", lineNum);
-            case FEATURE: finished = true; status = MAP + 3; continue;
             case PLAYER: if (isNum(line)) printFileErr("First line of PLAYER must be a string (the name of the Player).", lineNum); break;
             case (PLAYER + 4):
                 if (!isPair(line)) printFileErr("Fifth line of PLAYER must be a pair (the initial location).", lineNum);
@@ -86,11 +85,11 @@ bool Start::errorChecker(string filename) {
                 } break;
             case RESOURCES: finished = true; continue;
             case FILES: finished = true; continue;
-            case (CONNECTION + 2): if (!isPair(line)) printFileErr("Third line of CONNECTION must be a pair (location in first zone).", lineNum); break;
-            case (CONNECTION + 4):
-                if (!isPair(line)) printFileErr("Fifth line of CONNECTION must be a pair (location in second zone).", lineNum);
+            case (STAIRS + 2): if (!isPair(line)) printFileErr("Third line of STAIRS must be a pair (location in first zone).", lineNum); break;
+            case (STAIRS + 4):
+                if (!isPair(line)) printFileErr("Fifth line of STAIRS must be a pair (location in second zone).", lineNum);
                 finished = true; break;
-            case (CONNECTION + 5): printFileErr("CONNECTION only needs 5 lines.", lineNum);
+            case (STAIRS + 5): printFileErr("STAIRS only needs 5 lines.", lineNum);
             case ITEM: if (isNum(line)) printFileErr("First line of ITEM must be a string (the name of the ItemType).", lineNum); break;
             case (ITEM + 1): if (isNum(line)) printFileErr("Second line of ITEM must be a string (the description of the ItemType).", lineNum); break;
             case (ITEM + 2): if (!isNum(line)) printFileErr("Third line of ITEM must be an integer (location in texture).", lineNum); break;
@@ -164,9 +163,13 @@ bool Start::errorChecker(string filename) {
                     if (line[0] < 48) printFileErr("The first character here is invalid.", lineNum);
                     if (line[1] != ':') printFileErr("The second character here must be ':'", lineNum);
                     for (unsigned int i = 10; i < line.size(); i += 10) {
-                        if (line[i - 2] != '*' || !isNum(line.substr(i - 1, 2))) printFileErr("Incorrect formatting.", lineNum);
+                        if (line[i - 9] == '(') {
+                            if (line[i] != ')' || line[i - 5] != ',') printFileErr("Incorrect farmatting.", lineNum);
+                        } else {
+                            if (line[i - 2] != '*' || !isNum(line.substr(i - 1, 2))) printFileErr("Incorrect formatting.", lineNum);
+                        }
                     } for (unsigned int i = 11; i < line.size(); i += 10) {
-                        if (line[i] != ',') printFileErr("Incorrect formattings.", lineNum);
+                        if (line[i] != ',' && line[i] != '(') printFileErr("Incorrect formattings.", lineNum);
                     }
                 } continue;
             }
@@ -242,13 +245,6 @@ bool Start::errorChecker(string filename) {
                 if (!isPair(line)) printFileErr("Expected a pair on this line (coordinates).", lineNum);
                 status = MAP + 3; continue;
             case (MAP + 10): if (!isPair(line)) printFileErr("This line should be a pair.", lineNum); break;
-            case (MAP + 11):
-                if (line == "]]") {
-                    status = MAP + 3;
-                    finished = true;
-                } else if (!isPair(line)) {
-                    printFileErr("This line should either have a pair or double closing brackets.", lineNum);
-                } continue;
             case MAPSTACK: if (isNum(line)) printFileErr("This line should be a name (of the map stack)", lineNum); break;
             case (MAPSTACK + 1): if (line.substr(0, 3) != "in ") printFileErr("The format of this line is \"in AREA\"", lineNum); break;
             case (MAPSTACK + 2): if (line.substr(0, 3) != "lt " || !isNum(line.substr(3, 100))) printFileErr("The format of this line is \"lt NUMBER\"", lineNum); break;
@@ -265,6 +261,8 @@ bool Start::errorChecker(string filename) {
                 if (!isPair(line)) printFileErr("There should be a pair of integers here.", lineNum); break;
             case TILEDMAPS: finished = true; continue; //TODO this error check
             case TILEDMAPSREFER: finished = true; continue; //TODO this error check
+            case SKILLS: finished = true; continue; //TODO this error check
+            case MOBEQUIPS: finished = true; continue; //TODO this error check
             default: break;
         }
         status++;

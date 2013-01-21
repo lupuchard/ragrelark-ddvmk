@@ -62,7 +62,7 @@ Zone* Start::loadTileFile(string fileName) {
                 allTiles.insert(ind);
             }
             map<unsigned int, int> tempMap;
-            theZone = new Zone(width, height, allTiles.size(), lightness, 1, 0);
+            theZone = new Zone(fileName, width, height, lightness, true);
             int j = 0;
             for (set<unsigned int>::iterator i = allTiles.begin(); i != allTiles.end(); i++) {
                 theZone->addTile(tiledTiles[*i]);
@@ -115,11 +115,7 @@ Zone* Start::loadTileFile(string fileName) {
             for (int i = 0; i < totes; i++) {
                 if (out[i]) {
                     unsigned int index = out[i] - MOB_LAYER_TILEOFF;
-                    spawnMobSpeTag(tiledMobs[index], theZone, i % width, i / width, false, A_NONE);
-                    /*Unit* newUnit = new Unit(tempStr, getMob(tempStr).second);
-                    newUnit->x = i ! ;
-                    newUnit->y = nums.second;
-                    tempZone->getLocationAt(nums.first, nums.second)->unit = newUnit;*/
+                    mobSpawner->spawnMobSpeTag(tiledMobs[index], theZone, i % width, i / width, false);
                 }
             }
 		}

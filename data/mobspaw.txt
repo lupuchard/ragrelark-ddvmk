@@ -1,3 +1,17 @@
+MOBEQUIPS
+gbn
+~3:sling
+~1:rocks
+1:goblin shield
+2:X
+4:club
+3:club, goblin shield
+1:club, club
+2:dagger, goblin shield
+3:dagger
+1:steel dagger
+END
+
 ITEMSPAW
 main{
 candle:uncommon
@@ -8,48 +22,48 @@ arrow(3-10):very rare
 arrow(11-40):extremely rare
 }
 lv1{
-shirt:rare
-club:rare
-leather gloves:very rare
+shirt:very rare
+club:very rare
+leather gloves:extremely rare
 gold pens(1-4):rare
-longbow:extremely rare
+longbow:rrare
 }
 lv2{
-round wooden shield:very rare
-leather cap:rare
-steel dagger:rare
+round wooden shield:extremely rare
+leather cap:very rare
+steel dagger:extremely rare
 gold pens(5-8):rare
-longbow:very rare
+longbow:extremely rare
 }
 lv3{
-clogs:rare
-pointy hat:rare
-leather armor:rare
+clogs:very rare
+pointy hat:very rare
+leather armor:very rare
 gold pens(9-12):rare
-longbow:rare
+longbow:very rare
 }
 lv4{
-adventure clothes:rare
-ring of accuracy:rare
-reinforced shield:rare
+adventure clothes:very rare
+ring of accuracy:very rare
+reinforced shield:very rare
 gold pens(13-16):rare
 }
 lv5{
-amulet of intelligence:rare
-archery gloves:rare
-simple mace:rare
+amulet of intelligence:very rare
+archery gloves:very rare
+simple mace:very rare
 gold pens(17-20):rare
 }
 lv6{
-ring of regeneration:rare
-obsidian dagger:rare
-Speedy Boots:very rare
+ring of regeneration:very rare
+obsidian dagger:very rare
+Speedy Boots:rrare
 gold pens(21-24):rare
 }
 lv7{
-magma armor:rare
+magma armor:very rare
 Mace of Justice:very rare
-amulet of super sexiness:extremely rare
+amulet of super sexiness:rrare
 gold pens(25-30):rare
 }
 food{
@@ -70,14 +84,14 @@ END
 MOBSPAW
 dungeon{
 mobs[
-0:tslim1*04,pig000*01
-1:sslim1*08,tslim1*04,pig000*01
-2:sslim1*02,scorp1*01
-3:plant1*02,scorp1*02,sslim1*01
-4:mslim1*01,plant1*04,scorp1*04,tslim1*01
-5:mslim1*01,plant1*02,scorp1*02
-6:mslim1*01,plant1*01
-7:mslim1*01
+0:tslim1*16,pig000*04
+1:sslim1*12,tslim1*06,pig000*01
+2:sslim1*12,scorp1*06
+3:plant1*08,scorp1*08,sslim1*04
+4:mslim1*02,plant1*08,scorp1*08,tslim1*02
+5:mslim1*04,plant1*08,scorp1*08
+6:mslim1*08,plant1*08
+7:mslim1*20
 ]items[
 main:0,7
 food:0,7
@@ -88,6 +102,18 @@ lv4:3,4
 lv5:4,5
 lv6:5,6
 lv7:6,7
+]}
+goblins{
+mobs[
+1:g0blin*08(1_1,gbn3)
+2:g0blin*08(1_1,gbn!),g1blin*01(1_1,gbn3)
+3:g1blin*04(1_1,gbn!),g0blin*04(2-3,gbn3)
+4:g0blin*07(1-3,gbn!),g0blin*02(1-3,gbn?)
+5:g2blin*01(1_1,gbn6),g0blin*08(1-4,gbn!)
+6:g1blin*02(1-3,gbn!),g0blin*07(2-4,gbn!)
+7:g0blin*07(2-5,gbn!),g1blin*02(2-3,gbn!)
+8:g0blin*08(3-5,gbn!),g2blin*01(1-3,gbn6)
+9:g1blin*02(2-4,gbn!),g0blin*06(3-6,gbn!)
 ]}
 
 ~level goes 0-9

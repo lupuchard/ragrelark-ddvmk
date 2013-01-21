@@ -16,7 +16,7 @@ Helps you hit things.
 6
 32
 weight=9
-accuracy=1
+acc=1
 END
 
 ITEM

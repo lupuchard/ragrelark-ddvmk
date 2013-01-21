@@ -22,6 +22,7 @@
 #include "RandItemType.h"
 #include "graphics.h"
 #include "Blobber.h"
+#include "DungeonStack.h"
 
 #define BOOST_IOSTREAMS_NO_LIB
 
@@ -34,12 +35,6 @@
 #define MA_EAT 4
 #define MA_READ 5
 #define NUM_MENU_ACTIONS 6
-
-#define A_UNIT -1
-#define A_NONE 0
-#define A_MOVEDIR 1
-#define A_MOVELOC 2
-#define A_ATTACK 3
 
 #define GA_NONE 0
 #define GA_MOVE 1
@@ -66,8 +61,6 @@ enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, A
 
 using namespace std;
 
-typedef pair<string, StatHolder*> mob;
-
 #ifndef START_H
 #define START_H
 
@@ -92,7 +85,8 @@ class Start: FormulaUser, EnvironmentManager {
         /* --events.cpp-- */
         void events();
         void directionPress(int dir);
-        void action(int action, Unit* unit, int value1, int value2, int value3);
+        void sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude);
+        void action(SkillType skill, int exp);
         void openInventory();
         void openBag();
         void openEquipment();
@@ -176,11 +170,6 @@ class Start: FormulaUser, EnvironmentManager {
         void applyPoison(int poison, int duration, Unit* unit);
         /* --- */
 
-        /* --generator.cpp-- */
-        void generateZone(Zone* zone, int tilesetType, GenType zoneType, int x1, int y1, int x2, int y2);
-        void overgrowth(Zone* zone, GenType zoneType, int sx, int sy, int ex, int ey);
-        /* --- */
-
         color dark(color c);
         color light(color c);
 
@@ -218,24 +207,6 @@ class Start: FormulaUser, EnvironmentManager {
         void parseFormula(string line, bool errCheck, int lineNum);
         /* --- */
 
-        /* --mobSpawner.cpp */
-        int addMob(string s, string tag, StatHolder* u);
-        pair<string, StatHolder*> getMob(string tag);
-        bool placeMob(Unit* unit, Zone* z, int x, int y, bool allowAlt, int anim);
-        bool spawnMobSpeTag(int mobI, Zone* z, int x, int y, bool allowAlt, int anim);
-        bool spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt, int anim);
-        int hashMob(string tag);
-        int addEnvironment(string name);
-        void addEncounters(int type, int level, vector<pair<pair<string, StatHolder*>, unsigned int> >* encounters);
-        void createEncounters(Zone* z, int howMany, vector<pair<int, int> > possibleLocs);
-        void addItemsToEncounterLevel(int type, int level, string itemSetName);
-        void cleanSpawnData();
-        int addItemSpawnSet(string name);
-        void createItems(Zone* z, int howMany, vector<pair<int, int> > possibleLocs);
-        void addItemToSpawnSet(unsigned short item, unsigned int weight, int itemSpawnSet);
-        void addItemToSpawnSet(unsigned short item, unsigned int weight, unsigned char stackMin, unsigned char stackMax, int itemSpawnSet);
-        /* --- */
-
         /* --cleaner.cpp-- */
         void cleanup();
         /* --- */
@@ -264,21 +235,6 @@ class Start: FormulaUser, EnvironmentManager {
         unsigned short stateAction;
         /*endt*/
 
-        map<string, Tile*> tiles;
-        map<string, map<char, string>*> tileGroups;
-        map<string, Area*> areas;
-        map<string, vector<Zone*>*> areaZones;
-        map<string, Zone*> zones;
-
-        vector<Item> itemsToEquip;
-        map<string, int> itemTypeMap;
-
-        map<string, int> statMap;
-        map<string, int> conditionMap;
-        vector<pair<StatHolder*, string> > spawnPrototypes;
-        vector<int> defaultStats;
-        vector<Unit*> unitDeleteList;
-
         vector<Texture*> textures;
         Texture* structureTex;
         Texture* menuTex;
@@ -299,18 +255,35 @@ class Start: FormulaUser, EnvironmentManager {
         bool shiftIsDown;
         vector<pair<string, color> > messages;
 
-        short tempValues[8];
+        short tempValues[16];
         string tempStr;
         string tempStr2;
         map<char, string>* tempMap;
         Zone* tempZone;
         Zone* tempZone2;
         Area* tempArea;
+        DungeonStack* tempDun;
         vector<string> tempVect;
         vector<Zone*> zoneVect;
 
-        vector<Formula*> formulas;
+        vector<Item> itemsToEquip;
+        map<string, int> itemTypeMap;
+        map<string, int> statMap;
+        map<string, int> conditionMap;
+        map<string, int> skillMap;
+        vector<pair<StatHolder*, string> > spawnPrototypes;
+        map<string, MobEquipSet*> mobEquipsMap;
+        vector<int> defaultStats;
+        vector<Unit*> unitDeleteList;
 
+        map<string, Tile*> tiles;
+        map<string, map<char, string>*> tileGroups;
+        map<string, Area*> areas;
+        map<string, vector<Zone*>*> areaZones;
+        map<string, Zone*> zones;
+        map<string, DungeonStack*> dungeons;
+
+        vector<Formula*> formulas;
         int base;
 
         vector<animation*> anims;
@@ -332,6 +305,8 @@ class Start: FormulaUser, EnvironmentManager {
         double camX;
         double camY;
         long frameTime;
+
+        MobSpawner* mobSpawner;
 };
 
 #endif // START_H

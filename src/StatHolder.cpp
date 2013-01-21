@@ -2,6 +2,9 @@
 
 #define NUM_STAT_HOLDERS_SOFAR 3
 
+#include <stdexcept>
+#include <exception>
+
 FormulaUser* formUser;
 void setFormUser(FormulaUser* fUser) {
     formUser = fUser;
@@ -11,6 +14,7 @@ map<completeStat, vector<completeStat>*> afflictions;
 map<int, vector<completeStat>*> conAfflictions;
 set<Stat*> itemAfflictions;
 set<Stat*> enemyAfflictions;
+map<SkillType, set<Stat*> > skillAfflictions;
 
 set<Stat*> getItemAfflictions() {
     return itemAfflictions;
@@ -18,8 +22,11 @@ set<Stat*> getItemAfflictions() {
 set<Stat*> getEnemyAfflictions() {
     return enemyAfflictions;
 }
-vector<completeStat>* getAfflictions(Stat* s, int ownertype) {
-    completeStat cStat = pair<int, Stat*>(ownertype, s);
+set<Stat*> getSkillAfflictions(SkillType skill) {
+    return skillAfflictions[skill];
+}
+vector<completeStat>* getAfflictions(Stat* s, VOwner ownertype) {
+    completeStat cStat = pair<VOwner, Stat*>(ownertype, s);
     map<completeStat, vector<completeStat>*>::iterator p = afflictions.find(cStat);
     if (p != afflictions.end()) {
         return p->second;
@@ -34,7 +41,8 @@ vector<completeStat>* getConAfflictions(int condition){
     return NULL;
 }
 
-void addAffliction(completeStat afflictingStat, Stat* afflictedStat, int edOwner) {
+
+void addAffliction(completeStat afflictingStat, Stat* afflictedStat, VOwner edOwner) {
     if (edOwner == V_UNIT) {
         switch(afflictingStat.first) {
             case V_ITEM: itemAfflictions.insert(afflictedStat); break;
@@ -54,7 +62,7 @@ void addAffliction(completeStat afflictingStat, Stat* afflictedStat, int edOwner
     }
 }
 
-void addConAffliction(int afflictingCondition, int afflictingConOwner, Stat* afflictedStat, int edOwner) {
+void addConAffliction(int afflictingCondition, VOwner afflictingConOwner, Stat* afflictedStat, VOwner edOwner) {
     if (edOwner == V_UNIT) {
         switch(afflictingConOwner) {
             case V_ENEMY: enemyAfflictions.insert(afflictedStat); break;
@@ -70,6 +78,16 @@ void addConAffliction(int afflictingCondition, int afflictingConOwner, Stat* aff
             conAfflictions[afflictingCondition] = new vector<completeStat>;
         }
         conAfflictions[afflictingCondition]->push_back(completeStat(edOwner, afflictedStat));
+    }
+}
+
+void addSkillAffliction(SkillType afflictingSkill, Stat* afflictedStat) {
+    map<SkillType, set<Stat*> >::iterator i = skillAfflictions.find(afflictingSkill);
+    if (i == skillAfflictions.end()) {
+        skillAfflictions[afflictingSkill] = set<Stat*>();
+        skillAfflictions[afflictingSkill].insert(afflictedStat);
+    } else {
+        i->second.insert(afflictedStat);
     }
 }
 
@@ -193,7 +211,9 @@ void StatHolder::needToUpdate(int stat, bool isFloat) {
 
 short StatHolder::getStatValue(int stat) {
     if (hashMapped) {
-        pair<short, bool> val = (*tempHashMap)[stat];
+        unordered_map<unsigned char, pair<short, bool> >::iterator i = tempHashMap->find(stat);
+        if (i == tempHashMap->end()) return 0;
+        pair<short, bool> val = i->second;
         if (val.second) {
             Stat* s = getStat((VOwner)owner, stat);
             int temp = val.first;
@@ -211,9 +231,6 @@ short StatHolder::getStatValue(int stat) {
         return 0;
     }
     if (toBeUpdatedInt[i]) {
-        if (stat == S_DEFENSE) {
-            cout << "well then all the hats" << endl;
-        }
         Stat* s = getStat((VOwner)owner, stat);
         int temp = intValues[i];
         intValues[i] = s->getFormula()->run(formUser, aThis, intValues[i]);
@@ -227,7 +244,9 @@ short StatHolder::getStatValue(int stat) {
 
 float StatHolder::getStatValueF(int stat) {
     if (hashMapped) {
-        pair<float, bool> val = (*tempFloatHashMap)[stat];
+        unordered_map<unsigned char, pair<float, bool> >::iterator i = tempFloatHashMap->find(stat);
+        if (i == tempFloatHashMap->end()) return 0;
+        pair<float, bool> val = i->second;
         if (val.second) {
             Stat* s = getStat((VOwner)owner, stat);
             float temp = val.first;

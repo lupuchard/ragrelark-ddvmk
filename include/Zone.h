@@ -12,20 +12,14 @@ enum GenType{GEN_NONE = 0, GEN_MYDUN = 1, GEN_BSP = 2, GEN_DUNGEON = 10};
 
 //takes up 16 bytes when not filled
 
-typedef struct {
-    short x;
-    short y;
-    short value;
-    char type;
-} modification;
-
 class Zone: public StatHolder {
     public:
-        Zone(int width, int height, int numDiffTiles, int lightness, int fill, int mType);
+        Zone(string name, int width, int height, int lightness, bool fill);
         virtual ~Zone();
         int getWidth();
         int getHeight();
         unsigned char getLightness();
+        string getName();
         Tile* getTileAt(int x, int y);
         Tile* safeGetTileAt(int x, int y);
         Location* getLocationAt(int x, int y);
@@ -33,38 +27,31 @@ class Zone: public StatHolder {
         Location* safeGetLocationAt(int x, int y);
 
         int addTile(Tile* t);
-        void setTileset(int num, Tile** tileset);
+        //void setTileset(vector<Tile*>* tileSet);
         int getNumTiles();
 
         void fillTiles(int* tiles);
         void fillHeights(int* heights);
         void fillStructs(int* structs);
 
-        void becomeGenned();
         void fill();
-        int isFilled();
-        void addModification(int x, int y, char type, int value);
+        bool isFilled();
 
-        GenType getGenType();
-        int getMobType();
-        unsigned char getMobSpawnLevel();
-        void setMobSpawnLevel(unsigned char mobSpawnLevel);
-
-        int getNumReserved();
-        pair<int, int> getRes(int index);
+        void tagDungeon(int index, int depth);
+        pair<int, int> dungeonTag();
     protected:
     private:
         Location* locs;
-        Tile** tiles;
-        char numTiles; //negative means shared tileset
-        char filled; //0 = unfilled, 1 = filled & generated, negative is unfilled and specifies generation type
+        vector<Tile*>* tiles;
+        bool ownedTiles;
+        bool filled;
         unsigned char lightness; //0 - 11, 0 = blind, 1 - 10 = normal, 11 = surface
-        unsigned char mobType;
-        unsigned char mobSpawnLevel;
         unsigned short width;
         unsigned short height;
-        vector<modification>* modifications;
-        bool hasModifications;
+        string name;
+
+        char stackIndex;
+        unsigned char stackDepth;
 };
 
 #endif // ZONE_H

@@ -17,6 +17,7 @@ class EquipmentFolder : public ItemFolder, public StatHolder {
         Item equipItem(Item item, int itemTypeType);
 
         short getStatValue(int stat);
+        float getStatValueF(int stat);
         void needToUpdate(int stat);
     protected:
     private:

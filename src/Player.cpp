@@ -1,8 +1,10 @@
 #include "Player.h"
 
 Player::Player() {
-    //zone = z;
-    //unit = u;
+    for (int i = 0; i < NUM_SKILLS; i++) {
+        skillExps[i] = 0;
+        skillLevels[i] = 0;
+    }
 }
 
 Player::~Player() {
@@ -78,4 +80,36 @@ void Player::setUnitProto(StatHolder* proto) {
 
 void Player::setName(string n) {
     name = n;
+}
+
+int Player::gainSkillExp(SkillType skill, int xpGained) {
+    skillExps[skill] += xpGained;
+    if (skillExps[skill] < 0) {
+        if (skillLevels[skill] >= 0) {
+            int prevXpReq;
+            if (skillLevels[skill] == 1) prevXpReq = 100;
+            else prevXpReq = (int)(pow(skillLevels[skill] - 1, 1.1) * 30.);
+            skillExps[skill] += prevXpReq;
+            skillLevels[skill]--;
+            return -1;
+        }
+        return 0;
+    }
+    int xpReq = (int)(pow(skillLevels[skill] + 1, 1.1) * 30.);
+    int fooey = 0;
+    while (skillExps[skill] >= xpReq) {
+        skillExps[skill] -= xpReq;
+        skillLevels[skill]++;
+        fooey++;
+    }
+    return fooey;
+}
+
+unsigned short Player::getSkillLevel(SkillType skill) {
+    return skillLevels[skill];
+}
+
+int Player::getSkillExpPercent(SkillType skill) {
+    int xpReq = (int)(pow(skillLevels[skill] + 1, 1.1) * 30.);
+    return skillExps[skill] * 100 / xpReq;
 }

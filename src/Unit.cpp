@@ -36,11 +36,16 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT) {
     pointOnPath = -1;
     currentPath = NULL;
     theTime = 0;
+    equipment = NULL;
 }
 
 Unit::~Unit() {
     removeHashMaps();
     unitPrototype->removeHashMaps();
+    if (equipment) {
+        delete[] equipment->equips;
+        delete equipment;
+    }
 }
 
 void Unit::setStat(int stat, int value) {

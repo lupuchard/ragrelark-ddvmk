@@ -86,7 +86,7 @@ $blue feather
 
 END
 
-CONNECTION
+STAIRS
 foomfield
 
 map1
@@ -101,7 +101,6 @@ MAP
 bigroom
 >foomfield
 *2
-@@1
 
 :ruins
 
@@ -157,37 +156,25 @@ END
 ~ge generation type
 
 MAPSTACK
-dungon
-in foomfield
-lt 4
-sp 0
-lv 0,3
-ge 10
+dungon 24,10
+>foomfield
 
+light 60
+spawn 0,1
+level 0+.3334
+dim 52,52
+stair 6
+!!!
 :ruins
-
-~dimensions
-50,50
-
-~num floors and num stairs per floor
-24,6
 END
 
-CONNECTION
+STAIRS
 foomfield
 
 map1
 2,2
 
-dungon1
-12,12
-END
-
-FEATURE
-dungon1
-
-<q
-12,12
+dungon
 END
 
 TILEDMAPS
@@ -196,7 +183,7 @@ yesland
 prototype.tmx
 END
 
-CONNECTION
+STAIRS
 foomfield
 
 yesland

@@ -9,10 +9,6 @@ Tile::Tile(int loc, int tex, int type, int border): StatHolder(V_TILE) {
     g.border = border;
 }
 
-Tile::~Tile() {
-    //dtor
-}
-
 graphic Tile::getGraphic() {
     return g;
 }

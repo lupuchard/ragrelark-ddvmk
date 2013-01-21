@@ -13,7 +13,10 @@ libsdl1.2debian
 void Start::directionPress(int direction) {
     if (state == STATE_PLAY) {
         if (direction == 5) {
-            player->getUnit()->theTime += 5;
+            //player->getUnit()->theTime += 5;
+            changeLoc(player->getUnit(), player->getZone(), player->getUnit()->x, player->getZone()->getHeight() - 1);
+            moveUnit(player->getUnit(), player->getZone(), 2);
+            primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
         } else {
             moveUnit(player->getUnit(), player->getZone(), direction);
             primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
@@ -243,12 +246,39 @@ void Start::enterTargetMode() {
     }
 }
 
-void Start::action(int action, Unit* unit, int value1, int value2, int value3) {
-    switch(action) {
-        case A_MOVEDIR:
-            rMoveDir(unit, value1, value2, value3);
-            break;
-        default: break;
+void Start::action(SkillType skill, int exp) {
+    int toteExp = player->getUnit()->modifyStat(S_EXP, exp);
+    int lev = player->gainSkillExp(skill, exp);
+    if (lev) {
+        int level = player->getSkillLevel(skill);
+        int leve = level / 10;
+        int evel = level % 10;
+        if (lev > 0) {
+            addMessage("Your " + skillNames[skill] + " has leveled up to " + its(leve) + "." + its(evel) + "!", forest);
+        } else {
+            addMessage("Your " + skillNames[skill] + " has gone down to " + its(leve) + "." + its(evel) + "!", maroon);
+        }
+        set<Stat*> skillAfflictions = getSkillAfflictions(skill);
+        for (set<Stat*>::iterator i = skillAfflictions.begin(); i != skillAfflictions.end(); i++) {
+            Stat* theStat = (Stat*)*i;
+            player->getUnit()->needToUpdate(theStat->getIndex(), theStat->isItFloat());
+        }
+    }
+    int expReq = player->getUnit()->getStatValue(S_EXPREQ);
+    if (toteExp >= expReq) {
+        player->getUnit()->modifyStat(S_EXP, -expReq);
+        player->getUnit()->modifyStat(S_LEVEL, 1);
+    }
+}
+
+void Start::sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude) {
+    if (sapper == player->getUnit()) {
+        int expLeft = target->getStatValue(S_EXP);
+        if (expLeft) {
+            int gain = min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
+            action(skill, gain);
+            target->modifyStat(S_EXP, -gain);
+        }
     }
 }
 
@@ -258,10 +288,17 @@ bool Start::equipItem(Item item) {
     if (typeSlot != E_NONE && typeSlot != E_AMMO) {
         Item oldItem = primeFolder->getEquips()->equipItem(item, itemType->getType());
         int oldItemTypeType = getItemType(oldItem.itemType)->getType();
-        if (oldItemTypeType == 2) {
-            return false;
-        }
-        if (!(oldItemTypeType == 0 || oldItemTypeType == I_SLOT)) {
+        if (oldItemTypeType == I_SLOT) {
+            if (oldItem.quantityCharge == 1) {
+                return false;
+            } else if (oldItem.quantityCharge == 2) {
+                Item qux = primeFolder->getEquips()->removeItem(E_LHAND);
+                Item quux = primeFolder->getEquips()->removeItem(E_RHAND);
+                if (!primeFolder->getBag()->addItem(&qux)) primeFolder->getGround()->addItem(&qux);
+                if (!primeFolder->getBag()->addItem(&quux)) primeFolder->getGround()->addItem(&quux);
+                primeFolder->getEquips()->equipItem(item, itemType->getType());
+            }
+        } else if (oldItemTypeType != 0) {
             if (!primeFolder->getBag()->addItem(&oldItem)) {
                 primeFolder->getGround()->addItem(&oldItem);
             }
@@ -274,7 +311,6 @@ bool Start::equipItem(Item item) {
             Stat* theStat = (Stat*)*i;
             player->getUnit()->needToUpdate(theStat->getIndex(), theStat->isItFloat());
         }
-        cout << "ham is with all the cats? " << player->getUnit()->getStatValue(S_MOVESPEED) << " " << player->getUnit()->getStatValue(S_DEFENSE) << " " << player->getUnit()->getStatValue(S_MELDAMAGE) << endl;
         return true;
     }
     return false;
@@ -374,12 +410,10 @@ void Start::enterCommand() {
         switch(stateAction) {
             case SA_FIRE: {
             int range = typeRanges[getItemType(primeFolder->getEquips()->getItem(E_RHAND)->itemType)->getType()];
-            cout << "okayy " << range << endl;
             if (range) {
                 Item* items = primeFolder->getBag()->getItems();
                 for (int i = 0; i < primeFolder->getBag()->getNumItems(); i++) {
                     ItemType* itemType = getItemType(items[i].itemType);
-                    cout << "okay " << itemType->getType() << " " << range << endl;
                     if (itemType->getType() == range) {
                         primeFolder->getEquips()->equipItem(items[i], itemType->getType());
                         Item item = items[i];

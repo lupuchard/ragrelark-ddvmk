@@ -2,104 +2,42 @@
 
 Location* def = new Location(0);
 
-Zone::Zone(int w, int h, int numDiffTiles, int light, int fill, int mType): StatHolder(V_ZONE) {
-    hasModifications = false;
+Zone::Zone(string nam, int w, int h, int light, bool fill): StatHolder(V_ZONE) {
     width = w;
     height = h;
-    if (numDiffTiles) {
-        tiles = new Tile*[numDiffTiles];
-        //ownTileset = true;
-    }
-    if (fill < 0) {
-        filled = fill;
-    } else if (fill > 0) {
-        locs = new Location[width * height];
-        filled = 1;
-    } else {
-        filled = 0;
-    }
-    numTiles = 0;
+    name = nam;
+    filled = fill;
+    if (fill) locs = new Location[width * height];
+    ownedTiles = false;
+    tiles = NULL;
     lightness = light;
-    mobType = mType;
-    mobSpawnLevel = 0;
+
+    stackIndex = -1;
+    stackDepth = 0;
 }
 
 Zone::~Zone() {
-    if (numTiles < 0) {
-        delete[] tiles;
+    if (ownedTiles) {
+        delete tiles;
     }
     if (filled) {
         delete[] locs;
     }
 }
 
-void Zone::setTileset(int num, Tile** tileset) {
-    numTiles = num;
-    tiles = tileset;
-}
-
-int Zone::isFilled() {
-    return filled > 0;
-}
-
-GenType Zone::getGenType() {
-    return (GenType)-filled;
-}
-
-int Zone::getMobType() {
-    return mobType;
+bool Zone::isFilled() {
+    return filled;
 }
 
 void Zone::fill() {
-    if (filled <= 0) {
+    if (!filled) {
         locs = new Location[width * height];
-        filled = 1;
+        filled = true;
     }
 }
 
-void Zone::becomeGenned() {
-    filled = 2;
-    if (modifications) {
-        for (unsigned int i = 0; i < modifications->size(); i++) {
-            modification m = (*modifications)[i];
-            switch(m.type) {
-                case '$': getLocationAt(m.x, m.y)->addItem(Item(m.value)); break;
-                //case '@': TODO spawn unit
-                case '^': getLocationAt(m.x, m.y)->height = m.value; break;
-                case '<': getLocationAt(m.x, m.y)->structure = m.value; break;
-                case '.': getLocationAt(m.x, m.y)->tile = m.value; break;
-                case '0': break;
-                default: break;
-            }
-        }
-        delete modifications;
-    }
-}
-
-void Zone::addModification(int x, int y, char type, int value) {
-    if (!hasModifications) {
-        modifications = new vector<modification>;
-        hasModifications = true;
-    }
-    modification m;
-    m.x = x;
-    m.y = y;
-    m.type = type;
-    m.value = value;
-    modifications->push_back(m);
-}
-
-int Zone::getNumReserved() {
-    return modifications->size();
-}
-
-pair<int, int> Zone::getRes(int i) {
-    modification m = (*modifications)[i];
-    return pair<int, int>(m.x, m.y);
-}
-
-int Zone::getNumTiles() {
-    return numTiles;
+string Zone::getName() {
+    return name;
 }
 
 int Zone::getWidth() {
@@ -114,21 +52,9 @@ unsigned char Zone::getLightness() {
     return lightness;
 }
 
-unsigned char Zone::getMobSpawnLevel() {
-    return mobSpawnLevel;
-}
-
-void Zone::setMobSpawnLevel(unsigned char v) {
-    mobSpawnLevel = v;
-}
-
-Tile* Zone::getTileAt(int x, int y) {
-    return tiles[locs[x + y * width].tile];
-}
-
 Tile* Zone::safeGetTileAt(int x, int y) {
     if (x < 0 || y < 0 || x >= width || y >= width) {
-        return tiles[0];
+        return (*tiles)[0];
     }
     return getTileAt(x, y);
 }
@@ -148,10 +74,22 @@ Location* Zone::safeGetLocationAt(int x, int y) {
     return getLocationAt(x, y);
 }
 
-int Zone::addTile(Tile* t) {
-    tiles[(int)numTiles] = t;
-    return numTiles++;
+Tile* Zone::getTileAt(int x, int y) {
+    return (*tiles)[locs[x + y * width].tile];
 }
+
+int Zone::addTile(Tile* t) {
+    if (!ownedTiles) tiles = new vector<Tile*>();
+    tiles->push_back(t);
+    ownedTiles = true;
+    return tiles->size() - 1;
+}
+
+/*void Zone::setTileset(vector<Tile*>* tileSet) {
+    if (ownedTiles) delete tiles;
+    tiles = tileSet;
+    ownedTiles = false;
+}*/
 
 void Zone::fillTiles(int* tiles) {
     int totes = width * height;
@@ -172,4 +110,12 @@ void Zone::fillStructs(int* structs) {
     for (int i = 0; i < totes; i++) {
         locs[i].structure = structs[i];
     }
+}
+
+void Zone::tagDungeon(int index, int depth) {
+    stackIndex = index;
+    stackDepth = depth;
+}
+pair<int, int> Zone::dungeonTag() {
+    return pair<int, int>(stackIndex, stackDepth);
 }

@@ -15,7 +15,6 @@ class Tile : public StatHolder {
     public:
         //Tile();
         Tile(int loc, int tex, int type, int border);
-        virtual ~Tile();
         graphic getGraphic();
     protected:
     private:

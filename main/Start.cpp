@@ -36,6 +36,9 @@ void Start::prepare() {
 
     setFormUser(this);
     setEnvironmentManager(this);
+    setEnvironmentManager(this);
+    mobSpawner = new MobSpawner(this);
+    setMobSpawner(mobSpawner);
 
     world = new World();
     player = new Player();
@@ -65,7 +68,6 @@ void Start::prepare() {
 }
 
 void Start::execute() {
-
     int numFrames = 0;
     Uint32 startTime = SDL_GetTicks();
     playerFieldOfView(true);
@@ -159,7 +161,7 @@ void Start::addMessage(string message, color c) {
 void Start::findAreaUnits() {
     areaUnits.clear();
     Area* area = player->getArea();
-    for (int i = 0; i < area->getNumZones(); i++) {
+    for (unsigned int i = 0; i < area->getNumZones(); i++) {
         Zone* zone = area->getZone(i);
         if (zone->isFilled()) {
             for (int j = 0; j < zone->getWidth(); j++) {

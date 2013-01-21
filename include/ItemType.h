@@ -15,7 +15,7 @@ const string typeNames[] = {"none", "anon", "rem", "slot", "", "", "", "", "", "
     "ring", "", "", "", "", "", "", "", "", "food", "", "liquid", "", "potion", "", "coin",                                             //32-47
     "", "tool", "", "furniture", "", "ore", "resource", "seed", "", "book", "", "map", "", "monster part", "", "lighter",                    //48-63
     "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",                                                                     //64-79
-    "axe", "mace", "bow", "dagger", "dart", "sling", "crossbow", "spear", "staff", "club", "hammer", "large hammer", "knife", "javelin", "trident", "scythe", //80-95
+    "axe", "mace", "bow", "dagger", "dart", "sling", "crossbow", "spear", "staff", "club", "hammstaer", "large hammer", "knife", "javelin", "trident", "scythe", //80-95
     "whip", "flail", "sword", "greatsword", "gun", "automatic gun", "cordumbed gommer", "icg", "lance", "ammo", "arrow", "bolt", "bullet", "", "hat", "helm", //96-111
     "bandana", "", "", "shield", "spellbook", "orb", "", "", "cape", "", "", "", "", "backpack", "quiver", "",                          //112-127
     "", "", "necklace", "amulet", "", "", "", "gloves", "gauntlets", "mittens", "", "", "belt", "", "", "",                             //128-143

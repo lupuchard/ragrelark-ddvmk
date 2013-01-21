@@ -2,6 +2,7 @@
 #include "StatHolder.h"
 #include "Stat.h"
 #include "Tile.h"
+#include "Item.h"
 using namespace std;
 
 #ifndef UNIT_H
@@ -15,6 +16,12 @@ typedef struct {
     short* pathYs;
     bool cUnits;
 } path;
+
+typedef struct {
+    short len;
+    short type;
+    Item* equips;
+} MobEquips;
 
 enum MobActionState{MAS_NONE, MAS_ATTACK, MAS_FLEE};
 
@@ -31,6 +38,7 @@ class Unit: public StatHolder {
         path* currentPath;
         short pointOnPath;
         unsigned short actionState;
+        MobEquips* equipment;
 
         void setStat(int stat, int value);
         short getStatValue(int stat);

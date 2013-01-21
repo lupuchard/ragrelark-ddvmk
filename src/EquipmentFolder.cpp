@@ -62,7 +62,7 @@ Item EquipmentFolder::equipItem(Item item, int itemTypeType) {
             returnItem = equipment[E_RHAND];
             equipment[E_RHAND] = item;
         } else {
-            returnItem = emptySlots[E_LHAND];
+            returnItem.quantityCharge = 2;
         }
     }
     return returnItem;
@@ -72,6 +72,13 @@ short EquipmentFolder::getStatValue(int stat) {
     int value = 0;
     for (int i = 0; i < HA_REAL_NUM_EQUIP_SLOTS; i++) {
         value += getItemType(equipment[i].itemType)->getStatValue(stat);
+    }
+    return value;
+}
+float EquipmentFolder::getStatValueF(int stat) {
+    float value = 0;
+    for (int i = 0; i < HA_REAL_NUM_EQUIP_SLOTS; i++) {
+        value += getItemType(equipment[i].itemType)->getStatValueF(stat);
     }
     return value;
 }

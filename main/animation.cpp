@@ -22,7 +22,7 @@ const char dirIndices[] = {0, 1, 2, 3, 2, 1};
 const char fwubs[] = {0,  7,  0,  1,  6,  0,  2,  5,  4,  3};
 void Start::drawAnim(animation* anim, int z) {
     switch(anim->type) {
-        case A_MOVEDIR: {
+        case ANIM_MOVEDIR: {
             Unit* u = anim->target;
             double x2 = anim->startX + xDirs[anim->dir] * TILE_SIZE * anim->temp;
             double y2 = anim->ZY;
@@ -32,7 +32,7 @@ void Start::drawAnim(animation* anim, int z) {
             }
             drawUnit((int)x2, (int)y2, u);
         } break;
-        case A_MOVELOC: {
+        case ANIM_MOVELOC: {
             Unit* u = anim->target;
             double x2 = anim->startX + ((anim->value - 1) * TILE_SIZE - (anim->startX)) * anim->temp;
             double y2 = anim->ZY;
@@ -42,7 +42,7 @@ void Start::drawAnim(animation* anim, int z) {
             }
             drawUnit((int)x2, (int)y2, u);
         } break;
-        case A_ATTACK: {
+        case ANIM_ATTACK: {
             double prorp = (double)anim->time / (double)anim->end;
             int dType = anim->value >> 4;
             int hType = anim->value & 0xF;
@@ -60,7 +60,7 @@ void Start::drawAnim(animation* anim, int z) {
                         (anim->dir + 2) / 6, (anim->dir + 2) % 6 > 2);
             glColor4f(1, 1, 1, 1);
         } break;
-        case A_UNIT: drawUnit(anim->startX, anim->startY, anim->target); break;
+        case ANIM_UNIT: drawUnit(anim->startX, anim->startY, anim->target); break;
         default: break;
     }
     if (anim->time > anim->end) {
@@ -109,14 +109,14 @@ void Start::updateAnims() {
         anim->time++;
         int z = 0;
         switch(anim->type) {
-            case A_MOVEDIR: {
+            case ANIM_MOVEDIR: {
                 float amount = speedAnim((double)anim->time / (double)anim->end);
                 z = anim->startY + yDirs[anim->dir] * TILE_SIZE * amount;
                 anim->ZY = z; //the y is calculated and stored ahead of time because Z needs to be calculated early for order. X is calculated at the actual rendering
                 anim->temp = amount;
                 z += Z_UNIT;
             } break;
-            case A_MOVELOC: {
+            case ANIM_MOVELOC: {
                 float amount = speedAnim((double)anim->time / (double)anim->end);
                 //int y = (anim->value - 1) * TILE_SIZE * amount;
                 z = anim->startY + ((anim->dir - 1) * TILE_SIZE - (anim->startY)) * amount;//(anim->dir - 1) * TILE_SIZE * amount;
@@ -134,14 +134,14 @@ void Start::unitAnimTest(Unit* u, int x, int y) {
     bool has = false;
     for (unsigned int i = 0; i < anims.size(); i++) {
         int animType = anims[i]->type;
-        if (animType != A_ATTACK && anims[i]->target == u) {
+        if (animType != ANIM_ATTACK && anims[i]->target == u) {
             has = true;
             break;
         }
     }
     if (!has) {
         animation* newAnim = new animation;
-        newAnim->type = A_UNIT;
+        newAnim->type = ANIM_UNIT;
         newAnim->target = u;
         newAnim->startX = x;
         newAnim->startY = y;
@@ -154,7 +154,7 @@ void Start::unitAnimTest(Unit* u, int x, int y) {
 
 void Start::rMoveDir(Unit* unit, int dir, int x, int y) {
     animation* moveAnim = new animation;
-    moveAnim->type = (unsigned short)A_MOVEDIR;
+    moveAnim->type = (unsigned short)ANIM_MOVEDIR;
     moveAnim->dir = (unsigned char)dir;
     moveAnim->startX = (unsigned short)(x * TILE_SIZE);
     moveAnim->startY = (unsigned short)(y * TILE_SIZE);
@@ -166,7 +166,7 @@ void Start::rMoveDir(Unit* unit, int dir, int x, int y) {
 
 void Start::rMoveLoc(Unit* unit, int x, int y, int endX, int endY) {
     animation* moveAnim = new animation;
-    moveAnim->type = (unsigned short)A_MOVELOC;
+    moveAnim->type = (unsigned short)ANIM_MOVELOC;
     moveAnim->value = (unsigned char)(endX + 1);
     moveAnim->dir = (unsigned char)(endY + 1);
     moveAnim->startX = (unsigned short)(x * TILE_SIZE);
@@ -179,7 +179,7 @@ void Start::rMoveLoc(Unit* unit, int x, int y, int endX, int endY) {
 
 void Start::rAttack(int x, int y, int dir, int dType, int hType) {
     animation* attackAnim = new animation;
-    attackAnim->type = A_ATTACK;
+    attackAnim->type = ANIM_ATTACK;
     attackAnim->dir = fwubs[dir] * 3 + rand() % 5 - 2;
     if (attackAnim->dir > 24) {
         attackAnim->dir += 24;

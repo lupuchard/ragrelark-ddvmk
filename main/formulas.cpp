@@ -12,9 +12,11 @@ int Start::getVarValue(VOwner target, VType type, int index, StatHolderIntef* st
     StatHolder* foundStatHolder = findStatHolder(target, (StatHolder*)statHolder);
     switch(type) {
         case V_STAT: return foundStatHolder->getStatValue(index); break;
-        case V_SKILL: break;
-        case V_CONDITION: return foundStatHolder->getCondition(index);
-        break;
+        case V_SKILL: {
+            if (foundStatHolder == player->getUnit()) return player->getSkillLevel((SkillType)index);
+            else return 0;
+        } break;
+        case V_CONDITION: return foundStatHolder->getCondition(index); break;
         default: break;
     }
     return 0;
@@ -24,9 +26,11 @@ float Start::getVarValueF(VOwner target, VType type, int index, StatHolderIntef*
     StatHolder* foundStatHolder = findStatHolder(target, (StatHolder*)statHolder);
     switch(type) {
         case V_STAT: return foundStatHolder->getStatValue(index); break; //NOTE: UNABLE TO RETRIEVE FLOAT VARIABLES FROM FORMULA AT THIS TIME
-        case V_SKILL: break;
-        case V_CONDITION: return foundStatHolder->getCondition(index);
-        break;
+        case V_SKILL: {
+            if (foundStatHolder == player->getUnit()) return player->getSkillLevel((SkillType)index);
+            else return 0;
+        } break;
+        case V_CONDITION: return foundStatHolder->getCondition(index); break;
         default: break;
     }
     return 0;
@@ -59,6 +63,7 @@ void Start::conditionChanged(int condition, StatHolderIntef* statHolder) {
 }
 
 StatHolder emptyStatHolder = StatHolder(V_ITEM);
+StatHolder enemyEquipStatHolder = EnemyEquipStatHolder();
 
 StatHolder* Start::findStatHolder(int target, StatHolder* statHolderFrom) {
     VOwner owner = statHolderFrom->getOwner(); //step 8
@@ -128,8 +133,9 @@ int Start::getTime() {
 
 void Start::parseFormula(string line, bool errCheck, int lineNum) {
     Formula* newFormula = new Formula(1);
-    vector<pair<VOwner, Stat*> > statsForFormula;
-    vector<pair<VOwner, int> > conditionsForFormula;
+    set<pair<VOwner, Stat*> > statsForFormula;
+    set<pair<VOwner, int> > conditionsForFormula;
+    set<SkillType> skillsForFormula;
     bool isFloat = false;
     int start = 0;
     line = line + " ";
@@ -175,6 +181,8 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
             else if (s == "PI" || s == "PIE")   {newFormula->pushOperator(O_PIE); }
             else {
                 VOwner target = V_WORLD;
+                VType type = V_STAT;
+                int aStatConSkill = 0;
                 switch(s[0]) {
                     case 'u': target = V_UNIT; break;
                     case 'w': target = V_WORLD; break;
@@ -183,27 +191,34 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
                     case 't': target = V_TILE; break;
                     case 'a': target = V_AREA; break;
                     case 'e': target = V_ENEMY; break;
+                    case '$': {
+                        target = V_UNIT;
+                        type = V_SKILL;
+                        map<string, int>::iterator it = skillMap.find(s.substr(1, 100));
+                        if (it == skillMap.end()) printFileErr("There is an ISSUE with a skill in this formula!", lineNum);
+                        aStatConSkill = it->second;
+                        skillsForFormula.insert((SkillType)aStatConSkill);
+                    } break;
                     default: if (errCheck) {printFileErr("There is something WRONG with this formula!", lineNum);} break;
                 }
-                VType type = V_STAT;
-                int aStatConSkill = 0;
-                switch(s[1]) {
-                    case '-': {
-                        type = V_STAT;
-                        map<string, int>::iterator it = statMap.find(s.substr(2, 100));
-                        if (it == statMap.end()) printFileErr("There is an ISSUE with a stat in this formula!", lineNum);
-                        aStatConSkill = it->second;
-                        statsForFormula.push_back(pair<VOwner, Stat*>(target, getStat(target, aStatConSkill)));
-                    } break;
-                    case '|': {
-                        type = V_CONDITION;
-                        map<string, int>::iterator it = conditionMap.find(s.substr(2, 100));
-                        if (it == conditionMap.end()) printFileErr("There is an ISSUE with a condition in this formula!", lineNum);
-                        aStatConSkill = it->second;
-                        conditionsForFormula.push_back(pair<VOwner, int>(target, aStatConSkill));
-                    } break;
-                    case '~': type = V_SKILL; break;
-                    default: if (errCheck) {printFileErr("There is something INCORRECT about this formula!", lineNum);} break;
+                if (type != V_SKILL) {
+                    switch(s[1]) {
+                        case '-': {
+                            type = V_STAT;
+                            map<string, int>::iterator it = statMap.find(s.substr(2, 100));
+                            if (it == statMap.end()) printFileErr("There is an ISSUE with a stat in this formula!", lineNum);
+                            aStatConSkill = it->second;
+                            statsForFormula.insert(pair<VOwner, Stat*>(target, getStat(target, aStatConSkill)));
+                        } break;
+                        case '|': {
+                            type = V_CONDITION;
+                            map<string, int>::iterator it = conditionMap.find(s.substr(2, 100));
+                            if (it == conditionMap.end()) printFileErr("There is an ISSUE with a condition in this formula!", lineNum);
+                            aStatConSkill = it->second;
+                            conditionsForFormula.insert(pair<VOwner, int>(target, aStatConSkill));
+                        } break;
+                        default: if (errCheck) {printFileErr("There is something INCORRECT about this formula!", lineNum);} break;
+                    }
                 }
                 newFormula->pushVar(target, type, aStatConSkill);
             }
@@ -211,13 +226,14 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
         }
     }
     Stat* newStat = new Stat(tempStr, newFormula, getNumStats((VOwner)tempValues[0]), isFloat);
-    for (unsigned int i = 0; i < statsForFormula.size(); i++) {
-        //VOwner onw = statsForFormula[i].first;
-        //if (true || onw == V_ITEM) cout << "i hope so " << (int)onw << " " << (int)newStat->getIndex() << endl;
-        addAffliction(statsForFormula[i], newStat, tempValues[0]);
+    for (set<pair<VOwner, Stat*> >::iterator i = statsForFormula.begin(); i != statsForFormula.end(); i++) {
+        addAffliction(*i, newStat, (VOwner)tempValues[0]);
     }
-    for (unsigned int i = 0; i < conditionsForFormula.size(); i++) {
-        addConAffliction(conditionsForFormula[i].second, conditionsForFormula[i].first, newStat, tempValues[0]);
+    for (set<pair<VOwner, int> >::iterator i = conditionsForFormula.begin(); i != conditionsForFormula.end(); i++) {
+        addConAffliction(i->second, i->first, newStat, (VOwner)tempValues[0]);
+    }
+    for (set<SkillType>::iterator i = skillsForFormula.begin(); i != skillsForFormula.end(); i++) {
+        addSkillAffliction(*i, newStat);
     }
     statMap[tempStr] = addStat((VOwner)tempValues[0], newStat);
     statsForFormula.clear();

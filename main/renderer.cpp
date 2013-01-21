@@ -203,9 +203,20 @@ void Start::drawUnit(int x, int y, Unit* unit) {
         drawTileSuperSpe(x, y + TILE_SIZE - 4, Z_UNIT + y + 1, wid - 1, 4, menuTex, 96, 0, wid - 1, 4);
         drawTileSuperSpe(x + wid - 1, y + TILE_SIZE - 4, Z_UNIT + y + 1, 2, 4, menuTex, 126, 0, 2, 4);
     }
-    if (unit == player->getUnit()) {
-        Item* items = primeFolder->getEquips()->getItems();
-        for (int i = 0; i < primeFolder->getEquips()->getNumItems(); i++) {
+    if (unit == player->getUnit() || unit->equipment) {
+        Item* items;
+        int numItems;
+        bool pl;
+        if (unit == player->getUnit()) {
+            items = primeFolder->getEquips()->getItems();
+            numItems = primeFolder->getEquips()->getNumItems();
+            pl = true;
+        } else {
+            items = unit->equipment->equips;
+            numItems = unit->equipment->len;
+            pl = false;
+        }
+        for (int i = 0; i < numItems; i++) {
             ItemType* item = getItemType(items[i].itemType);
             bool gendered = false;
             int wid = 0;
@@ -225,7 +236,18 @@ void Start::drawUnit(int x, int y, Unit* unit) {
             if (wid) {
                 int xMid = 0;
                 int yMid = 0;
-                switch(i) {
+                int j;
+                if (pl) j = i;
+                else {
+                    int typ = typeSlots[item->getType()];
+                    switch(typ) {
+                        case E_BHANDS: j = E_RHAND;
+                        case E_BBHANDS: j = E_RHAND;
+                        case E_RING: j = E_RING1;
+                        default: j = typ;
+                    }
+                }
+                switch(j) {
                     case E_HEAD: xMid = 16; yMid = 8; break;
                     case E_FACE: xMid = 16; yMid = 8; break;
                     case E_BACK: xMid = 16; yMid = 16; break;
@@ -358,6 +380,80 @@ void Start::renderSidePanels() {
         renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, black);
     }
     renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, black);
+    renderText(player->getZone()->getName(), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, charcoal);
+
+    static const int numFunctionalSkills = 7;
+    static const SkillType functionalSkills[] = {SKL_MELEE, SKL_LIFT, SKL_FORT, SKL_CONC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
+    int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
+    for (int i = 0; i < numFunctionalSkills; i++) {
+        renderText(capitalize(skillNames[functionalSkills[i]]), 2, soff, toff + i * 40, Z_MENU + 2, RIGHT, dark(teal));
+        int level = player->getSkillLevel(functionalSkills[i]);
+        int eve = player->getSkillExpPercent(functionalSkills[i]);
+        string s = " (";
+        if (eve < 10) s = "  (";
+        int leve = level / 10;
+        int evel = level % 10;
+        renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff - 20, toff + i * 40 + 20, Z_MENU + 2, RIGHT, dark(teal));
+    }
+
+    //MINIMAP TIME
+    Zone* z = player->getZone();
+    int len = z->getWidth() * z->getHeight() * 3;
+    unsigned char datas[len];
+    int k = 0;
+    for (int j = z->getHeight() - 1; j >= 0; j--) {
+        for (int i = 0; i < z->getWidth(); i++) {
+            Location* loc = z->getLocationAt(i, j);
+            color c;
+            if (player->getUnit()->x == i && player->getUnit()->y == j) {
+                c = magenta;
+            } else if (visibilities[j * z->getWidth() + i] < 2) {
+                pair<int, int> p = player->getMemoryBottom(i, j);
+                if (p.first == 5) {
+                    c = black;
+                } else {
+                    if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
+                        c = silver;
+                    } else if (isClosedDoor(loc->structure) || isOpenDoor(loc->structure)) {
+                        c = brown;
+                    } else {
+                        c.red = loc->height * 2;
+                        c.green = loc->height * 2;
+                        c.blue = loc->height * 2;
+                    }
+                }
+            } else if (loc->hasUnit()) {
+                c = red;
+            } else if (loc->structure != S_NONE) {
+                if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
+                    c = silver;
+                } else if (isOpenDoor(loc->structure)) {
+                    c = dark(tann);
+                } else if (isClosedDoor(loc->structure)) {
+                    c = brown;
+                } else if (loc->structure == S_ROCK) {
+                    c = charcoal;
+                } else {
+                    c = pink;
+                }
+            } else if (loc->hasItems()) {
+                c = green;
+            } else {
+                c.red = loc->height * 3 + 32;
+                c.green = loc->height * 3 + 32;
+                c.blue = loc->height * 3 + 32;
+            }
+            datas[k++] = c.red;
+            datas[k++] = c.green;
+            datas[k++] = c.blue;
+        }
+    }
+    for (; k < len; k++) {
+        datas[k] = 0;
+    }
+    glRasterPos3i(WIN1_WIDTH + 30, SWIN_HEIGHT / 2 + 60 + z->getHeight() * 3, Z_MENU + 1);
+    glPixelZoom(3, 3);
+    glDrawPixels(z->getWidth(), z->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, datas);
 }
 
 void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
