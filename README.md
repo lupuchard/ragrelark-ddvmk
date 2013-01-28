@@ -21,5 +21,5 @@ __Main controls:__
 * ctrl: backwards in inventory
 * space: select
 
-![The great outdooooors.](/pics/ragrpic1.png)
-![Simple dungeon.](/pics/ragrepic2.png)
+![The great outdooooors.](/LUKK3/ragrelark-ddvmk/blob/master/pics/ragrpic1.png)
+![Simple dungeon.](/LUKK3/ragrelark-ddvmk/blob/master/pics/ragrepic2.png)

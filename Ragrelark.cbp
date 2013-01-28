@@ -304,11 +304,6 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="main/animation.cpp">
-			<Option virtualFolder="code/main/graphics/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="main/cleaner.cpp">
 			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
