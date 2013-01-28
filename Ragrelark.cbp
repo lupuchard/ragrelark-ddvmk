@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/classes/sources/;code/classes/headers/;data/maps/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/main/activity/;code/classes/Mobs/;code/classes/Generation/;" />
+		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/main/activity/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -77,52 +77,61 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="data/armor.txt">
+		<Unit filename="data/armor.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="data/base.txt">
+		<Unit filename="data/base.rag">
 			<Option virtualFolder="data/" />
 		</Unit>
-		<Unit filename="data/coins.txt">
+		<Unit filename="data/coins.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="data/extraitems.txt">
+		<Unit filename="data/dungeontiles.rag">
+			<Option virtualFolder="data/tiles/" />
+		</Unit>
+		<Unit filename="data/extraitems.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="data/food.txt">
+		<Unit filename="data/food.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="data/formulas.txt">
+		<Unit filename="data/formulas.rag">
 			<Option virtualFolder="data/" />
 		</Unit>
-		<Unit filename="data/humanoids.txt">
+		<Unit filename="data/humanoids.rag">
 			<Option virtualFolder="data/" />
 		</Unit>
-		<Unit filename="data/items.txt">
+		<Unit filename="data/items.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="data/jewlery.txt">
+		<Unit filename="data/jewlery.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="data/map1.txt">
+		<Unit filename="data/map1.rag">
 			<Option virtualFolder="data/maps/" />
 		</Unit>
-		<Unit filename="data/maps2.txt">
+		<Unit filename="data/maps2.rag">
 			<Option virtualFolder="data/maps/" />
 		</Unit>
-		<Unit filename="data/maptiles.txt">
-			<Option virtualFolder="data/maps/" />
+		<Unit filename="data/maptiles.rag">
+			<Option virtualFolder="data/tiles/" />
 		</Unit>
-		<Unit filename="data/mobspaw.txt">
+		<Unit filename="data/mobspaw.rag">
 			<Option virtualFolder="data/" />
 		</Unit>
-		<Unit filename="data/moreitems.txt">
+		<Unit filename="data/moreitems.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
-		<Unit filename="data/units.txt">
+		<Unit filename="data/plaintiles.rag">
+			<Option virtualFolder="data/tiles/" />
+		</Unit>
+		<Unit filename="data/treetiles.rag">
+			<Option virtualFolder="data/tiles/" />
+		</Unit>
+		<Unit filename="data/units.rag">
 			<Option virtualFolder="data/" />
 		</Unit>
-		<Unit filename="data/weapons.txt">
+		<Unit filename="data/weapons.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
 		<Unit filename="depenencies/base64/base64.cpp">
@@ -230,6 +239,16 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="include/RagAnim.h">
+			<Option virtualFolder="code/classes/Graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/RagDrawer.h">
+			<Option virtualFolder="code/classes/Graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="include/RandItemType.h">
 			<Option virtualFolder="code/classes/Items/" />
 			<Option target="Debug" />
@@ -251,12 +270,12 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Texture.h">
-			<Option virtualFolder="code/classes/headers/" />
+			<Option virtualFolder="code/classes/Graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Tile.h">
-			<Option virtualFolder="code/classes/Generation/" />
+			<Option virtualFolder="code/classes/Graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -462,6 +481,16 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="src/RagAnim.cpp">
+			<Option virtualFolder="code/classes/Graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/RagDrawer.cpp">
+			<Option virtualFolder="code/classes/Graphics/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/RandItemType.cpp">
 			<Option virtualFolder="code/classes/Items/" />
 			<Option target="Debug" />
@@ -483,12 +512,12 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Texture.cpp">
-			<Option virtualFolder="code/classes/sources/" />
+			<Option virtualFolder="code/classes/Graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Tile.cpp">
-			<Option virtualFolder="code/classes/Generation/" />
+			<Option virtualFolder="code/classes/Graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

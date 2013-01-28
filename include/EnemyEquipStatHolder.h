@@ -1,9 +1,7 @@
 #ifndef ENEMYEQUIPSTATHOLDER_H
 #define ENEMYEQUIPSTATHOLDER_H
 
-#include "StatHolder.h"
 #include "Unit.h"
-
 
 class EnemyEquipStatHolder: public StatHolder {
     public:

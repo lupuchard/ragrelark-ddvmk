@@ -10,23 +10,15 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include "fov/fov.h"
+
 #include "Player.h"
 #include "World.h"
-#include "Texture.h"
-#include "FormulaUser.h"
-#include "usefulParsing.h"
-#include "BagFolder.h"
-#include "GroundFolder.h"
-#include "EquipmentFolder.h"
 #include "PrimeFolder.h"
-#include "RandItemType.h"
 #include "graphics.h"
-#include "Blobber.h"
-#include "DungeonStack.h"
+
+using namespace std;
 
 #define BOOST_IOSTREAMS_NO_LIB
-
-//#define NUM_UNIT_STATS 5
 
 #define MA_EXAMINE 0
 #define MA_GRAB 1
@@ -58,8 +50,6 @@ enum{STATE_PLAY, STATE_MENU, STATE_DIR, STATE_TARGET};
 enum{SA_NONE, SA_ATTACK, SA_FIRE, SA_OPENDOOR, SA_CLOSEDOOR};
 
 enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, AI_NEUTRAL = 4};
-
-using namespace std;
 
 #ifndef START_H
 #define START_H
@@ -118,28 +108,10 @@ class Start: FormulaUser, EnvironmentManager {
         void renderMessages();
         void renderBars();
         void renderText(string text, int size, int x, int y, int z, int align, color c);
-        void drawUnit(int x, int y, Unit* unit);
         void startRenderer();
-        void addAnim(animation* anim);
         void makeSplatter(Unit* unit, int x, int y);
         void addStatus(string name, color c, int type);
         void removeStatus(int type);
-
-        void drawTile(int x, int y, int z, Texture* tex, int loc);
-        void drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot, bool flip);
-        void drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, int size);
-        void drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture* tex, int x1, int y1, int wid1, int hei1);
-        void drawTileFull(int x, int y, int z, int wid, int hei, Texture* tex, int tx, int ty, int rot, bool flip);
-        /* --- */
-
-        /* --animation.cpp-- */
-        void updateAnims();
-        void drawAnim(animation* anim, int z);
-        void unitAnimTest(Unit* u, int x, int y);
-        void renderAnims();
-        void rMoveDir(Unit* unit, int dir, int x, int y);
-        void rMoveLoc(Unit* unit, int x, int y, int endX, int endY);
-        void rAttack(int x, int y, int dir, int dType, int hType);
         /* --- */
 
         /* --particles.cpp-- */
@@ -183,7 +155,7 @@ class Start: FormulaUser, EnvironmentManager {
         /* --dataLoader.cpp-- */
         void loadData(World* w, Player* p);
         void openFile(string fileName, World* w, Player* p);
-        Zone* loadTileFile(string fileName);
+        Zone* loadTileFile(string fileName, string zoneName);
         void finishDataSetup();
         void deleteData();
         bool errorChecker(string filename);
@@ -194,7 +166,6 @@ class Start: FormulaUser, EnvironmentManager {
         /* --resourceLoader.cpp-- */
         void loadImage(string filename);
         void buildFont();
-        Texture* getTexture(int i);
         /* --- */
 
         /* --formulas.cpp-- */
@@ -210,9 +181,6 @@ class Start: FormulaUser, EnvironmentManager {
         /* --cleaner.cpp-- */
         void cleanup();
         /* --- */
-
-        static const char xDirs[10];
-        static const char yDirs[10];
     protected:
     private:
         SDL_Surface* display;
@@ -235,19 +203,15 @@ class Start: FormulaUser, EnvironmentManager {
         unsigned short stateAction;
         /*endt*/
 
-        vector<Texture*> textures;
-        Texture* structureTex;
-        Texture* menuTex;
-        Texture* fontTex;
-        Texture* splatterTex;
-        Texture* attackAnimsTex;
-        Texture* playerTex;
         bool gotsStructureTex; //TODO arrayify (with enum)
         bool gotsMenuTex;
         bool gotsFontTex;
         bool gotsSplatterTex;
         bool gotsAttackAnimsTex;
         bool gotsPlayerTex;
+
+        RagDrawer ragd;
+        RagAnim raga;
 
         char tempChar;
         unsigned char loadStatus;
@@ -286,7 +250,6 @@ class Start: FormulaUser, EnvironmentManager {
         vector<Formula*> formulas;
         int base;
 
-        vector<animation*> anims;
         unsigned char splatters[MAX_ZONE_SIZE];
         unsigned char visibilities[MAX_ZONE_SIZE]; //0 = nope, 1 = LOS, 2 = lit
 
@@ -302,8 +265,6 @@ class Start: FormulaUser, EnvironmentManager {
         set<pair<Unit*, Zone*> > areaUnits; //the zone is the zone the unit is in the zone is where the unit is
         void findAreaUnits();
 
-        double camX;
-        double camY;
         long frameTime;
 
         MobSpawner* mobSpawner;

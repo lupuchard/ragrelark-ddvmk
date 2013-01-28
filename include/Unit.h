@@ -34,6 +34,7 @@ class Unit: public StatHolder {
         short y;
         int theTime;
         string name;
+        graphic g;
 
         path* currentPath;
         short pointOnPath;
@@ -49,13 +50,11 @@ class Unit: public StatHolder {
 
         void needToUpdate(int stat, bool isFloat);
         bool hasStat(int stat, bool isFloat);
-        graphic getGraphic();
         void setEnemy(Unit* enemy);
         Unit* getEnemy();
     private:
         StatHolder* unitPrototype;
         Unit* currentEnemy;
-        graphic g;
 };
 
 #endif // UNIT_H

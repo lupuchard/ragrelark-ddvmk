@@ -39,6 +39,8 @@ class Zone: public StatHolder {
 
         void tagDungeon(int index, int depth);
         pair<int, int> dungeonTag();
+
+        int getFoon();
     protected:
     private:
         Location* locs;
@@ -49,6 +51,7 @@ class Zone: public StatHolder {
         unsigned short width;
         unsigned short height;
         string name;
+        unsigned short ind;
 
         char stackIndex;
         unsigned char stackDepth;

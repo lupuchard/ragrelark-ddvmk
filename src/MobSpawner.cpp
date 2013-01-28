@@ -51,7 +51,8 @@ Location* MobSpawner::getNear(Zone* z, int* x, int* y, bool avoidMobs, int baseH
         int ay = altYs[i] + *y;
         if (ax >= 0 && ay >= 0 && ax < z->getWidth() && ay < z->getWidth()) {
             Location* nextLoc = z->getLocationAt(ax, ay);
-            if (!(avoidMobs && nextLoc->hasUnit()) && ((baseHeight == -1 && nextLoc->tile == 0) || (baseHeight >= 0 && nextLoc->height != MAX_HEIGHT && fabs(baseHeight - nextLoc->height) <= 2))) {
+            if (!(avoidMobs && nextLoc->hasUnit()) && !z->getTileAt(ax, ay)->blocksMove() &&
+                    ((baseHeight == -1 && nextLoc->tile == 0) || (baseHeight >= 0 && nextLoc->height != MAX_HEIGHT && fabs(baseHeight - nextLoc->height) <= 2))) {
                 *x = ax;
                 *y = ay;
                 return nextLoc;
@@ -152,9 +153,7 @@ bool MobSpawner::placeMob(Unit* mob, Zone* z, int x, int y, bool allowAlt) {
                 place->unit = mob;
                 mob->x = nx;
                 mob->y = ny;
-                //if (anim == ANIM_MOVELOC) {
-                    //rMoveLoc(mob, x, y, nx, ny); TODO okay
-                //}
+                return true;
             }
         }
     } else {
@@ -164,20 +163,25 @@ bool MobSpawner::placeMob(Unit* mob, Zone* z, int x, int y, bool allowAlt) {
     return false;
 }
 
-bool MobSpawner::spawnMobSpeTag(int mobTag, Zone* z, int x, int y, bool allowAlt) {
+Unit* MobSpawner::spawnMobSpeTag(int mobTag, Zone* z, int x, int y, bool allowAlt) {
     return spawnMobSpe(taggedMobs[mobTag], z, x, y, allowAlt);
 }
 
-bool MobSpawner::spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt) {
+Unit* MobSpawner::spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt) {
     Unit* newUnit = new Unit(m.first, m.second);
     newUnit->x = x;
     newUnit->y = y;
     newUnit->theTime = 0; //should be set later
-    //areaUnits.insert(pair<Unit*, Zone*>(newUnit, z));
-    return placeMob(newUnit, z, x, y, allowAlt);
+    if (placeMob(newUnit, z, x, y, allowAlt)) {
+        return newUnit;
+    }
+    cout << "HAPPENS?" << endl;
+    delete newUnit;
+    return NULL;
 }
 
 void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environments, int level, int howMany, vector<pair<int, int> > possibleLocs, vector<pair<Unit*, Zone*> >* unitsAdded) {
+    //first it calculates the total weight by adding up the weights of all spawnable mobs
     int totalWeight = 0;
     for (int i = 0; i < numEnvironments; i++) {
         encounterLevel* e = spawnings[environments[i]].encounterLevels[level];
@@ -187,49 +191,54 @@ void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environme
             }
         }
     }
+
+    //it spawns as many mobs as it needs to
     for (int j = 0; j < howMany; j++) {
-        //TODO groups and equipment
-        double num = (double)rand() / RAND_MAX;
+        double sel = (double)rand() / RAND_MAX;
         double current = 0;
         for (int i = 0; i < numEnvironments; i++) {
             encounterLevel* e = spawnings[environments[i]].encounterLevels[level];
             if (e) {
                 for (unsigned int i = 0; i < e->size(); i++) {
                     current += (double)(*e)[i].weight / totalWeight;
-                    if (num < current) {
-                        pair<int, int> location = possibleLocs[rand() %  possibleLocs.size()]; //fooey
+                    if (sel < current) {
+                        //this mob has been chosen to spawn
+
+                        pair<int, int> location = possibleLocs[rand() %  possibleLocs.size()]; //first it selects a random position
                         int min = (*e)[i].mobMod.min;
                         int max = (*e)[i].mobMod.max;
                         int num;
                         if (min == max) num = min;
-                        else num = rand() % (max - min + 1) + min;
+                        else num = rand() % (max - min + 1) + min; //then it selects how many to spawn if they are spawning in a group
 
                         int index = (*e)[i].mobMod.equipsInEquipsType;
                         int foo = 0;
                         if (index == -2) foo = (*e)[i].mobMod.mobEquipSet->getRandIndex();
 
                         for (int k = 0; k < num; k++) {
-                            spawnMobSpe((*e)[i].theMob, z, location.first, location.second);
-                            Unit* u = z->getLocationAt(location.first, location.second)->unit;
-                            unitsAdded->push_back(pair<Unit*, Zone*>(u, z));
-                            int index = (*e)[i].mobMod.equipsInEquipsType;
-                            if (index != -3) {
-                                MobEquips* equipment = new MobEquips;
-                                MobEquipSet* equipSet = (*e)[i].mobMod.mobEquipSet;
-                                int* equips = new int[2];
-                                if (index == -1) {
-                                    equipment->len = equipSet->getRandEquips(equips);
-                                } else if (index == -2) {
-                                    equipment->len = equipSet->getRandEquipsNear(foo, equips);
-                                } else {
-                                    equipment->len = equipSet->getRandEquipsNear(index, equips); //here
+                            Unit* u = spawnMobSpe((*e)[i].theMob, z, location.first, location.second);
+                            if (u) {
+                                unitsAdded->push_back(pair<Unit*, Zone*>(u, z));
+                                if (index != -3) {
+                                    MobEquips* equipment = new MobEquips;
+                                    MobEquipSet* equipSet = (*e)[i].mobMod.mobEquipSet;
+                                    int* equips = new int[2];
+                                    if (index == -1) {
+                                        equipment->len = equipSet->getRandEquips(equips);
+                                    } else if (index == -2) {
+                                        equipment->len = equipSet->getRandEquipsNear(foo, equips);
+                                    } else {
+                                        equipment->len = equipSet->getRandEquipsNear(index, equips);
+                                    }
+                                    equipment->equips = new Item[equipment->len];
+                                    for (int i = 0; i < equipment->len; i++) {
+                                        equipment->equips[i] = Item(equips[i]);
+                                    }
+                                    delete[] equips;
+                                    if (equipment->len) {
+                                        u->equipment = equipment;
+                                    }
                                 }
-                                equipment->equips = new Item[equipment->len];
-                                for (int i = 0; i < equipment->len; i++) {
-                                    equipment->equips[i] = Item(equips[i]);
-                                }
-                                delete[] equips;
-                                u->equipment = equipment;
                             }
                         }
                         break;

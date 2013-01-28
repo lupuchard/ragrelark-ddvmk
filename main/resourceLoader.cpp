@@ -18,34 +18,29 @@ void Start::buildFont() {
     XFreeFont(dpy, fontInfo);
     XCloseDisplay(dpy);
 }
-
-Texture* Start::getTexture(int i) {
-    return textures[i];
-}
-
 void Start::loadImage(string filename) {
     cout << " -Loading " << filename << "..." << endl;
 
     Texture* newTexture = new Texture();
-    newTexture->OnLoad("resources/" + filename);
+    newTexture->load("resources/" + filename);
     if (filename == "structures.png") {
-        structureTex = newTexture;
+        setStructureTex(newTexture);
         gotsStructureTex = true;
     } else if (filename == "menu.png") {
-        menuTex = newTexture;
+        setMenuTex(newTexture);
         gotsMenuTex = true;
     } else if (filename == "font.png") {
-        fontTex = newTexture;
+        setFontTex(newTexture);
         gotsFontTex = true;
     } else if (filename == "splatters.png") {
-        splatterTex = newTexture;
+        setSplatterTex(newTexture);
         gotsSplatterTex = true;
     } else if (filename == "attackAnims.png") {
-        attackAnimsTex = newTexture;
+        setAttackAnimsTex(newTexture);
         gotsAttackAnimsTex = true;
     } else if (filename == "player.png") {
-        playerTex = newTexture;
+        setPlayerTex(newTexture);
         gotsPlayerTex = true;
     }
-    textures.push_back(newTexture);
+    addTexture(newTexture);
 }

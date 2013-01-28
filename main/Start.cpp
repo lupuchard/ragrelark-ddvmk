@@ -1,9 +1,5 @@
 #include "Start.h"
 
-const char Start::xDirs[10] = {0, -1,  0,  1, -1,  0,  1, -1,  0,  1};
-const char Start::yDirs[10] = {0,  1,  1,  1,  0,  0,  0, -1, -1, -1};
-//const char Start::fwubs[10] = {0,  3,  0,  0,  3,  0,  1,  2,  2,  1};
-
 Start::Start() {
     done = false;
 

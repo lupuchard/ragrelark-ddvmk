@@ -130,7 +130,7 @@ void Start::updateEffects(int xCam, int yCam) {
 
                         int x = i->proj.x0 + xChange;
                         int y = i->proj.y0 + yChange;
-                        drawTileFull(x, y, Z_EFFECT + iv, 32, 32, attackAnimsTex, 32 * i->proj.ind, 992, i->proj.rotFlip % 4, i->proj.rotFlip / 4);
+                        ragd.drawTileFull(x, y, Z_EFFECT + iv, 32, 32, getAttackAnimsTex(), 32 * i->proj.ind, 992, i->proj.rotFlip % 4, i->proj.rotFlip / 4);
                         i++;
                     }
                     iv++;
@@ -147,7 +147,7 @@ void Start::updateEffects(int xCam, int yCam) {
 void Start::drawCirc(int x, int y, int z, int size, int fade, int rot, color c) {
     glColor4f(c.red / 255., c.green / 255., c.blue / 255., c.alpha / 255.);
     int wid = 3 + 2 * size;
-    drawTileFull(x, y, z, wid, wid, attackAnimsTex, size * (size + 2), 544 + wid * fade, rot, false);
+    ragd.drawTileFull(x, y, z, wid, wid, getAttackAnimsTex(), size * (size + 2), 544 + wid * fade, rot, false);
     glColor4f(1.f, 1.f, 1.f, 1.f);
 }
 
@@ -166,6 +166,6 @@ void Start::drawBox(int x, int y, int z, int size, int rote, color c) {
         f = 9 - (rote % 45) / 5;
         flip = true;
     }
-    drawTileFull(x + flip, y, z, wid, wid, attackAnimsTex, 420 - 2 * (size + 1) * (size + 6), 544 + wid * f, 0, flip);
+    ragd.drawTileFull(x + flip, y, z, wid, wid, getAttackAnimsTex(), 420 - 2 * (size + 1) * (size + 6), 544 + wid * f, 0, flip);
     glColor4f(1.f, 1.f, 1.f, 1.f);
 }

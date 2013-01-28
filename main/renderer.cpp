@@ -37,245 +37,6 @@ color Start::light(color c) {
     return c;
 }
 
-void Start::drawTile(int x, int y, int z, Texture* tex, int loc) {
-    tex->Bind();
-
-    int wid = tex->Width / TILE_SIZE;
-    int x1 = (loc % wid) * TILE_SIZE;
-    int y1 = (loc / wid) * TILE_SIZE;
-    double x1d = ((double)x1 / tex->Width);
-    double x2d = ((double)(x1 + TILE_SIZE) / tex->Width);
-    double y1d = ((double)y1 / tex->Height);
-    double y2d = ((double)(y1 + TILE_SIZE) / tex->Height);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(x1d, y1d);
-    glVertex3i(x, y, z);
-    glTexCoord2f(x2d, y1d);
-    glVertex3i(x + TILE_SIZE, y, z);
-    glTexCoord2f(x2d, y2d);
-    glVertex3i(x + TILE_SIZE, y + TILE_SIZE, z);
-    glTexCoord2f(x1d, y2d);
-    glVertex3i(x, y + TILE_SIZE, z);
-    glEnd();
-}
-
-
-//rot: 0 = 0 deg, 1 = 90 deg, 2 = 180 deg, 3 = 270 deg
-void Start::drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot, bool flip) {
-    tex->Bind();
-
-    int wid = tex->Width / TILE_SIZE;
-    int x1 = (loc % wid) * TILE_SIZE;
-    int y1 = (loc / wid) * TILE_SIZE;
-    double x1d = ((double)x1 / tex->Width);
-    double x2d = ((double)(x1 + TILE_SIZE) / tex->Width);
-    double y1d = ((double)y1 / tex->Height);
-    double y2d = ((double)(y1 + TILE_SIZE) / tex->Height);
-
-    int ix[] = {x, x + TILE_SIZE, x + TILE_SIZE, x};
-    int iy[] = {y, y, y + TILE_SIZE, y + TILE_SIZE};
-    if (flip) {
-        ix[0] = x + TILE_SIZE;
-        ix[1] = x; ix[2] = x;
-        ix[3] = x + TILE_SIZE;
-    }
-    while(rot > 0) {
-        rot--;
-        int temp1 = ix[0];
-        int temp2 = iy[0];
-        for (int i = 0; i < 3; i++) {
-            ix[i] = ix[i + 1];
-            iy[i] = iy[i + 1];
-        }
-        ix[3] = temp1;
-        iy[3] = temp2;
-    }
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(x1d, y1d);
-    glVertex3i(ix[0], iy[0], z);
-    glTexCoord2f(x2d, y1d);
-    glVertex3i(ix[1], iy[1], z);
-    glTexCoord2f(x2d, y2d);
-    glVertex3i(ix[2], iy[2], z);
-    glTexCoord2f(x1d, y2d);
-    glVertex3i(ix[3], iy[3], z);
-    glEnd();
-}
-
-void Start::drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, int size) {
-    tex->Bind();
-
-    double x1d = ((double)x1 / tex->Width);
-    double x2d = ((double)(x1 + size) / tex->Width);
-    double y1d = ((double)y1 / tex->Height);
-    double y2d = ((double)(y1 + size) / tex->Height);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(x1d, y1d);
-    glVertex3i(x, y, z);
-    glTexCoord2f(x2d, y1d);
-    glVertex3i(x + size, y, z);
-    glTexCoord2f(x2d, y2d);
-    glVertex3i(x + size, y + size, z);
-    glTexCoord2f(x1d, y2d);
-    glVertex3i(x, y + size, z);
-    glEnd();
-}
-
-void Start::drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture* tex, int x1, int y1, int wid1, int hei1) {
-    tex->Bind();
-
-    double x1d = ((double)x1 / tex->Width);
-    double x2d = ((double)(x1 + wid1) / tex->Width);
-    double y1d = ((double)y1 / tex->Height);
-    double y2d = ((double)(y1 + hei1) / tex->Height);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(x1d, y1d);
-    glVertex3i(x, y, z);
-    glTexCoord2f(x2d, y1d);
-    glVertex3i(x + wid, y, z);
-    glTexCoord2f(x2d, y2d);
-    glVertex3i(x + wid, y + hei, z);
-    glTexCoord2f(x1d, y2d);
-    glVertex3i(x, y + hei, z);
-    glEnd();
-}
-
-void Start::drawTileFull(int x, int y, int z, int wid, int hei, Texture* tex, int tx, int ty, int rot, bool flip) {
-    tex->Bind();
-
-    double x1d = ((double)tx / tex->Width);
-    double x2d = ((double)(tx + wid) / tex->Width);
-    double y1d = ((double)ty / tex->Height);
-    double y2d = ((double)(ty + hei) / tex->Height);
-
-    int ix[] = {x, x + wid, x + wid, x};
-    int iy[] = {y, y, y + hei, y + hei};
-    if (flip) {
-        ix[0] = x + wid;
-        ix[1] = x; ix[2] = x;
-        ix[3] = x + wid;
-    }
-    while(rot > 0) {
-        rot--;
-        int temp1 = ix[0];
-        int temp2 = iy[0];
-        for (int i = 0; i < 3; i++) {
-            ix[i] = ix[i + 1];
-            iy[i] = iy[i + 1];
-        }
-        ix[3] = temp1;
-        iy[3] = temp2;
-    }
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(x1d, y1d);
-    glVertex3i(ix[0], iy[0], z);
-    glTexCoord2f(x2d, y1d);
-    glVertex3i(ix[1], iy[1], z);
-    glTexCoord2f(x2d, y2d);
-    glVertex3i(ix[2], iy[2], z);
-    glTexCoord2f(x1d, y2d);
-    glVertex3i(ix[3], iy[3], z);
-    glEnd();
-}
-
-void drawColorBox(int x1, int y1, int z, int x2, int y2, color c) {
-    glColor4f(c.red / 255., c.green / 255., c.blue / 255., c.alpha / 255.);
-    glDisable(GL_TEXTURE_2D);
-    glBegin(GL_QUADS);
-    glVertex3i(x1, y1, z);
-    glVertex3i(x2, y1, z);
-    glVertex3i(x2, y2, z);
-    glVertex3i(x1, y2, z);
-    glEnd();
-    glEnable(GL_TEXTURE_2D);
-}
-
-void Start::drawUnit(int x, int y, Unit* unit) {
-    graphic g = unit->getGraphic();
-    drawTile(x, y, Z_UNIT + y, getTexture(unit->getGraphic().tex), g.loc);
-    int wid = max((int)((float)unit->getStatValue(S_HP) / unit->getStatValue(S_MAXHP) * TILE_SIZE), 3);
-    if (wid < TILE_SIZE) {
-        drawTileSuperSpe(x, y + TILE_SIZE - 4, Z_UNIT + y + 1, wid - 1, 4, menuTex, 96, 0, wid - 1, 4);
-        drawTileSuperSpe(x + wid - 1, y + TILE_SIZE - 4, Z_UNIT + y + 1, 2, 4, menuTex, 126, 0, 2, 4);
-    }
-    if (unit == player->getUnit() || unit->equipment) {
-        Item* items;
-        int numItems;
-        bool pl;
-        if (unit == player->getUnit()) {
-            items = primeFolder->getEquips()->getItems();
-            numItems = primeFolder->getEquips()->getNumItems();
-            pl = true;
-        } else {
-            items = unit->equipment->equips;
-            numItems = unit->equipment->len;
-            pl = false;
-        }
-        for (int i = 0; i < numItems; i++) {
-            ItemType* item = getItemType(items[i].itemType);
-            bool gendered = false;
-            int wid = 0;
-            int hei = 0;
-            switch(item->getEquipGType()) {
-                case EQG_NONE: break;
-                case EQG_NORM: wid = 32; hei = 32; break;
-                case EQG_GNORM: wid = 32; hei = 32; gendered = true; break;
-                case EQG_SMALL: wid = 16; hei = 16; break;
-                case EQG_GSMALL: wid = 16; hei = 16; gendered = true; break;
-                case EQG_TALL: wid = 16; hei = 32; break;
-                case EQG_GTALL: wid = 16; hei = 32; gendered = true; break;
-                case EQG_LONG: wid = 32; hei = 16; break;
-                case EQG_GLONG: wid = 32; hei = 16; gendered = true; break;
-                default: break;
-            }
-            if (wid) {
-                int xMid = 0;
-                int yMid = 0;
-                int j;
-                if (pl) j = i;
-                else {
-                    int typ = typeSlots[item->getType()];
-                    switch(typ) {
-                        case E_BHANDS: j = E_RHAND;
-                        case E_BBHANDS: j = E_RHAND;
-                        case E_RING: j = E_RING1;
-                        default: j = typ;
-                    }
-                }
-                switch(j) {
-                    case E_HEAD: xMid = 16; yMid = 8; break;
-                    case E_FACE: xMid = 16; yMid = 8; break;
-                    case E_BACK: xMid = 16; yMid = 16; break;
-                    case E_BAG: xMid = 16; yMid = 16; break;
-                    case E_NECK: xMid = 16; yMid = 8; break;
-                    case E_BODY: xMid = 16; yMid = 16; break;
-                    case E_LHAND: xMid = 24; yMid = 16; break;
-                    case E_RHAND: xMid = 8; yMid = 16; break;
-                    case E_HANDS: xMid = 16; yMid = 16; break;
-                    case E_WAIST: xMid = 16; yMid = 16; break;
-                    case E_WRIST: xMid = 16; yMid = 16; break;
-                    case E_FEET: xMid = 16; yMid = 24; break;
-                    case E_RING1: xMid = 8; yMid = 16; break;
-                    case E_RING2: xMid = 24; yMid = 16; break;
-                    default: break;
-                }
-                int num = item->getEquipGLoc();
-                //if (gendered) etc.
-                int x0 = xMid - wid / 2 + x;
-                int y0 = yMid - hei / 2 + y;
-                int x1 = (num * 16) % playerTex->Width;
-                int y1 = (num * 256) / playerTex->Width;
-                drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, playerTex, x1, y1, wid, hei);
-            }
-        }
-    }
-}
-
 void Start::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -341,20 +102,20 @@ void Start::renderBars() {
                 flo = prevTims[k] / 10.;
             }
             glColor4f(1, 1, 1, flo / 2);
-            drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU, wid1, 14, menuTex, 106, 186 + k * 14, wid1, 14);
+            ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU, wid1, 14, getMenuTex(), 106, 186 + k * 14, wid1, 14);
             color c = white; c.alpha = flo / 6;
-            drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 1, i + 5 + wid1, WIN1_HEIGHT - 7, c);
+            ragd.drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 1, i + 5 + wid1, WIN1_HEIGHT - 7, c);
         }
         int wid = (int)(percents[k] * 96);
         float flu = percents[k] / 2 + 0.5;
         glColor4f(flu, flu, flu, 1);
-        drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU + 2, wid, 14, menuTex, 106, 186 + k * 14, wid, 14);
+        ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU + 2, wid, 14, getMenuTex(), 106, 186 + k * 14, wid, 14);
         if (danger[k] && percents[k] < .2) {
             color c = white; c.alpha = .5 - dangerInterval / 20.;
-            drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 3, i + 5 + wid, WIN1_HEIGHT - 7, c);
+            ragd.drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 3, i + 5 + wid, WIN1_HEIGHT - 7, c);
         }
         glColor4f(1, 1, 1, 1);
-        drawTileSuperSpe(i, WIN1_HEIGHT - 24, Z_MENU + 4, 106, 20, menuTex, 0, 192, 106, 20);
+        ragd.drawTileSuperSpe(i, WIN1_HEIGHT - 24, Z_MENU + 4, 106, 20, getMenuTex(), 0, 192, 106, 20);
         renderText(strings[k], 4, i + 53, WIN1_HEIGHT - 20, Z_MENU + 5, CENTER, black);
         k++;
     }
@@ -362,8 +123,8 @@ void Start::renderBars() {
 
 void Start::renderSidePanels() {
     int hei = SWIN_HEIGHT / 2 - 30;
-    drawTileSuperSpe(WIN1_WIDTH, 30                  , Z_MENU, SWIN_WIDTH, hei, menuTex, 252, 192, SWIN_WIDTH, hei);
-    drawTileSuperSpe(WIN1_WIDTH, 30 + SWIN_HEIGHT / 2, Z_MENU, SWIN_WIDTH, hei, menuTex, 252, 192, SWIN_WIDTH, hei);
+    ragd.drawTileSuperSpe(WIN1_WIDTH, 30                  , Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
+    ragd.drawTileSuperSpe(WIN1_WIDTH, 30 + SWIN_HEIGHT / 2, Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
 
     static const string statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
     int toff = 50;
@@ -459,15 +220,15 @@ void Start::renderSidePanels() {
 void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
     int cWid = x2 - x1 - 32;
     int cHei = y2 - y1 - 32;
-    drawTileSuperSpe(x1     , y1     , Z_MENU, 16  , 16  , menuTex, 0 , 32, 16, 16);
-    drawTileSuperSpe(x1 + 16, y1     , Z_MENU, cWid, 16  , menuTex, 16, 32, 16, 16);
-    drawTileSuperSpe(x2 - 16, y1     , Z_MENU, 16  , 16  , menuTex, 32, 32, 16, 16);
-    drawTileSuperSpe(x1     , y1 + 16, Z_MENU, 16  , cHei, menuTex, 0 , 48, 16, 16);
-    drawTileSuperSpe(x1 + 16, y1 + 16, Z_MENU, cWid, cHei, menuTex, 16, 48, 16, 16);
-    drawTileSuperSpe(x2 - 16, y1 + 16, Z_MENU, 16  , cHei, menuTex, 32, 48, 16, 16);
-    drawTileSuperSpe(x1     , y2 - 16, Z_MENU, 16  , 16  , menuTex, 0 , 64, 16, 16);
-    drawTileSuperSpe(x1 + 16, y2 - 16, Z_MENU, cWid, 16  , menuTex, 16, 64, 16, 16);
-    drawTileSuperSpe(x2 - 16, y2 - 16, Z_MENU, 16  , 16  , menuTex, 32, 64, 16, 16);
+    ragd.drawTileSuperSpe(x1     , y1     , Z_MENU, 16  , 16  , getMenuTex(), 0 , 32, 16, 16);
+    ragd.drawTileSuperSpe(x1 + 16, y1     , Z_MENU, cWid, 16  , getMenuTex(), 16, 32, 16, 16);
+    ragd.drawTileSuperSpe(x2 - 16, y1     , Z_MENU, 16  , 16  , getMenuTex(), 32, 32, 16, 16);
+    ragd.drawTileSuperSpe(x1     , y1 + 16, Z_MENU, 16  , cHei, getMenuTex(), 0 , 48, 16, 16);
+    ragd.drawTileSuperSpe(x1 + 16, y1 + 16, Z_MENU, cWid, cHei, getMenuTex(), 16, 48, 16, 16);
+    ragd.drawTileSuperSpe(x2 - 16, y1 + 16, Z_MENU, 16  , cHei, getMenuTex(), 32, 48, 16, 16);
+    ragd.drawTileSuperSpe(x1     , y2 - 16, Z_MENU, 16  , 16  , getMenuTex(), 0 , 64, 16, 16);
+    ragd.drawTileSuperSpe(x1 + 16, y2 - 16, Z_MENU, cWid, 16  , getMenuTex(), 16, 64, 16, 16);
+    ragd.drawTileSuperSpe(x2 - 16, y2 - 16, Z_MENU, 16  , 16  , getMenuTex(), 32, 64, 16, 16);
 }
 
 const int shownItemStatsMin = 7;
@@ -527,22 +288,22 @@ void Start::renderMenu() {
             ItemType* itemType = getItemType(items[k].itemType);
             graphic g = itemType->getGraphic(items[k].quantityCharge);
             int d = offset + 64 + 28 * i;
-            drawTile(28 + 8 * (k % 2), d, Z_MENU + i + 1, textures[g.tex], g.loc);
+            ragd.drawTile(28 + 8 * (k % 2), d, Z_MENU + i + 1, getTexture(g.tex), g.loc);
             renderText(capitalize(itemType->getName()), 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, black);
             if (items[k].quantityCharge > 1 && typeStacks[itemType->getType()]) {
                 renderText(its(items[k].quantityCharge), 1, 50 + 8 * (k % 2), d + 16, Z_MENU + i + 2, LEFT, black);
             }
         }
 
-        drawTileSpe(8, curArrowY, Z_MENU + 20, menuTex, arrowX[(interval % 40) / 4], arrowY[(interval % 40) / 4], 16);
+        ragd.drawTileSpe(8, curArrowY, Z_MENU + 20, getMenuTex(), arrowX[(interval % 40) / 4], arrowY[(interval % 40) / 4], 16);
         if (selectedShift > 0) {
-            drawTileSuperSpe(IM_WID / 2 + 4, offset          + abs(interval % 24 / 2 - 6) + 36, Z_MENU, 24, 16, menuTex, 48, 48, 32, -16);
+            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset          + abs(interval % 24 / 2 - 6) + 36, Z_MENU, 24, 16, getMenuTex(), 48, 48, 32, -16);
         }
         if (numItems - selectedShift > MAX_MENU_ITEMS) {
-            drawTileSuperSpe(IM_WID / 2 + 4, offset + height - abs(interval % 24 / 2 - 6) - 10, Z_MENU, 24, 16, menuTex, 48, 32, 32,  16);
+            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset + height - abs(interval % 24 / 2 - 6) - 10, Z_MENU, 24, 16, getMenuTex(), 48, 32, 32,  16);
         }
         glColor4f(1, 1, 1, .5);
-        drawTileSuperSpe(2, offset + 18, Z_MENU, IM_WID + 36, 16, menuTex, 0, 80, 64, 16);
+        ragd.drawTileSuperSpe(2, offset + 18, Z_MENU, IM_WID + 36, 16, getMenuTex(), 0, 80, 64, 16);
         glColor4f(1, 1, 1, 1);
         renderText(menuActionNames[menuAction]    , 2, 4              , offset + 20, Z_MENU + 1, LEFT  , black);
         renderText(menuActionNames[menuAction + 1], 3, 20 + IM_WID / 2, offset + 20, Z_MENU + 1, CENTER, black);
@@ -617,7 +378,7 @@ void Start::renderMenu() {
             drawMenuBox(IM_WID + 40, offset, IM_WID + 232, offset + height);
             glColor4f(1, 1, 1, .5);
             int nLen = selectedItemType->getName().size();
-            drawTileSuperSpe(IM_WID + 132 - nLen * 7, offset + 9, Z_MENU + 1, 14 * nLen + 8, 32, menuTex, 0, 80, 64, 16);
+            ragd.drawTileSuperSpe(IM_WID + 132 - nLen * 7, offset + 9, Z_MENU + 1, 14 * nLen + 8, 32, getMenuTex(), 0, 80, 64, 16);
             renderText(capitalize(selectedItemType->getName()), 5, IM_WID + 136, offset + 16, Z_MENU + 2, CENTER, black);
             int f = 4;
             for (unsigned int i = 0; i < lines.size(); i++) {
@@ -629,13 +390,13 @@ void Start::renderMenu() {
 }
 
 void Start::renderMessages() {
-    drawTileSuperSpe(0, WIN1_HEIGHT + 4, Z_MENU, 32, 96, menuTex, 0, 96, 32, 96);
+    ragd.drawTileSuperSpe(0, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 0, 96, 32, 96);
     int x;
     for (x = 32; x < CWIN_WIDTH - 64; x += 32) {
-        drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, 32, 96, menuTex, 32, 96, 32, 96);
+        ragd.drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 32, 96, 32, 96);
     }
-    drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, CWIN_WIDTH - x - 32, 96, menuTex, 32, 96, CWIN_WIDTH - x - 32, 96);
-    drawTileSuperSpe(CWIN_WIDTH - 32, WIN1_HEIGHT + 4, Z_MENU, 32, 96, menuTex, 64, 96, 32, 96);
+    ragd.drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, CWIN_WIDTH - x - 32, 96, getMenuTex(), 32, 96, CWIN_WIDTH - x - 32, 96);
+    ragd.drawTileSuperSpe(CWIN_WIDTH - 32, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 64, 96, 32, 96);
 
     for (int i = 7 - min((int)messages.size(), 7); i < 7; i++) {
         pair<string, color> completeMess = messages[messages.size() - 7 + i];
@@ -661,6 +422,16 @@ void Start::renderMessages() {
     }
 }
 
+typedef struct {
+    int loc;
+    int tex;
+    float darkness;
+} rendaten;
+
+bool is_to_be_deleted(Unit* u) {
+    return !(u->g.border);
+}
+
 void Start::renderGround() {
 
     Zone* z = player->getZone();
@@ -668,10 +439,10 @@ void Start::renderGround() {
     int y = player->getUnit()->y;
 
     glPushMatrix();
-    glTranslatef(-(int)camX + WIN1_WIDTH / 2 - 16, -(int)camY + WIN1_HEIGHT / 2 - 16, 0);
+    glTranslatef(-(int)ragd.camX + WIN1_WIDTH / 2 - 16, -(int)ragd.camY + WIN1_HEIGHT / 2 - 16, 0);
 
-    camX = x * TILE_SIZE;
-    camY = y * TILE_SIZE;
+    ragd.camX = x * TILE_SIZE;
+    ragd.camY = y * TILE_SIZE;
 
     int maxXTiles = WIN1_WIDTH / TILE_SIZE;
     int maxYTiles = WIN1_HEIGHT / TILE_SIZE;
@@ -680,17 +451,28 @@ void Start::renderGround() {
     int iMax = min(z->getWidth(), x + maxXTiles / 2 + 1);
     int jMax = min(z->getHeight(), y + maxYTiles / 2 + 2);
 
-    updateAnims();
+    raga.updateAnims();
+    unitDeleteList.erase(remove_if(unitDeleteList.begin(), unitDeleteList.end(), is_to_be_deleted), unitDeleteList.end());
+    /*for (unsigned int i = 0; i < unitDeleteList.size(); i++) {
+        if (!unitDeleteList[i]->g.border) delete unitDeleteList[i];
+        unitDeleteList.erase(i);
+        i--;
+        //TODO also on area movements
+    }*/
 
+    rendaten renderAtEnd[(iMax - iMin) * (jMax - jMin)];
+    int tot = 0;
     for (int i = iMin; i < iMax; i++) {
         for (int j = jMin; j < jMax; j++) {
-            float locX = (double)(i) * TILE_SIZE;
-            float locY = (double)(j) * TILE_SIZE;
+            renderAtEnd[tot] = {-1, -1, -1};
+            tot++;
+            int locX = i * TILE_SIZE;
+            int locY = j * TILE_SIZE;
             bool isMemory = false;
             if (visibilities[i + j * z->getWidth()] < 2) {
                 pair<int, int> botMems = player->getMemoryBottom(i, j);
                 if (botMems.first == 5) {
-                    drawColorBox(locX, locY, Z_EFFECT - 1, locX + TILE_SIZE, locY + TILE_SIZE, black);
+                    ragd.drawColorBox(locX, locY, Z_EFFECT - 1, locX + TILE_SIZE, locY + TILE_SIZE, black);
                     glColor4f(1, 1, 1, 1);
                     continue;
                 }
@@ -709,6 +491,11 @@ void Start::renderGround() {
             glColor4f(darkness, darkness, darkness, 1);
             Tile* tile = z->getTileAt(i, j);
             graphic g = tile->getGraphic();
+            if (g.type == TT_OVER) {
+                renderAtEnd[tot - 1] = {g.loc, g.tex, darkness};
+                tile = tile->getOver();
+                g = tile->getGraphic();
+            }
             Texture* tex = getTexture(g.tex);
             int TZ;
             if (isMemory) {
@@ -716,11 +503,11 @@ void Start::renderGround() {
             } else {
                 TZ = Z_GROUND;
             }
-            if (g.type == 0) {
-                drawTile(locX, locY, TZ, tex, g.loc);
-            } else if (g.type < 4) {
+            if (g.type == TT_NORMAL) {
+                ragd.drawTile(locX, locY, TZ, tex, g.loc);
+            } else if (g.type == TT_SMOOTH || g.type == TT_SMOOTHDOWN || g.type == TT_SMOOTHUP) {
                 int b = g.border;
-                int wid = tex->Width / TILE_SIZE;
+                int wid = tex->width / TILE_SIZE;
                 int x1 = (g.loc % wid) * TILE_SIZE;
                 int y1 = (g.loc / wid) * TILE_SIZE;
 
@@ -733,81 +520,81 @@ void Start::renderGround() {
                     sm[k] = tiles[k]->getGraphic().border == b && tiles[k] != tile;
                 }
 
-                if (g.type == 2 || g.type == 3) {
+                if (g.type == TT_SMOOTHUP || g.type == TT_SMOOTHDOWN) {
                     int heights[8] = {z->safeGetLocationAt(i-1, j-1)->height, z->safeGetLocationAt(i, j-1)->height, z->safeGetLocationAt(i+1, j-1)->height,
                                         z->safeGetLocationAt(i-1, j)->height, z->safeGetLocationAt(i+1, j)->height,
-                                        z->safeGetLocationAt(i-1, j+1)->height, z->safeGetLocationAt(i, j+1)->height, z->safeGetLocationAt(i, j+1)->height};
+                                        z->safeGetLocationAt(i-1, j+1)->height, z->safeGetLocationAt(i, j+1)->height, z->safeGetLocationAt(i+1, j+1)->height};
                     for (int k = 0; k < 8; k++) {
-                        if ((heights[k] >= h && g.type == 2) || (heights[k] <= h && g.type == 3)) {
+                        if ((heights[k] >= h - 2 && g.type == 2) || (heights[k] <= h + 2 && g.type == 3)) {
                             sm[k] = false;
                         }
                     }
                 }
                 if (sm[3] && sm[1]) {
-                    drawTileSpe(locX            , locY, TZ, tex, x1, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX            , locY, TZ, tex, x1, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (!sm[3] && sm[1]) {
-                    drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (sm[3] && !sm[1]) {
-                    drawTileSpe(locX, locY, TZ, tex, x1, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, tex, x1, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 } else if (!sm[3] && sm[0] && !sm[1]) {
-                    drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1, TILE_SIZE / 2);
                 } else if (!sm[3] && !sm[0] && !sm[1]) {
-                    drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 }
                 if (sm[1] && sm[4]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (!sm[1] && sm[4]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 } else if (sm[1] && !sm[4]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (!sm[1] && sm[2] && !sm[4]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1, TILE_SIZE / 2);
                 } else if (!sm[1] && !sm[2] && !sm[4]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 }
                 if (sm[4] && sm[6]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (!sm[4] && sm[6]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (sm[4] && !sm[6]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 } else if (!sm[4] && sm[7] && !sm[6]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
                 } else if (!sm[4] && !sm[7] && !sm[6]) {
-                    drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 }
                 if (sm[6] && sm[3]) {
-                    drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (!sm[6] && sm[3]) {
-                    drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 } else if (sm[6] && !sm[3]) {
-                    drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (!sm[6] && sm[5] && !sm[3]) {
-                    drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
                 } else if (!sm[6] && !sm[5] && !sm[3]) {
-                    drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 }
             }
             if (isMemory) {
                 glColor4f(.5, .5, .5, 1);
                 pair<int, int> botMems = player->getMemoryBottom(i, j);
                 if (botMems.first != 7 && botMems.first != 5) {
-                    drawTile(locX, locY, Z_EFFECT - 2, getTexture(botMems.first), botMems.second);
+                    ragd.drawTile(locX, locY, Z_EFFECT - 2, getTexture(botMems.first), botMems.second);
                 }
                 pair<int, int> topMems = player->getMemoryTop(i, j);
                 if (topMems.first != 7 && botMems.first != 5) {
-                    drawTile(locX, locY, Z_EFFECT - 1, getTexture(topMems.first), topMems.second);
+                    ragd.drawTile(locX, locY, Z_EFFECT - 1, getTexture(topMems.first), topMems.second);
                 }
             } else {
                 glColor4f(1, 1, 1, 1);
                 int struc = loc->structure;
                 if (struc != S_NONE) {
-                    drawTile(locX, locY, Z_STRUCT, structureTex, struc);
+                    ragd.drawTile(locX, locY, Z_STRUCT, getStructureTex(), struc);
                 }
 
                 glColor4f(1, 1, 1, 0.5);
                 if (splatters[i + j * z->getWidth()] < 255) {
-                    drawTile(locX, locY, Z_SPLAT, splatterTex, splatters[i + j * z->getWidth()]);
+                    ragd.drawTile(locX, locY, Z_SPLAT, getSplatterTex(), splatters[i + j * z->getWidth()]);
                 }
                 glColor4f(1, 1, 1, 1);
                 if (loc->hasItems()) {
@@ -816,24 +603,42 @@ void Start::renderGround() {
                     for (int k = 0; k < numItems; k++) {
                         ItemType* itemType = getItemType(items[k].itemType);
                         graphic g = itemType->getGraphic(items[k].quantityCharge);
-                        drawTile(locX, locY, Z_ITEM + k, getTexture(g.tex), g.loc);
+                        ragd.drawTile(locX, locY, Z_ITEM + k, getTexture(g.tex), g.loc);
                     }
                 }
                 if (loc->hasUnit()) {
-                    unitAnimTest(loc->unit, locX, locY);
+                    raga.unitAnimTest(loc->unit, locX, locY);
                 }
             }
         }
     }
     glColor4f(1, 1, 1, 1);
-    renderAnims();
+
+    raga.renderAnims();
+
+    tot = 0;
+    for (int i = iMin; i < iMax; i++) {
+        for (int j = jMin; j < jMax; j++) {
+            if (renderAtEnd[tot].loc != -1) {
+                int locX = i * TILE_SIZE;
+                int locY = j * TILE_SIZE;
+                float darkness = renderAtEnd[tot].darkness;
+                glColor4f(darkness, darkness, darkness, 1);
+                ragd.drawTile(locX, locY, Z_FOREGROUND, getTexture(renderAtEnd[tot].tex), renderAtEnd[tot].loc);
+            }
+            tot++;
+        }
+    }
+    glColor4f(1, 1, 1, 1);
     drawBox(x + 50, y + 50, Z_EFFECT, 4, interval, scarlet);
     updateEffects(x, y);
     if (state == STATE_TARGET) {
+        //51-55
+        //67-71
         int num = (interval % 40) / 4;
-        if (num >= 5) num += 30;
-        else num += 27;
-        drawTile(unitsInRange[stIndex]->x * TILE_SIZE, unitsInRange[stIndex]->y * TILE_SIZE, Z_MENU, menuTex, num);
+        if (num >= 5) num += 62;
+        else num += 51;
+        ragd.drawTile(unitsInRange[stIndex]->x * TILE_SIZE, unitsInRange[stIndex]->y * TILE_SIZE, Z_MENU, getMenuTex(), num);
     }
 }
 
@@ -855,9 +660,12 @@ void Start::startRenderer() {
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(0., 0.1, 0., 0.);
 
-	camX = 0;
-	camY = 0;
+	ragd.camX = 0;
+	ragd.camY = 0;
 	frameTime = 0;
+
+	ragd = RagDrawer(TILE_SIZE, player);
+	raga = RagAnim(&ragd);
 
 	createEffect(P_ARROW, 0, 0);
 }
@@ -889,7 +697,7 @@ void Start::renderText(string text, int size, int x, int y, int z, int align, co
             color newC = textColors[text[i] - 'a'];
             glColor3f(newC.red / 255., newC.green / 255., newC.blue / 255.);
         } else {
-            drawTileSuperSpe(x + j * w - a, y, z, w, h, fontTex, offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
+            ragd.drawTileSuperSpe(x + j * w - a, y, z, w, h, getFontTex(), offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
         }
     }
 

@@ -20,27 +20,6 @@ splatters.png
 attackAnims.png
 END
 
-~What to put:
-~ name
-~ index of icon in texture graphic
-~ index of the texture graphic
-~ the type of graphic, 0 for normal, 1 for edged, 2 for height edged, 3 for reverse height edged, 4 for ground, 5 for bag
-~ index of border in graphic
-~  0 - none, 1 - grass
-TILE
-wall
-0,0
-0,0
-END
-
-~map tile group
-~first, name
-~then, all the characters referring to the name
-MTG
-default
-#-wall
-END
-
 ~lists other files to sift through
 ~it will run through these files before continuing
 FILES
@@ -67,8 +46,8 @@ Guy
 youare
 
 foomfield
-map1
-2,3
+yesland
+43,35
 
 -equips
 backpack

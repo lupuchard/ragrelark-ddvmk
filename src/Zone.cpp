@@ -14,6 +14,10 @@ Zone::Zone(string nam, int w, int h, int light, bool fill): StatHolder(V_ZONE) {
 
     stackIndex = -1;
     stackDepth = 0;
+
+    static int foon = 0;
+    ind = foon;
+    foon++;
 }
 
 Zone::~Zone() {
@@ -118,4 +122,8 @@ void Zone::tagDungeon(int index, int depth) {
 }
 pair<int, int> Zone::dungeonTag() {
     return pair<int, int>(stackIndex, stackDepth);
+}
+
+int Zone::getFoon() {
+    return ind;
 }

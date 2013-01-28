@@ -1,6 +1,9 @@
 #ifndef GRAPHICS_H_INCLUDED
 #define GRAPHICS_H_INCLUDED
 
+#include "RagDrawer.h"
+#include "RagAnim.h"
+
 #define WIN1_HEIGHT 600
 #define WIN1_WIDTH 640
 #define CWIN_HEIGHT 100
@@ -10,38 +13,8 @@
 
 #define TILE_SIZE 32
 
-#define Z_MENU 5000
-#define Z_EFFECT 3000
-#define Z_UNIT 70
-#define Z_ITEM 40
-#define Z_STRUCT 30
-#define Z_SPLAT 20
-#define Z_GROUND 10
-
 enum peType{P_NONE, P_DARKDUST, P_ARROW};
 enum align{LEFT, CENTER, RIGHT};
-enum animType{ANIM_NONE, ANIM_UNIT, ANIM_MOVEDIR, ANIM_MOVELOC, ANIM_ATTACK};
-
-typedef struct ANMAT_ {
-    short type;
-    unsigned char value;
-    unsigned char dir;
-    unsigned short time;
-    unsigned short end;
-    short startX;
-    short startY;
-    int ZY;
-    float temp;
-    Unit* target;
-    ANMAT_* nextAnim;
-} animation; //28 bytes
-
-typedef struct {
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
-    unsigned char alpha;
-} color;
 
 //it may be worth noting that all these colors are fully transparent
 const color red        = {255,   0,   0, 0};  const color scarlet    = {255,  63,   0, 255};  const color orange     = {255, 127,   0, 0};

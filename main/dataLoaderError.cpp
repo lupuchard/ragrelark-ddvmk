@@ -56,11 +56,29 @@ bool Start::errorChecker(string filename) {
                 if (line[1] != '-') printFileErr("Second char must be a '-'.", lineNum);
                 finished = true; continue;
             case TILE: if (isNum(line)) printFileErr("First line of TILE must be a string (the name of the Tile).", lineNum); break;
-            case (TILE + 1): if (!isPair(line)) printFileErr("Second line of TILE must be a valid pair (the graphic).", lineNum); break;
+            case (TILE + 1): {
+                unsigned int i = 0;
+                while(line[i] != ':') {
+                    i++;
+                    if (i == line.size()) {
+                        printFileErr("Where's the colon?", lineNum);
+                        break;
+                    }
+                }
+                if (!isPair(line.substr(0, i))) printFileErr("Second line of TILE must have a valid pair (the graphic coords).", lineNum);
+                if (!isNum(line.substr(i + 1, 100))) printFileErr("Second line of TILE must have a texture index after the colon.", lineNum);
+                } break;
             case (TILE + 2):
                 if (!isPair(line)) printFileErr("Third line of TILE must be a valid pair (the type and stuff).", lineNum);
                 finished = true; break;
-            case (TILE + 3): printFileErr("TILE only needs 3 lines.", lineNum); break;
+            case (TILE + 3):
+                if (line[0] == '*') {
+                    if (line.size() == 3) {
+                        if (!(line[1] == 't' || line[1] == 'f') || !(line[2] == 't' || line[2] == 'f')) printFileErr("t's and f's only please", lineNum);
+                    } else printFileErr("Only two chars, t or f each, after the asterix.", lineNum);
+                } else if (isNum(line)) printFileErr("No number on the fourth line of TILE, silly!", lineNum);
+                break;
+            case (TILE + 4): printFileErr("TILE only needs 3 or 4 lines.", lineNum); break;
             case WORLD: if (!isNum(line)) printFileErr("First line of WORLD must be an integer (world map width).", lineNum); break;
             case (WORLD + 1):
                 if (!isNum(line)) printFileErr("Second line of WORLD must be an integer (world map height).", lineNum);
@@ -86,9 +104,8 @@ bool Start::errorChecker(string filename) {
             case RESOURCES: finished = true; continue;
             case FILES: finished = true; continue;
             case (STAIRS + 2): if (!isPair(line)) printFileErr("Third line of STAIRS must be a pair (location in first zone).", lineNum); break;
-            case (STAIRS + 4):
-                if (!isPair(line)) printFileErr("Fifth line of STAIRS must be a pair (location in second zone).", lineNum);
-                finished = true; break;
+            case (STAIRS + 3): finished = true; break;
+            case (STAIRS + 4): if (!isPair(line)) printFileErr("Fifth line of STAIRS must be a pair (location in second zone).", lineNum); break;
             case (STAIRS + 5): printFileErr("STAIRS only needs 5 lines.", lineNum);
             case ITEM: if (isNum(line)) printFileErr("First line of ITEM must be a string (the name of the ItemType).", lineNum); break;
             case (ITEM + 1): if (isNum(line)) printFileErr("Second line of ITEM must be a string (the description of the ItemType).", lineNum); break;
@@ -246,19 +263,20 @@ bool Start::errorChecker(string filename) {
                 status = MAP + 3; continue;
             case (MAP + 10): if (!isPair(line)) printFileErr("This line should be a pair.", lineNum); break;
             case MAPSTACK: if (isNum(line)) printFileErr("This line should be a name (of the map stack)", lineNum); break;
-            case (MAPSTACK + 1): if (line.substr(0, 3) != "in ") printFileErr("The format of this line is \"in AREA\"", lineNum); break;
-            case (MAPSTACK + 2): if (line.substr(0, 3) != "lt " || !isNum(line.substr(3, 100))) printFileErr("The format of this line is \"lt NUMBER\"", lineNum); break;
-            case (MAPSTACK + 3): if (line.substr(0, 3) != "sp " || !isNum(line.substr(3, 100))) printFileErr("The format of this line is \"sp NUMBER\"", lineNum); break;
-            case (MAPSTACK + 4): if (line.substr(0, 3) != "lv " || !isPair(line.substr(3, 100))) printFileErr("The format of this line is \"lv NUM,NUM\"", lineNum); break;
-            case (MAPSTACK + 5): if (line.substr(0, 3) != "ge " || !isNum(line.substr(3, 100))) printFileErr("The format of this line is \"ge NUMBER\"", lineNum); break;
-            case (MAPSTACK + 6):
-                if (line[0] == ':') continue;
-                else if (line[1] == '-') continue;
-                else if (!isPair(line)) printFileErr("This line is not understood.", lineNum);
-                break;
-            case (MAPSTACK + 7):
+            case (MAPSTACK + 1): if (line[0] != '>') printFileErr("The format of this line is \">AREA\"", lineNum); break;
+            case (MAPSTACK + 2): {
                 finished = true;
-                if (!isPair(line)) printFileErr("There should be a pair of integers here.", lineNum); break;
+                unsigned int b = 0;
+                while (line[b] != ' ') b++;
+                b++;
+                if (b > 3) {
+                    while (b < line.size()) {
+                        if (line[b] != '+' && line[b] != '.' && line[b] != ',' && !isNum(line.substr(b, 1))) printFileErr("inorrwrong", lineNum);
+                        b++;
+                    }
+                } else printFileErr("wrong", lineNum);
+                } continue;
+            if (line.substr(0, 3) != "lt " || !isNum(line.substr(3, 100))) printFileErr("The format of this line is \"lt NUMBER\"", lineNum); break;
             case TILEDMAPS: finished = true; continue; //TODO this error check
             case TILEDMAPSREFER: finished = true; continue; //TODO this error check
             case SKILLS: finished = true; continue; //TODO this error check

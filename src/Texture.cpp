@@ -1,75 +1,88 @@
 #include "Texture.h"
 
-Texture::Texture() {
-    TextureID = 0;
+vector<Texture*> textures;
+Texture* structureTex;
+Texture* menuTex;
+Texture* fontTex;
+Texture* splatterTex;
+Texture* attackAnimsTex;
+Texture* playerTex;
 
-    Width   = 0;
-    Height  = 0;
+int addTexture(Texture* texture) {
+    textures.push_back(texture);
+    return textures.size() - 1;
+}
+void setStructureTex(Texture* texture) { structureTex = texture; }
+void setMenuTex(Texture* texture) { menuTex = texture; }
+void setFontTex(Texture* texture) { fontTex = texture; }
+void setSplatterTex(Texture* texture) { splatterTex = texture; }
+void setAttackAnimsTex(Texture* texture) { attackAnimsTex = texture; }
+void setPlayerTex(Texture* texture) { playerTex = texture; }
+Texture* getStructureTex() { return structureTex; }
+Texture* getMenuTex() { return menuTex; }
+Texture* getFontTex() { return fontTex; }
+Texture* getSplatterTex() { return splatterTex; }
+Texture* getAttackAnimsTex() { return attackAnimsTex; }
+Texture* getPlayerTex() { return playerTex; }
+Texture* getTexture(int index) {
+    return textures[index];
+}
+void clearTextures() {
+    for (unsigned int i = 0; i < textures.size(); i++) {
+        delete textures[i];
+    }
+    textures.clear();
 }
 
-bool Texture::OnLoad(string File) {
-    SDL_Surface* tempSurf = NULL;
-    if((tempSurf = IMG_Load(File.c_str())) == NULL) {
-        cout << "Unable to load file : " << File << endl;
+Texture::Texture() {
+    textureID = 0;
+    width   = 0;
+    height  = 0;
+}
+
+void Texture::bind() {
+    glBindTexture(GL_TEXTURE_2D, textureID);
+}
+
+bool Texture::load(string file) {
+    SDL_Surface* tempSurf = IMG_Load(file.c_str());
+    if (!tempSurf) {
+        cout << "Texture file not found: " << file << endl;
         return false;
     }
-    OnLoad(tempSurf);
-
+    load(tempSurf);
     SDL_FreeSurface(tempSurf);
-
     return true;
 }
 
-bool Texture::OnLoad(SDL_Surface* Surface) {
-    OnCleanup();
+bool Texture::load(SDL_Surface* surface) {
+    cleanup();
 
-    if(Surface == NULL) {
-        return false;
+    if(!surface) return false;
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    int mode;
+    if(surface->format->BytesPerPixel == 4) {
+        mode = GL_RGBA;
+    } else {
+        mode = GL_RGB;
     }
-
-    glGenTextures(1, &TextureID);
-
-    glBindTexture(GL_TEXTURE_2D, TextureID);
-
-    int Mode = GL_RGB;
-
-    if(Surface->format->BytesPerPixel == 4) {
-        Mode = GL_RGBA;
-    }
-    glPixelStorei(GL_UNPACK_ALIGNMENT, Mode);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, Mode, Surface->w, Surface->h, 0, Mode, GL_UNSIGNED_BYTE, Surface->pixels);
-
+    glPixelStorei(GL_UNPACK_ALIGNMENT, mode);
+    glTexImage2D(GL_TEXTURE_2D, 0, mode, surface->w, surface->h, 0, mode, GL_UNSIGNED_BYTE, surface->pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    Width   = Surface->w;
-    Height  = Surface->h;
+    width   = surface->w;
+    height  = surface->h;
 
     return true;
 }
 
-void Texture::OnCleanup() {
-    if(TextureID > 0) {
-        glDeleteTextures(1, &TextureID);
-        TextureID = 0;
+void Texture::cleanup() {
+    if(textureID > 0) {
+        glDeleteTextures(1, &textureID);
+        textureID = 0;
     }
-}
-
-void Texture::Bind() {
-    glBindTexture(GL_TEXTURE_2D, TextureID);
-}
-
-void Texture::RenderQuad(int X, int Y) {
-    RenderQuad(X, Y, Width, Height);
-}
-
-void Texture::RenderQuad(int X, int Y, int Width, int Height) {
-    Bind();
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(X, Y, 0);
-        glTexCoord2f(1, 0); glVertex3f(X + Width, Y, 0);
-        glTexCoord2f(1, 1); glVertex3f(X + Width, Y + Height, 0);
-        glTexCoord2f(0, 1); glVertex3f(X, Y + Height, 0);
-    glEnd();
 }

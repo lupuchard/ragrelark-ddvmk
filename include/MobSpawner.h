@@ -3,7 +3,6 @@
 
 #define MAX_MOBS 1000
 
-#include "Zone.h"
 #include "EnvironmentManager.h"
 #include "EnemyEquipStatHolder.h"
 #include "MobEquipSet.h"
@@ -41,8 +40,8 @@ class MobSpawner {
         int hashMob(string tag);
         int addMob(string s, string tag, StatHolder* u);
         bool placeMob(Unit* unit, Zone* z, int x, int y, bool allowAlt = true);
-        bool spawnMobSpeTag(int mobI, Zone* z, int x, int y, bool allowAlt = true); //time
-        bool spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt = true); //time
+        Unit* spawnMobSpeTag(int mobI, Zone* z, int x, int y, bool allowAlt = true); //time
+        Unit* spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt = true); //time
         pair<string, StatHolder*> getMob(string tag);
 
         int addEnvironment(string name);

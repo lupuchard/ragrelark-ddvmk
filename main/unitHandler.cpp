@@ -18,7 +18,7 @@ int actionTimePassed(int time, int speed) {
     return max((int)(time * pow(.95, speed - 8)), 1);
 }
 
-//ok I WILL comment this method OKAYS then eventuallies all the methods will be comment and success
+//ok I WILL comment this method OKAY then eventuallie all the methods will be comment and success
 //this method runs to tell the unit in the zone what to do, it chooses it's action
 void Start::ai(Unit* unit, Zone* zone) {
     int ai = unit->getStatValue(S_AI); //the type of AI the monster uses, currently only two.
@@ -143,7 +143,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                 Location* prevLoc = zone->getLocationAt(x, y);
                 int prevHeight = prevLoc->getTotalHeight();
                 int height = nextLoc->getTotalHeight();
-                if (nextLoc->isOpen()) {
+                if (nextLoc->isOpen() && !zone->getTileAt(newX, newY)->blocksMove()) {
                     int movSpeed = unit->getStatValue(S_MOVESPEED);
                     normalMove = true;
                     if (prevHeight != height) {
@@ -198,7 +198,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
             }
         }
         if (normalMove && zone == player->getZone()) {
-            rMoveDir(unit, dir, x, y);
+            raga.rMoveDir(unit, dir, x, y);
         }
     }
 }
@@ -229,7 +229,7 @@ void Start::pushRock(Unit* unit, Zone* zone, int dir) {
                     }
                     tim = actionTimePassed(tim, movSpeed);
                     unit->theTime += T_ROCK + diff + tim;
-                    rMoveDir(unit, dir, unit->x, unit->y);
+                    raga.rMoveDir(unit, dir, unit->x, unit->y);
                     changeLoc(unit, zone, unit->x + xDirs[dir], unit->y + yDirs[dir]);
                 }
             }
@@ -339,7 +339,7 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 }
 
                 string extra;
-                rAttack(enemy->x, enemy->y, dir, damageType, hitType);
+                raga.rAttack(enemy->x, enemy->y, dir, damageType, hitType);
 
                 unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(S_ATTACKSPEED));
                 if (unit == player->getUnit()) {
@@ -577,15 +577,21 @@ void Start::killUnit(Unit* unit, Zone* zone) {
     int split = unit->getStatValue(S_SPLIT);
     if (split) {
         for (int i = 0; i < split; i++) {
-            if (!mobSpawner->spawnMobSpeTag(unit->getStatValue(S_SPAWN), zone, unit->x, unit->y, world->theTime)) break;
+            Unit* newUnit = mobSpawner->spawnMobSpeTag(unit->getStatValue(S_SPAWN), zone, unit->x, unit->y, world->theTime);
+            if (newUnit) {
+                areaUnits.insert(pair<Unit*, Zone*>(newUnit, zone));
+                newUnit->theTime = world->theTime;
+                raga.rMoveLoc(newUnit, unit->x, unit->y, newUnit->x, newUnit->y);
+            } else break;
         }
     }
-    unitDeleteList.push_back(unit);
     unit->x = -2;
     unit->y = -2;
     if (unit == player->getUnit()) {
         addMessage("GAME OVER HAHA", black);
     }
+    if (unit->g.border) unitDeleteList.push_back(unit);
+    else delete unit;
 }
 
 void Start::openDoor(Unit* unit, Zone* zone, int dir, bool safe) {

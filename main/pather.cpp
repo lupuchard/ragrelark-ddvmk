@@ -150,7 +150,7 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType 
                 int hei = locAt->getTotalHeight();
                 int heightDiff = hei - current->height;
                 bool isGoal = l.x == xDest && l.y == yDest;
-                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || (considerOtherUnits && locAt->hasUnit() && !(((pathingType != P_FLEE) && isGoal)))) {
+                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || zone->getTileAt(l.x, l.y)->blocksMove() || (considerOtherUnits && locAt->hasUnit() && !(((pathingType != P_FLEE) && isGoal)))) {
                     val = 2;
                 }
             }
@@ -288,7 +288,7 @@ void Start::playerFieldOfView(bool isNew) {
             unsigned char texs[2] = {7, 7};
             unsigned char locs[2] = {0, 0};
             if (loc->hasUnit()) {
-                graphic g = loc->unit->getGraphic();
+                graphic g = loc->unit->g;
                 texs[v] = g.tex;
                 locs[v] = g.loc;
                 v++;
@@ -351,9 +351,18 @@ void fovApply(void* map, int x, int y, int dx, int dy, void* src) {
     }
 }
 
+#define RANDA 14741
+#define RANDB 7919
+#define RANDC 44318
+const int RANDM = rand();
+const int RANDN = rand();
 bool fovOpaque(void* map, int x, int y) {
     Zone* zone = (Zone*)map;
     if (x < 0 || y < 0 || x >= zone->getWidth() || y >= zone->getHeight()) return true;
+    if (zone->getTileAt(x, y)->blocksLight()) {
+        unsigned short r = (RANDA * x + RANDB * y + RANDC * zone->getFoon() + RANDM) ^ RANDN;
+        return r % 50 > 24;
+    }
     Location* loc = zone->getLocationAt(x, y);
     if (loc->isClosedDoor()) return true;
     return loc->height == MAX_HEIGHT;
@@ -365,8 +374,10 @@ void Start::initFieldOfView() {
     fov_settings_init(&fovSettings);
     fov_settings_set_opacity_test_function(&fovSettings, fovOpaque);
     fov_settings_set_apply_lighting_function(&fovSettings, fovApply);
+    fov_settings_set_shape(&fovSettings, FOV_SHAPE_CIRCLE);
 }
 
 void Start::cleanFov() {
     fov_settings_free(&fovSettings);
+    //fov_free(); ???
 }

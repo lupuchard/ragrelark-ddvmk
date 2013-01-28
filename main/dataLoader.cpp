@@ -75,6 +75,8 @@ void Start::loadData(World* w, Player* p) {
         cout << "WARNING: No splatters.png was loaded!" << endl;
     } if (!gotsPlayerTex) {
         cout << "WARNING: No player.png was loaded!" << endl;
+    } if (!gotsAttackAnimsTex) {
+        cout << "WORNING: No attackAnims.png was loaded!" << endl;
     }
 
     for (map<string, vector<Zone*>*>::iterator i = areaZones.begin(); i != areaZones.end(); i++) {
@@ -152,20 +154,30 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 continue;
             case TILE: tempStr = line; break;
             case (TILE + 1): {
-                pair<int, int> nums = stp(line);
-                tempValues[0] = nums.first;
-                tempValues[1] = nums.second;
+                int c = 0;
+                while (line[c] != ':') c++;
+                pair<int, int> nums = stp(line.substr(0, c));
+                tempValues[1] = sti(line.substr(c + 1, 100));
+                tempValues[0] = nums.first + nums.second * (getTexture(tempValues[1])->width / TILE_SIZE);
                 } break;
             case (TILE + 2): {
                 pair<int, int> nums = stp(line);
                 tiles[tempStr] = new Tile(tempValues[0], tempValues[1], nums.first, nums.second);
+                } break;
+            case (TILE + 3):
+                if (line[0] == '*') {
+                    bool blockM = line[1] == 't';
+                    bool blockL = line[2] == 't';
+                    tiles[tempStr]->setBlock(blockM, blockL);
+                } else {
+                    tiles[tempStr]->setOver(tiles[line]);
                 } break;
             case WORLD: tempValues[0] = sti(line); break;
             case (WORLD + 1):
                 w->setDim(tempValues[0], sti(line));
                 break;
             case FILES: {
-                string fName = "data/" + line + ".txt";
+                string fName = "data/" + line + ".rag";
                 openFile(fName, w, p);
                 } continue;
             case AREA: tempStr = line; break;
@@ -266,7 +278,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 } else if (typ == "!!!") {
                     tempDun->createZones();
                     tempArea->addDungeonStack(tempDun);
-                }
+                } else if (ERRCHECK) printFileProb("That's not an option!", lineNum);
             } continue;
             case MAP:
                 tempStr = line;
@@ -620,17 +632,19 @@ void Start::openFile(string fileName, World* w, Player* p) {
                             else if (c == '-') disp = 1;
                             else if (c == '~') disp = 2;
                             int index = 0;
-                            MobEquipSet* ridiculous = mobEquipsMap[line.substr(mon * 10 + 6, 3)];
-                            c = line[mon * 10 + 9];
-                            if (c == '!') index = -2;
-                            else if (c == '?') index = -1;
-                            else index = cti(c);
-                            if (index > 10) index -= 7;
                             MobMod* relevent = &(encounters->at(encounters->size() - 1).mobMod);
                             relevent->min = min; relevent->max = max;
                             relevent->dispersion = disp;
-                            relevent->mobEquipSet = ridiculous;
-                            relevent->equipsInEquipsType = index;
+                            if (line[mon * 10 + 6] != '-') {
+                                MobEquipSet* ridiculous = mobEquipsMap[line.substr(mon * 10 + 6, 3)];
+                                c = line[mon * 10 + 9];
+                                if (c == '!') index = -2;
+                                else if (c == '?') index = -1;
+                                else index = cti(c);
+                                if (index > 10) index -= 7;
+                                relevent->mobEquipSet = ridiculous;
+                                relevent->equipsInEquipsType = index;
+                            }
                             mon++;
                         }
                     }
@@ -716,7 +730,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
             case TILEDMAPS: tempStr = line.substr(1, 100); break;
             case (TILEDMAPS + 1): tempStr2 = line; break;
             case (TILEDMAPS + 2): {
-                Zone* z = loadTileFile("resources/tilemaps/" + line);
+                Zone* z = loadTileFile("resources/tilemaps/" + line, tempStr2);
                 areaZones[tempStr]->push_back(z);
                 zones[tempStr2] = z;
                 status = TILEDMAPS + 1;
@@ -825,7 +839,7 @@ void Start::deleteData() {
     tiles.clear();
     areas.clear();
     zones.clear();
-    textures.clear();
+    clearTextures();
     clearItemTypes();
     glDeleteLists(base, 96);
 }

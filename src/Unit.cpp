@@ -32,6 +32,7 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT) {
         StatHolder::setStat(S_HP, prototype->getStatValue(S_MAXHP));
         StatHolder::setStat(S_MANA, prototype->getStatValue(S_MAXMANA));
     }
+    g.border = 0;
     StatHolder::aThis = this;
     pointOnPath = -1;
     currentPath = NULL;
@@ -132,8 +133,4 @@ Unit* Unit::getEnemy() {
 
 bool Unit::hasStat(int stat, bool isFloat) {
     return StatHolder::hasStat(stat, isFloat) || unitPrototype->hasStat(stat, isFloat);
-}
-
-graphic Unit::getGraphic() {
-    return g;
 }

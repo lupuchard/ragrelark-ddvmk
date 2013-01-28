@@ -1,8 +1,7 @@
-#include "Unit.h"
-#include "Area.h"
-
 #ifndef PLAYER_H
 #define PLAYER_H
+
+#include "Area.h"
 
 #define NUM_SKILLS 56
 

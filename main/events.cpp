@@ -13,10 +13,7 @@ libsdl1.2debian
 void Start::directionPress(int direction) {
     if (state == STATE_PLAY) {
         if (direction == 5) {
-            //player->getUnit()->theTime += 5;
-            changeLoc(player->getUnit(), player->getZone(), player->getUnit()->x, player->getZone()->getHeight() - 1);
-            moveUnit(player->getUnit(), player->getZone(), 2);
-            primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
+            player->getUnit()->theTime += 5;
         } else {
             moveUnit(player->getUnit(), player->getZone(), direction);
             primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);

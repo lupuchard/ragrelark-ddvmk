@@ -25,7 +25,7 @@
 #define TILEDMAPS 1900
 #define TILEDMAPSREFER 1950
 
-#define FIRST_FILE "data/base.txt"
+#define FIRST_FILE "data/base.rag"
 
 #define DEBUG false
 #define ERRCHECK true

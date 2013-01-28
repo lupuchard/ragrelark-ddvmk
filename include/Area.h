@@ -1,11 +1,11 @@
+#ifndef AREA_H
+#define AREA_H
+
 #include <string>
 #include <vector>
 #include "StatHolder.h"
 #include "DungeonStack.h"
 using namespace std;
-
-#ifndef AREA_H
-#define AREA_H
 
 #define NUM_ESCAPE_DIRS 3
 

@@ -19,7 +19,7 @@ unsigned* spoon(XMLElement* currentLayer) {
     return out;
 }
 
-Zone* Start::loadTileFile(string fileName) {
+Zone* Start::loadTileFile(string fileName, string zoneName) {
     cout << " -Loading " << fileName << endl;
     XMLDocument doc;
     int success = doc.LoadFile(fileName.c_str());
@@ -62,7 +62,7 @@ Zone* Start::loadTileFile(string fileName) {
                 allTiles.insert(ind);
             }
             map<unsigned int, int> tempMap;
-            theZone = new Zone(fileName, width, height, lightness, true);
+            theZone = new Zone(zoneName, width, height, lightness, true);
             int j = 0;
             for (set<unsigned int>::iterator i = allTiles.begin(); i != allTiles.end(); i++) {
                 theZone->addTile(tiledTiles[*i]);
@@ -119,7 +119,6 @@ Zone* Start::loadTileFile(string fileName) {
                 }
             }
 		}
-		cout << "cart " << (int)theZone->getLightness() << " " << isZone << endl;
 		return theZone;
 	}
     cout << "File could not be loadeded.";
