@@ -5,6 +5,9 @@
 #define INTERVAL_MAX 360
 #define MAX_MENU_ITEMS 12
 
+#define SHOWN_ITEM_STATS_MIN 7
+#define SHOWN_ITEM_STATS_MAX 24
+
 const string menuActionNames[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(R)ead", "E(x)amine"};
 
 const char arrowX[] = {0, 16, 32, 48, 64,  0, 16, 32, 48, 64};
@@ -47,6 +50,7 @@ void Start::render() {
 
     renderMenu();
     renderMessages();
+    renderCircleSelect();
     renderBars();
     renderSidePanels();
 
@@ -58,6 +62,27 @@ void Start::render() {
         interval = 0;
     }
     frameTime++;
+}
+
+void Start::renderCircleSelect() {
+    if (state == STATE_SPELL) {
+        static const int siz = 4 + 3 * 28;
+        static const int cx = CWIN_WIDTH - 4 - siz;
+        static const int cy = WIN1_HEIGHT + 8;
+        static const int locsX[] = {0, 0, 1, 1, 0, 0, 1, 0, 0, 1};
+        static const int locsY[] = {0, 1, 3, 1, 2, 4, 2, 0, 3, 0};
+        ragd.drawTileSpe(cx, cy, Z_MENU + 20, getMenuTex(), 0, 212, siz);
+        int k = 1;
+        for (int j = 2; j >= 0; j--) {
+            for (int i = 0; i < 3; i++) {
+                int x = locsX[k] * 56;
+                if (circleSelect[k]) x += 28;
+                int y = locsY[k] * 28 + 308;
+                ragd.drawTileSpe(cx + 1 + i * 29, cy + 1 + j * 29, Z_MENU + 30, getMenuTex(), x, y, 28);
+                k++;
+            }
+        }
+    }
 }
 
 void Start::renderBars() {
@@ -126,95 +151,159 @@ void Start::renderSidePanels() {
     ragd.drawTileSuperSpe(WIN1_WIDTH, 30                  , Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
     ragd.drawTileSuperSpe(WIN1_WIDTH, 30 + SWIN_HEIGHT / 2, Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
 
-    static const string statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
-    int toff = 50;
-    int loff = 20;
-    Unit* p = player->getUnit();
-    renderText("  HP: " + its(p->getStatValue(S_HP)) + "/" + its(p->getStatValue(S_MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, forest);
-    renderText("  MANA: " + its(p->getStatValue(S_MANA)) + "/" + its(p->getStatValue(S_MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, navy);
-    for (int i = S_STR; i <= S_CHA; i++) {
-        int base = p->getStatValue(i - 9);
-        int main = p->getStatValue(i);
-        string s;
-        if (main != base) s = statNames[i - S_STR] + "\\p" + its(main) + "\\z(" + its(base) + ")";
-        else s = statNames[i - S_STR] + "\\z" + its(main);
-        renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, black);
-    }
-    renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, black);
-    renderText(player->getZone()->getName(), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, charcoal);
-
-    static const int numFunctionalSkills = 7;
-    static const SkillType functionalSkills[] = {SKL_MELEE, SKL_LIFT, SKL_FORT, SKL_CONC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
-    int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
-    for (int i = 0; i < numFunctionalSkills; i++) {
-        renderText(capitalize(skillNames[functionalSkills[i]]), 2, soff, toff + i * 40, Z_MENU + 2, RIGHT, dark(teal));
-        int level = player->getSkillLevel(functionalSkills[i]);
-        int eve = player->getSkillExpPercent(functionalSkills[i]);
-        string s = " (";
-        if (eve < 10) s = "  (";
-        int leve = level / 10;
-        int evel = level % 10;
-        renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff - 20, toff + i * 40 + 20, Z_MENU + 2, RIGHT, dark(teal));
-    }
-
-    //MINIMAP TIME
-    Zone* z = player->getZone();
-    int len = z->getWidth() * z->getHeight() * 3;
-    unsigned char datas[len];
+    static const string panelNames[] = {"", "", "Stats", "Skills", "Inv", "", "", "Map", "Notes"};
     int k = 0;
-    for (int j = z->getHeight() - 1; j >= 0; j--) {
-        for (int i = 0; i < z->getWidth(); i++) {
-            Location* loc = z->getLocationAt(i, j);
-            color c;
-            if (player->getUnit()->x == i && player->getUnit()->y == j) {
-                c = magenta;
-            } else if (visibilities[j * z->getWidth() + i] < 2) {
-                pair<int, int> p = player->getMemoryBottom(i, j);
-                if (p.first == 5) {
-                    c = black;
-                } else {
-                    if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
-                        c = silver;
-                    } else if (isClosedDoor(loc->structure) || isOpenDoor(loc->structure)) {
-                        c = brown;
-                    } else {
-                        c.red = loc->height * 2;
-                        c.green = loc->height * 2;
-                        c.blue = loc->height * 2;
-                    }
-                }
-            } else if (loc->hasUnit()) {
-                c = red;
-            } else if (loc->structure != S_NONE) {
-                if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
-                    c = silver;
-                } else if (isOpenDoor(loc->structure)) {
-                    c = dark(tann);
-                } else if (isClosedDoor(loc->structure)) {
-                    c = brown;
-                } else if (loc->structure == S_ROCK) {
-                    c = charcoal;
-                } else {
-                    c = pink;
-                }
-            } else if (loc->hasItems()) {
-                c = green;
-            } else {
-                c.red = loc->height * 3 + 32;
-                c.green = loc->height * 3 + 32;
-                c.blue = loc->height * 3 + 32;
+    for (int i = PANEL_TOPSTART + 1; i < PANEL_TOPEND; i++) {
+        int xd = 252;
+        int siz = 2;
+        if (i == topPanel) {
+            xd = 317;
+            siz = 3;
+        }
+        ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, 0, Z_MENU, 65, 30, getMenuTex(), xd, 162, 65, 30);
+        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12, Z_MENU + 1, CENTER, black);
+        k++;
+    }
+    k = 0;
+    for (int i = PANEL_BOTTOMSTART + 1; i < PANEL_BOTTOMEND; i++) {
+        int xd = 252;
+        int siz = 2;
+        if (i == botPanel) {
+            xd = 317;
+            siz = 3;
+        }
+        ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, SWIN_HEIGHT / 2, Z_MENU, 65, 30, getMenuTex(), xd, 162, 65, 30);
+        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12 + SWIN_HEIGHT / 2, Z_MENU + 1, CENTER, black);
+        k++;
+    }
+
+    static const int toff = 50;
+    static const int loff = 20;
+    if (topPanel == PANEL_STATS) {
+        static const string statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
+        Unit* p = player->getUnit();
+        renderText("  HP: " + its(p->getStatValue(S_HP)) + "/" + its(p->getStatValue(S_MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, forest);
+        renderText("  MANA: " + its(p->getStatValue(S_MANA)) + "/" + its(p->getStatValue(S_MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, navy);
+        for (int i = S_STR; i <= S_CHA; i++) {
+            int base = p->getStatValue(i - 9);
+            int main = p->getStatValue(i);
+            string s;
+            if (main != base) s = statNames[i - S_STR] + "\\p" + its(main) + "\\z(" + its(base) + ")";
+            else s = statNames[i - S_STR] + "\\z" + its(main);
+            renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, black);
+        }
+        renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, black);
+        renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, dark(teal));
+        renderText("Time passed: \\q" + its(player->getUnit()->theTime), 2, loff + WIN1_WIDTH, toff + 260, Z_MENU + 1, LEFT, dark(red));
+    } else if (topPanel == PANEL_SKILLS) {
+        static const int numFunctionalSkills = 7;
+        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_LIFT, SKL_FORT, SKL_CONC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
+        int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
+        int k = 0;
+        for (int i = 0; i < numFunctionalSkills; i++) {
+            int level = player->getSkillLevel(functionalSkills[i]);
+            if (level) {
+                renderText(capitalize(skillNames[functionalSkills[i]]), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, dark(olive));
+                int eve = player->getSkillExpPercent(functionalSkills[i]);
+                string s = " (";
+                if (eve < 10) s = "  (";
+                int leve = level / 10;
+                int evel = level % 10;
+                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, dark(olive));
+                k++;
             }
-            datas[k++] = c.red;
-            datas[k++] = c.green;
-            datas[k++] = c.blue;
+        }
+        for (map<int, playerSpell>::iterator i = player->getSpellsBegin(); i != player->getSpellsEnd(); i++) {
+            int level = i->second.level;
+            if (level) {
+                int spellIndex = i->first << 2;
+                renderText(capitalize(getAbility(spellIndex)->getName()), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, dark(teal));
+                int eve = i->second.exp * 100 / (int)(pow(level + 1, 1.1) * 2.f);
+                string s = " (";
+                if (eve < 10) s = "  (";
+                int leve = level / 10;
+                int evel = level % 10;
+                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, dark(teal));
+                k++;
+            }
+        }
+        if (!k) {
+            renderText("I'm sorry, but you currently", 2, WIN1_WIDTH + loff, toff, Z_MENU + 2, LEFT, black);
+            renderText("lack any skill levels.", 2, WIN1_WIDTH + loff, toff + 20, Z_MENU + 2, LEFT, black);
         }
     }
-    for (; k < len; k++) {
-        datas[k] = 0;
+
+    if (botPanel == PANEL_MINIMAP) {
+        //MINIMAP TIME
+        Zone* z = player->getZone();
+        int len = z->getWidth() * z->getHeight() * 3;
+        unsigned char datas[len];
+        int k = 0;
+        for (int j = z->getHeight() - 1; j >= 0; j--) {
+            for (int i = 0; i < z->getWidth(); i++) {
+                Location* loc = z->getLocationAt(i, j);
+                color c;
+                if (player->getUnit()->x == i && player->getUnit()->y == j) {
+                    c = magenta;
+                } else if (visibilities[j * z->getWidth() + i] < 2) {
+                    pair<int, int> p = player->getMemoryBottom(i, j);
+                    if (p.first == 5) {
+                        c = black;
+                    } else {
+                        if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
+                            c = silver;
+                        } else if (isClosedDoor(loc->structure) || isOpenDoor(loc->structure)) {
+                            c = brown;
+                        } else {
+                            c.red = loc->height * 2;
+                            c.green = loc->height * 2;
+                            c.blue = loc->height * 2;
+                        }
+                    }
+                } else if (loc->hasUnit()) {
+                    c = red;
+                } else if (loc->structure != S_NONE) {
+                    if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
+                        c = silver;
+                    } else if (isOpenDoor(loc->structure)) {
+                        c = dark(tann);
+                    } else if (isClosedDoor(loc->structure)) {
+                        c = brown;
+                    } else if (loc->structure == S_ROCK) {
+                        c = charcoal;
+                    } else {
+                        c = pink;
+                    }
+                } else if (loc->hasItems()) {
+                    c = green;
+                } else {
+                    c.red = loc->height * 3 + 32;
+                    c.green = loc->height * 3 + 32;
+                    c.blue = loc->height * 3 + 32;
+                }
+                datas[k++] = c.red;
+                datas[k++] = c.green;
+                datas[k++] = c.blue;
+            }
+        }
+        for (; k < len; k++) {
+            datas[k] = 0;
+        }
+        glRasterPos3i(WIN1_WIDTH + 30, SWIN_HEIGHT / 2 + 60 + z->getHeight() * 3, Z_MENU + 1);
+        glPixelZoom(3, 3);
+        glDrawPixels(z->getWidth(), z->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, datas);
+
+        renderText(player->getZone()->getName(), 2, loff + WIN1_WIDTH, SWIN_HEIGHT / 2 + toff + 240, Z_MENU + 1, LEFT, charcoal);
+    } else if (botPanel == PANEL_NOTES) {
+        for (int i = 0; i < NUM_NOTELINES; i++) {
+            renderText(theNotes[i], 2, WIN1_WIDTH + loff, i * 12 + SWIN_HEIGHT / 2 + 30, Z_MENU + 1, LEFT, black);
+        }
+        if (notesSelected && notesSelected < NUM_NOTELINES) {
+            if (interval % 32 < 16) {
+                drawBox(WIN1_WIDTH + 8 * theNotes[notesSelected].size() + loff - 4, notesSelected * 12 + SWIN_HEIGHT / 2 + 28, Z_MENU + 2, 1, 0, black);
+            }
+        }
     }
-    glRasterPos3i(WIN1_WIDTH + 30, SWIN_HEIGHT / 2 + 60 + z->getHeight() * 3, Z_MENU + 1);
-    glPixelZoom(3, 3);
-    glDrawPixels(z->getWidth(), z->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, datas);
 }
 
 void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
@@ -230,9 +319,6 @@ void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
     ragd.drawTileSuperSpe(x1 + 16, y2 - 16, Z_MENU, cWid, 16  , getMenuTex(), 16, 64, 16, 16);
     ragd.drawTileSuperSpe(x2 - 16, y2 - 16, Z_MENU, 16  , 16  , getMenuTex(), 32, 64, 16, 16);
 }
-
-const int shownItemStatsMin = 7;
-const int shownItemStatsMax = 24;
 
 color selectStatColor(int value, int i) {
     if (i == S_PENALTY) value = -value;
@@ -255,7 +341,7 @@ color selectStatColor(int value, int i) {
 void Start::renderMenu() {
     static const color weightColors[] = {tar, black, black, dark(dark(purple)), dark(purple), purple};
     static const color valueColors[] = {tar, black, dark(brown), dark(amber), olive, yellow};
-    static const string dTypeNames[] = {"none", "bludgeon", "slashing", "piercing"};
+    static const string dTypeNames[] = {"none", "bludgeon", "slashing", "piercing", "maaaaagic"};
     if (state == STATE_MENU) {
         if (selected >= MAX_MENU_ITEMS + selectedShift) {
             selectedShift = selected - MAX_MENU_ITEMS + 1;
@@ -338,11 +424,13 @@ void Start::renderMenu() {
                 descLen = lines.size();
                 lines.push_back(pair<string, color>("", black));
 
+                //first it displays weight and value
                 int weightValue = selectedItemType->getStatValue(S_WEIGHT);
                 lines.push_back(pair<string, color>(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
                 int valueValue = selectedItemType->getStatValue(S_VALUE);
                 lines.push_back(pair<string, color>(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
 
+                //then it displays damage and AC
                 color c;
                 c.alpha = 0;
                 if (selectedItemType->hasStat(S_IDAMAGE, false)) {
@@ -350,7 +438,7 @@ void Start::renderMenu() {
                     c.red = 2 * min(damVal, 32);
                     c.blue = 2 * min(damVal, 32);
                     c.green = 2 * min(damVal, 32);
-                    lines.push_back(pair<string, color>(" " + its(damVal) + " Damage (" + capitalize(dTypeNames[selectedItemType->getStatValue(S_DTYPE)]) + ")", c));
+                    lines.push_back(pair<string, color>(" " + its(damVal) + " Damage (" + capitalize(dTypeNames[weapDamTypes[selectedItemType->getStatValue(S_DTYPE)]]) + ")", c));
                 }
                 if (selectedItemType->hasStat(S_AC, false)) {
                     int acVal = selectedItemType->getStatValue(S_AC);
@@ -360,7 +448,8 @@ void Start::renderMenu() {
                     lines.push_back(pair<string, color>(" " + its(acVal) + " AC", c));
                 }
 
-                for (int i = shownItemStatsMin; i <= shownItemStatsMax; i++) {
+                //then it displays all other visible stats
+                for (int i = SHOWN_ITEM_STATS_MIN; i <= SHOWN_ITEM_STATS_MAX; i++) {
                     Stat* theStat = getStat(V_ITEM, i);
                     if (selectedItemType->hasStat(i, theStat->isItFloat())) {
                         if (theStat->isItFloat()) {
@@ -371,6 +460,12 @@ void Start::renderMenu() {
                             lines.push_back(pair<string, color>(" " + its0(value) + " " + capitalize(theStat->getName()), selectStatColor(value, i)));
                         }
                     }
+                }
+
+                lines.push_back(pair<string, color>("", black));
+                //then it displays any abilities it may have
+                for (set<unsigned short>::iterator i = selectedItemType->getAbilitiesBegin(); i != selectedItemType->getAbilitiesEnd(); i++) {
+                    lines.push_back(pair<string, color>("  " + capitalize(getAbility(*i)->getName()), dark(teal)));
                 }
             }
             height = 32 + 30 + 12 * lines.size();
@@ -453,12 +548,6 @@ void Start::renderGround() {
 
     raga.updateAnims();
     unitDeleteList.erase(remove_if(unitDeleteList.begin(), unitDeleteList.end(), is_to_be_deleted), unitDeleteList.end());
-    /*for (unsigned int i = 0; i < unitDeleteList.size(); i++) {
-        if (!unitDeleteList[i]->g.border) delete unitDeleteList[i];
-        unitDeleteList.erase(i);
-        i--;
-        //TODO also on area movements
-    }*/
 
     rendaten renderAtEnd[(iMax - iMin) * (jMax - jMin)];
     int tot = 0;
@@ -660,8 +749,6 @@ void Start::startRenderer() {
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(0., 0.1, 0., 0.);
 
-	ragd.camX = 0;
-	ragd.camY = 0;
 	frameTime = 0;
 
 	ragd = RagDrawer(TILE_SIZE, player);

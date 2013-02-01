@@ -15,41 +15,36 @@
 #include "World.h"
 #include "PrimeFolder.h"
 #include "graphics.h"
+#include "Ability.h"
 
 using namespace std;
 
 #define BOOST_IOSTREAMS_NO_LIB
 
-#define MA_EXAMINE 0
-#define MA_GRAB 1
-#define MA_DROP 2
-#define MA_EQUIP 3
-#define MA_EAT 4
-#define MA_READ 5
-#define NUM_MENU_ACTIONS 6
-
-#define GA_NONE 0
-#define GA_MOVE 1
-
 #define ST_CONF 20
 #define ST_POIS 21
 #define ST_ENCUM 22
+#define ST_HUNG 23
 
 //2000-3000 calories per day
 //apple = 91 calories
 //763-291-6339
 
 #define MAX_MESSAGES 100
+#define NUM_NOTELINES 26
 
 #define INTERVAL_0_TIM 5
 #define INTERVAL_1_TIM 50
 #define INTERVAL_2_TIM 500
 #define INTERVAL_3_TIM 5000
 
-enum{STATE_PLAY, STATE_MENU, STATE_DIR, STATE_TARGET};
-enum{SA_NONE, SA_ATTACK, SA_FIRE, SA_OPENDOOR, SA_CLOSEDOOR};
-
+enum MenuAction{MA_EXAMINE, MA_GRAB, MA_DROP, MA_EQUIP, MA_EAT, MA_READ, NUM_MENU_ACTIONS};
+enum{STATE_PLAY, STATE_MENU, STATE_DIR, STATE_TARGET, STATE_SPELL};
+enum Panels{PANEL_EMPTY, PANEL_TOPSTART, PANEL_STATS, PANEL_SKILLS, PANEL_INVENTORY, PANEL_TOPEND, PANEL_BOTTOMSTART, PANEL_MINIMAP, PANEL_NOTES, PANEL_BOTTOMEND};
 enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, AI_NEUTRAL = 4};
+
+enum AttackType{ATT_STRIKE, ATT_SHOOT, ATT_SPELL};
+enum{SA_NONE, SA_ATTACK, SA_FIRE, SA_OPENDOOR, SA_CLOSEDOOR};
 
 #ifndef START_H
 #define START_H
@@ -88,6 +83,7 @@ class Start: FormulaUser, EnvironmentManager {
         void closeDoors();
         void itemRemovalCheck();
         void enterTargetMode();
+        void enterSpellMode();
         /* --- */
 
         /* --pather.cpp-- */
@@ -106,6 +102,7 @@ class Start: FormulaUser, EnvironmentManager {
         void renderSidePanels();
         void drawMenuBox(int x1, int y1, int x2, int y2);
         void renderMessages();
+        void renderCircleSelect();
         void renderBars();
         void renderText(string text, int size, int x, int y, int z, int align, color c);
         void startRenderer();
@@ -124,22 +121,28 @@ class Start: FormulaUser, EnvironmentManager {
 
         /* --unitHandler.cpp-- */
         void ai(Unit* unit, Zone* zone);
-        void moveUnit(Unit* unit, Zone* zone, int dir);
+        void followPath(Unit* unit, Zone* zone);
         void playerWalkStaminaDrain(int* movSpeed, int time, Unit* unit);
-        void hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& verb);
+        void moveUnit(Unit* unit, Zone* zone, int dir);
+
+        void goTheStairs(Unit* unit, Zone* zone);
+        void changeLoc(Unit* unit, Zone* zone, int x, int y);
+        void changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, int x, int y);
+
+        void applyPoison(int poison, int duration, Unit* unit);
+
+        void hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& verb, int unarmedAttackType);
         void strikeUnit(Unit* unit, Zone* zone, int dir, bool safe);
         void shootUnit(Unit* attacker, Unit* defender, Zone* zone);
-        void killUnit(Unit* unit, Zone* zone);
-        void followPath(Unit* unit, Zone* zone);
+        void attackUnit(Unit* attacker, Unit* defender, Zone* zone, int dir, AttackType attackType);
         void reactToAttack(Unit* unit, Unit* attacker, Zone* zone);
-        void goTheStairs(Unit* unit, Zone* zone);
+        void killUnit(Unit* unit, Zone* zone);
+
         void openDoor(Unit* unit, Zone* zone, int dir, bool safe);
         void closeDoor(Unit* unit, Zone* zone, int dir, bool safe);
         void pushRock(Unit* unit, Zone* zone, int dir);
         void eatFood(Unit* unit, ItemType* food);
-        void changeLoc(Unit* unit, Zone* zone, int x, int y);
-        void changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, int x, int y);
-        void applyPoison(int poison, int duration, Unit* unit);
+        void castSpell(unsigned int spellI, Unit* unit, Zone* zone);
         /* --- */
 
         color dark(color c);
@@ -202,6 +205,11 @@ class Start: FormulaUser, EnvironmentManager {
         short stIndex;
         unsigned short stateAction;
         /*endt*/
+        bool circleSelect[10];
+        int topPanel;
+        int botPanel;
+        int notesSelected;
+        string theNotes[NUM_NOTELINES];
 
         bool gotsStructureTex; //TODO arrayify (with enum)
         bool gotsMenuTex;
@@ -219,6 +227,7 @@ class Start: FormulaUser, EnvironmentManager {
         bool shiftIsDown;
         vector<pair<string, color> > messages;
 
+        /* temp data for loading */
         short tempValues[16];
         string tempStr;
         string tempStr2;
@@ -230,20 +239,23 @@ class Start: FormulaUser, EnvironmentManager {
         vector<string> tempVect;
         vector<Zone*> zoneVect;
 
-        vector<Item> itemsToEquip;
+        map<string, vector<Zone*>*> areaZones;
+        map<string, map<char, string>*> tileGroups;
         map<string, int> itemTypeMap;
         map<string, int> statMap;
         map<string, int> conditionMap;
+        map<string, int> spellMap;
         map<string, int> skillMap;
+        vector<Item> itemsToEquip;
+        /* end temp values for loading */
+
         vector<pair<StatHolder*, string> > spawnPrototypes;
         map<string, MobEquipSet*> mobEquipsMap;
         vector<int> defaultStats;
         vector<Unit*> unitDeleteList;
 
         map<string, Tile*> tiles;
-        map<string, map<char, string>*> tileGroups;
         map<string, Area*> areas;
-        map<string, vector<Zone*>*> areaZones;
         map<string, Zone*> zones;
         map<string, DungeonStack*> dungeons;
 

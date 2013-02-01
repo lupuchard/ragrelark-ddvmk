@@ -209,9 +209,9 @@ u-base_attspe i-attack_rate + u|p_aslow 3 * -
 move_speed
 u-base_movespe i-movement_speed + u|p_mslow 3 * -
 hp_reg
-(f) 0.1 i-hp_regen +
+(f) 0.2 i-hp_regen +
 mana_reg
-(f) 0.1 i-mana_regen + $chann 100 / +
+(f) 0.8 i-mana_regen + $chann 100 / +
 metabolism
 20 u-max_hit_points u-hit_points > 5 * + 10000 u-stamina > 5 * + u-max_mana u-mana > 10 * + u-hunger 5000 > 10 * + 2000 u-hunger > 3 * - 750 u-hunger > 6 * - 250 u-hunger > 9 * -
 att_condition

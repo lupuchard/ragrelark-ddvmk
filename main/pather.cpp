@@ -270,7 +270,7 @@ void Start::myFovCirclePerm(Zone* zone, int x, int y, int radius, int mod) {
             locs[i]->light = temp[i];
         }
     } else {
-        fov_circle(&fovSettings, zone, &mod, x, y, 3);
+        fov_circle(&fovSettings, zone, &mod, x, y, radius);
     }
     zone->getLocationAt(x, y)->light += mod;
 }

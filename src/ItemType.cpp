@@ -83,3 +83,19 @@ string ItemType::getName() {
 string ItemType::getDescription() {
     return description;
 }
+
+void ItemType::addAbility(unsigned short ability) {
+    abilities.insert(ability);
+}
+
+bool ItemType::hasAbility(unsigned short ability) {
+    return abilities.find(ability) != abilities.end();
+}
+
+const set<unsigned short>::iterator ItemType::getAbilitiesBegin() {
+    return abilities.begin();
+}
+
+const set<unsigned short>::iterator ItemType::getAbilitiesEnd() {
+    return abilities.end();
+}

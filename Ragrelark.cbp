@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/classes/Items/;code/main/;code/classes/Places/;code/Helpful Functions/;code/classes/Items/Folders/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/main/activity/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;" />
+		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/Helpful Functions/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -83,6 +83,9 @@
 		<Unit filename="data/base.rag">
 			<Option virtualFolder="data/" />
 		</Unit>
+		<Unit filename="data/books.rag">
+			<Option virtualFolder="data/items/" />
+		</Unit>
 		<Unit filename="data/coins.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
@@ -125,6 +128,11 @@
 		<Unit filename="data/plaintiles.rag">
 			<Option virtualFolder="data/tiles/" />
 		</Unit>
+		<Unit filename="data/spells.rag">
+			<Option virtualFolder="data/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="data/treetiles.rag">
 			<Option virtualFolder="data/tiles/" />
 		</Unit>
@@ -145,6 +153,11 @@
 		</Unit>
 		<Unit filename="depenencies/tinyxml2/tinyxml2.h">
 			<Option virtualFolder="code/Helpful Functions/" />
+		</Unit>
+		<Unit filename="include/Ability.h">
+			<Option virtualFolder="code/classes/Mobs/" />
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Area.h">
 			<Option virtualFolder="code/classes/Places/" />
@@ -304,6 +317,11 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="main/abilities.cpp">
+			<Option virtualFolder="code/main/activity/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="main/cleaner.cpp">
 			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
@@ -380,6 +398,11 @@
 		</Unit>
 		<Unit filename="main/unitHandler.cpp">
 			<Option virtualFolder="code/main/activity/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/Ability.cpp">
+			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

@@ -179,12 +179,12 @@ void RagDrawer::drawUnit(int x, int y, Unit* unit) {
     drawTile(x, y, Z_UNIT + y, getTexture(unit->g.tex), g.loc);
     int i = 0;
     if (unit == player->getUnit() || unit->equipment) {
-        /*Item* items;
+        Item* items;
         int numItems;
         bool pl;
         if (unit == player->getUnit()) {
-            items = primeFolder->getEquips()->getItems();
-            numItems = primeFolder->getEquips()->getNumItems();
+            items = player->getPrimeFolder()->getEquips()->getItems();
+            numItems = player->getPrimeFolder()->getEquips()->getNumItems();
             pl = true;
         } else {
             items = unit->equipment->equips;
@@ -243,11 +243,11 @@ void RagDrawer::drawUnit(int x, int y, Unit* unit) {
                 //if (gendered) etc.
                 int x0 = xMid - wid / 2 + x;
                 int y0 = yMid - hei / 2 + y;
-                int x1 = (num * 16) % playerTex->Width;
-                int y1 = (num * 256) / playerTex->Width;
-                ragd.drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, playerTex, x1, y1, wid, hei);
+                int x1 = (num * 16) % getPlayerTex()->width;
+                int y1 = (num * 256) / getPlayerTex()->width;
+                drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, getPlayerTex(), x1, y1, wid, hei);
             }
-        }*/
+        }
     }
     int wid = max((int)((float)unit->getStatValue(S_HP) / unit->getStatValue(S_MAXHP) * tileSize), 3);
     if (wid < tileSize) {

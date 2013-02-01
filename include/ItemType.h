@@ -9,6 +9,7 @@ enum {E_HEAD, E_FACE, E_BACK, E_BAG, E_NECK, E_BODY, E_LHAND, E_RHAND, E_HANDS, 
 #define E_BHANDS 21
 #define E_BBHANDS 22
 #define E_CG 23
+const int timeEquip[] = {20, 22, 30, 18, 60, 15, 16, 24, 40, 19, 26, 17, 17, 0, 0, 0, 0, 0, 0, 17, 17, 18, 23};
 
 const string typeNames[] = {"none", "anon", "rem", "slot", "", "", "", "", "", "fdr", "ground fdr", "equip fdr", "bag fdr", "prime fdr", "", "", //0-15
     "", "", "", "", "headgear", "face", "back", "bag", "neck", "body", "left hand", "right hand", "hands", "waist", "wrist", "feet",    //16-31
@@ -58,6 +59,10 @@ const int typeRanges[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 enum EquipGType{EQG_NONE, EQG_NORM, EQG_SMALL, EQG_TALL, EQG_LONG, EQG_GNORM, EQG_GSMALL, EQG_GTALL, EQG_GLONG};
 
+enum DamType{DAMT_NONE, DAMT_BASH, DAMT_SLASH, DAMT_PIERCE, DAMT_SPELL};
+enum          WeapAttType{WEAP_NONE, WEAP_CLAWS, WEAP_TENTACLE, WEAP_FISTS, WEAP_HEAD, WEAP_SLAM, WEAP_BITE, WEAP_CLUB, WEAP_DAGGER, WEAP_AXE, WEAP_SPEAR, WEAP_SCYTHE, WEAP_ARROW, WEAP_STONE};
+const int weapDamTypes[] = {DAMT_NONE, DAMT_SLASH, DAMT_BASH, DAMT_BASH, DAMT_BASH, DAMT_BASH, DAMT_PIERCE, DAMT_BASH, DAMT_SLASH, DAMT_SLASH, DAMT_PIERCE, DAMT_SLASH, DAMT_PIERCE, DAMT_BASH};
+
 class ItemType: public StatHolder {
     public:
         ItemType(string name, string desc, int iI, int tI, int type);
@@ -70,6 +75,10 @@ class ItemType: public StatHolder {
         unsigned char getType();
         string getName();
         string getDescription();
+        void addAbility(unsigned short ability);
+        bool hasAbility(unsigned short ability);
+        const set<unsigned short>::iterator getAbilitiesBegin();
+        const set<unsigned short>::iterator getAbilitiesEnd();
     protected:
     private:
         string name;
@@ -78,6 +87,7 @@ class ItemType: public StatHolder {
         unsigned char equipGType;
         unsigned short equipGLoc;
         graphic g;
+        set<unsigned short> abilities;
 };
 
 ItemType* getItemType(int itemType);

@@ -52,14 +52,22 @@ void Start::logic() {
         }
         if (i1times > 0) {
             interval1 = interval1 % INTERVAL_1_TIM;
-
         }
         if (i2times > 0) {
             interval2 = interval2 % INTERVAL_2_TIM;
         }
         if (i3times > 0) {
             interval3 = interval3 % INTERVAL_3_TIM;
-            pUnit->modifyStat(S_HUNGER, -(int)(pUnit->getStatValue(S_METABOLISM) * 1.7361111 * i3times)); //base metabolism is 100 calories per hour
+            int hung = pUnit->modifyStat(S_HUNGER, -(int)(pUnit->getStatValue(S_METABOLISM) * 1.7361111 * i3times)); //base metabolism is 100 calories per hour
+            if (hung < MAX_HUNGER * .05f) {
+                addStatus("starving", red, ST_HUNG);
+            } else if (hung < MAX_HUNGER * .15) {
+                addStatus("near starving", maroon, ST_HUNG);
+            } else if (hung < MAX_HUNGER * .4) {
+                addStatus("very hungry", salmon, ST_HUNG);
+            } else if (hung <= MAX_HUNGER) {
+                removeStatus(ST_HUNG);
+            }
         }
         pUnit->modifyStat(S_STAMINA, timePassed);
         world->theTime = pUnit->theTime;
@@ -72,14 +80,25 @@ void Start::logic() {
                     int before = unit->theTime;
                     ai(unit, iter->second);
                     if (before == unit->theTime) {
-                        unit->theTime++;
+                        unit->theTime += 3;
                         //cout << "PROBLEMS AI NOT MOVING" << endl;
                     }
                 }
             }
             for (int i = 0; i < i2times; i++) {
-                unit->modifyStat(S_HP, (int)(unit->getStatValueF(S_HPREGEN) * unit->getStatValue(S_HP)));
-                unit->modifyStat(S_MANA, (int)(unit->getStatValueF(S_MANAREGEN) * unit->getStatValue(S_MANA)));
+                double foon1 = rand() / (double)RAND_MAX;
+                float hpr = unit->getStatValueF(S_HPREGEN) * unit->getStatValue(S_MAXHP) / 10.f;
+                int hpa = (int)hpr;
+                hpr = fmodf(hpr, 1.f);
+                if (foon1 < hpr) hpa++;
+                if (hpa) unit->modifyStat(S_HP, hpa);
+
+                double foon2 = rand() / (double)RAND_MAX;
+                float manar = unit->getStatValueF(S_MANAREGEN) * unit->getStatValue(S_MAXMANA) / 10.f;
+                int manaa = (int)manar;
+                manar = fmodf(manar, 1.f);
+                if (foon2 < manar) manaa++;
+                if (manaa) unit->modifyStat(S_MANA, manaa);
             }
         }
     }

@@ -74,13 +74,6 @@ void RagAnim::drawAnim(animation* anim, int z) {
         case ANIM_UNIT: ragd->drawUnit(anim->startX, anim->startY, anim->target); break;
         default: break;
     }
-    if (anim->time > anim->end) {
-        if (anim->target) {
-            if (anim->target->g.border == 0) cout << "something has gone TERRABLE wrong" << endl;
-            anim->target->g.border--;
-        }
-        delete anim;
-    }
 }
 
 void RagAnim::updateAnims() {
@@ -88,6 +81,10 @@ void RagAnim::updateAnims() {
     for (unsigned int i = 0; i < anims.size(); i++) {
         animation* anim = anims[i];
         if (anim->time >= anim->end) {
+            if (anim->target) {
+                if (anim->target->g.border == 0) cout << "something has gone TERRABLE wrong" << endl;
+                anim->target->g.border--;
+            }
             if (anim->nextAnim) {
                 animation* temp = anim;
                 anim = anim->nextAnim;

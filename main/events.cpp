@@ -11,14 +11,15 @@ libsdl1.2debian
 */
 
 void Start::directionPress(int direction) {
-    if (state == STATE_PLAY) {
+    switch(state) {
+    case STATE_PLAY:
         if (direction == 5) {
             player->getUnit()->theTime += 5;
         } else {
             moveUnit(player->getUnit(), player->getZone(), direction);
             primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
-        }
-    } else if (state == STATE_MENU) {
+        } break;
+    case STATE_MENU:
         switch (direction) {
             case 2:
                 selected++;
@@ -41,8 +42,8 @@ void Start::directionPress(int direction) {
                 } else {
                     selected--;
                 } break;
-        }
-    } else if (state == STATE_TARGET) {
+        } break;
+    case STATE_TARGET:
         switch (direction) {
             case 6:
                 stIndex++;
@@ -55,7 +56,9 @@ void Start::directionPress(int direction) {
                     stIndex = unitsInRange.size() - 1;
                 } break;
             default: break;
-        }
+        } break;
+    case STATE_SPELL: circleSelect[direction] = !circleSelect[direction]; break;
+    default: break;
     }
 }
 
@@ -63,8 +66,60 @@ void Start::events() {
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
             case SDL_QUIT: done = true; break;
+            case SDL_MOUSEBUTTONDOWN: {
+                if (notesSelected) {
+                    SDL_EnableUNICODE(false);
+                    notesSelected = 0;
+                }
+                int x = event.button.x;
+                int y = event.button.y;
+                if (x > WIN1_WIDTH) {
+                    if (botPanel == PANEL_NOTES && y > SWIN_HEIGHT / 2 + 30) {
+                        notesSelected = max((y - SWIN_HEIGHT / 2 - 26) / 12, 1);
+                        SDL_EnableUNICODE(true);
+                    } else if (y > SWIN_HEIGHT / 2 && y <= SWIN_HEIGHT / 2 + 30) {
+                        int k = 0;
+                        for (int i = PANEL_BOTTOMSTART + 1; i < PANEL_BOTTOMEND; i++) {
+                            if (x > WIN1_WIDTH + k * 65 && x < WIN1_WIDTH + (k + 1) * 65) {
+                                botPanel = i;
+                                break;
+                            }
+                            k++;
+                        }
+                    } else if (y <= 30) {
+                        int k = 0;
+                        for (int i = PANEL_TOPSTART + 1; i < PANEL_TOPEND; i++) {
+                            if (x > WIN1_WIDTH + k * 65 && x < WIN1_WIDTH + (k + 1) * 65) {
+                                topPanel = i;
+                                break;
+                            }
+                            k++;
+                        }
+                    }
+                } }break;
             case SDL_KEYDOWN:
-            if (shiftIsDown) {
+            if (notesSelected && notesSelected < NUM_NOTELINES) {
+                int k = event.key.keysym.sym;
+                if (k == SDLK_UP) {
+                    notesSelected--;
+                } else if (k == SDLK_BACKSPACE || k == SDLK_DELETE) {
+                    if (theNotes[notesSelected].empty()) notesSelected--;
+                    else {
+                        theNotes[notesSelected].erase(theNotes[notesSelected].size() - 1, 1);
+                    }
+                } else if (k == SDLK_RETURN || k == SDLK_DOWN) {
+                    notesSelected++;
+                } else if (k == SDLK_TAB) {
+                    theNotes[notesSelected] += "   ";
+                } else {
+                    if (k != SDLK_LSHIFT && k != SDLK_RSHIFT && k != SDLK_LCTRL && k != SDLK_RCTRL && k != SDLK_CAPSLOCK && k != SDLK_LALT && k != SDLK_RALT) {
+                        theNotes[notesSelected] += event.key.keysym.unicode;
+                    }
+                }
+                if (notesSelected < NUM_NOTELINES && theNotes[notesSelected].size() >= 28) {
+                    notesSelected++;
+                }
+            } else if (shiftIsDown) {
                 switch(event.key.keysym.sym) {
                     case SDLK_COMMA:  goTheStairs(player->getUnit(), player->getZone()); break;
                     case SDLK_PERIOD: goTheStairs(player->getUnit(), player->getZone()); break;
@@ -79,21 +134,6 @@ void Start::events() {
                 }
             } else {
                 switch(event.key.keysym.sym) {
-                    case SDLK_7:     directionPress(7); break;
-                    case SDLK_8:     directionPress(8); break;
-                    case SDLK_9:     directionPress(9); break;
-                    case SDLK_u:     directionPress(4); break;
-                    case SDLK_i:     directionPress(5); break;
-                    case SDLK_o:     directionPress(6); break;
-                    case SDLK_j:     directionPress(1); break;
-                    case SDLK_k:     directionPress(2); break;
-                    case SDLK_l:     directionPress(3); break;
-                    case SDLK_g:     directionPress(4); break;
-                    case SDLK_c:     directionPress(5); break;
-                    case SDLK_r:     directionPress(6); break;
-                    case SDLK_h:     directionPress(1); break;
-                    case SDLK_t:     directionPress(2); break;
-                    case SDLK_n:     directionPress(3); break;
                     case SDLK_KP1:   directionPress(1); break;
                     case SDLK_KP2:   directionPress(2); break;
                     case SDLK_KP3:   directionPress(3); break;
@@ -117,14 +157,17 @@ void Start::events() {
                     case SDLK_e:      openBag();       menuAction = MA_EAT;     break;
 
                     case SDLK_f:
-                        if (state == STATE_TARGET) {
-                            state = STATE_PLAY;
-                        } else {
+                    case SDLK_j: //two options for the same thing
+                        if (state == STATE_TARGET) state = STATE_PLAY;
+                        else {
                             stateAction = SA_FIRE;
                             enterTargetMode();
-                        }
+                        } break;
+                    case SDLK_z:
+                    case SDLK_SEMICOLON: //two options for the same thing again!
+                        if (state == STATE_SPELL) state = STATE_PLAY;
+                        else enterSpellMode();
                         break;
-
                     case SDLK_LSHIFT: shiftIsDown = true; break;
                     case SDLK_RSHIFT: shiftIsDown = true; break;
                     case SDLK_ESCAPE: state = STATE_PLAY; selected = 0; break;
@@ -179,6 +222,7 @@ void Start::groundGrab() {
                 primeFolder->getGround()->addItem(&item);
             }
         }
+        player->getUnit()->theTime += 5;
         itemRemovalCheck();
     } else {
         openGround();
@@ -243,6 +287,13 @@ void Start::enterTargetMode() {
     }
 }
 
+void Start::enterSpellMode() {
+    state = STATE_SPELL;
+    for (int i = 0; i < 10; i++) {
+        circleSelect[i] = false;
+    }
+}
+
 void Start::action(SkillType skill, int exp) {
     int toteExp = player->getUnit()->modifyStat(S_EXP, exp);
     int lev = player->gainSkillExp(skill, exp);
@@ -271,6 +322,12 @@ void Start::action(SkillType skill, int exp) {
 void Start::sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude) {
     if (sapper == player->getUnit()) {
         int expLeft = target->getStatValue(S_EXP);
+        int bnk = player->getXpBank();
+        if (bnk < 0) {
+            int gain = min(expLeft, -bnk);
+            expLeft -= gain;
+            player->bankXp(gain);
+        }
         if (expLeft) {
             int gain = min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
             action(skill, gain);
@@ -308,6 +365,9 @@ bool Start::equipItem(Item item) {
             Stat* theStat = (Stat*)*i;
             player->getUnit()->needToUpdate(theStat->getIndex(), theStat->isItFloat());
         }
+        int tim = 16;
+        if (typeSlot == E_BODY) tim = 60;
+        player->getUnit()->theTime += timeEquip[typeSlot];
         return true;
     }
     return false;
@@ -361,6 +421,7 @@ void Start::enterCommand() {
                             primeFolder->getGround()->addItem(&item);
                         }
                     }
+                    player->getUnit()->theTime += 4;
                     itemRemovalCheck();
                 } break;
                 case MA_DROP: {
@@ -369,6 +430,7 @@ void Start::enterCommand() {
                     if (!(itemTypeType == 0 || itemTypeType == I_SLOT)) {
                         addItemToPlace(player->getUnit()->x, player->getUnit()->y, player->getZone(), item);
                     }
+                    player->getUnit()->theTime += 2;
                     itemRemovalCheck();
                 } break;
                 case MA_EQUIP: {
@@ -433,6 +495,13 @@ void Start::enterCommand() {
             default: break;
         }
         state = STATE_PLAY;
+    } else if (state == STATE_SPELL) {
+        state = STATE_PLAY;
+        unsigned int spellI = 0;
+        for (int i = 9; i >= 0; i--) {
+            spellI = (spellI << 1) | circleSelect[i];
+        }
+        castSpell(spellI, player->getUnit(), player->getZone());
     }
 }
 

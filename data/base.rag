@@ -18,12 +18,14 @@ monsters.png
 splatters.png
 ~10
 attackAnims.png
+items2.png
 END
 
 ~lists other files to sift through
 ~it will run through these files before continuing
 FILES
 formulas
+spells
 items
 units
 mobspaw

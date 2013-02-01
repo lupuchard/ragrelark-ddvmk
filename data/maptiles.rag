@@ -131,9 +131,30 @@ TILEDMAPSREFER
 1,5->big heavy rock
 0,6->candle
 
+16,0->leather gloves
+16,1->archery gloves
+16,2->clogs
+16,3->Speedy Boots
+17,0->shirt
+17,1->leather armor
+17,2->adventure clothes
+17,3->magma armor
+18,0->pointy hat
+18,1->leather cap
+19,0->round wooden shield
+19,1->reinforced shield
+20,1->steel dagger
+20,2->obsidian dagger
+21,0->club
+21,1->simple mace
+21,2->Mace of Justice
 22,0->longbow
 23,0->arrow
-17,0->shirt
+24,0->ring of regeneration
+24,1->ring of accuracy
+25,0->amulet of intelligence
+25,1->amulet of super sexiness
+26,0->adventure spellbook
 
 -mobs
 0,0->tslim1

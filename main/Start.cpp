@@ -17,11 +17,16 @@ Start::Start() {
     interval2 = 0;
     interval3 = 0;
 
+    topPanel = PANEL_TOPSTART + 1;
+    botPanel = PANEL_BOTTOMSTART + 1;
+    notesSelected = 0;
+
     loadStatus = 0;
 
     shiftIsDown = false;
 
     messages.reserve(MAX_MESSAGES);
+
 }
 
 Start::~Start() {
@@ -37,13 +42,13 @@ void Start::prepare() {
     setMobSpawner(mobSpawner);
 
     world = new World();
-    player = new Player();
+    primeFolder = new PrimeFolder();
+    player = new Player(primeFolder);
 
     done = !init();
 
     loadData(world, player);
 
-    primeFolder = new PrimeFolder();
     Item* primeFolders = primeFolder->getItems();
     putItemFolder(primeFolders + 2, primeFolder->getGround());
     putItemFolder(primeFolders + 1, primeFolder->getEquips());
@@ -129,7 +134,7 @@ void Start::putItemFolder(Item* item, ItemFolder* itemFolder) {
     }
 }
 
-#define MESSAGE_LEN_LIMIT 90
+#define MESSAGE_LEN_LIMIT 78
 
 void Start::addMessage(string message, color c) {
     pair<string, color> completeMess = pair<string, color>(message, c);

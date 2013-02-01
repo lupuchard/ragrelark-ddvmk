@@ -7,7 +7,7 @@ A log carved in the shape of a short fat oar.
 *384,TALL
 damage=1
 weight=9
-damage_type=1
+damage_type=7
 END
 
 ITEM
@@ -19,7 +19,7 @@ Way too big.
 *576,TALL
 damage=6
 weight=99
-damage_type=1
+damage_type=7
 penalty=5
 END
 
@@ -33,7 +33,7 @@ The most ordinary of maces. If you took the average of all maces ever it would l
 damage=4
 weight=99
 attack_speed=-1
-damage_type=1
+damage_type=7
 END
 
 ITEM
@@ -48,7 +48,7 @@ weight=105
 attack_speed=-1
 str=2
 con=1
-damage_type=1
+damage_type=7
 END
 
 ITEM
@@ -60,7 +60,7 @@ A simple dagger with an iron blade.
 *448,TALL
 damage=2
 weight=35
-damage_type=2
+damage_type=8
 END
 
 ITEM
@@ -73,7 +73,7 @@ Self explanatory.
 damage=2
 acc=1
 weight=32
-damage_type=2
+damage_type=8
 END
 
 ITEM
@@ -86,7 +86,7 @@ Very very sharp.
 damage=3
 accuracy=1
 weight=9
-damage_type=2
+damage_type=8
 END
 
 ITEM
@@ -98,6 +98,7 @@ It's more useful at long distances outdoors or in tall towers but you can use it
 *512,TALL
 damage=1
 weight=9
+damage_type=12
 ~range=16
 END
 
@@ -108,4 +109,5 @@ Intended to be fired with a bow.
 6
 106
 damage=1
+damage_type=12
 END

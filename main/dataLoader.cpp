@@ -23,8 +23,8 @@ int stringToStatus(string line) {
         return MAP;
     } else if (line == "AREA") {
         return AREA;
-    } else if (line == "MONSTER") {
-        return MONSTER;
+    } else if (line == "SPELLS") {
+        return SPELLS;
     } else if (line == "RESOURCES") {
         return RESOURCES;
     } else if (line == "STAIRS") {
@@ -100,7 +100,9 @@ void Start::finishDataSetup() {
     areaZones.clear();
     itemTypeMap.clear();
     itemsToEquip.clear();
+    spellMap.clear();
     statMap.clear();
+    skillMap.clear();
     conditionMap.clear();
 }
 
@@ -516,6 +518,20 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     else if (s == "GSMALL") t = EQG_GSMALL;
                     else printFileProb("That is not an avaliable item equip graphic shape type form condition.", lineNum);
                     itemType->setEquipGraphic(t, num);
+                } else if (line[0] == '(') {
+                    unsigned int c = 1;
+                    unsigned int d = c;
+                    cout << "okay " << endl;
+                    while (c < line.size()) {
+                        if (line[c] == ',' || line[c] == ')') {
+                            string s = line.substr(d, c - d);
+                            cout << "now what " << s << endl;
+                            itemType->addAbility(spellMap[s]);
+                            c++;
+                            d = c;
+                        }
+                        c++;
+                    }
                 } else {
                     int i = 0;
                     while(line[i] != '=') {
@@ -829,6 +845,45 @@ void Start::openFile(string fileName, World* w, Player* p) {
                         d = c;
                     }
             } } continue;
+            case SPELLS: tempStr = line; break;
+            case (SPELLS + 1): {
+                unsigned int c = 0;
+                int d = 0;
+                bool wind, earth, fire, water, phys, mind, light, dark;
+                wind = earth = fire = water = phys = mind = light = dark = false;
+                int power = 0;
+                while (c < line.size()) {
+                    c++;
+                    if (c >= line.size() || line[c] == '+') {
+                        string s = line.substr(d, 2);
+                        if (s == "wi") wind = true;
+                        else if (s == "ea") earth = true;
+                        else if (s == "fi") fire = true;
+                        else if (s == "wa") water = true;
+                        else if (s == "ph") phys = true;
+                        else if (s == "mi") mind = true;
+                        else if (s == "li") light = true;
+                        else if (s == "da") dark = true;
+                        c++;
+                        d = c;
+                    } else if (line[c] == '*') {
+                        power++;
+                        d = c + 1;
+                    }
+                }
+                tempValues[0] = (wind << 7) | (earth << 1) | (water << 3) | (fire << 9) | (phys << 4) | (mind << 6) | (light << 8) | (dark << 2) | power;
+            } break;
+            case (SPELLS + 2): {
+                pair<int, int> nums = stp(line);
+                tempValues[1] = nums.first;
+                tempValues[2] = nums.second;
+            } break;
+            case (SPELLS + 3): {
+                Ability* newSpell = new Ability(tempStr, tempValues[1], tempValues[2], sti(line), tempValues[0]);
+                spellMap[tempStr] = tempValues[0];
+                addAbility(newSpell);
+                status = SPELLS;
+            } continue;
             default: status = BETWEEN; break;
         }
         status++;

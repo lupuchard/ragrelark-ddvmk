@@ -12,8 +12,6 @@
 #define T_EAT 40
 #define T_ROCK 30
 
-const int unarmedDamageTypes[] = {0, 2, 1, 1, 1, 1};
-
 int actionTimePassed(int time, int speed) {
     return max((int)(time * pow(.95, speed - 8)), 1);
 }
@@ -262,26 +260,61 @@ void Start::goTheStairs(Unit* unit, Zone* zone) {
     }
 }
 
-void Start::hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& verb) {
+void Start::hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& verb, int unarmedAttackType) {
     float howLuckyAreYou = (float)rand() / RAND_MAX;
     if (howLuckyAreYou > unit->getStatValueF(S_MCRITC)) {
         damage *= 5;
-        verb = "megacrit"; hitType = 4; c = red;
+        hitType = 4; c = red;
+        switch(unarmedAttackType) {
+            case WEAP_CLAWS: verb = "rend"; break;
+            case WEAP_SPEAR: verb = "impale"; break;
+            default: verb = "megacrit"; break;
+        }
         sapExp(unit, unit->getEnemy(), SKL_CRIT, 3);
     } else if (howLuckyAreYou > unit->getStatValueF(S_CRITC)) {
         damage *= 2;
-        verb = "crit";     hitType = 3; c = brick;
+        hitType = 3; c = brick;
+        switch(unarmedAttackType) {
+            case WEAP_FISTS: verb = "kick"; break;
+            case WEAP_TENTACLE: verb = "tentacle slap"; break;
+            case WEAP_SLAM: verb = "slam"; break;
+            case WEAP_BITE: verb = "chomp"; break;
+            case WEAP_CLUB: verb = "clobber"; break;
+            case WEAP_DAGGER: verb = "stab"; break;
+            case WEAP_AXE: verb = "chop"; break;
+            default: verb = "crit"; break;
+        }
         sapExp(unit, unit->getEnemy(), SKL_CRIT, 1);
     } else if (howLuckyAreYou > unit->getStatValueF(S_HITC)) {
-        verb = "hit";      hitType = 2; c = maroon;
+        hitType = 2; c = maroon;
+        switch(unarmedAttackType) {
+            case WEAP_CLAWS: verb = "claw"; break;
+            case WEAP_FISTS: verb = "punch"; break;
+            case WEAP_HEAD: verb = "headbutt"; break;
+            case WEAP_BITE: verb = "bite"; break;
+            case WEAP_CLUB: verb = "smack"; break;
+            case WEAP_AXE: verb = "axe"; break;
+            case WEAP_SPEAR: verb = "jab"; break;
+            case WEAP_SCYTHE: verb = "slash"; break;
+            default: verb = "hit"; break;
+        }
     } else if (howLuckyAreYou > unit->getStatValueF(S_SCRAPEC)) {
         damage /= 2;
-        verb = "scrape";   hitType = 1; c = dark(maroon);
+        hitType = 1; c = dark(maroon);
+        switch(unarmedAttackType) {
+            case WEAP_CLAWS: verb = "scratch"; break;
+            case WEAP_TENTACLE: verb = "rub"; break;
+            case WEAP_FISTS: verb = "pap"; break;
+            case WEAP_CLUB: verb = "tap"; break;
+            case WEAP_SPEAR: verb = "poke"; break;
+            default: verb = "scrape"; break;
+        }
         sapExp(unit, unit->getEnemy(), SKL_CRIT, 1);
         sapExp(unit->getEnemy(), unit, SKL_DODGE, 1);
     } else {
         damage = 0;
-        verb = "miss";     hitType = 0; c = dark(salmon);
+        verb = "miss";
+        hitType = 0; c = dark(salmon);
         sapExp(unit->getEnemy(), unit, SKL_DODGE, 1);
     }
 }
@@ -297,170 +330,132 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
         if (safe || (newX >= 0 && newY >= 0 && newX < zone->getWidth() && newY < zone->getHeight())) {
             Location* loc = zone->getLocationAt(newX, newY);
             if (loc->hasUnit()) {
-                Unit* enemy = loc->unit;
-                unit->setEnemy(enemy);
-
-                string verb;
-                string u1name;
-                string u2name;
-
-                float damage = unit->getStatValueF(S_MELDAMAGE);
-                damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
-                int hitType;
-                color c;
-
-                hitCMod(unit, damage, c, hitType, verb);
-
-                if (unit == player->getUnit()) {
-                    u1name = "you";
-                } else {
-                    u1name = "the " + unit->name;
-                    c.green += c.red / 2;
-                    verb = pluralize(verb);
-                }
-                if (enemy == player->getUnit()) {
-                    if (enemy == unit) u2name = "yourself";
-                    else u2name = "you";
-                } else {
-                    if (enemy == unit) u2name = "itself";
-                    else u2name = "the " + enemy->name;
-                }
-
-                int damageType = -1;
-                if (unit == player->getUnit()) {
-                    Item* item = primeFolder->getEquips()->getItem(E_RHAND);
-                    ItemType* itemType = getItemType(item->itemType);
-                    if (itemType->getType() != I_SLOT) {
-                        damageType = itemType->getStatValue(S_DTYPE);
-                    }
-                }
-                if (damageType == -1) {
-                    damageType = unarmedDamageTypes[unit->getStatValue(S_UNARMED)];
-                }
-
-                string extra;
-                raga.rAttack(enemy->x, enemy->y, dir, damageType, hitType);
-
-                unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(S_ATTACKSPEED));
-                if (unit == player->getUnit()) {
-                    unit->modifyStat(S_STAMINA, -T_ATTACK);
-                }
-
-                if (damage) {
-                    int hp = enemy->modifyStat(S_HP, -(int)damage);
-                    if (hp > 0) {
-                        int conditionAffectC = unit->getStatValue(S_ATTCONDCHANCE);
-                        if (conditionAffectC > 0 && rand() % 100 <= conditionAffectC) {
-                            int conditionAffect = unit->getStatValue(S_ATTCOND);
-                            if (enemy == player->getUnit()) {
-                                switch(conditionAffect) {
-                                case C_CONFUSION: extra = " and confuses";
-                                addStatus("Confused", maroon, ST_CONF);
-                                break;
-                                case C_POISON: extra = " and stings"; break;
-                                default: break;
-                                }
-                            }
-                            if (conditionAffect >= C_POISON && conditionAffect < C_POISON + 16) {
-                                applyPoison(conditionAffect, 10, enemy);
-                            } else {
-                                enemy->setCondition(conditionAffect, true);
-                            }
-                        }
-                    }
-                    sapExp(unit, enemy, SKL_MELEE, 1);
-                    sapExp(enemy, unit, SKL_FORT, 1);
-                    int splatterChance;
-                    if (hp <= 0) {
-                        splatterChance = 10;
-                    } else {
-                        splatterChance = 10 * damage / hp;
-                    }
-                    splatterChance *= enemy->getStatValue(S_SPLATTER);
-                    if (rand() % 200 < splatterChance) {
-                        makeSplatter(enemy, newX, newY);
-                    }
-
-                    if (hp <= 0) {
-                        killUnit(enemy, zone);
-                    } else {
-                        reactToAttack(enemy, unit, zone);
-                    }
-                }
-                addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
+                attackUnit(unit, loc->unit, zone, dir, ATT_STRIKE);
             }
         }
     }
+}
+
+const int damStats[] = {S_MELDAMAGE, S_RANDAMAGE, S_SPEDAMAGE};
+const SkillType damSkills[] = {SKL_MELEE, SKL_RANGE, SKL_CONC};
+void Start::attackUnit(Unit* attacker, Unit* defender, Zone* zone, int dir, AttackType attackType) {
+    attacker->setEnemy(defender);
+
+    string verb;
+    string u1name;
+    string u2name;
+
+    float damage = attacker->getStatValueF(damStats[attackType]);
+    damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
+    int hitType;
+    color c;
+
+    int weapType = 0;
+    if (attackType == ATT_STRIKE) {
+        if (attacker == player->getUnit()) {
+            Item* item = primeFolder->getEquips()->getItem(E_RHAND);
+            ItemType* itemType = getItemType(item->itemType);
+            if (itemType->getType() != I_SLOT) {
+                weapType = itemType->getStatValue(S_DTYPE);
+            } else {
+                weapType = attacker->getStatValue(S_UNARMED);
+            }
+        } else if (attacker->equipment) {
+            for (int i = 0; i < attacker->equipment->len; i++) {
+                Item item = attacker->equipment->equips[i];
+                ItemType* itemType = getItemType(item.itemType);
+                int slot = typeSlots[itemType->getType()];
+                if (slot == E_RHAND || slot == E_BHANDS || slot == E_BBHANDS) {
+                    weapType = itemType->getStatValue(S_DTYPE);
+                }
+            }
+        } else {
+            weapType = attacker->getStatValue(S_UNARMED);
+        }
+    } else if (attackType == ATT_SHOOT) weapType = DAMT_PIERCE;
+    else if (attackType == ATT_SPELL) weapType = DAMT_SPELL;
+
+    hitCMod(attacker, damage, c, hitType, verb, weapType);
+
+    //fooey
+
+    if (attacker == player->getUnit()) {
+        if (attackType == ATT_STRIKE) u1name = "you";
+        else if (attackType == ATT_SHOOT) u1name = "you fire and";
+    } else {
+        if (attackType == ATT_STRIKE) u1name = "the " + attacker->name;
+        else if (attackType == ATT_SHOOT) u1name = "the " + attacker->name + " shoots and";
+        c.green += c.red / 2;
+        verb = pluralize(verb);
+    }
+    if (defender == player->getUnit()) {
+        if (defender == attacker) u2name = "yourself";
+        else u2name = "you";
+    } else {
+        if (defender == attacker) u2name = "itself";
+        else u2name = "the " + defender->name;
+    }
+
+    string extra;
+    raga.rAttack(defender->x, defender->y, dir, weapDamTypes[weapType], hitType);
+
+    attacker->theTime += actionTimePassed(T_ATTACK, attacker->getStatValue(S_ATTACKSPEED));
+    if (attacker == player->getUnit()) {
+        if (attackType == ATT_STRIKE) attacker->modifyStat(S_STAMINA, -T_ATTACK);
+        else attacker->modifyStat(S_STAMINA, -(T_ATTACK / 2));
+    }
+
+    if (damage) {
+        int hp = defender->modifyStat(S_HP, -(int)damage);
+            if (hp > 0) {
+                int conditionAffectC = attacker->getStatValue(S_ATTCONDCHANCE);
+                if (conditionAffectC > 0 && rand() % 100 <= conditionAffectC) {
+                    int conditionAffect = attacker->getStatValue(S_ATTCOND);
+                    if (defender == player->getUnit()) {
+                        switch(conditionAffect) {
+                        case C_CONFUSION: extra = " and confuses";
+                        addStatus("Confused", maroon, ST_CONF);
+                        break;
+                        case C_POISON: extra = " and stings"; break;
+                        default: break;
+                    }
+                }
+                if (conditionAffect >= C_POISON && conditionAffect < C_POISON + 16) {
+                    applyPoison(conditionAffect, 10, defender);
+                } else {
+                    defender->setCondition(conditionAffect, true);
+                }
+            }
+        }
+        sapExp(attacker, defender, damSkills[attackType], 1);
+        sapExp(defender, attacker, SKL_FORT, 1);
+        int splatterChance;
+        if (hp <= 0) {
+            splatterChance = 10;
+        } else {
+            splatterChance = 10 * damage / hp;
+            if (attackType == ATT_SHOOT) splatterChance /= 2;
+        }
+        splatterChance *= defender->getStatValue(S_SPLATTER);
+        if (rand() % 200 < splatterChance) {
+            makeSplatter(defender, defender->x, defender->y);
+        }
+
+        if (hp <= 0) {
+            if (defender != player->getUnit()) player->bankXp(defender->getStatValue(S_EXP));
+            killUnit(defender, zone);
+        } else {
+            reactToAttack(defender, attacker, zone);
+        }
+    }
+    addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
 }
 
 void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
     if (attacker == player->getUnit() && attacker->getStatValue(S_STAMINA) < 1500) {
         addMessage("You are too exausted to shoot!", gray);
     } else {
-        attacker->setEnemy(defender);
-
-        string verb;
-        string u1name;
-        string u2name;
-
-        float damage = attacker->getStatValueF(S_RANDAMAGE);
-        damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
-        int hitType;
-        color c;
-        hitCMod(attacker, damage, c, hitType, verb);
-
-        if (attacker == player->getUnit()) {
-            u1name = "you fire and";
-        } else {
-            u1name = "the " + attacker->name + " shoots and";
-            c.green += c.red / 2;
-            verb = pluralize(verb);
-        }
-        if (defender == player->getUnit()) {
-            if (defender == attacker) u2name = "yourself";
-            else u2name = "you";
-        } else {
-            if (defender == attacker) u2name = "itself";
-            else u2name = "the " + defender->name;
-        }
-
-        /*int damageType = -1;
-        if (attacker == player->getUnit()) {
-            Item* item = primeFolder->getEquips()->getItem(E_RHAND);
-            ItemType* itemType = getItemType(item->itemType);
-            damageType = itemType->getStatValue(S_DTYPE);
-        }*/
-        string extra;
-
-        attacker->theTime += actionTimePassed(T_ATTACK, attacker->getStatValue(S_ATTACKSPEED));
-        if (attacker == player->getUnit()) {
-            attacker->modifyStat(S_STAMINA, -(T_ATTACK / 2));
-        }
-
-        if (damage) {
-            int hp = defender->modifyStat(S_HP, -(int)damage);
-
-            sapExp(attacker, defender, SKL_RANGE, 1);
-            sapExp(defender, attacker, SKL_FORT, 1);
-
-            int splatterChance;
-            if (hp <= 0) {
-                splatterChance = 10;
-            } else {
-                splatterChance = 5 * damage / hp;
-            }
-            splatterChance *= defender->getStatValue(S_SPLATTER);
-            if (rand() % 200 < splatterChance) {
-                makeSplatter(defender, defender->x, defender->y);
-            }
-
-            if (hp <= 0) {
-                killUnit(defender, zone);
-            } else {
-                reactToAttack(defender, attacker, zone);
-            }
-        }
-        addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
+        attackUnit(attacker, defender, zone, 0, ATT_SHOOT);
     }
 }
 
@@ -641,8 +636,13 @@ void Start::closeDoor(Unit* unit, Zone* zone, int dir, bool safe) {
 }
 
 void Start::eatFood(Unit* unit, ItemType* food) {
-    unit->modifyStat(S_HUNGER, food->getStatValue(S_FEED));
+    int hung = unit->modifyStat(S_HUNGER, food->getStatValue(S_FEED));
     unit->theTime += T_EAT;
+    if (unit == player->getUnit()) {
+        if (hung > MAX_HUNGER) {
+            addStatus("bloated", brown, ST_HUNG);
+        }
+    }
 }
 
 void Start::changeLoc(Unit* unit, Zone* zone, int x, int y) {

@@ -1,10 +1,17 @@
 #include "Player.h"
 
-Player::Player() {
+int calcXpReq(int level, float mult) {
+    return (int)(pow(level + 1, 1.1) * mult);
+}
+
+Player::Player(PrimeFolder* pFolder) {
     for (int i = 0; i < NUM_SKILLS; i++) {
         skillExps[i] = 0;
         skillLevels[i] = 0;
     }
+    primeFolder = pFolder;
+
+    //trainSpell(SPELL_LIGHT, 100);
 }
 
 Player::~Player() {
@@ -17,6 +24,7 @@ Player::~Player() {
         delete[] m->topLoc;
         delete m;
     }
+    xpBank = 0;
 }
 
 Zone* Player::getZone() {
@@ -88,19 +96,20 @@ int Player::gainSkillExp(SkillType skill, int xpGained) {
         if (skillLevels[skill] >= 0) {
             int prevXpReq;
             if (skillLevels[skill] == 1) prevXpReq = 100;
-            else prevXpReq = (int)(pow(skillLevels[skill] - 1, 1.1) * 30.);
+            else prevXpReq = calcXpReq(skillLevels[skill] - 1, 30.f);
             skillExps[skill] += prevXpReq;
             skillLevels[skill]--;
             return -1;
         }
         return 0;
     }
-    int xpReq = (int)(pow(skillLevels[skill] + 1, 1.1) * 30.);
+    int xpReq = calcXpReq(skillLevels[skill], 30.f);
     int fooey = 0;
     while (skillExps[skill] >= xpReq) {
         skillExps[skill] -= xpReq;
         skillLevels[skill]++;
         fooey++;
+        xpReq = calcXpReq(skillLevels[skill], 30.f);
     }
     return fooey;
 }
@@ -112,4 +121,56 @@ unsigned short Player::getSkillLevel(SkillType skill) {
 int Player::getSkillExpPercent(SkillType skill) {
     int xpReq = (int)(pow(skillLevels[skill] + 1, 1.1) * 30.);
     return skillExps[skill] * 100 / xpReq;
+}
+
+PrimeFolder* Player::getPrimeFolder() {
+    return primeFolder;
+}
+
+//the spell index used by the player lacks the two least significant bits
+int Player::getSpellLevel(int spellIndex) {
+    int trueSpellIndex = spellIndex >> 2;
+    map<int, playerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
+    if (itr == playerSpells.end()) return 0;
+    else return itr->second.level;
+}
+
+void Player::trainSpell(int spellIndex, int xpGained) {
+    int trueSpellIndex = spellIndex >> 2;
+    map<int, playerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
+    playerSpell* pSpell;
+    if (itr == playerSpells.end()) {
+        pSpell = &playerSpells[trueSpellIndex];
+        pSpell->level = 0;
+        pSpell->exp = 0;
+    } else {
+        pSpell = &itr->second;
+    }
+    pSpell->exp += xpGained;
+    int xpReq = calcXpReq(pSpell->level, 2.f);
+    while (pSpell->exp >= xpReq) {
+        pSpell->exp -= xpReq;
+        pSpell->level++;
+        xpReq = calcXpReq(pSpell->level, 2.f);
+    }
+}
+
+const map<int, playerSpell>::iterator Player::getSpellsBegin() {
+    return playerSpells.begin();
+}
+const map<int, playerSpell>::iterator Player::getSpellsEnd() {
+    return playerSpells.end();
+}
+
+int Player::takeFromXpBank(int amount) {
+    int rem = min(amount, xpBank + 10);
+    xpBank -= rem;
+    return rem;
+}
+
+void Player::bankXp(int amount) {
+    xpBank += amount;
+}
+int Player::getXpBank() {
+    return xpBank;
 }

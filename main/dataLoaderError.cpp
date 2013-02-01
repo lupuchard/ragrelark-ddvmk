@@ -125,6 +125,8 @@ bool Start::errorChecker(string filename) {
                         }
                     }
                     if (!isNum(line.substr(1, i - 1))) printFileErr("After the asterisk must be a number (and then a comma and then a word)!", lineNum);
+                } else if (line[0] == '(') {
+                    if (line[line.size() - 1] != ')') printFileErr("Close yer parthens man.", lineNum);
                 } else {
                     unsigned int i = 0;
                     while(line[i] != '=') {
@@ -281,6 +283,7 @@ bool Start::errorChecker(string filename) {
             case TILEDMAPSREFER: finished = true; continue; //TODO this error check
             case SKILLS: finished = true; continue; //TODO this error check
             case MOBEQUIPS: finished = true; continue; //TODO this error check
+            case SPELLS: finished = true; continue; //TODO this error check
             default: break;
         }
         status++;

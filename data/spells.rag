@@ -1,0 +1,30 @@
+
+~really it just defines their name, cost and difficulty. not what they do
+SPELLS
+
+light
+fire+light
+4,12
+21
+
+darkness
+mind+dark
+4,12
+21
+
+erupt ground
+earth*
+8,24
+20
+
+launch projectile
+wind+phys
+2,12
+20
+
+warmth
+fire
+4,6
+18
+
+END

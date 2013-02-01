@@ -21,6 +21,7 @@ void Start::cleanup() {
     for (map<string, MobEquipSet*>::iterator i = mobEquipsMap.begin(); i != mobEquipsMap.end(); i++) {
         delete i->second;
     }
+    cleanAbilities();
     tiledItems.clear();
     tiledTiles.clear();
     folders.clear();

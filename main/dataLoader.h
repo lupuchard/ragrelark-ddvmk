@@ -8,7 +8,7 @@
 #define PLAYER 400
 #define FILES 500
 #define MAP 600
-#define MONSTER 700
+#define SPELLS 700
 #define AREA 800
 #define RESOURCES 900
 #define STAIRS 1000
