@@ -41,8 +41,8 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT) {
 }
 
 Unit::~Unit() {
-    removeHashMaps();
-    unitPrototype->removeHashMaps();
+    //removeHashMaps();
+    //unitPrototype->removeHashMaps();
     if (equipment) {
         delete[] equipment->equips;
         delete equipment;

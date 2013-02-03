@@ -4,6 +4,8 @@
 #include "ItemFolder.h"
 #define NUM_EQUIP_SLOTS 14
 
+#define HA_REAL_NUM_EQUIP_SLOTS 15
+
 #define SECRET_AMMO_INDEX 15
 
 class EquipmentFolder : public ItemFolder, public StatHolder {
@@ -21,7 +23,7 @@ class EquipmentFolder : public ItemFolder, public StatHolder {
         void needToUpdate(int stat);
     protected:
     private:
-        Item equipment[NUM_EQUIP_SLOTS];
+        Item equipment[HA_REAL_NUM_EQUIP_SLOTS];
 };
 
 #endif // EQUIPMENTFOLDER_H

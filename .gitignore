@@ -6,6 +6,10 @@ test.cpp
 *.layout
 *.depend
 
+ValgrindOut.xml
+*.supp
+*.log
+
 # Compiled Object files
 *.slo
 *.lo

@@ -34,7 +34,7 @@ DungeonStack::~DungeonStack() {
     if (depthReached != depth) {
         delete[] skeleton;
     }
-    for (int i = 0; i < depthReached; i++) {
+    for (int i = 0; i < depth; i++) {
         delete zones[i];
     }
     delete[] zones;

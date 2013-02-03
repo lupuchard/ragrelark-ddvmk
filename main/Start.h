@@ -246,11 +246,11 @@ class Start: FormulaUser, EnvironmentManager {
         map<string, int> conditionMap;
         map<string, int> spellMap;
         map<string, int> skillMap;
+        map<string, MobEquipSet*> mobEquipsMap;
         vector<Item> itemsToEquip;
         /* end temp values for loading */
 
         vector<pair<StatHolder*, string> > spawnPrototypes;
-        map<string, MobEquipSet*> mobEquipsMap;
         vector<int> defaultStats;
         vector<Unit*> unitDeleteList;
 

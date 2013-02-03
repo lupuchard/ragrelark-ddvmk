@@ -7,11 +7,16 @@ Area::Area(int w): StatHolder(V_AREA) {
 
 Area::~Area() {
     for (unsigned int i = 0; i < zones.size(); i++) {
+        //cout << "lol wat is seventh zone " << zones[i]->getName() << endl;
         delete zones[i];
     }
+    zones.clear();
     for (unsigned int i = 0; i < dungeonStacks.size(); i++) {
         delete dungeonStacks[i];
     }
+    cout << "triple aft" << endl;
+    dungeonStacks.clear();
+    cout << "quad aft" << endl;
 }
 
 void Area::addZone(Zone* z) {

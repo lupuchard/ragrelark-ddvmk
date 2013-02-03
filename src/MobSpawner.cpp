@@ -17,11 +17,14 @@ bool operator<(const RandItemType& left, const RandItemType& right) {
 
 MobSpawner::MobSpawner(EnvironmentManager* em) {
     enviroManager = em;
+    for (int i = 0; i < MAX_MOBS; i++) {
+        taggedMobs[i] = mob("x", NULL);
+    }
 }
 
 MobSpawner::~MobSpawner() {
-    for (unsigned int i = 0; i < spawnings.size(); i++) {
-        itemSpawnSets[i];
+    for (unsigned int i = 0; i < itemSpawnSets.size(); i++) {
+        delete itemSpawnSets[i];
     }
     itemSpawnSets.clear();
     itemSpawnSetNameMap.clear();
@@ -30,6 +33,10 @@ MobSpawner::~MobSpawner() {
         for (unsigned int j = 0; j < spawnings[i].encounterLevels.size(); j++) {
             delete spawnings[i].encounterLevels[j];
         }
+    }
+
+    for (int i = 0; i < MAX_MOBS; i++) {
+        if (taggedMobs[i].first != "x") delete taggedMobs[i].second;
     }
 }
 
@@ -118,13 +125,6 @@ int MobSpawner::hashMob(string tag) {
 
 /* Returns the index if unit in storage. */
 int MobSpawner::addMob(string name, string tag, StatHolder* u) {
-    static bool done = false;
-    if (!done) {
-        for (int i = 0; i < MAX_MOBS; i++) {
-            taggedMobs[i] = mob("x", NULL);
-        }
-        done = true;
-    }
     mob theMob = mob(name, u);
     int num = hashMob(tag);
     if (taggedMobs[num].first == "x") {

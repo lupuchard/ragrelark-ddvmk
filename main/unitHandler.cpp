@@ -91,10 +91,26 @@ void Start::playerWalkStaminaDrain(int* movSpeed, int tim, Unit* unit) {
     if (unit == player->getUnit()) {
         switch(loadStatus) {
             case 0: unit->modifyStat(S_STAMINA, -tim / 2); break;
-            case 1: *movSpeed -= 1; unit->modifyStat(S_STAMINA, -tim); break;
-            case 2: *movSpeed -= 2; unit->modifyStat(S_STAMINA, -tim * 3 / 2); break;
-            case 3: *movSpeed -= 3;   unit->modifyStat(S_STAMINA, -tim * 2); break;
-            default: *movSpeed -= 4;  unit->modifyStat(S_STAMINA, -tim * 5 / 2); break;
+            case 1:
+                *movSpeed -= 1;
+                unit->modifyStat(S_STAMINA, -tim);
+                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(1));
+                break;
+            case 2:
+                *movSpeed -= 2;
+                unit->modifyStat(S_STAMINA, -tim * 3 / 2);
+                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(2));
+                break;
+            case 3:
+                *movSpeed -= 3;
+                unit->modifyStat(S_STAMINA, -tim * 2);
+                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(3));
+                break;
+            default:
+                *movSpeed -= 4;
+                unit->modifyStat(S_STAMINA, -tim * 5 / 2);
+                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(4));
+                break;
         }
         int stam = unit->getStatValue(S_STAMINA);
         if (stam < 2000) {
@@ -345,20 +361,19 @@ void Start::attackUnit(Unit* attacker, Unit* defender, Zone* zone, int dir, Atta
     string u1name;
     string u2name;
 
-    float damage = attacker->getStatValueF(damStats[attackType]);
-    damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
-    int hitType;
-    color c;
 
+    bool unarmed = false;
     int weapType = 0;
     if (attackType == ATT_STRIKE) {
+        unarmed = true;
         if (attacker == player->getUnit()) {
             Item* item = primeFolder->getEquips()->getItem(E_RHAND);
             ItemType* itemType = getItemType(item->itemType);
-            if (itemType->getType() != I_SLOT) {
-                weapType = itemType->getStatValue(S_DTYPE);
-            } else {
-                weapType = attacker->getStatValue(S_UNARMED);
+            if (itemType->getType() != I_SLOT && item) {
+                if (!typeRanges[item->itemType]) {
+                    weapType = itemType->getStatValue(S_DTYPE);
+                    unarmed = false;
+                }
             }
         } else if (attacker->equipment) {
             for (int i = 0; i < attacker->equipment->len; i++) {
@@ -367,13 +382,24 @@ void Start::attackUnit(Unit* attacker, Unit* defender, Zone* zone, int dir, Atta
                 int slot = typeSlots[itemType->getType()];
                 if (slot == E_RHAND || slot == E_BHANDS || slot == E_BBHANDS) {
                     weapType = itemType->getStatValue(S_DTYPE);
+                    unarmed = false;
+                    break;
                 }
             }
-        } else {
+        }
+        if (unarmed) {
             weapType = attacker->getStatValue(S_UNARMED);
         }
     } else if (attackType == ATT_SHOOT) weapType = DAMT_PIERCE;
     else if (attackType == ATT_SPELL) weapType = DAMT_SPELL;
+
+    float damage;
+    if (unarmed) damage = attacker->getStatValueF(S_UNARMDAMAGE);
+    else damage = attacker->getStatValueF(damStats[attackType]);
+
+    damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
+    int hitType;
+    color c;
 
     hitCMod(attacker, damage, c, hitType, verb, weapType);
 
@@ -427,7 +453,8 @@ void Start::attackUnit(Unit* attacker, Unit* defender, Zone* zone, int dir, Atta
                 }
             }
         }
-        sapExp(attacker, defender, damSkills[attackType], 1);
+        if (unarmed) sapExp(attacker, defender, SKL_UNARM, 1);
+        else sapExp(attacker, defender, damSkills[attackType], 1);
         sapExp(defender, attacker, SKL_FORT, 1);
         int splatterChance;
         if (hp <= 0) {
@@ -472,6 +499,16 @@ void Start::reactToAttack(Unit* unit, Unit* attacker, Zone* zone) {
 
 int poisonWeights[] = {1, 2, 4, 1, 1, 1, 1, 1, 1, 3, 3, 1, 2, 2, 3, 3};
 void Start::applyPoison(int condition, int duration, Unit* unit) {
+    int r = rand() % 100;
+    int res = unit->getStatValue(S_RESPOIS);
+    if (r < res / 5) {
+        if (unit == player->getUnit()) addMessage("You resist the poison!", black);
+        return;
+    } else if (r < res) {
+        if (unit == player->getUnit()) addMessage("You slightly resist the poison.", black);
+        duration /= 2;
+    }
+
     bool exists = false;
 
     bool slow = false;

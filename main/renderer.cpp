@@ -196,8 +196,8 @@ void Start::renderSidePanels() {
         renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, dark(teal));
         renderText("Time passed: \\q" + its(player->getUnit()->theTime), 2, loff + WIN1_WIDTH, toff + 260, Z_MENU + 1, LEFT, dark(red));
     } else if (topPanel == PANEL_SKILLS) {
-        static const int numFunctionalSkills = 7;
-        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_LIFT, SKL_FORT, SKL_CONC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
+        static const int numFunctionalSkills = 9;
+        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CONC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
         int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
         int k = 0;
         for (int i = 0; i < numFunctionalSkills; i++) {

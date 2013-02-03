@@ -17,7 +17,7 @@ class PrimeFolder: public ItemFolder {
         BagFolder* getBag();
         EquipmentFolder* getEquips();
         GroundFolder* getGround();
-        void setBag(BagFolder* b);
+        //void setBag(BagFolder* b);
     protected:
     private:
         BagFolder* bag;

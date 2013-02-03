@@ -12,6 +12,9 @@ int addItemType(ItemType* itemType) {
 }
 
 void clearItemTypes() {
+    for (unsigned int i = 0; i < itemTypes.size(); i++) {
+        delete itemTypes[i];
+    }
     itemTypes.clear();
 }
 
@@ -28,7 +31,7 @@ ItemType::ItemType(string n, string desc, int iI, int tI, int t): StatHolder(V_I
 }
 
 ItemType::~ItemType() {
-    removeHashMaps();
+    //removeHashMaps();
 }
 
 graphic ItemType::getGraphic() {

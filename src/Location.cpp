@@ -29,6 +29,13 @@ Location::Location(int h) {
     items = &genericBlankVector;
 }
 
+void Location::clearStuff() {
+    if (hasUnit()) {
+        delete unit;
+    }
+    if (hasItems()) delete items;
+}
+
 bool Location::hasUnit() {
     return !(unit == none);
 }

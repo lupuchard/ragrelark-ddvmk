@@ -10,12 +10,15 @@ Player::Player(PrimeFolder* pFolder) {
         skillLevels[i] = 0;
     }
     primeFolder = pFolder;
-
+    unit = NULL;
+    zone = NULL;
+    area = NULL;
+    xpBank = 0;
     //trainSpell(SPELL_LIGHT, 100);
 }
 
 Player::~Player() {
-    delete unit;
+    //deletes all the players personal memories of how things were one day
     for (map<Zone*, zoneMemory*>::iterator i = memoryBank.begin(); i != memoryBank.end(); i++) {
         zoneMemory* m = i->second;
         delete[] m->bottomTex;
@@ -24,7 +27,6 @@ Player::~Player() {
         delete[] m->topLoc;
         delete m;
     }
-    xpBank = 0;
 }
 
 Zone* Player::getZone() {

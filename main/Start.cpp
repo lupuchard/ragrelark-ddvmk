@@ -13,6 +13,7 @@ Start::Start() {
     state = STATE_PLAY;
     stateAction = SA_NONE;
 
+    interval0 = 0;
     interval1 = 0;
     interval2 = 0;
     interval3 = 0;
@@ -145,8 +146,11 @@ void Start::addMessage(string message, color c) {
         messages[ind].first = message + " x" + its(forbs);
     } else {
         forbs = 1;
-        color c1 = messages[ind].second;
-        color c2 = messages[ind - 1].second;
+        color c1, c2;
+        if (messages.size() >= 2) {
+            c1 = messages[ind].second;
+            c2 = messages[ind - 1].second;
+        }
         if (messages.size() >= 2 && c1.red == c2.red && c1.blue == c2.blue && c1.green == c2.green && messages[ind].first.size() + messages[ind - 1].first.size() < MESSAGE_LEN_LIMIT) {
             messages[ind - 1].first = messages[ind - 1].first + " " + messages[ind].first;
             messages[ind] = completeMess;

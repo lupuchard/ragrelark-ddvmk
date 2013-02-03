@@ -23,7 +23,6 @@ stamina=10000
 unarmed_type=3
 light_load=0
 ai=2
-equip_type=-1
 *
 END
 

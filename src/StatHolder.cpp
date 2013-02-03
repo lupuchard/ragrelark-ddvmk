@@ -95,10 +95,10 @@ StatHolder::StatHolder(VOwner o) {
     owner = o;
     numIntStats = 0;
     numFloatStats = 0;
-    intStats = new unsigned char[0];
-    intValues = new short[0];
-    floatStats = new unsigned char[0];
-    floatValues = new float[0];
+    intStats = NULL;
+    intValues = NULL;
+    floatStats = NULL;
+    floatValues = NULL;
     aThis = this;
     hashMapped = false;
     tempHashMap = NULL;
@@ -106,10 +106,18 @@ StatHolder::StatHolder(VOwner o) {
 }
 
 StatHolder::~StatHolder() {
-    delete[] intStats;
-    delete[] intValues;
-    delete[] floatStats;
-    delete[] floatValues;
+    if (hashMapped) {
+        delete tempHashMap;
+        delete tempFloatHashMap;
+    }
+    if (intStats) {
+        delete[] intStats;
+        delete[] intValues;
+    }
+    if (floatStats) {
+        delete[] floatStats;
+        delete[] floatValues;
+    }
 }
 
 void StatHolder::addStat(int stat) {

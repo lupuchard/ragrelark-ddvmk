@@ -45,6 +45,8 @@ class Location {
         bool addItem(Item item);
         Item removeItem(int itemI);
         bool hasItems();
+
+        void clearStuff();
 };
 
 #endif // LOCATION_H

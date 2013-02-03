@@ -77,6 +77,9 @@ void RagAnim::drawAnim(animation* anim, int z) {
 }
 
 void RagAnim::updateAnims() {
+    /*for (set<renderable>::iterator i = renderables.begin(); i != renderables.end(); i++) {
+        delete i->anim;
+    }*/
     renderables.clear();
     for (unsigned int i = 0; i < anims.size(); i++) {
         animation* anim = anims[i];
@@ -215,7 +218,7 @@ void RagAnim::renderAnims() {
     for (set<renderable>::iterator i = renderables.begin(); i != renderables.end(); i++) {
         renderable r = *i;
         drawAnim(r.anim, r.z);
-        if (r.anim->type < 0) {
+        if (r.anim->type == ANIM_UNIT) {
             delete r.anim;
         }
     }

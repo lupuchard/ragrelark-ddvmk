@@ -96,7 +96,14 @@ void Start::finishDataSetup() {
         equipItem(itemsToEquip[i]);
     }
 
+    for (map<string, map<char, string>*>::iterator i = tileGroups.begin(); i != tileGroups.end(); i++) {
+        delete i->second;
+    }
     tileGroups.clear();
+    for (map<string, vector<Zone*>*>::iterator i = areaZones.begin(); i != areaZones.end(); i++) {
+        i->second->clear();
+        delete i->second;
+    }
     areaZones.clear();
     itemTypeMap.clear();
     itemsToEquip.clear();
@@ -104,6 +111,10 @@ void Start::finishDataSetup() {
     statMap.clear();
     skillMap.clear();
     conditionMap.clear();
+
+    tempStr.clear();
+    tempStr2.clear();
+    tempVect.clear();
 }
 
 void Start::openFile(string fileName, World* w, Player* p) {
@@ -361,6 +372,9 @@ void Start::openFile(string fileName, World* w, Player* p) {
                         newZone->fillHeights(heights);
                         newZone->fillTiles(ntiles);
                         newZone->fillStructs(structs);
+                        delete[] heights;
+                        delete[] ntiles;
+                        delete[] structs;
                         for (map<char, string>::iterator i = tempMap->begin(); i != tempMap->end(); i++) {
                             newZone->addTile(tiles[i->second]);
                         }
@@ -521,11 +535,9 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 } else if (line[0] == '(') {
                     unsigned int c = 1;
                     unsigned int d = c;
-                    cout << "okay " << endl;
                     while (c < line.size()) {
                         if (line[c] == ',' || line[c] == ')') {
                             string s = line.substr(d, c - d);
-                            cout << "now what " << s << endl;
                             itemType->addAbility(spellMap[s]);
                             c++;
                             d = c;
@@ -891,7 +903,17 @@ void Start::openFile(string fileName, World* w, Player* p) {
 }
 
 void Start::deleteData() {
+    for (map<string, MobEquipSet*>::iterator i = mobEquipsMap.begin(); i != mobEquipsMap.end(); i++) {
+        delete i->second;
+    }
+    mobEquipsMap.clear();
+    for (map<string, Tile*>::iterator i = tiles.begin(); i != tiles.end(); i++) {
+        delete i->second;
+    }
     tiles.clear();
+    for (map<string, Area*>::iterator i = areas.begin(); i != areas.end(); i++) {
+        delete i->second;
+    }
     areas.clear();
     zones.clear();
     clearTextures();

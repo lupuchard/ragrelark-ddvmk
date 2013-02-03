@@ -25,7 +25,11 @@ Zone::~Zone() {
         delete tiles;
     }
     if (filled) {
+        for (int i = 0; i < width * height; i++) {
+            locs[i].clearStuff();
+        }
         delete[] locs;
+        filled = false;
     }
 }
 

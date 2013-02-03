@@ -10,7 +10,7 @@ PrimeFolder::PrimeFolder() {
 }
 
 PrimeFolder::~PrimeFolder() {
-    //delete bag; TODO bom
+    delete bag;
     delete equips;
     delete ground;
 }
@@ -47,6 +47,6 @@ GroundFolder* PrimeFolder::getGround() {
     return ground;
 }
 
-void PrimeFolder::setBag(BagFolder* b) {
+/*void PrimeFolder::setBag(BagFolder* b) {
     bag = b;
-}
+}*/

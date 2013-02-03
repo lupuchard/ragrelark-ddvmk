@@ -14,7 +14,7 @@ bool Start::errorChecker(string filename) {
     ifstream fin;
     fin.open(filename.c_str(), ios::in);
     if (fin.fail()) {
-        cout << "FILE ERROR: Problem opening file " << filename << ".";
+        cout << "FILE ERROR: Problem opening file " << filename << "." << endl;
         return false;
     }
 

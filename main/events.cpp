@@ -1,6 +1,6 @@
 #include "Start.h"
 
-string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear."};
+const string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear."};
 
 /*
 ok here is list
@@ -365,8 +365,6 @@ bool Start::equipItem(Item item) {
             Stat* theStat = (Stat*)*i;
             player->getUnit()->needToUpdate(theStat->getIndex(), theStat->isItFloat());
         }
-        int tim = 16;
-        if (typeSlot == E_BODY) tim = 60;
         player->getUnit()->theTime += timeEquip[typeSlot];
         return true;
     }

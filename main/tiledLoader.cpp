@@ -80,11 +80,11 @@ Zone* Start::loadTileFile(string fileName, string zoneName) {
 		}
 		if (strcmp(currentLayer->Attribute("name"), "ht") == 0) {
             unsigned* out = spoon(currentLayer);
-            spoon(currentLayer);
             for (int i = 0; i < totes; i++) {
                 unsigned int index = out[i] - HEIGHT_LAYER_TILEOFF;
                 theZone->getLocationAt(i)->height = MAX_HEIGHT - ((index / 32) * 8 + (index % 32));
             }
+            free(out);
 		}
 		currentLayer = currentLayer->NextSiblingElement();
 		if (strcmp(currentLayer->Attribute("name"), "st") == 0) {
@@ -98,6 +98,7 @@ Zone* Start::loadTileFile(string fileName, string zoneName) {
                 }
                 theZone->getLocationAt(i)->structure = index;
             }
+            free(out);
 		}
 		currentLayer = currentLayer->NextSiblingElement();
 		if (strcmp(currentLayer->Attribute("name"), "i1") == 0) { //TODO multile layers of items
@@ -108,6 +109,7 @@ Zone* Start::loadTileFile(string fileName, string zoneName) {
                     addItemToPlace(i % width, i / width, theZone, tiledItems[index]->genItem());
                 }
             }
+            free(out);
 		}
 		currentLayer = currentLayer->NextSiblingElement();
 		if (strcmp(currentLayer->Attribute("name"), "mb") == 0) {
@@ -118,6 +120,7 @@ Zone* Start::loadTileFile(string fileName, string zoneName) {
                     mobSpawner->spawnMobSpeTag(tiledMobs[index], theZone, i % width, i / width, false);
                 }
             }
+            free(out);
 		}
 		return theZone;
 	}
