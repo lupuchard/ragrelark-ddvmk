@@ -94,11 +94,18 @@ void Start::logic() {
                 if (hpa) unit->modifyStat(S_HP, hpa);
 
                 double foon2 = rand() / (double)RAND_MAX;
-                float manar = unit->getStatValueF(S_MANAREGEN) * unit->getStatValue(S_MAXMANA) / 10.f;
+                int maxMana = unit->getStatValue(S_MAXMANA);
+                float manar = unit->getStatValueF(S_MANAREGEN) * maxMana / 10.f;
                 int manaa = (int)manar;
                 manar = fmodf(manar, 1.f);
                 if (foon2 < manar) manaa++;
-                if (manaa) unit->modifyStat(S_MANA, manaa);
+                if (manaa) {
+                    int mana = unit->getStatValue(S_MANA);
+                    if (mana != maxMana) {
+                        debankExp(unit, SKL_CHANN, min(manaa, maxMana - mana));
+                        unit->modifyStat(S_MANA, manaa);
+                    }
+                }
             }
         }
     }

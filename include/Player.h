@@ -49,7 +49,7 @@ class Player {
         int getSkillExpPercent(SkillType skill);
 
         int getSpellLevel(int spellIndex);
-        void trainSpell(int spellIndex, int xpGained);
+        int trainSpell(int spellIndex, int xpGained);
         const map<int, playerSpell>::iterator getSpellsBegin();
         const map<int, playerSpell>::iterator getSpellsEnd();
 

@@ -95,6 +95,8 @@ light
 SLF
 g_stack
 SLF
+learn
+SLF
 
 ~
 ~
@@ -107,9 +109,6 @@ level
 SLF
 experience_required
 2 u-level ^ 25 *
-
-placeholder_1
-SLF
 
 base_str
 SLF
@@ -148,6 +147,9 @@ defense
 u-base_def i-AC +
 luck
 u-base_luck i-luck_bonus +
+
+learning
+u-intelligence i-learn $learn + +
 
 max_hit_points
 u-constitution 1 + u-level 2 + * 2 / i-hp_bonus + $fort 2 / +

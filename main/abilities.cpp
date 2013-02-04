@@ -30,8 +30,12 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                     return;
                 }
                 unit->modifyStat(S_MANA, -ability->getCost());
-                if (unit == player->getUnit()) player->trainSpell(spellI, player->takeFromXpBank(ability->getDifficulty() / 10));
-                unit->theTime += ability->getTimeTake();
+                int sp = 0;
+                if (unit == player->getUnit()) {
+                    sp = player->getSkillLevel(SKL_QCAST) / 4;
+                }
+                unit->theTime += actionTimePassed(ability->getTimeTake(), sp);
+                Unit* target = NULL;
                 if (success) {
                     //calc power
                     switch(spellI) {
@@ -45,6 +49,44 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                 } else {
                     if (unit == player->getUnit()) addMessage("You miscast " + ability->getName() + ".", black);
                     else addMessage("The " + unit->name + " messes up.", black);
+                }
+                if (unit == player->getUnit()) {
+                    int expGained = 0;
+
+                    if (target) {
+                        int expLeft = target->getStatValue(S_EXP);
+                        if (expLeft) {
+                            int expGained = min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
+                            target->modifyStat(S_EXP, -expGained);
+                        }
+                        sapExp(unit, target, SKL_QCAST, 1);
+                    } else {
+                        expGained = player->takeFromXpBank(ability->getDifficulty() / 10);
+                        debankExp(unit, SKL_QCAST, ability->getDifficulty() / 10);
+                    }
+
+                    int toteExp = player->getUnit()->modifyStat(S_EXP, expGained);
+                    int lev = player->trainSpell(spellI, expGained);
+                    if (lev) {
+                        int level = player->getSpellLevel(spellI);
+                        int leve = level / 10;
+                        int evel = level % 10;
+                        if (lev > 0) {
+                            addMessage("Your ability to cast " + ability->getName() + " has increased to " + its(leve) + "." + its(evel) + "!", forest);
+                        } else {
+                            addMessage("Your ability to cast " + ability->getName() + " has increased to " + its(leve) + "." + its(evel) + "!", maroon);
+                        }
+                    }
+                    int expReq = player->getUnit()->getStatValue(S_EXPREQ);
+                    if (toteExp >= expReq) {
+                        player->getUnit()->modifyStat(S_EXP, -expReq);
+                        player->getUnit()->modifyStat(S_LEVEL, 1);
+                    }
+                    foon += expGained;
+                    if (foon > 10) {
+                        debankExp(unit, SKL_LEARN, foon / 10);
+                        foon %= 10;
+                    }
                 }
             } else if (unit == player->getUnit()) {
                 addMessage("You do not have enough mana to cast the spell '" + ability->getName() + "'.", black);

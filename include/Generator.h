@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "Zone.h"
-#include "Blobber.h"
 
 using namespace std;
 
@@ -41,8 +40,6 @@ class Generator {
 
         void makeConnection(unsigned char* skeleton, ZoneNode* n1, ZoneNode* n2, int type);
         void bspRecurse(unsigned char* skeleton, BspGenNode* next, int left, vector<ZoneNode>* nodes);
-
-        Blobber blobber;
 
         int toteWidth;
         int toteHeight;

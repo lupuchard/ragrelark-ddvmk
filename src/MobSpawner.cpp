@@ -279,3 +279,31 @@ void MobSpawner::createItems(Zone* z, int numEnvironments, short* environments, 
         }
     }
 }
+
+void MobSpawner::overgrowth(Zone* zone, GenType genType, int sx, int sy, int ex, int ey) {
+    static const int plantTag = hashMob("2growt");
+    if (genType == GEN_DUNGEON) {
+        int num = (ex - sx) * (ey - sy) / 1000;
+        for (int i = 0; i < num; i++) {
+            int x = rand() % zone->getWidth();
+            int y = rand() % zone->getHeight(); //random location
+            int rad = rand() % 4 + 2; //random size
+            blobber.makeCircle(rad);
+            const bool** circle = blobber.getBlob();
+            for (int i = 0; i < blobber.getWidth(); i++) {
+                for (int j = 0; j < blobber.getHeight(); j++) {
+                    if (circle[i][j]) {
+                        int xi = x + i - rad;
+                        int yj = y + j - rad;
+                        if (xi >= sx && xi < ex && yj >= sy && yj < ey) {
+                            Location* locAt = zone->getLocationAt(xi, yj);
+                            if (locAt->height != MAX_HEIGHT && !locAt->hasUnit() && locAt->structure == S_NONE) {
+                                spawnMobSpeTag(plantTag, zone, xi, yj, true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

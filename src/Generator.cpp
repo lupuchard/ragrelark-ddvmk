@@ -103,15 +103,6 @@ unsigned char* Generator::genSkeleton(int width, int height, GenType genType) {
     for (int i = 0; i < totes; i++) {
         skeleton[i] = SKEL_WALL;
     }
-    /*for (int i = 0; i < width; i++) {
-
-        skeleton[i] = new unsigned char[height];
-        for (int j = 0; j < height; j++) {
-            cout << "step " << j << endl;
-            skeleton[i][j] = SKEL_WALL;
-            //0 is floor, 1 is wall
-        }
-    }*/
 
     int uncomminity = 0;
     switch(genType) {

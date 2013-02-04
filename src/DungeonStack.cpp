@@ -118,7 +118,6 @@ void DungeonStack::createZones() {
     skeleton = generator.genSkeleton(width, height, genType);
 }
 void DungeonStack::genLevel(int floor, vector<pair<Unit*, Zone*> >* unitsAdded) {
-    cout << "IS THIS OCCURING? " << depthReached << endl;
     for (int i = depthReached; i < floor; i++) {
         int wid = zones[i]->getWidth();
         int hei = zones[i]->getHeight();
@@ -171,6 +170,7 @@ void DungeonStack::genLevel(int floor, vector<pair<Unit*, Zone*> >* unitsAdded) 
         int numItems = (int)(wid * hei * (itemsPerSquare + iDensityChange * i));
         mobSpawner->createEncounters(zones[i], environments.size(), &environments[0], currLevel, numEnemies, possibleLocs, unitsAdded);
         mobSpawner->createItems(zones[i], environments.size(), &environments[0], currLevel, numItems, possibleLocs);
+        mobSpawner->overgrowth(zones[i], genType, 0, 0, wid, hei);
     }
     depthReached = floor;
 }

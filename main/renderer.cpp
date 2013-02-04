@@ -196,13 +196,13 @@ void Start::renderSidePanels() {
         renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, dark(teal));
         renderText("Time passed: \\q" + its(player->getUnit()->theTime), 2, loff + WIN1_WIDTH, toff + 260, Z_MENU + 1, LEFT, dark(red));
     } else if (topPanel == PANEL_SKILLS) {
-        static const int numFunctionalSkills = 9;
-        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CONC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
+        static const int numFunctionalSkills = 11;
+        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CHANN, SKL_QCAST, SKL_LEARN, SKL_DODGE, SKL_RANGE, SKL_CRIT};
         int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
         int k = 0;
         for (int i = 0; i < numFunctionalSkills; i++) {
             int level = player->getSkillLevel(functionalSkills[i]);
-            if (level) {
+            if (/*level*/true) {
                 renderText(capitalize(skillNames[functionalSkills[i]]), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, dark(olive));
                 int eve = player->getSkillExpPercent(functionalSkills[i]);
                 string s = " (";
@@ -215,7 +215,7 @@ void Start::renderSidePanels() {
         }
         for (map<int, playerSpell>::iterator i = player->getSpellsBegin(); i != player->getSpellsEnd(); i++) {
             int level = i->second.level;
-            if (level) {
+            if (/*level*/true) {
                 int spellIndex = i->first << 2;
                 renderText(capitalize(getAbility(spellIndex)->getName()), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, dark(teal));
                 int eve = i->second.exp * 100 / (int)(pow(level + 1, 1.1) * 2.f);
@@ -351,7 +351,7 @@ void Start::renderMenu() {
 
         ItemFolder* topFolder = folderStack.top();
         int numItems = topFolder->getNumItems();
-        int numDisplayedItems = min(MAX_MENU_ITEMS, numItems);
+        int numDisplayedItems = min(min(MAX_MENU_ITEMS, numItems), numItems - selectedShift);
         int height = 28 * numDisplayedItems + 88;
         int offset = (WIN1_HEIGHT - height) / 2;
 

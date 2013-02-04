@@ -137,7 +137,8 @@ int Player::getSpellLevel(int spellIndex) {
     else return itr->second.level;
 }
 
-void Player::trainSpell(int spellIndex, int xpGained) {
+int Player::trainSpell(int spellIndex, int xpGained) {
+    xpGained = (int)(xpGained * (getSkillLevel(SKL_LEARN) / 10.f + 1.f));
     int trueSpellIndex = spellIndex >> 2;
     map<int, playerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
     playerSpell* pSpell;
@@ -150,11 +151,14 @@ void Player::trainSpell(int spellIndex, int xpGained) {
     }
     pSpell->exp += xpGained;
     int xpReq = calcXpReq(pSpell->level, 2.f);
+    int fooey = 0;
     while (pSpell->exp >= xpReq) {
         pSpell->exp -= xpReq;
         pSpell->level++;
+        fooey++;
         xpReq = calcXpReq(pSpell->level, 2.f);
     }
+    return fooey;
 }
 
 const map<int, playerSpell>::iterator Player::getSpellsBegin() {

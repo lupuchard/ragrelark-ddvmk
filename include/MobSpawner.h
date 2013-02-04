@@ -7,6 +7,7 @@
 #include "EnemyEquipStatHolder.h"
 #include "MobEquipSet.h"
 #include "RandItemType.h"
+#include "Blobber.h"
 
 typedef pair<string, StatHolder*> mob;
 typedef struct {
@@ -54,6 +55,7 @@ class MobSpawner {
 
         void createEncounters(Zone* z, int numEnvironments, short* environments, int level, int howMany, vector<pair<int, int> > possibleLocs, vector<pair<Unit*, Zone*> >* unitsAdded);
         void createItems(Zone* z, int numEnvironments, short* environments, int level, int howMany, vector<pair<int, int> > possibleLocs);
+        void overgrowth(Zone* zone, GenType genType, int sx, int sy, int ex, int ey);
     protected:
     private:
         EnvironmentManager* enviroManager;
@@ -63,6 +65,8 @@ class MobSpawner {
 
         vector<itemSpawnSet*> itemSpawnSets;
         map<string, itemSpawnSet*> itemSpawnSetNameMap;
+
+        Blobber blobber;
 };
 
 #endif // MOBSPAWNER_H

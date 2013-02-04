@@ -12,7 +12,7 @@
 #define T_EAT 40
 #define T_ROCK 30
 
-int actionTimePassed(int time, int speed) {
+int Start::actionTimePassed(int time, int speed) {
     return max((int)(time * pow(.95, speed - 8)), 1);
 }
 
@@ -94,22 +94,22 @@ void Start::playerWalkStaminaDrain(int* movSpeed, int tim, Unit* unit) {
             case 1:
                 *movSpeed -= 1;
                 unit->modifyStat(S_STAMINA, -tim);
-                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(1));
+                debankExp(unit, SKL_LIFT, 1);
                 break;
             case 2:
                 *movSpeed -= 2;
                 unit->modifyStat(S_STAMINA, -tim * 3 / 2);
-                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(2));
+                debankExp(unit, SKL_LIFT, 2);
                 break;
             case 3:
                 *movSpeed -= 3;
                 unit->modifyStat(S_STAMINA, -tim * 2);
-                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(3));
+                debankExp(unit, SKL_LIFT, 3);
                 break;
             default:
                 *movSpeed -= 4;
                 unit->modifyStat(S_STAMINA, -tim * 5 / 2);
-                player->gainSkillExp(SKL_LIFT, player->takeFromXpBank(4));
+                debankExp(unit, SKL_LIFT, 4);
                 break;
         }
         int stam = unit->getStatValue(S_STAMINA);
@@ -447,7 +447,7 @@ void Start::attackUnit(Unit* attacker, Unit* defender, Zone* zone, int dir, Atta
                     }
                 }
                 if (conditionAffect >= C_POISON && conditionAffect < C_POISON + 16) {
-                    applyPoison(conditionAffect, 10, defender);
+                    applyPoison(conditionAffect, 10, defender, attacker);
                 } else {
                     defender->setCondition(conditionAffect, true);
                 }
@@ -498,7 +498,7 @@ void Start::reactToAttack(Unit* unit, Unit* attacker, Zone* zone) {
 }
 
 int poisonWeights[] = {1, 2, 4, 1, 1, 1, 1, 1, 1, 3, 3, 1, 2, 2, 3, 3};
-void Start::applyPoison(int condition, int duration, Unit* unit) {
+void Start::applyPoison(int condition, int duration, Unit* unit, Unit* poisoner) {
     int r = rand() % 100;
     int res = unit->getStatValue(S_RESPOIS);
     if (r < res / 5) {
@@ -507,6 +507,12 @@ void Start::applyPoison(int condition, int duration, Unit* unit) {
     } else if (r < res) {
         if (unit == player->getUnit()) addMessage("You slightly resist the poison.", black);
         duration /= 2;
+    }
+
+    if (poisoner) {
+        sapExp(unit, poisoner, SKL_RPOIS, 1);
+    } else {
+        debankExp(unit, SKL_RPOIS, poisonWeights[condition - 8]);
     }
 
     bool exists = false;

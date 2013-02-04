@@ -17,6 +17,7 @@ Start::Start() {
     interval1 = 0;
     interval2 = 0;
     interval3 = 0;
+    foon = 0;
 
     topPanel = PANEL_TOPSTART + 1;
     botPanel = PANEL_BOTTOMSTART + 1;

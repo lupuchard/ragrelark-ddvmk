@@ -71,6 +71,7 @@ class Start: FormulaUser, EnvironmentManager {
         void events();
         void directionPress(int dir);
         void sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude);
+        void debankExp(Unit* debanker, SkillType skill, int amount);
         void action(SkillType skill, int exp);
         void openInventory();
         void openBag();
@@ -129,7 +130,8 @@ class Start: FormulaUser, EnvironmentManager {
         void changeLoc(Unit* unit, Zone* zone, int x, int y);
         void changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, int x, int y);
 
-        void applyPoison(int poison, int duration, Unit* unit);
+        void applyPoison(int poison, int duration, Unit* unit, Unit* poisoner);
+        int actionTimePassed(int time, int speed);
 
         void hitCMod(Unit* unit, float& damage, color& c, int& hitType, string& verb, int unarmedAttackType);
         void strikeUnit(Unit* unit, Zone* zone, int dir, bool safe);
@@ -142,6 +144,9 @@ class Start: FormulaUser, EnvironmentManager {
         void closeDoor(Unit* unit, Zone* zone, int dir, bool safe);
         void pushRock(Unit* unit, Zone* zone, int dir);
         void eatFood(Unit* unit, ItemType* food);
+        /* --- */
+
+        /* --abilities.cpp-- */
         void castSpell(unsigned int spellI, Unit* unit, Zone* zone);
         /* --- */
 
@@ -193,9 +198,9 @@ class Start: FormulaUser, EnvironmentManager {
         Area* activeArea;
 
         bool done;
-        unsigned char state;
-        unsigned char selected;
-        unsigned char menuAction;
+        short selected;
+        int state;
+        int menuAction;
         stack<ItemFolder*> folderStack;
         PrimeFolder* primeFolder;
         map<unsigned short, vector<ItemFolder*> > folders;
@@ -221,7 +226,6 @@ class Start: FormulaUser, EnvironmentManager {
         RagDrawer ragd;
         RagAnim raga;
 
-        char tempChar;
         unsigned char loadStatus;
 
         bool shiftIsDown;
@@ -229,6 +233,7 @@ class Start: FormulaUser, EnvironmentManager {
 
         /* temp data for loading */
         short tempValues[16];
+        char tempChar;
         string tempStr;
         string tempStr2;
         map<char, string>* tempMap;
@@ -269,6 +274,7 @@ class Start: FormulaUser, EnvironmentManager {
         int interval1;
         int interval2;
         int interval3;
+        int foon;
 
         map<unsigned int, Tile*> tiledTiles;
         map<unsigned int, RandItemType*> tiledItems;

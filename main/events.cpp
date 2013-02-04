@@ -37,10 +37,9 @@ void Start::directionPress(int direction) {
                     menuAction = 0;
                 } break;
             case 8:
-                if (selected == 0) {
+                selected--;
+                if (selected < 0) {
                     selected = folderStack.top()->getNumItems() - 1;
-                } else {
-                    selected--;
                 } break;
         } break;
     case STATE_TARGET:
@@ -319,6 +318,23 @@ void Start::action(SkillType skill, int exp) {
     }
 }
 
+bool Start::init() {
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+        return false;
+    }
+    display = SDL_SetVideoMode(WIN1_WIDTH + SWIN_WIDTH, WIN1_HEIGHT + CWIN_HEIGHT, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL);
+    if(display == NULL) {
+        return false;
+    }
+    IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
+    startRenderer();
+
+    srand(time(NULL));
+
+    initFieldOfView();
+    return true;
+}
+
 void Start::sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude) {
     if (sapper == player->getUnit()) {
         int expLeft = target->getStatValue(S_EXP);
@@ -333,6 +349,12 @@ void Start::sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude) {
             action(skill, gain);
             target->modifyStat(S_EXP, -gain);
         }
+    }
+}
+
+void Start::debankExp(Unit* debanker, SkillType skill, int amount) {
+    if (debanker == player->getUnit()) {
+        action(skill, player->takeFromXpBank(amount));
     }
 }
 
