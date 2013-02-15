@@ -1,16 +1,16 @@
 
 UNIT
 player:youare
-level=5
+level=1
 experience=0
 experience_required=0
-base_str=11
-base_con=10
-base_aff=7
-base_int=6
+base_str=8
+base_con=8
+base_aff=8
+base_int=8
 base_per=8
-base_dex=9
-base_cha=12
+base_dex=8
+base_cha=8
 base_def=0
 learning=0
 base_attspe=8
@@ -251,4 +251,5 @@ END
 
 FILES
 humanoids
+swarmers
 END

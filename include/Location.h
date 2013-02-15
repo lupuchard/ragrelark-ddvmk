@@ -7,11 +7,11 @@ using namespace std;
 #define LOCATION_H
 
 #define MAX_HEIGHT 31
-#define S_NONE 31
-#define S_WOODDOOR 0
-#define S_STAIRUP 16
-#define S_STAIRDOWN 17
-#define S_ROCK 25
+enum Structures{S_WOODDOOR = 0, S_WOODDOOR_OPEN, S_WOODDOOR_BROKE, S_NORMDOOR, S_NORMDOOR_OPEN, S_NORMDOOR_BROKE, S_HIDDENDOOR, S_FOUNDDOOR,
+    S_SKULLDOOR, S_SKULLDOOR_OPEN, S_SKULLDOOR_BROKE, S_STONEDOOR, S_STOREDOOR_OPEN, S_STONEDOOR_BROKE, S_WOODDOOR_LOCKED, S_placeholder,
+    S_STAIRUP, S_STAIRDOWN, S_LADDERUP, S_LADDERDOWN, S_ROCK = 25, S_NONE = 31};
+
+enum Fogs{FOG_NONE};
 
 /*struct itemNode {
     Item item;
@@ -27,11 +27,17 @@ class Location {
         Location();
         Location(int h);
 
-        unsigned char height;
-        unsigned char tile;
+        unsigned short tile;
         unsigned char structure;
-        unsigned char light;
+
+        unsigned char height;
         int getTotalHeight();
+
+        short light;
+        unsigned char fog1;
+        unsigned char fog2;
+        unsigned short debris1;
+        unsigned short debris2;
 
         Unit* unit;
         bool hasUnit();

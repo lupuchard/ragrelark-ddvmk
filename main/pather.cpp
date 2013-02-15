@@ -100,6 +100,9 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType 
         yDest = zone->getHeight() - 1; add = 4;
     }
 
+    int swarm = unit->getStatValue(S_SWARM);
+    int fly = unit->getStatValue(S_FLY);
+
     pType = pathingType;
     bool considerOtherUnits = pathingType != P_PASSUNITS;
     start = loc(unit->x, unit->y);
@@ -145,12 +148,24 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType 
             }
             int val = arr[l.x][l.y].first;
             if (val == 3) {
+                //very long check to see if a location is walkable
                 bool canDoor = ai == AI_HOSTILESMART;
                 Location* locAt = zone->getLocationAt(l.x, l.y);
                 int hei = locAt->getTotalHeight();
-                int heightDiff = hei - current->height;
+                int heightDiff;
+                if (fly) heightDiff = 0;
+                else heightDiff = hei - current->height;
                 bool isGoal = l.x == xDest && l.y == yDest;
-                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || zone->getTileAt(l.x, l.y)->blocksMove() || (considerOtherUnits && locAt->hasUnit() && !(((pathingType != P_FLEE) && isGoal)))) {
+                bool unitInWay = locAt->hasUnit();
+                if (unitInWay) {
+                    if (swarm && locAt->unit->getProto() == unit->getProto()) {
+                        Swarmer* unitS = (Swarmer*)unit;
+                        Swarmer* nextS = (Swarmer*)locAt->unit;
+                        if (unitS->howMany() + nextS->howMany() <= swarm) unitInWay = false;
+                    }
+                }
+                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || getTile(locAt->tile)->blocksMove() ||
+                        (considerOtherUnits && unitInWay && !(((pathingType != P_FLEE) && isGoal)))) {
                     val = 2;
                 }
             }
@@ -310,9 +325,14 @@ void Start::playerFieldOfView(bool isNew) {
                     v++;
                 }
             }
-            if (v < 2 && splatters[i] != 255) {
+            if (v < 2 && loc->debris1) {
                 texs[v] = SPLATTERS_TEX;
-                locs[v] = splatters[i];
+                locs[v] = loc->debris1;
+                v++;
+            }
+            if (v < 2 && loc->debris2) {
+                texs[v] = SPLATTERS_TEX;
+                locs[v] = loc->debris2;
             }
             p->setMemory(x, y, texs[1], locs[1], texs[0], locs[0]);
         }
@@ -359,12 +379,12 @@ const int RANDN = rand();
 bool fovOpaque(void* map, int x, int y) {
     Zone* zone = (Zone*)map;
     if (x < 0 || y < 0 || x >= zone->getWidth() || y >= zone->getHeight()) return true;
-    if (zone->getTileAt(x, y)->blocksLight()) {
+    Location* loc = zone->getLocationAt(x, y);
+    if (getTile(loc->tile)->blocksLight()) {
         unsigned short r = (RANDA * x + RANDB * y + RANDC * zone->getFoon() + RANDM) ^ RANDN;
         return r % 50 > 24;
     }
-    Location* loc = zone->getLocationAt(x, y);
-    if (loc->isClosedDoor()) return true;
+    if (loc->isClosedDoor() || loc->structure == S_HIDDENDOOR) return true;
     return loc->height == MAX_HEIGHT;
 }
 

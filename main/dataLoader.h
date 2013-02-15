@@ -7,7 +7,6 @@
 #define WORLD 300
 #define PLAYER 400
 #define FILES 500
-#define MAP 600
 #define SPELLS 700
 #define AREA 800
 #define RESOURCES 900

@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/Helpful Functions/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;" />
+		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/Helpful Functions/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;data/mobs/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -102,16 +102,13 @@
 			<Option virtualFolder="data/" />
 		</Unit>
 		<Unit filename="data/humanoids.rag">
-			<Option virtualFolder="data/" />
+			<Option virtualFolder="data/mobs/" />
 		</Unit>
 		<Unit filename="data/items.rag">
 			<Option virtualFolder="data/items/" />
 		</Unit>
 		<Unit filename="data/jewlery.rag">
 			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/map1.rag">
-			<Option virtualFolder="data/maps/" />
 		</Unit>
 		<Unit filename="data/maps2.rag">
 			<Option virtualFolder="data/maps/" />
@@ -120,7 +117,7 @@
 			<Option virtualFolder="data/tiles/" />
 		</Unit>
 		<Unit filename="data/mobspaw.rag">
-			<Option virtualFolder="data/" />
+			<Option virtualFolder="data/mobs/" />
 		</Unit>
 		<Unit filename="data/moreitems.rag">
 			<Option virtualFolder="data/items/" />
@@ -133,11 +130,16 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="data/swarmers.rag">
+			<Option virtualFolder="data/mobs/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="data/treetiles.rag">
 			<Option virtualFolder="data/tiles/" />
 		</Unit>
 		<Unit filename="data/units.rag">
-			<Option virtualFolder="data/" />
+			<Option virtualFolder="data/mobs/" />
 		</Unit>
 		<Unit filename="data/weapons.rag">
 			<Option virtualFolder="data/items/" />
@@ -282,13 +284,18 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="include/Swarmer.h">
+			<Option virtualFolder="code/classes/Mobs/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="include/Texture.h">
 			<Option virtualFolder="code/classes/Graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/Tile.h">
-			<Option virtualFolder="code/classes/Graphics/" />
+			<Option virtualFolder="code/classes/Generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -354,11 +361,6 @@
 		</Unit>
 		<Unit filename="main/graphics.h">
 			<Option virtualFolder="code/main/graphics/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="main/initiator.cpp">
-			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -529,13 +531,18 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="src/Swarmer.cpp">
+			<Option virtualFolder="code/classes/Mobs/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/Texture.cpp">
 			<Option virtualFolder="code/classes/Graphics/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Tile.cpp">
-			<Option virtualFolder="code/classes/Graphics/" />
+			<Option virtualFolder="code/classes/Generation/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

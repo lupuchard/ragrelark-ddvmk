@@ -6,7 +6,7 @@ vector<Item> genericBlankVector;
 
 bool opens[] = {false, true, true, false, true, true, false, false, false, true, true, false, true, true, false, false,
             true, true, true, true, false, false, false, false, false, true, false, false, true, true, true, true};
-bool cDoors[] = {true, false, false, true, false, false, true, true, true, false, false, true, false, false, true, true,
+bool cDoors[] = {true, false, false, true, false, false, false, true, true, false, false, true, false, false, true, true,
             false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
 bool oDoors[] = {false, true, false, false, true, false, false, false, false, true, false, false, true, false, false, false,
             false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
@@ -18,6 +18,11 @@ Location::Location() {
     light = 0;
     unit = none;
     items = &genericBlankVector;
+
+    fog1 = FOG_NONE;
+    fog2 = FOG_NONE;
+    debris1 = 0;
+    debris2 = 0;
 }
 
 Location::Location(int h) {

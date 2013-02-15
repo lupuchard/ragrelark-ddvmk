@@ -2,6 +2,21 @@
 #include "Tile.h"
 using namespace std;
 
+vector<Tile*> tiles;
+void addTile(Tile* tile) {
+    tile->setIndex(tiles.size());
+    tiles.push_back(tile);
+}
+Tile* getTile(int index) {
+    return tiles[index];
+}
+void clearTiles() {
+    for (unsigned int i = 0; i < tiles.size(); i++) {
+        delete tiles[i];
+    }
+    tiles.clear();
+}
+
 Tile::Tile(int loc, int tex, int type, int border): StatHolder(V_TILE) {
     g.loc = loc;
     g.tex = tex;
@@ -37,4 +52,12 @@ bool Tile::blocksLight() {
 
 bool Tile::blocksMove() {
     return blockMove;
+}
+
+void Tile::setIndex(int i) {
+    index = i;
+}
+
+unsigned short Tile::getIndex() {
+    return index;
 }

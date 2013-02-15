@@ -167,18 +167,28 @@ END
 
 MTG
 ruins
-A-dfloor
-B-dfloor2
-C-dfloor3
-D-dfloor4
-E-dwall
-F-dwall2
-G-dwall3
-H-dwall4
-END
 
-MTG
-bruins
-A-bluedfloor
-E-bluedwall
+~first four floors
+dfloor
+dfloor2
+dfloor3
+dfloor4
+
+~next four walls
+dwall
+dwall2
+dwall3
+dwall4
+
+~next alternate floors/walls
+greenflor1
+greenflor2
+greenflor3
+greenflor4
+greenwall1
+greenwall2
+greenwall3
+greenwall4
+
+dpit
 END

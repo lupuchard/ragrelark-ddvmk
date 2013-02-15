@@ -12,6 +12,7 @@
 #include "fov/fov.h"
 
 #include "Player.h"
+#include "Swarmer.h"
 #include "World.h"
 #include "PrimeFolder.h"
 #include "graphics.h"
@@ -107,7 +108,7 @@ class Start: FormulaUser, EnvironmentManager {
         void renderBars();
         void renderText(string text, int size, int x, int y, int z, int align, color c);
         void startRenderer();
-        void makeSplatter(Unit* unit, int x, int y);
+        void makeSplatter(Unit* unit, Zone* zone, int x, int y);
         void addStatus(string name, color c, int type);
         void removeStatus(int type);
         /* --- */
@@ -144,6 +145,7 @@ class Start: FormulaUser, EnvironmentManager {
         void closeDoor(Unit* unit, Zone* zone, int dir, bool safe);
         void pushRock(Unit* unit, Zone* zone, int dir);
         void eatFood(Unit* unit, ItemType* food);
+        void search(Unit* unit, Zone* zone);
         /* --- */
 
         /* --abilities.cpp-- */
@@ -233,24 +235,21 @@ class Start: FormulaUser, EnvironmentManager {
 
         /* temp data for loading */
         short tempValues[16];
-        char tempChar;
         string tempStr;
         string tempStr2;
-        map<char, string>* tempMap;
         Zone* tempZone;
         Zone* tempZone2;
         Area* tempArea;
         DungeonStack* tempDun;
-        vector<string> tempVect;
-        vector<Zone*> zoneVect;
 
         map<string, vector<Zone*>*> areaZones;
-        map<string, map<char, string>*> tileGroups;
+        map<string, vector<Tile*> > tileGroups;
         map<string, int> itemTypeMap;
         map<string, int> statMap;
         map<string, int> conditionMap;
         map<string, int> spellMap;
         map<string, int> skillMap;
+        map<string, Tile*> tileMap;
         map<string, MobEquipSet*> mobEquipsMap;
         vector<Item> itemsToEquip;
         /* end temp values for loading */
@@ -259,7 +258,6 @@ class Start: FormulaUser, EnvironmentManager {
         vector<int> defaultStats;
         vector<Unit*> unitDeleteList;
 
-        map<string, Tile*> tiles;
         map<string, Area*> areas;
         map<string, Zone*> zones;
         map<string, DungeonStack*> dungeons;
@@ -267,7 +265,6 @@ class Start: FormulaUser, EnvironmentManager {
         vector<Formula*> formulas;
         int base;
 
-        unsigned char splatters[MAX_ZONE_SIZE];
         unsigned char visibilities[MAX_ZONE_SIZE]; //0 = nope, 1 = LOS, 2 = lit
 
         int interval0;//TODO an array

@@ -98,9 +98,9 @@ END
 MOBSPAW
 dungeon{
 mobs[
-0:tslim1*16,pig000*04
-1:sslim1*12,tslim1*06,pig000*01
-2:sslim1*12,scorp1*06
+0:tslim1*03,raaaat*08(1-3,----),baaaat*08(1-3,----),pig000*01
+1:sslim1*12,tslim1*01,raaaat*06(3-5,----),baaaat*01(3-5,----)
+2:sslim1*10,scorp1*06,baaaat*02(5-9,----)
 3:plant1*08,scorp1*08,sslim1*04,milli1*01
 4:mslim1*02,plant1*06,scorp1*06,milli1*01,dwolfe*04
 5:mslim1*04,plant1*06,scorp1*06,milli1*02,dwolfe*02

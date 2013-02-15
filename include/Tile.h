@@ -23,12 +23,20 @@ class Tile : public StatHolder {
         Tile* getOver();
         bool blocksLight();
         bool blocksMove();
+
+        void setIndex(int index);
+        unsigned short getIndex();
     protected:
     private:
         graphic g;
         Tile* over;
         bool blockLight;
         bool blockMove;
+        unsigned short index;
 };
+
+void addTile(Tile* tile);
+Tile* getTile(int index);
+void clearTiles();
 
 #endif // TILE_H

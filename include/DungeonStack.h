@@ -20,6 +20,7 @@ class DungeonStack {
         void setDimensions(int width, int height, float widthChange = 0.f, float heightChange = 0.f);
         void setEnemyDensity(float enemyPerSquare, float change);
         void setItemDensity(float itemsPerSquare, float change);
+        void setTileset(Tile** tileset);
 
         void createZones();
         void genLevel(int level, vector<pair<Unit*, Zone*> >* unitsAdded);
@@ -38,6 +39,8 @@ class DungeonStack {
         GenType genType;
         vector<short> environments;
         string name;
+
+        Tile** tileset;
 
         int width;
         int height;

@@ -62,7 +62,6 @@ void Start::prepare() {
     finishDataSetup();
 
     for (int i = 0; i < MAX_ZONE_SIZE; i++) {
-        splatters[i] = 255;
         visibilities[i] = 0;
     }
     findAreaUnits();

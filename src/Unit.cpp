@@ -76,7 +76,7 @@ short Unit::modifyStat(int stat, int amount) {
     }
 }
 
-float Unit::modifyStat(int stat, float amount) {
+float Unit::modifyStatF(int stat, float amount) {
     if (StatHolder::hasStat(stat, true)) {
         return StatHolder::modifyStatF(stat, amount);
     } else {
@@ -133,4 +133,8 @@ Unit* Unit::getEnemy() {
 
 bool Unit::hasStat(int stat, bool isFloat) {
     return StatHolder::hasStat(stat, isFloat) || unitPrototype->hasStat(stat, isFloat);
+}
+
+StatHolder* Unit::getProto() {
+    return unitPrototype;
 }

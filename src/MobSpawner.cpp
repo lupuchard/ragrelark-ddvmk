@@ -58,8 +58,8 @@ Location* MobSpawner::getNear(Zone* z, int* x, int* y, bool avoidMobs, int baseH
         int ay = altYs[i] + *y;
         if (ax >= 0 && ay >= 0 && ax < z->getWidth() && ay < z->getWidth()) {
             Location* nextLoc = z->getLocationAt(ax, ay);
-            if (!(avoidMobs && nextLoc->hasUnit()) && !z->getTileAt(ax, ay)->blocksMove() &&
-                    ((baseHeight == -1 && nextLoc->tile == 0) || (baseHeight >= 0 && nextLoc->height != MAX_HEIGHT && fabs(baseHeight - nextLoc->height) <= 2))) {
+            if (!(avoidMobs && nextLoc->hasUnit()) && !getTile(nextLoc->tile)->blocksMove() &&
+                    (baseHeight >= 0 && nextLoc->height != MAX_HEIGHT && fabs(baseHeight - nextLoc->height) <= 2)) {
                 *x = ax;
                 *y = ay;
                 return nextLoc;
@@ -168,7 +168,12 @@ Unit* MobSpawner::spawnMobSpeTag(int mobTag, Zone* z, int x, int y, bool allowAl
 }
 
 Unit* MobSpawner::spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt) {
-    Unit* newUnit = new Unit(m.first, m.second);
+    Unit* newUnit;
+    if (m.second->getStatValue(S_SWARM)) {
+        newUnit = new Swarmer(m.first, m.second);
+    } else {
+        newUnit = new Unit(m.first, m.second);
+    }
     newUnit->x = x;
     newUnit->y = y;
     newUnit->theTime = 0; //should be set later
@@ -297,7 +302,7 @@ void MobSpawner::overgrowth(Zone* zone, GenType genType, int sx, int sy, int ex,
                         int yj = y + j - rad;
                         if (xi >= sx && xi < ex && yj >= sy && yj < ey) {
                             Location* locAt = zone->getLocationAt(xi, yj);
-                            if (locAt->height != MAX_HEIGHT && !locAt->hasUnit() && locAt->structure == S_NONE) {
+                            if (locAt->height != MAX_HEIGHT && locAt->height > MAX_HEIGHT / 4 && !locAt->hasUnit() && locAt->structure == S_NONE) {
                                 spawnMobSpeTag(plantTag, zone, xi, yj, true);
                             }
                         }

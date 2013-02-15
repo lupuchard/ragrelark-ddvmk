@@ -20,15 +20,9 @@ class Zone: public StatHolder {
         int getHeight();
         unsigned char getLightness();
         string getName();
-        Tile* getTileAt(int x, int y);
-        Tile* safeGetTileAt(int x, int y);
         Location* getLocationAt(int x, int y);
         Location* getLocationAt(int i);
         Location* safeGetLocationAt(int x, int y);
-
-        int addTile(Tile* t);
-        //void setTileset(vector<Tile*>* tileSet);
-        int getNumTiles();
 
         void fillTiles(int* tiles);
         void fillHeights(int* heights);
@@ -44,8 +38,6 @@ class Zone: public StatHolder {
     protected:
     private:
         Location* locs;
-        vector<Tile*>* tiles;
-        bool ownedTiles;
         bool filled;
         unsigned char lightness; //0 - 11, 0 = blind, 1 - 10 = normal, 11 = surface
         unsigned short width;

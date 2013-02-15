@@ -1,12 +1,12 @@
+#ifndef UNIT_H
+#define UNIT_H
+
 #include <string>
 #include "StatHolder.h"
 #include "Stat.h"
 #include "Tile.h"
 #include "Item.h"
 using namespace std;
-
-#ifndef UNIT_H
-#define UNIT_H
 
 enum PathType{P_NORMAL, P_PASSUNITS, P_STAIRS, P_FLEE};
 
@@ -42,16 +42,18 @@ class Unit: public StatHolder {
         MobEquips* equipment;
 
         void setStat(int stat, int value);
-        short getStatValue(int stat);
-        short modifyStat(int stat, int amount);
+        virtual short getStatValue(int stat);
+        virtual short modifyStat(int stat, int amount);
         void setStatF(int stat, float value);
-        float getStatValueF(int stat);
-        float modifyStat(int stat, float amount);
+        virtual float getStatValueF(int stat);
+        virtual float modifyStatF(int stat, float amount);
 
         void needToUpdate(int stat, bool isFloat);
         bool hasStat(int stat, bool isFloat);
         void setEnemy(Unit* enemy);
         Unit* getEnemy();
+
+        StatHolder* getProto();
     private:
         StatHolder* unitPrototype;
         Unit* currentEnemy;

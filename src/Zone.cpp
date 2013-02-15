@@ -8,8 +8,6 @@ Zone::Zone(string nam, int w, int h, int light, bool fill): StatHolder(V_ZONE) {
     name = nam;
     filled = fill;
     if (fill) locs = new Location[width * height];
-    ownedTiles = false;
-    tiles = NULL;
     lightness = light;
 
     stackIndex = -1;
@@ -21,9 +19,6 @@ Zone::Zone(string nam, int w, int h, int light, bool fill): StatHolder(V_ZONE) {
 }
 
 Zone::~Zone() {
-    if (ownedTiles) {
-        delete tiles;
-    }
     if (filled) {
         for (int i = 0; i < width * height; i++) {
             locs[i].clearStuff();
@@ -60,13 +55,6 @@ unsigned char Zone::getLightness() {
     return lightness;
 }
 
-Tile* Zone::safeGetTileAt(int x, int y) {
-    if (x < 0 || y < 0 || x >= width || y >= width) {
-        return (*tiles)[0];
-    }
-    return getTileAt(x, y);
-}
-
 Location* Zone::getLocationAt(int x, int y) {
     return &locs[x + y * width];
 }
@@ -81,23 +69,6 @@ Location* Zone::safeGetLocationAt(int x, int y) {
     }
     return getLocationAt(x, y);
 }
-
-Tile* Zone::getTileAt(int x, int y) {
-    return (*tiles)[locs[x + y * width].tile];
-}
-
-int Zone::addTile(Tile* t) {
-    if (!ownedTiles) tiles = new vector<Tile*>();
-    tiles->push_back(t);
-    ownedTiles = true;
-    return tiles->size() - 1;
-}
-
-/*void Zone::setTileset(vector<Tile*>* tileSet) {
-    if (ownedTiles) delete tiles;
-    tiles = tileSet;
-    ownedTiles = false;
-}*/
 
 void Zone::fillTiles(int* tiles) {
     int totes = width * height;

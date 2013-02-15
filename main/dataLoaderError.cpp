@@ -52,9 +52,7 @@ bool Start::errorChecker(string filename) {
                     }
                 } continue;
             case MTG: if (isNum(line)) printFileErr("First line of MTG must be a string (the name of the group).", lineNum); break;
-            case (MTG + 1):
-                if (line[1] != '-') printFileErr("Second char must be a '-'.", lineNum);
-                finished = true; continue;
+            case (MTG + 1): finished = true; continue;
             case TILE: if (isNum(line)) printFileErr("First line of TILE must be a string (the name of the Tile).", lineNum); break;
             case (TILE + 1): {
                 unsigned int i = 0;
@@ -242,34 +240,12 @@ bool Start::errorChecker(string filename) {
                     }
                 }
                 } continue;
-            case (MAP + 1):
-                if (line == "[[") {
-                    status = MAP + 10;
-                } else if (line == "[") {
-                    status = MAP + 2;
-                } continue;
-            case (MAP + 2):
-                if (line[0] == ']') {
-                    status = MAP + 3;
-                    finished = true;
-                } continue;
-            case (MAP + 3): {
-                char t = line[0];
-                if (t == '$' || t == '@' || t == '^' || t == '<' || t == '.') {
-                    status = MAP + 4;
-                } else {
-                    printFileErr("Not a valid map modification character.", lineNum);
-                } } continue;
-            case (MAP + 4):
-                if (!isPair(line)) printFileErr("Expected a pair on this line (coordinates).", lineNum);
-                status = MAP + 3; continue;
-            case (MAP + 10): if (!isPair(line)) printFileErr("This line should be a pair.", lineNum); break;
             case MAPSTACK: if (isNum(line)) printFileErr("This line should be a name (of the map stack)", lineNum); break;
             case (MAPSTACK + 1): if (line[0] != '>') printFileErr("The format of this line is \">AREA\"", lineNum); break;
             case (MAPSTACK + 2): {
                 finished = true;
                 unsigned int b = 0;
-                while (line[b] != ' ') b++;
+                while (line[b] != ' ' && b < line.size()) b++;
                 b++;
                 if (b > 3) {
                     while (b < line.size()) {

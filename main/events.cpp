@@ -14,7 +14,7 @@ void Start::directionPress(int direction) {
     switch(state) {
     case STATE_PLAY:
         if (direction == 5) {
-            player->getUnit()->theTime += 5;
+            search(player->getUnit(), player->getZone());
         } else {
             moveUnit(player->getUnit(), player->getZone(), direction);
             primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
@@ -129,6 +129,7 @@ void Start::events() {
                     case SDLK_q: openBag();       menuAction = MA_EQUIP;   break;
                     case SDLK_u: openEquipment(); menuAction = MA_GRAB;    break;
                     case SDLK_c: closeDoors(); break;
+                    case SDLK_s: search(player->getUnit(), player->getZone()); break;
                     default: break;
                 }
             } else {
@@ -146,6 +147,15 @@ void Start::events() {
                     case SDLK_DOWN:  directionPress(2); break;
                     case SDLK_LEFT:  directionPress(4); break;
                     case SDLK_RIGHT: directionPress(6); break;
+                    case SDLK_j:   directionPress(1); break;
+                    case SDLK_k:   directionPress(2); break;
+                    case SDLK_l:   directionPress(3); break;
+                    case SDLK_u:   directionPress(4); break;
+                    case SDLK_i:   directionPress(5); break;
+                    case SDLK_o:   directionPress(6); break;
+                    case SDLK_7:   directionPress(7); break;
+                    case SDLK_8:   directionPress(8); break;
+                    case SDLK_9:   directionPress(9); break;
 
                     case SDLK_s:      openInventory(); menuAction = MA_EXAMINE; break;
                     case SDLK_PERIOD: openInventory(); menuAction = MA_EXAMINE; break;
@@ -156,14 +166,13 @@ void Start::events() {
                     case SDLK_e:      openBag();       menuAction = MA_EAT;     break;
 
                     case SDLK_f:
-                    case SDLK_j: //two options for the same thing
                         if (state == STATE_TARGET) state = STATE_PLAY;
                         else {
                             stateAction = SA_FIRE;
                             enterTargetMode();
                         } break;
                     case SDLK_z:
-                    case SDLK_SEMICOLON: //two options for the same thing again!
+                    case SDLK_SEMICOLON: //two options for the same thing
                         if (state == STATE_SPELL) state = STATE_PLAY;
                         else enterSpellMode();
                         break;
@@ -314,7 +323,13 @@ void Start::action(SkillType skill, int exp) {
     int expReq = player->getUnit()->getStatValue(S_EXPREQ);
     if (toteExp >= expReq) {
         player->getUnit()->modifyStat(S_EXP, -expReq);
-        player->getUnit()->modifyStat(S_LEVEL, 1);
+        int lev = player->getUnit()->modifyStat(S_LEVEL, 1);
+        const string levelUpWords[] = {"congrats", "wonderful", "sweet", "congradulations", "fantastic", "cool", "fabulous", "incredible", "awesome",
+                        "amazing", "brilliant", "super", "great", "admirable", "exceptional", "marvelous", "terrific", "outstanding", "superb",
+                        "epic", "woah", "right on", "crazy", "stupendous", "congratz", "astonishing", "beautiful", "breathtaking", "exalting",
+                        "grand", "nice", "impressive", "wondrous", "phenomenal", "nifty", "wow", "fancy", "groovy", "spectacular",
+                        "commendable", "favorable", "legendary", "swell", "sensational", "splended", "majestic", "wondrous", "acceptable", "fine, be that way"};
+        addMessage("You leveled up! " + capitalize(levelUpWords[min(lev - 2, 48)]) + "!", black);
     }
 }
 

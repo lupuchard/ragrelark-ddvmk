@@ -19,8 +19,6 @@ int stringToStatus(string line) {
         return PLAYER;
     } else if (line == "FILES") {
         return FILES;
-    } else if (line == "MAP") {
-        return MAP;
     } else if (line == "AREA") {
         return AREA;
     } else if (line == "SPELLS") {
@@ -91,15 +89,9 @@ void Start::loadData(World* w, Player* p) {
 }
 
 void Start::finishDataSetup() {
-
     for (unsigned int i = 0; i < itemsToEquip.size(); i++) {
         equipItem(itemsToEquip[i]);
     }
-
-    for (map<string, map<char, string>*>::iterator i = tileGroups.begin(); i != tileGroups.end(); i++) {
-        delete i->second;
-    }
-    tileGroups.clear();
     for (map<string, vector<Zone*>*>::iterator i = areaZones.begin(); i != areaZones.end(); i++) {
         i->second->clear();
         delete i->second;
@@ -111,10 +103,10 @@ void Start::finishDataSetup() {
     statMap.clear();
     skillMap.clear();
     conditionMap.clear();
+    tileMap.clear();
 
     tempStr.clear();
     tempStr2.clear();
-    tempVect.clear();
 }
 
 void Start::openFile(string fileName, World* w, Player* p) {
@@ -158,13 +150,8 @@ void Start::openFile(string fileName, World* w, Player* p) {
             case BETWEEN:
                 status = stringToStatus(line);
                 continue;
-            case MTG:
-                tempMap = new map<char, string>;
-                tileGroups[line] = tempMap;
-                break;
-            case (MTG + 1):
-                (*tempMap)[line[0]] = line.substr(2, 100);
-                continue;
+            case MTG: tempStr = line; break;
+            case (MTG + 1): tileGroups[tempStr].push_back(tileMap[line]); continue;
             case TILE: tempStr = line; break;
             case (TILE + 1): {
                 int c = 0;
@@ -175,15 +162,17 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 } break;
             case (TILE + 2): {
                 pair<int, int> nums = stp(line);
-                tiles[tempStr] = new Tile(tempValues[0], tempValues[1], nums.first, nums.second);
+                Tile* newTile = new Tile(tempValues[0], tempValues[1], nums.first, nums.second);
+                tileMap[tempStr] = newTile;
+                addTile(newTile);
                 } break;
             case (TILE + 3):
                 if (line[0] == '*') {
                     bool blockM = line[1] == 't';
                     bool blockL = line[2] == 't';
-                    tiles[tempStr]->setBlock(blockM, blockL);
+                    tileMap[tempStr]->setBlock(blockM, blockL);
                 } else {
-                    tiles[tempStr]->setOver(tiles[line]);
+                    tileMap[tempStr]->setOver(tileMap[line]);
                 } break;
             case WORLD: tempValues[0] = sti(line); break;
             case (WORLD + 1):
@@ -222,12 +211,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                 if (line[0] == ':') {
                     string s = line.substr(1, 100);
                     if (ERRCHECK && tileGroups.find(s) == tileGroups.end()) printFileProb("That tile group simply does not exist.", lineNum);
-                    map<char, string>* temp = tileGroups[s];
-                    for (map<char, string>::iterator i = temp->begin(); i != temp->end(); i++) {
-                        for (int j = 0; j < tempDun->getDepth(); j++) {
-                            tempDun->getZone(j)->addTile(tiles[i->second]);
-                        }
-                    }
+                    tempDun->setTileset(&tileGroups[s][0]);
                 } else if (typ == "lig") {
                     while (c + b < line.size() && line[c + b] != '+') c++;
                     int light = sti(line.substr(b, c));
@@ -293,148 +277,6 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     tempArea->addDungeonStack(tempDun);
                 } else if (ERRCHECK) printFileProb("That's not an option!", lineNum);
             } continue;
-            case MAP:
-                tempStr = line;
-                tempValues[3] = 0;
-                tempMap = new map<char, string>;
-                break;
-            case (MAP + 1):
-                switch(line[0]) {
-                    case '>': {
-                        string s = line.substr(1, 100);
-                        if (ERRCHECK && areas.find(s) == areas.end()) printFileProb("This is not an existing area.", lineNum);
-                        tempStr2 = s;
-                        } continue;
-                    case 'v': tempValues[2] = sti(line.substr(1, 100)); continue;
-                    case ':': {
-                        string s = line.substr(1, 100);
-                        if (ERRCHECK && tileGroups.find(s) == tileGroups.end()) printFileProb("This is not an existing tile group.", lineNum);
-                        map<char, string>* temp = tileGroups[line.substr(1, 100)];
-                        tempMap->insert(temp->begin(),temp->end());
-                        } continue;
-                    case '[':
-                        if (line[1] == '[') {
-                            status = MAP + 10;
-                            continue;
-                        } else {
-                            tempVect.clear();
-                        } break;
-                    case '*': {
-                        string s = line.substr(1, 100);
-                        if (ERRCHECK && !isNum(s)) printFileErr("Light needs to be an integer.", lineNum);
-                        int num = sti(s);
-                        if (ERRCHECK && num <= 0) printFileErr("Light level must be positive.", lineNum);
-                        tempValues[0] = sti(s);
-                        } continue;
-                    default:
-                        if (line[1] == '-') {
-                            (*tempMap)[line[0]] = line.substr(2, 100);
-                        } else if (ERRCHECK) {
-                            printFileErr("This line has an unknown goal.", lineNum);
-                        }
-                        continue;
-                } break;
-            case (MAP + 2):
-                if (line[0] == ']') {
-                    if (ERRCHECK && tempVect.empty()) printFileErr("Where is the map?", lineNum);
-                    else {
-                        status = MAP + 3;
-                        int wid = tempVect[0].size() / 4 + 1;
-                        if (ERRCHECK) {
-                            for (unsigned int i = 0; i < tempVect.size(); i++) {
-                                if (tempVect[i].size() / 4 + 1 != (unsigned int)wid) printFileErr("Inconsistant row widths in this map.", lineNum);
-                            }
-                        }
-                        int hei = tempVect.size();
-                        Zone* newZone = new Zone(tempStr, wid, hei, tempValues[0], true);
-                        int* heights = new int[wid * hei];
-                        int* ntiles = new int[wid * hei];
-                        int* structs = new int[wid * hei];
-                        for (int i = 0; i < wid; i++) {
-                            for (int j = 0; j < hei; j++) {
-                                int t = tempVect.at(j).at(i * 4);
-                                int b = tempVect.at(j).at(i * 4 + 1);
-                                if (b < 60)       b -= 48;
-                                else if (b < 90) b -= 55;
-                                else              b -= 87;
-                                int sc = getStructIntFromChar(tempVect.at(j).at(i * 4 + 2));
-                                if (ERRCHECK) {
-                                    if (tempMap->find(t) == tempMap->end()) printFileProb("Invalid tile used somewhere in this map.", lineNum);
-                                    if (b < 0 || b >= 32) printFileProb("Invalid height used somewhere in this map.", lineNum);
-                                    if (sc < 0 || sc >= 32) printFileProb("Invalid struct used somewhere in this map.", lineNum);
-                                }
-                                int k = i + j * wid;
-                                ntiles[k] = distance(tempMap->begin(), tempMap->find(t));
-                                heights[k] = b;
-                                structs[k] = sc;
-                            }
-                        }
-                        newZone->fillHeights(heights);
-                        newZone->fillTiles(ntiles);
-                        newZone->fillStructs(structs);
-                        delete[] heights;
-                        delete[] ntiles;
-                        delete[] structs;
-                        for (map<char, string>::iterator i = tempMap->begin(); i != tempMap->end(); i++) {
-                            newZone->addTile(tiles[i->second]);
-                        }
-                        areaZones[tempStr2]->push_back(newZone);
-                        zones[tempStr] = newZone;
-                        tempZone = newZone;
-                        delete tempMap;
-                    }
-                } else {
-                    tempVect.push_back(line);
-                } continue;
-            case (MAP + 3):
-                switch(line[0]) {
-                    case '$': //item
-                        tempStr = line.substr(1, 100);
-                        status = MAP + 4;
-                        break;
-                    case '@': //unit
-                        tempStr = line.substr(1, 100);
-                        status = MAP + 5;
-                        break;
-                    case '^': //height
-                        tempValues[0] = sti(line.substr(1, 100));
-                        status = MAP + 6;
-                        break;
-                    case '<': //struct
-                        tempChar = line[1];
-                        status = MAP + 7;
-                        break;
-                    default: break;
-                } continue;
-            case (MAP + 4): {
-                pair<int, int> nums = stp(line);
-                Item newItem;
-                newItem.itemType = itemTypeMap[tempStr];
-                addItemToPlace(nums.first, nums.second, tempZone, newItem);
-                status = MAP + 3;
-                } continue;
-            case (MAP + 5): {
-                pair<int, int> nums = stp(line);
-                Unit* newUnit = new Unit(tempStr, mobSpawner->getMob(tempStr).second);
-                newUnit->x = nums.first;
-                newUnit->y = nums.second;
-                tempZone->getLocationAt(nums.first, nums.second)->unit = newUnit;
-                status = MAP + 3;
-                } continue;
-            case (MAP + 6): {
-                pair<int, int> nums = stp(line);
-                tempZone->getLocationAt(nums.first, nums.second)->height = tempValues[0];
-                status = MAP + 3;
-                } continue;
-            case (MAP + 7): {
-                pair<int, int> nums = stp(line);
-                tempZone->getLocationAt(nums.first, nums.second)->structure = getStructIntFromChar(tempChar);
-                status = MAP + 3;
-                } continue;
-            case (MAP + 10): {
-                pair<int, int> nums = stp(line);
-                tempZone = new Zone(tempStr, nums.first, nums.second, tempValues[0], false);
-                } break;
             case PLAYER: p->setName(line); break;
             case (PLAYER + 1): {
                 mob unitProto = mobSpawner->getMob(line);
@@ -779,7 +621,7 @@ void Start::openFile(string fileName, World* w, Player* p) {
                     while (line[c] != '-') c++;
                     pair<int, int> nums = stp(line.substr(0, c));
                     int ind = nums.second * 32 + nums.first;
-                    Tile* theTile = tiles[line.substr(c + 2, 100)];
+                    Tile* theTile = tileMap[line.substr(c + 2, 100)];
                     tiledTiles[ind] = theTile;
                 } continue;
             case (TILEDMAPSREFER + 2):
@@ -907,10 +749,6 @@ void Start::deleteData() {
         delete i->second;
     }
     mobEquipsMap.clear();
-    for (map<string, Tile*>::iterator i = tiles.begin(); i != tiles.end(); i++) {
-        delete i->second;
-    }
-    tiles.clear();
     for (map<string, Area*>::iterator i = areas.begin(); i != areas.end(); i++) {
         delete i->second;
     }
@@ -918,5 +756,7 @@ void Start::deleteData() {
     zones.clear();
     clearTextures();
     clearItemTypes();
+    clearTiles();
+    tileGroups.clear();
     glDeleteLists(base, 96);
 }

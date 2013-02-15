@@ -4,9 +4,9 @@
 #include "Texture.h"
 #include "Player.h"
 
-#define Z_MENU 5000
-#define Z_FOREGROUND 4000
-#define Z_EFFECT 3000
+#define Z_MENU 4000
+#define Z_FOREGROUND 3000
+#define Z_EFFECT 2200
 #define Z_UNIT 70
 #define Z_ITEM 40
 #define Z_STRUCT 30

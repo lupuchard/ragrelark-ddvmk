@@ -8,6 +8,7 @@
 #include "MobEquipSet.h"
 #include "RandItemType.h"
 #include "Blobber.h"
+#include "Swarmer.h"
 
 typedef pair<string, StatHolder*> mob;
 typedef struct {

@@ -1,28 +1,30 @@
 #include "Generator.h"
 
-void placeWall(Location* loc) {
+void placeWall(Location* loc, Tile** tiles, bool alt) {
     int foo = rand() % 20;
+    int k = alt * 8;
     if (foo == 0) {
-        loc->tile = 7;
+        loc->tile = tiles[7 + k]->getIndex();
     } else if (foo < 4) {
-        loc->tile = 6;
+        loc->tile = tiles[6 + k]->getIndex();
     } else if (foo < 8) {
-        loc->tile = 5;
+        loc->tile = tiles[5 + k]->getIndex();
     } else {
-        loc->tile = 4;
+        loc->tile = tiles[4 + k]->getIndex();
     }
     loc->height = MAX_HEIGHT;
 }
-void placeFloor(Location* loc) {
+void placeFloor(Location* loc, Tile** tiles, bool alt) {
     int foo = rand() % 20;
+    int k = alt * 8;
     if (foo == 0) {
-        loc->tile = 3;
+        loc->tile = tiles[3 + k]->getIndex();
     } else if (foo < 4) {
-        loc->tile = 2;
+        loc->tile = tiles[2 + k]->getIndex();
     } else if (foo < 8) {
-        loc->tile = 1;
+        loc->tile = tiles[1 + k]->getIndex();
     } else {
-        loc->tile = 0;
+        loc->tile = tiles[0 + k]->getIndex();
     }
     loc->height = MAX_HEIGHT / 2;
 }
@@ -72,23 +74,73 @@ void depthSearch(ZoneNode* start) {
 Generator::Generator() {}
 Generator::~Generator() {}
 
-void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone) {
+void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) {
     zone->fill();
     for (int x = 0; x < zone->getWidth(); x++) {
         for (int y = 0; y < zone->getHeight(); y++) {
             Location* loc = zone->getLocationAt(x, y);
             if (skeleton[x + y * zone->getWidth()] == SKEL_WALL) {
-                placeWall(loc);
+                placeWall(loc, tiles, false);
                 loc->structure = S_NONE;
             } else if (skeleton[x + y * zone->getWidth()] == SKEL_FLOOR) {
-                placeFloor(loc);
+                placeFloor(loc, tiles, false);
                 loc->structure = S_NONE;
             } else if (skeleton[x + y * zone->getWidth()] == SKEL_DOOR) {
-                placeFloor(loc);
-                loc->structure = S_WOODDOOR;
+                placeFloor(loc, tiles, false);
+                loc->tile = tiles[4]->getIndex();
+                int r = rand() % 100;
+                if (r == 50) loc->structure = S_WOODDOOR_BROKE;
+                else if (r == 51) loc->structure = S_NORMDOOR;
+                else if (r > 95) loc->structure = S_STONEDOOR;
+                else if (r < 35) loc->structure = S_HIDDENDOOR;
+                else loc->structure = S_WOODDOOR;
             } else if (skeleton[x + y * zone->getWidth()] == SKEL_STAIRS) {
-                placeFloor(loc);
+                placeFloor(loc, tiles, false);
                 loc->structure = S_STAIRUP;
+            } else if (skeleton[x + y * zone->getWidth()] == SKEL_ALT) {
+                loc->structure = S_NONE;
+            }
+        }
+    }
+    for (int x = 1; x < zone->getWidth() - 1; x++) {
+        for (int y = 1; y < zone->getHeight() - 1; y++) {
+            if (skeleton[x + y * zone->getWidth()] == SKEL_ALT) {
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        int num = x + i + (y + j) * zone->getWidth();
+                        Location* loc = zone->getLocationAt(x + i, y + j);
+                        if (skeleton[num] == SKEL_WALL || skeleton[num] == SKEL_DOOR) {
+                            placeWall(loc, tiles, true);
+                        } else if (skeleton[num] == SKEL_DOOR) {
+                            placeFloor(loc, tiles, false);
+                            loc->tile = tiles[12]->getIndex();
+                        } else {
+                            placeFloor(loc, tiles, true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    int wid = rand() % 5 + 5;
+    int hei = rand() % 5 + 5;
+    int sx = rand() % (zone->getWidth() - wid - 1) + 1;
+    int sy = rand() % (zone->getHeight() - hei - 1) + 1;
+    for (int x = sx; x < sx + wid; x++) {
+        for (int y = sy; y < sy + hei; y++) {
+            Location* loc = zone->getLocationAt(x, y);
+            if (loc->height == MAX_HEIGHT) {
+                loc->tile = tiles[16]->getIndex();
+                loc->height = MAX_HEIGHT / 4;
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        Location* loc2 = zone->getLocationAt(x + i, y + j);
+                        if (loc2->structure == S_WOODDOOR) {
+                            loc2->structure = S_NONE;
+                            placeFloor(loc2, tiles, false);
+                        }
+                    }
+                }
             }
         }
     }
@@ -159,9 +211,11 @@ void Generator::genSkeletonCrazy(unsigned char* skeleton, int x, int y, int wid,
         int y2 = yLoc + sizeY / 2;
         if (sizeX % 2) x2++;
         if (sizeY % 2) y2++;
+        bool alt = !(rand() % 100);
         for (int i = x1; i <= x2; i++) {
             for (int j = y1; j <= y2; j++) {
-                skeleton[i + j * toteWidth] = SKEL_FLOOR;
+                if (alt) skeleton[i + j * toteWidth] = SKEL_ALT;
+                else skeleton[i + j * toteWidth] = SKEL_FLOOR;
             }
         }
         ZoneNode n;
@@ -276,9 +330,11 @@ void Generator::bspRecurse(unsigned char* skeleton, BspGenNode* next, int left, 
             int y1 = next->y + rand() % h + 1;
             int x2 = next->x + wid - rand() % w - 1;
             int y2 = next->y + hei - rand() % h - 1;
+            bool alt = !(rand() % 10);
             for (int i = x1; i < x2; i++) {
                 for (int j = y1; j < y2; j++) {
-                    skeleton[i + j * toteWidth] = SKEL_FLOOR;
+                    if (alt) skeleton[i + j * toteWidth] = SKEL_ALT;
+                    else skeleton[i + j * toteWidth] = SKEL_FLOOR;
                 }
             }
         } else cout << "bahahahaha" << endl;

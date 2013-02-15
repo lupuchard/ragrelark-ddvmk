@@ -56,22 +56,10 @@ Zone* Start::loadTileFile(string fileName, string zoneName) {
 		XMLElement* currentLayer = mapBase->FirstChildElement("layer");
 		if (strcmp(currentLayer->Attribute("name"), "ti") == 0) {
 		    unsigned* out = spoon(currentLayer);
-            set<unsigned int> allTiles;
+		    theZone = new Zone(zoneName, width, height, lightness, true);
             for (int i = 0; i < totes; i++) {
                 unsigned int ind = out[i] - TILE_LAYER_TILEOFF;
-                allTiles.insert(ind);
-            }
-            map<unsigned int, int> tempMap;
-            theZone = new Zone(zoneName, width, height, lightness, true);
-            int j = 0;
-            for (set<unsigned int>::iterator i = allTiles.begin(); i != allTiles.end(); i++) {
-                theZone->addTile(tiledTiles[*i]);
-                tempMap[*i] = j;
-                j++;
-            }
-            for (int i = 0; i < totes; i++) {
-                unsigned int ind = out[i] - TILE_LAYER_TILEOFF;
-                theZone->getLocationAt(i)->tile = tempMap[ind];
+                theZone->getLocationAt(i)->tile = tiledTiles[ind]->getIndex();
                 theZone->getLocationAt(i)->height = 4;
                 theZone->getLocationAt(i)->structure = S_NONE;
             }

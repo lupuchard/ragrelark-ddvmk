@@ -194,10 +194,12 @@ void Start::renderSidePanels() {
         }
         renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, black);
         renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, dark(teal));
-        renderText("Time passed: \\q" + its(player->getUnit()->theTime), 2, loff + WIN1_WIDTH, toff + 260, Z_MENU + 1, LEFT, dark(red));
+
+        renderText("Level " + its(player->getUnit()->getStatValue(S_LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, black);
+        renderText("\\q" + its(player->getUnit()->theTime) + "\\z ticks", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 80, Z_MENU + 1, RIGHT, dark(red));
     } else if (topPanel == PANEL_SKILLS) {
-        static const int numFunctionalSkills = 11;
-        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CHANN, SKL_QCAST, SKL_LEARN, SKL_DODGE, SKL_RANGE, SKL_CRIT};
+        static const int numFunctionalSkills = 12;
+        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CHANN, SKL_QCAST, SKL_LEARN, SKL_SEARC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
         int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
         int k = 0;
         for (int i = 0; i < numFunctionalSkills; i++) {
@@ -252,8 +254,12 @@ void Start::renderSidePanels() {
                     } else {
                         if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
                             c = silver;
-                        } else if (isClosedDoor(loc->structure) || isOpenDoor(loc->structure)) {
+                        } else if (loc->isClosedDoor() || loc->isOpenDoor()) {
                             c = brown;
+                        } else if (loc->structure == S_HIDDENDOOR) {
+                            c.red = MAX_HEIGHT * 2;
+                            c.green = MAX_HEIGHT * 2;
+                            c.blue = MAX_HEIGHT * 2;
                         } else {
                             c.red = loc->height * 2;
                             c.green = loc->height * 2;
@@ -265,12 +271,16 @@ void Start::renderSidePanels() {
                 } else if (loc->structure != S_NONE) {
                     if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
                         c = silver;
-                    } else if (isOpenDoor(loc->structure)) {
+                    } else if (loc->isOpenDoor()) {
                         c = dark(tann);
-                    } else if (isClosedDoor(loc->structure)) {
+                    } else if (loc->isClosedDoor()) {
                         c = brown;
                     } else if (loc->structure == S_ROCK) {
                         c = charcoal;
+                    } else if (loc->structure == S_HIDDENDOOR) {
+                        c.red = MAX_HEIGHT * 3 + 32;
+                        c.green = MAX_HEIGHT * 3 + 32;
+                        c.blue = MAX_HEIGHT * 3 + 32;
                     } else {
                         c = pink;
                     }
@@ -569,7 +579,7 @@ void Start::renderGround() {
             }
             Location* loc = z->getLocationAt(i, j);
             int h = loc->height;
-            if (loc->isOpenDoor() || loc->isClosedDoor()) {
+            if (loc->isOpenDoor() || loc->isClosedDoor() || loc->structure == S_HIDDENDOOR) {
                 h = MAX_HEIGHT;
             }
             float darkness = (double)(h*2 + 16) / (MAX_HEIGHT*3);
@@ -578,7 +588,7 @@ void Start::renderGround() {
                 darkness /= 2;
             }
             glColor4f(darkness, darkness, darkness, 1);
-            Tile* tile = z->getTileAt(i, j);
+            Tile* tile = getTile(loc->tile);
             graphic g = tile->getGraphic();
             if (g.type == TT_OVER) {
                 renderAtEnd[tot - 1] = {g.loc, g.tex, darkness};
@@ -600,9 +610,11 @@ void Start::renderGround() {
                 int x1 = (g.loc % wid) * TILE_SIZE;
                 int y1 = (g.loc / wid) * TILE_SIZE;
 
-                Tile* tiles[8] = {z->safeGetTileAt(i-1, j-1), z->safeGetTileAt(i, j-1), z->safeGetTileAt(i+1, j-1),
-                                z->safeGetTileAt(i-1, j), z->safeGetTileAt(i+1, j),
-                                z->safeGetTileAt(i-1, j+1), z->safeGetTileAt(i, j+1), z->safeGetTileAt(i+1, j+1)};
+                Location* locs[8] = {z->safeGetLocationAt(i-1, j-1), z->safeGetLocationAt(i, j-1), z->safeGetLocationAt(i+1, j-1),
+                                z->safeGetLocationAt(i-1, j), z->safeGetLocationAt(i+1, j),
+                                z->safeGetLocationAt(i-1, j+1), z->safeGetLocationAt(i, j+1), z->safeGetLocationAt(i+1, j+1)};
+                Tile* tiles[8];
+                for (int i = 0; i < 8; i++) tiles[i] = getTile(locs[i]->tile);
 
                 bool sm[8];
                 for (int k = 0; k < 8; k++) {
@@ -610,9 +622,9 @@ void Start::renderGround() {
                 }
 
                 if (g.type == TT_SMOOTHUP || g.type == TT_SMOOTHDOWN) {
-                    int heights[8] = {z->safeGetLocationAt(i-1, j-1)->height, z->safeGetLocationAt(i, j-1)->height, z->safeGetLocationAt(i+1, j-1)->height,
-                                        z->safeGetLocationAt(i-1, j)->height, z->safeGetLocationAt(i+1, j)->height,
-                                        z->safeGetLocationAt(i-1, j+1)->height, z->safeGetLocationAt(i, j+1)->height, z->safeGetLocationAt(i+1, j+1)->height};
+                    int heights[8];
+                    for (int i = 0; i < 8; i++) heights[i] = locs[i]->height;
+
                     for (int k = 0; k < 8; k++) {
                         if ((heights[k] >= h - 2 && g.type == 2) || (heights[k] <= h + 2 && g.type == 3)) {
                             sm[k] = false;
@@ -682,8 +694,11 @@ void Start::renderGround() {
                 }
 
                 glColor4f(1, 1, 1, 0.5);
-                if (splatters[i + j * z->getWidth()] < 255) {
-                    ragd.drawTile(locX, locY, Z_SPLAT, getSplatterTex(), splatters[i + j * z->getWidth()]);
+                if (loc->debris2) {
+                    ragd.drawTile(locX, locY, Z_SPLAT, getSplatterTex(), loc->debris2);
+                }
+                if (loc->debris1) {
+                    ragd.drawTile(locX, locY, Z_SPLAT + 1, getSplatterTex(), loc->debris1);
                 }
                 glColor4f(1, 1, 1, 1);
                 if (loc->hasItems()) {

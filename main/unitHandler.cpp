@@ -144,7 +144,21 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
         if (newX >= 0 && newY >= 0 && newX < zone->getWidth() && newY < zone->getHeight()) {
             Location* nextLoc = zone->getLocationAt(newX, newY);
             if (nextLoc->hasUnit()) {
-                if (unit == player->getUnit() || nextLoc->unit == player->getUnit()) {
+                int swarm = unit->getStatValue(S_SWARM);
+                if (swarm && nextLoc->unit->getProto() == unit->getProto()) {
+                    Swarmer* unitS = (Swarmer*)unit;
+                    Swarmer* nextS = (Swarmer*)nextLoc->unit;
+                    if (unitS->howMany() + nextS->howMany() <= swarm) {
+                        nextS->add(unitS);
+                        raga.rMoveLoc(unit, x, y, newX, newY);
+                        zone->getLocationAt(x, y)->removeUnit();
+                        areaUnits.erase(areaUnits.find(pair<Unit*, Zone*>(unitS, zone)));
+                        return;
+                    } else {
+                        unit->theTime += 2;
+                        makePath(unit, player->getUnit()->x, player->getUnit()->y, zone, P_NORMAL);
+                    }
+                } else if (unit == player->getUnit() || nextLoc->unit == player->getUnit()) {
                     strikeUnit(unit, zone, dir, true);
                 } else {
                     unit->theTime += 2;
@@ -157,10 +171,10 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                 Location* prevLoc = zone->getLocationAt(x, y);
                 int prevHeight = prevLoc->getTotalHeight();
                 int height = nextLoc->getTotalHeight();
-                if (nextLoc->isOpen() && !zone->getTileAt(newX, newY)->blocksMove()) {
+                if (nextLoc->isOpen() && !getTile(nextLoc->tile)->blocksMove()) {
                     int movSpeed = unit->getStatValue(S_MOVESPEED);
                     normalMove = true;
-                    if (prevHeight != height) {
+                    if (prevHeight != height && !unit->getStatValue(S_FLY)) {
                         if (fabs(prevHeight - height) <= 2) {
                             if (prevHeight < height) movSpeed--;
                         } else {
@@ -465,7 +479,7 @@ void Start::attackUnit(Unit* attacker, Unit* defender, Zone* zone, int dir, Atta
         }
         splatterChance *= defender->getStatValue(S_SPLATTER);
         if (rand() % 200 < splatterChance) {
-            makeSplatter(defender, defender->x, defender->y);
+            makeSplatter(defender, zone, defender->x, defender->y);
         }
 
         if (hp <= 0) {
@@ -593,14 +607,17 @@ void Start::applyPoison(int condition, int duration, Unit* unit, Unit* poisoner)
     }
 }
 
-//TODO first make new move animation then finish animations in unit spawning then finish slime/main mob spawning
-
-void Start::makeSplatter(Unit* unit, int x, int y) {
-    int i = x + player->getZone()->getWidth() * y;
-    if (splatters[i] == 255) {
-        splatters[i] = unit->getStatValue(S_BLOOD) * 32 - 1;
+void Start::makeSplatter(Unit* unit, Zone* zone, int x, int y) {
+    Location* loc = zone->getLocationAt(x, y);
+    int bloodColor = unit->getStatValue(S_BLOOD);
+    if (loc->debris1 > bloodColor * 32 && loc->debris1 < (bloodColor + 1) * 32) {
+        loc->debris1++;
+    } else if (loc->debris2 > bloodColor * 32 && loc->debris2 < (bloodColor + 1) * 32) {
+        loc->debris2++;
+    } else {
+        loc->debris2 = loc->debris1;
+        loc->debris1 = bloodColor * 32 + 1;
     }
-    splatters[i] += rand() % 2 + 1;
 }
 
 void Start::killUnit(Unit* unit, Zone* zone) {
@@ -639,8 +656,10 @@ void Start::openDoor(Unit* unit, Zone* zone, int dir, bool safe) {
         Location* nextLoc = zone->getLocationAt(doorX, doorY);
         int str = nextLoc->structure;
         if (isClosedDoor(str)) {
-            nextLoc->structure = str + 1;
-            unit->theTime += T_OPENDOOR;
+            if (str == S_FOUNDDOOR) nextLoc->structure = S_WOODDOOR_OPEN;
+            else nextLoc->structure = str + 1;
+            if (str == S_STONEDOOR) unit->theTime += T_OPENDOOR * 2;
+            else unit->theTime += T_OPENDOOR;
             if (unit == player->getUnit()) {
                 addMessage("You open the door.", black);
             } else {
@@ -664,7 +683,8 @@ void Start::closeDoor(Unit* unit, Zone* zone, int dir, bool safe) {
                 addMessage("There's something in the way!", gray);
             } else {
                 nextLoc->structure = str - 1;
-                unit->theTime += T_OPENDOOR;
+                if (str == S_STONEDOOR) unit->theTime += T_OPENDOOR * 2;
+                else unit->theTime += T_OPENDOOR;
                 if (unit == player->getUnit()) {
                     addMessage("You close the door.", black);
                 } else {
@@ -676,6 +696,28 @@ void Start::closeDoor(Unit* unit, Zone* zone, int dir, bool safe) {
             }
         }
     }
+}
+
+void Start::search(Unit* unit, Zone* zone) {
+    unit->theTime += 5;
+    for (int i = 1; i <= 9; i++) {
+        int x = unit->x + xDirs[i];
+        int y = unit->y + yDirs[i];
+        if (x >= 0 && y >= 0 && x < zone->getWidth() && y < zone->getHeight()) {
+            Location* loc = zone->getLocationAt(x, y);
+            if (loc->structure == S_HIDDENDOOR) {
+                int c = 10;
+                if (unit == player->getUnit()) c += player->getSkillLevel(SKL_SEARC);
+                if (rand() % 100 < c) {
+                    debankExp(unit, SKL_SEARC, 5);
+                    if (unit == player->getUnit()) addMessage("You found a secret door!", black);
+                    loc->structure = S_FOUNDDOOR;
+                    return;
+                }
+            }
+        }
+    }
+    if (unit == player->getUnit()) addMessage("You search for a bit.", black);
 }
 
 void Start::eatFood(Unit* unit, ItemType* food) {
@@ -781,8 +823,5 @@ void Start::changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, int x, int y) 
         player->setZone(newZone);
         //remove all paths from mobs
         playerFieldOfView(true);
-    }
-    for (int i = 0; i < MAX_ZONE_SIZE; i++) {
-        splatters[i] = 255;
     }
 }

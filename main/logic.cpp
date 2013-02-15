@@ -76,6 +76,8 @@ void Start::logic() {
         for (; iter != areaUnits.end(); iter++) {
             Unit* unit = iter->first;
             if (unit != player->getUnit()) {
+                //if (unit->getStatValue(S_SWARM) && ((Swarmer*)unit)->howMany() >= 2) cout << "hmm " << unit->getStatValue(S_AI) << endl;
+                //if (unit->getStatValue(S_SWARM)) cout << "hmm " << unit->getStatValue(S_AI) << endl;
                 while (unit->theTime < world->theTime) {
                     int before = unit->theTime;
                     ai(unit, iter->second);

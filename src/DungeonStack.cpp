@@ -76,6 +76,10 @@ void DungeonStack::setItemDensity(float itePerSquare, float change) {
     iDensityChange = change;
 }
 
+void DungeonStack::setTileset(Tile** ts) {
+    tileset = ts;
+}
+
 Zone* DungeonStack::getZone(int d) {
     return zones[d];
 }
@@ -88,7 +92,8 @@ pair<short, short> DungeonStack::addEntryStairs() {
     vector<pair<int, int> > possibleLocs;
     for (int j = 0; j < zones[0]->getWidth(); j++) {
         for (int k = 0; k < zones[0]->getHeight(); k++) {
-            if (!skeleton[j + k * zones[0]->getWidth()]) possibleLocs.push_back(pair<short, short>(j, k));
+            int skel = skeleton[j + k * zones[0]->getWidth()];
+            if (skel == SKEL_FLOOR) possibleLocs.push_back(pair<short, short>(j, k));
         }
     }
     pair<short, short> foon = possibleLocs[rand() % possibleLocs.size()];
@@ -128,7 +133,7 @@ void DungeonStack::genLevel(int floor, vector<pair<Unit*, Zone*> >* unitsAdded) 
                 if (!skeleton[j + k * wid]) possibleLocs.push_back(pair<int, int>(j, k));
             }
         }
-        generator.fillSkeleton(skeleton, zones[i]);
+        generator.fillSkeleton(skeleton, zones[i], tileset);
 
         if (i < depth - 1) {
             unsigned char* newSkeleton;

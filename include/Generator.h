@@ -6,7 +6,7 @@
 
 using namespace std;
 
-enum {SKEL_FLOOR, SKEL_WALL, SKEL_DOOR, SKEL_STAIRS, SKEL_WATER};
+enum {SKEL_FLOOR, SKEL_WALL, SKEL_DOOR, SKEL_STAIRS, SKEL_WATER, SKEL_ALT, SKEL_PIT, SKEL_HIGH, SKEL_SLOPE};
 
 struct BSPGEN {
     BSPGEN* first; //left and up
@@ -32,7 +32,7 @@ class Generator {
         virtual ~Generator();
 
         unsigned char* genSkeleton(int width, int height, GenType genType);
-        void fillSkeleton(unsigned char* skeleton, Zone* zone);
+        void fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles);
     protected:
     private:
         void genSkeletonCrazy(unsigned char* skeleton, int x, int y, int width, int height);
