@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "EquipmentFolder.h"
 
 Item emptySlots[HA_REAL_NUM_EQUIP_SLOTS] = {Item(0), Item(1), Item(2), Item(3), Item(4),
@@ -31,10 +49,10 @@ bool EquipmentFolder::addItem(Item* item) {
 }
 Item EquipmentFolder::equipItem(Item item, int itemTypeType) {
     Item returnItem = emptySlots[0];
-    int typeSlot = typeSlots[itemTypeType];
+    int typeSlot = TYPE_SLOTS[itemTypeType];
     if (typeSlot >= 0 && typeSlot <= E_FEET) {
         if (typeSlot == E_LHAND) {
-            if (typeSlots[getItemType(equipment[E_RHAND].itemType)->getType()] == E_BHANDS) {
+            if (TYPE_SLOTS[getItemType(equipment[E_RHAND].itemType)->getType()] == E_BHANDS) {
                 returnItem = equipment[E_RHAND];
                 equipment[E_RHAND] = emptySlots[E_RHAND];
             } else {

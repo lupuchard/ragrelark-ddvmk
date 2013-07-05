@@ -1,9 +1,5 @@
 #include "FormulaUser.h"
 
-FormulaUser::FormulaUser() {
-    //ctor
-}
+FormulaUser::FormulaUser() {}
 
-FormulaUser::~FormulaUser() {
-    //dtor
-}
+FormulaUser::~FormulaUser() {}

@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 
 Start::Start() {
@@ -29,6 +47,7 @@ Start::Start() {
 
     messages.reserve(MAX_MESSAGES);
 
+    prepare();
 }
 
 Start::~Start() {
@@ -57,7 +76,7 @@ void Start::prepare() {
     putItemFolder(primeFolders, primeFolder->getBag());
     folderStack.push(primeFolder);
 
-    primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
+    primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->pos);
 
     finishDataSetup();
 
@@ -66,23 +85,23 @@ void Start::prepare() {
     }
     findAreaUnits();
 
-    addMessage("Welcome to game great fun play.", black);
+    addMessage("Welcome to game great fun play.", BLACK);
 }
 
 void Start::execute() {
     int numFrames = 0;
-    Uint32 startTime = SDL_GetTicks();
+    //Uint32 startTime = SDL_GetTicks();
     playerFieldOfView(true);
     while(!done) {
         events();
         logic();
         render();
         numFrames++;
-        double fps = (numFrames / (float)(SDL_GetTicks() - startTime)) * 1000;
+        //double fps = (numFrames / (float)(SDL_GetTicks() - startTime)) * 1000;
         if (numFrames % 1000 == 0) {
-            cout << "FPS: " << fps << endl;
+            //cout << "FPS: " << fps << endl;
             numFrames = 0;
-            startTime = SDL_GetTicks();
+            //startTime = SDL_GetTicks();
         }
     }
     cleanup();
@@ -90,7 +109,6 @@ void Start::execute() {
 
 int main() {
     Start start;
-    start.prepare();
     start.execute();
 
     return 0;
@@ -137,8 +155,8 @@ void Start::putItemFolder(Item* item, ItemFolder* itemFolder) {
 
 #define MESSAGE_LEN_LIMIT 78
 
-void Start::addMessage(string message, color c) {
-    pair<string, color> completeMess = pair<string, color>(message, c);
+void Start::addMessage(std::string message, Color c) {
+    std::pair<std::string, Color> completeMess = std::make_pair(message, c);
     static int forbs = 1;
     int ind = messages.size() - 1;
     if (ind > 0 && messages[ind].first.substr(0, message.size()) == message) {
@@ -146,7 +164,7 @@ void Start::addMessage(string message, color c) {
         messages[ind].first = message + " x" + its(forbs);
     } else {
         forbs = 1;
-        color c1, c2;
+        Color c1, c2;
         if (messages.size() >= 2) {
             c1 = messages[ind].second;
             c2 = messages[ind - 1].second;
@@ -169,11 +187,11 @@ void Start::findAreaUnits() {
     for (unsigned int i = 0; i < area->getNumZones(); i++) {
         Zone* zone = area->getZone(i);
         if (zone->isFilled()) {
-            for (int j = 0; j < zone->getWidth(); j++) {
-                for (int k = 0; k < zone->getHeight(); k++) {
-                    Location* loc = zone->getLocationAt(j, k);
+            for (int k = 0; k < zone->getHeight(); k++) {
+                for (int j = 0; j < zone->getWidth(); j++) {
+                    Location* loc = zone->getLocationAt(Coord(j, k));
                     if (loc->hasUnit()) {
-                        areaUnits.insert(pair<Unit*, Zone*>(loc->unit, zone));
+                        areaUnits.insert(std::pair<Unit*, Zone*>(loc->unit, zone));
                         loc->unit->makeHashMaps();
                     }
                 }
@@ -182,24 +200,24 @@ void Start::findAreaUnits() {
     }
 }
 
-void Start::addItemToPlace(int x, int y, Zone* z, Item item) {
-    z->getLocationAt(x, y)->addItem(item);
+void Start::addItemToPlace(Coord c, Zone* z, Item item) {
+    z->getLocationAt(c)->addItem(item);
     ItemType* itemType = getItemType(item.itemType);
     int light = itemType->getStatValue(S_LIGHT);
     if (light > 0) {
-        myFovCirclePerm(z, x, y, light, 1);
+        myFovCirclePerm(z, c, light, 1);
         if (z == player->getZone()) {
             playerFieldOfView(false);
         }
     }
 }
 
-Item Start::removeItemFromPlace(int x, int y, Zone* z, int index) {
-    Item item = z->getLocationAt(x, y)->removeItem(index);
+Item Start::removeItemFromPlace(Coord c, Zone* z, int index) {
+    Item item = z->getLocationAt(c)->removeItem(index);
     ItemType* itemType = getItemType(item.itemType);
     int light = itemType->getStatValue(S_LIGHT);
     if (light > 0) {
-        myFovCirclePerm(z, x, y, light, -1);
+        myFovCirclePerm(z, c, light, -1);
         if (z == player->getZone()) {
             playerFieldOfView(false);
         }

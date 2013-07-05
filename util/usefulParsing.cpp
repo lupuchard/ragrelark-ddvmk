@@ -1,4 +1,24 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "usefulParsing.h"
+
+using namespace std;
 
 /* Converts a char to a 1 digit number. */
 int cti(char c) {
@@ -27,6 +47,15 @@ pair<int, int> stp(string s) {
         }
     }
     return pair<int, int>(0, 0);
+}
+
+Coord stc(string s) {
+    for (unsigned int i = 0; i < s.size(); i++) {
+        if (s[i] == ','  || s[i] == ':') {
+            return Coord(sti(s.substr(0, i)), sti(s.substr(i + 1, 100)));
+        }
+    }
+    return Coord();
 }
 
 bool isPair(string s) {

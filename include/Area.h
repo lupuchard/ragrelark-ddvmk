@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef AREA_H
 #define AREA_H
 
@@ -5,24 +23,20 @@
 #include <vector>
 #include "StatHolder.h"
 #include "DungeonStack.h"
-using namespace std;
 
 #define NUM_ESCAPE_DIRS 3
 
 typedef struct {
-    short x1;
-    short y1;
-    short x2;
-    short y2;
+    Coord loc1;
+    Coord loc2;
     Zone* z1;
     Zone* z2;
-} connection;
+} Connection;
 
 typedef struct {
-    short x;
-    short y;
+    Coord loc;
     Zone* z;
-} speLoc;
+} SpeLoc;
 
 void setAreaFormUser(FormulaUser* formUser);
 
@@ -31,7 +45,7 @@ class Area: public StatHolder {
         Area(int width);
         virtual ~Area();
 
-        void setName(string name);
+        void setName(std::string name);
 
         void addZone(Zone* zone);
         unsigned int getNumZones();
@@ -41,17 +55,16 @@ class Area: public StatHolder {
         unsigned int getNumDungeonStacks();
         DungeonStack* getDungeonStack(int stackIndex);
 
-        void addConnection(connection c);
-        speLoc moveConnection(Zone* zone, int x, int y);
-        void changeConnection(Zone* zone, int x, int y, int newX, int newY);
-        speLoc moveZones(Zone* z, int x, int y);
+        void addConnection(Connection c);
+        SpeLoc moveConnection(Zone* zone, Coord where);
+        void changeConnection(Zone* zone, Coord prevLoc, Coord newLoc);
+        SpeLoc moveZones(Zone* z, Coord where);
     protected:
     private:
-        string name;
-        vector<Zone*> zones;
-        vector<DungeonStack*> dungeonStacks;
-        vector<connection> connections;
-        int numConnections;
+        std::string name;
+        std::vector<Zone*> zones;
+        std::vector<DungeonStack*> dungeonStacks;
+        std::vector<Connection> connections;
         int width;
 };
 

@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 #include <queue>
 
@@ -5,41 +23,35 @@
 #define STRUCTURE_TEX 1
 #define SPLATTERS_TEX 9
 
-struct loc {
-    short x;
-    short y;
-    loc(short x1, short y1) : x(x1), y(y1) { }
+/*friend bool operator<(const loc &a, const loc &b) {
+    return a.x * MAX_ZONE_SIZE + a.y < b.x * MAX_ZONE_SIZE + b.y;
+}*/
 
-    friend bool operator<(const loc &a, const loc &b) {
-        return a.x * MAX_ZONE_SIZE + a.y < b.x * MAX_ZONE_SIZE + b.y;
-    }
-};
-
-loc start = loc(0, 0);
-loc goal  = loc(0, 0);
+Coord start;
+Coord goal;
 PathType pType;
 
-struct node {
+struct Node {
     unsigned short g;
     unsigned short h;
     unsigned short f;
     unsigned char n;
     unsigned char height;
-    node* parent;
-    loc l;
-    node(node* p, loc where, int hei) : height(hei), parent(p), l(where) {
+    Node* parent;
+    Coord l;
+    Node(Node* p, Coord where, int hei) : height(hei), parent(p), l(where) {
         refresh();
     }
     void refresh();
 };
 
-struct CompareNode : public std::binary_function<node*, node*, bool> {
-	bool operator()(const node* lhs, const node* rhs) const {
+struct CompareNode : public std::binary_function<Node*, Node*, bool> {
+	bool operator()(const Node* lhs, const Node* rhs) const {
 		return lhs->f > rhs->f;
 	}
 };
 
-int getG(node* parent, node* n) {
+int getG(Node* parent, Node* n) {
     int g;
     if ((parent->l.x - n->l.x) && (parent->l.y - n->l.y) /*If diagonal*/ ) {
         g = parent->g + 14;
@@ -49,32 +61,26 @@ int getG(node* parent, node* n) {
     return g;
 }
 
-int getHFlee(loc l) {
-    int x = l.x - goal.x;
-    int y = l.y - goal.y;
-    if (x < 0) x = -x;
-    if (y < 0) y = -y;
-    if (x > y) {
-        return -(y * 14 + (x - y) * 10);
+int getHFlee(Coord l) {
+    Coord c = (l - goal).abs();
+    if (c.x > c.y) {
+        return -(c.y * 14 + (c.x - c.y) * 10);
     } else {
-        return -(x * 14 + (y - x) * 10);
+        return -(c.x * 14 + (c.y - c.x) * 10);
     }
 }
 
-int getH(loc l) {
+int getH(Coord l) {
     if (pType == P_FLEE) return getHFlee(l);
-    int x = l.x - goal.x;
-    int y = l.y - goal.y;
-    if (x < 0) x = -x;
-    if (y < 0) y = -y;
-    if (x > y) {
-        return y * 14 + (x - y) * 10;
+    Coord c = (l - goal).abs();
+    if (c.x > c.y) {
+        return c.y * 14 + (c.x - c.y) * 10;
     } else {
-        return x * 14 + (y - x) * 10;
+        return c.x * 14 + (c.y - c.x) * 10;
     }
 }
 
-void node::refresh() {
+void Node::refresh() {
     if (parent) {
         g = getG(parent, this);
         n = parent->n + 1;
@@ -86,18 +92,18 @@ void node::refresh() {
     f = g + h;
 }
 
-pair<int, node*> arr[64][64];
+std::pair<int, Node*> arr[64][64];
 
-void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType pathingType) {
+void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
     int add = 0;
-    if (xDest == -1) {
-        xDest = 0; add = 1;
-    } else if (yDest < -1) {
-        yDest = 0; add = 2;
-    } else if (xDest == zone->getWidth()) {
-        xDest = zone->getWidth() - 1; add = 3;
-    } else if (yDest == zone->getHeight()) {
-        yDest = zone->getHeight() - 1; add = 4;
+    if (dest.x == -1) {
+        dest.x = 0; add = 1;
+    } else if (dest.y < -1) {
+        dest.y = 0; add = 2;
+    } else if (dest.x == zone->getWidth()) {
+        dest.x = zone->getWidth() - 1; add = 3;
+    } else if (dest.y == zone->getHeight()) {
+        dest.y = zone->getHeight() - 1; add = 4;
     }
 
     int swarm = unit->getStatValue(S_SWARM);
@@ -105,27 +111,27 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType 
 
     pType = pathingType;
     bool considerOtherUnits = pathingType != P_PASSUNITS;
-    start = loc(unit->x, unit->y);
-    goal = loc(xDest, yDest);
+    start = unit->pos;
+    goal = dest;
 
     if (start.x == goal.x && start.y == goal.y) return;
 
     int ai = unit->getStatValue(S_AI);
     int wid = zone->getWidth();
     int hei = zone->getHeight();
-    priority_queue<node*, vector<node*>, CompareNode> open;
+    std::priority_queue<Node*, std::vector<Node*>, CompareNode> open;
     for (int i = 0; i < wid; i++) {
         for (int j = 0; j < hei; j++) {
             if (arr[i][j].second) {
                 delete arr[i][j].second;
             }
-            arr[i][j] = pair<int, node*>(3, (node*)NULL);
+            arr[i][j] = std::pair<int, Node*>(3, (Node*)NULL);
         }
     }
     arr[goal.x][goal.y].first = 0;
-    open.push(new node(NULL, start, zone->getLocationAt(start.x, start.y)->getTotalHeight()));
-    arr[start.x][start.y] = pair<int, node*>(1, open.top());
-    node* current = NULL;
+    open.push(new Node(NULL, start, zone->getLocationAt(start)->getTotalHeight()));
+    arr[start.x][start.y] = std::pair<int, Node*>(1, open.top());
+    Node* current = NULL;
 
     bool done = false;
     bool success = false;
@@ -141,7 +147,7 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType 
             if (i == 5) {
                 i++;
             }
-            loc l = loc(xDirs[i] + current->l.x, yDirs[i] + current->l.y);
+            Coord l = DIRS[i] + current->l;
 
             if (l.x < 0 || l.x >= wid || l.y < 0 || l.y >= hei) {
                 continue;
@@ -150,36 +156,35 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType 
             if (val == 3) {
                 //very long check to see if a location is walkable
                 bool canDoor = ai == AI_HOSTILESMART;
-                Location* locAt = zone->getLocationAt(l.x, l.y);
+                Location* locAt = zone->getLocationAt(l);
                 int hei = locAt->getTotalHeight();
                 int heightDiff;
                 if (fly) heightDiff = 0;
                 else heightDiff = hei - current->height;
-                bool isGoal = l.x == xDest && l.y == yDest;
                 bool unitInWay = locAt->hasUnit();
                 if (unitInWay) {
                     if (swarm && locAt->unit->getProto() == unit->getProto()) {
-                        Swarmer* unitS = (Swarmer*)unit;
-                        Swarmer* nextS = (Swarmer*)locAt->unit;
+                        Swarmer* unitS = static_cast<Swarmer*>(unit);
+                        Swarmer* nextS = static_cast<Swarmer*>(locAt->unit);
                         if (unitS->howMany() + nextS->howMany() <= swarm) unitInWay = false;
                     }
                 }
                 if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || getTile(locAt->tile)->blocksMove() ||
-                        (considerOtherUnits && unitInWay && !(((pathingType != P_FLEE) && isGoal)))) {
+                        (considerOtherUnits && unitInWay && !(((pathingType != P_FLEE) && (l == dest))))) {
                     val = 2;
                 }
             }
             if (val == 2) {
                 continue;
             } else if (val == 1) {
-                node* n = arr[l.x][l.y].second;
+                Node* n = arr[l.x][l.y].second;
                 if (getG(current, n) < n->g) {
-                    node* temp  = n;
+                    Node* temp  = n;
                     temp->parent = current;
                     temp->refresh();
                 }
             } else {
-                arr[l.x][l.y] = pair<int, node*>(1, new node(current, l, zone->getLocationAt(l.x, l.y)->getTotalHeight()));
+                arr[l.x][l.y] = std::pair<int, Node*>(1, new Node(current, l, zone->getLocationAt(l)->getTotalHeight()));
                 open.push(arr[l.x][l.y].second);
             }
         }
@@ -204,33 +209,28 @@ void Start::makePath(Unit* unit, short xDest, short yDest, Zone* zone, PathType 
         int len2 = len1;
         if (pathingType == P_STAIRS) len2++;
         if (add > 2) len2++;
-        short* pathXs = new short[len2];
-        short* pathYs = new short[len2];
+        Coord* pathLocs = new Coord[len2];
         for (int i = len1 - 1; i >= 0; i--) {
-            pathXs[i] = current->l.x;
-            pathYs[i] = current->l.y;
+            pathLocs[i] = current->l;
             current = current->parent;
         }
         if (pathingType == P_STAIRS) {
-            pathXs[len1] = -P_STAIRS;
-            pathYs[len1] = -P_STAIRS;
+            pathLocs[len1] = Coord(-P_STAIRS, -P_STAIRS);
         }
         switch(add) {
             case 0: break;
-            case 1: pathYs[len1] = pathYs[len1 - 1]; pathXs[len1] = -1; break;
-            case 2: pathXs[len1] = pathXs[len1 - 1]; pathYs[len1] = -1; break;
-            case 3: pathYs[len1] = pathYs[len1 - 1]; pathXs[len1] = zone->getWidth(); break;
-            case 4: pathXs[len1] = pathXs[len1 - 1]; pathYs[len1] = zone->getHeight(); break;
+            case 1: pathLocs[len1].y = pathLocs[len1 - 1].y; pathLocs[len1].x = -1; break;
+            case 2: pathLocs[len1].x = pathLocs[len1 - 1].x; pathLocs[len1].y = -1; break;
+            case 3: pathLocs[len1].y = pathLocs[len1 - 1].y; pathLocs[len1].x = zone->getWidth(); break;
+            case 4: pathLocs[len1].x = pathLocs[len1 - 1].x; pathLocs[len1].y = zone->getHeight(); break;
             default: break;
         }
-        path* p = new path;
+        Path* p = new Path;
         p->len = len2;
-        p->pathXs = pathXs;
-        p->pathYs = pathYs;
+        p->pathLocs = pathLocs;
         p->cUnits = considerOtherUnits;
         if (unit->pointOnPath > -1) {
-            delete[] unit->currentPath->pathXs;
-            delete[] unit->currentPath->pathYs;
+            delete[] unit->currentPath->pathLocs;
             delete unit->currentPath;
         }
         unit->currentPath = p;
@@ -245,8 +245,8 @@ fov_settings_type fovSettings;
 Player* p;
 unsigned char* vis;
 
-void Start::myFovCircle(Zone* zone, void* source, int x, int y, int radius) {
-    int center = x + y * zone->getWidth();
+void Start::myFovCircle(Zone* zone, void* source, Coord pos, int radius) {
+    int center = pos.index(zone->getWidth());
     if (radius == 2) {
         visibilities[center + 1] = 2; visibilities[center - 1] = 2;
         visibilities[center + zone->getWidth() + 1] = 2; visibilities[center + zone->getWidth()] = 2; visibilities[center + zone->getWidth() - 1] = 2;
@@ -257,37 +257,36 @@ void Start::myFovCircle(Zone* zone, void* source, int x, int y, int radius) {
         for (int i = 0; i < 4; i++) {
             temp[i] = visibilities[nums[i]];
         }
-        fov_circle(&fovSettings, zone, source, x, y, 3);
+        fov_circle(&fovSettings, zone, source, pos.x, pos.y, 3);
         for (int i = 0; i < 4; i++) {
             visibilities[nums[i]] = temp[i];
         }
     } else {
-        fov_circle(&fovSettings, zone, source, x, y, radius);
+        fov_circle(&fovSettings, zone, source, pos.x, pos.y, radius);
     }
     visibilities[center] = 2;
 }
 
-void Start::myFovCirclePerm(Zone* zone, int x, int y, int radius, int mod) {
+void Start::myFovCirclePerm(Zone* zone, Coord pos, int radius, int mod) {
     if (radius == 2) {
-        zone->getLocationAt(x + 1, y)->light += mod; zone->getLocationAt(x - 1, y)->light += mod;
-        zone->getLocationAt(x, y + 1)->light += mod; zone->getLocationAt(x, y - 1)->light += mod;
-        zone->getLocationAt(x + 1, y + 1)->light += mod; zone->getLocationAt(x + 1, y - 1)->light += mod;
-        zone->getLocationAt(x - 1, y + 1)->light += mod; zone->getLocationAt(x - 1, y - 1)->light += mod;
+        for (int i = 1; i < NUM_COORD_DIRS; i++) {
+            if (i != 5) zone->getLocationAt(pos + DIRS[i])->light += mod;
+        }
     } else if (radius == 3) {
-        Location* locs[] = {zone->getLocationAt(x + 2, y + 2), zone->getLocationAt(x + 2, y - 2),
-                            zone->getLocationAt(x - 2, y + 2), zone->getLocationAt(x - 2, y - 2)};
+        Location* locs[] = {zone->getLocationAt(pos + Coord(2, 2)), zone->getLocationAt(pos + Coord(2, -2)),
+                            zone->getLocationAt(pos + Coord(-2, 2)), zone->getLocationAt(pos + Coord(-2, -2))};
         int temp[4];
         for (int i = 0; i < 4; i++) {
-            temp[i] = locs[i]->light;
+            temp[i] = locs[i]->light; //TODO ??????
         }
-        fov_circle(&fovSettings, zone, &mod, x, y, 3);
+        fov_circle(&fovSettings, zone, &mod, pos.x, pos.y, 3);
         for (int i = 0; i < 4; i++) {
             locs[i]->light = temp[i];
         }
     } else {
-        fov_circle(&fovSettings, zone, &mod, x, y, radius);
+        fov_circle(&fovSettings, zone, &mod, pos.x, pos.y, radius);
     }
-    zone->getLocationAt(x, y)->light += mod;
+    zone->getLocationAt(pos)->light += mod;
 }
 
 void Start::playerFieldOfView(bool isNew) {
@@ -296,9 +295,7 @@ void Start::playerFieldOfView(bool isNew) {
     int totes = zWidth * zone->getHeight();
     for (int i = 0; i < totes; i++) {
         if (!isNew && visibilities[i] >= 2) {
-            int x = i % zWidth;
-            int y = i / zWidth;
-            Location* loc = zone->getLocationAt(x, y);
+            Location* loc = zone->getLocationAt(i);
             int v = 0;
             unsigned char texs[2] = {7, 7};
             unsigned char locs[2] = {0, 0};
@@ -308,7 +305,7 @@ void Start::playerFieldOfView(bool isNew) {
                 locs[v] = g.loc;
                 v++;
             }
-            vector<graphic> itemGraphics;
+            //vector<graphic> itemGraphics;
             Item* items = &(*loc->items)[0];
             int numItems = loc->items->size();
             for (int j = numItems - 1; j >= 0 && v < 2; j--) {
@@ -334,7 +331,9 @@ void Start::playerFieldOfView(bool isNew) {
                 texs[v] = SPLATTERS_TEX;
                 locs[v] = loc->debris2;
             }
-            p->setMemory(x, y, texs[1], locs[1], texs[0], locs[0]);
+            int x = i % zWidth;
+            int y = i / zWidth;
+            p->setMemory(Coord(x, y), texs[1], locs[1], texs[0], locs[0]);
         }
         visibilities[i] = 0;
     }
@@ -344,29 +343,28 @@ void Start::playerFieldOfView(bool isNew) {
         int l = getItemType(primeFolder->getEquips()->getItem(i)->itemType)->getStatValue(S_LIGHT);
         if (l > lightness) lightness = l;
     }
-    int px = unit->x;
-    int py = unit->y;
-    int ui = px + py * zWidth;
+    Coord p = unit->pos;
+    int ui = p.index(zWidth);
     if (lightness == 11) lightness--;
-    myFovCircle(zone, player->getUnit(), px, py, lightness);
-    myFovCircle(zone, player, px, py, 12);
+    myFovCircle(zone, player->getUnit(), p, lightness);
+    myFovCircle(zone, player, p, 12);
     visibilities[ui] = 2;
 }
 
 void fovApply(void* map, int x, int y, int dx, int dy, void* src) {
-    Zone* z = (Zone*)map;
+    Zone* z = static_cast<Zone*>(map);
     if (x >= 0 && y >= 0 && x < z->getWidth() && y < z->getHeight()) {
         int index = x + y * z->getWidth();
         if (src == p->getUnit()) {
             vis[index] = 2;
         } else if (src == p) {
-            if (z->getLocationAt(x, y)->light > 0) {
+            if (z->getLocationAt(Coord(x, y))->light > 0) {
                 vis[index] = 2;
             } else if (vis[index] != 2) {
                 vis[index] = 1;
             }
         } else {
-            z->getLocationAt(x, y)->light += *(int*)src;
+            z->getLocationAt(Coord(x, y))->light += *(int*)src;
         }
     }
 }
@@ -377,9 +375,9 @@ void fovApply(void* map, int x, int y, int dx, int dy, void* src) {
 const int RANDM = rand();
 const int RANDN = rand();
 bool fovOpaque(void* map, int x, int y) {
-    Zone* zone = (Zone*)map;
+    Zone* zone = static_cast<Zone*>(map);
     if (x < 0 || y < 0 || x >= zone->getWidth() || y >= zone->getHeight()) return true;
-    Location* loc = zone->getLocationAt(x, y);
+    Location* loc = zone->getLocationAt(Coord(x, y));
     if (getTile(loc->tile)->blocksLight()) {
         unsigned short r = (RANDA * x + RANDB * y + RANDC * zone->getFoon() + RANDM) ^ RANDN;
         return r % 50 > 24;

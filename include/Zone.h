@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef ZONE_H
 #define ZONE_H
 
@@ -14,15 +32,15 @@ enum GenType{GEN_NONE = 0, GEN_MYDUN = 1, GEN_BSP = 2, GEN_DUNGEON = 10};
 
 class Zone: public StatHolder {
     public:
-        Zone(string name, int width, int height, int lightness, bool fill);
+        Zone(std::string name, int width, int height, int lightness, bool fill);
         virtual ~Zone();
         int getWidth();
         int getHeight();
         unsigned char getLightness();
-        string getName();
-        Location* getLocationAt(int x, int y);
+        std::string getName();
+        Location* getLocationAt(Coord pos);
         Location* getLocationAt(int i);
-        Location* safeGetLocationAt(int x, int y);
+        Location* safeGetLocationAt(Coord pos);
 
         void fillTiles(int* tiles);
         void fillHeights(int* heights);
@@ -32,7 +50,7 @@ class Zone: public StatHolder {
         bool isFilled();
 
         void tagDungeon(int index, int depth);
-        pair<int, int> dungeonTag();
+        std::pair<int, int> dungeonTag();
 
         int getFoon();
     protected:
@@ -42,7 +60,7 @@ class Zone: public StatHolder {
         unsigned char lightness; //0 - 11, 0 = blind, 1 - 10 = normal, 11 = surface
         unsigned short width;
         unsigned short height;
-        string name;
+        std::string name;
         unsigned short ind;
 
         char stackIndex;

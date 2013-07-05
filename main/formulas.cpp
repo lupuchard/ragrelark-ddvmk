@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 
 #define F_ITEM 1
@@ -9,7 +27,7 @@
 #define F_ENEMY 7
 
 int Start::getVarValue(VOwner target, VType type, int index, StatHolderIntef* statHolder) {
-    StatHolder* foundStatHolder = findStatHolder(target, (StatHolder*)statHolder);
+    StatHolder* foundStatHolder = findStatHolder(target, static_cast<StatHolder*>(statHolder));
     switch(type) {
         case V_STAT: return foundStatHolder->getStatValue(index); break;
         case V_SKILL: {
@@ -23,7 +41,7 @@ int Start::getVarValue(VOwner target, VType type, int index, StatHolderIntef* st
 }
 
 float Start::getVarValueF(VOwner target, VType type, int index, StatHolderIntef* statHolder) {
-    StatHolder* foundStatHolder = findStatHolder(target, (StatHolder*)statHolder);
+    StatHolder* foundStatHolder = findStatHolder(target, static_cast<StatHolder*>(statHolder));
     switch(type) {
         case V_STAT: return foundStatHolder->getStatValue(index); break; //NOTE: UNABLE TO RETRIEVE FLOAT VARIABLES FROM FORMULA AT THIS TIME
         case V_SKILL: {
@@ -38,11 +56,11 @@ float Start::getVarValueF(VOwner target, VType type, int index, StatHolderIntef*
 
 void Start::statChanged(int stat, StatHolderIntef* statHolder) {
     Stat* theStat = getStat(statHolder->getOwner(), stat);
-    vector<completeStat>* affStats = getAfflictions(theStat, statHolder->getOwner());
+    std::vector<CompleteStat>* affStats = getAfflictions(theStat, statHolder->getOwner());
     if (affStats) {
         for (unsigned int i = 0; i < affStats->size(); i++) {
-            pair<int, Stat*> cStat = (*affStats)[i];
-            StatHolder* foundStatHolder = findStatHolder(cStat.first, (StatHolder*)statHolder);
+            std::pair<int, Stat*> cStat = (*affStats)[i];
+            StatHolder* foundStatHolder = findStatHolder(cStat.first, static_cast<StatHolder*>(statHolder));
             //foundStatHolder->needToUpdate(stat, theStat->isItFloat());
             foundStatHolder->needToUpdate(cStat.second->getIndex(), cStat.second->isItFloat());
             //statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
@@ -51,11 +69,11 @@ void Start::statChanged(int stat, StatHolderIntef* statHolder) {
 }
 
 void Start::conditionChanged(int condition, StatHolderIntef* statHolder) {
-    vector<completeStat>* affStats = getConAfflictions(condition);
+    std::vector<CompleteStat>* affStats = getConAfflictions(condition);
     if (affStats) {
         for (unsigned int i = 0; i < affStats->size(); i++) {
-            pair<int, Stat*> cStat = (*affStats)[i];
-            StatHolder* foundStatHolder = findStatHolder(cStat.first, (StatHolder*)statHolder);
+            std::pair<int, Stat*> cStat = (*affStats)[i];
+            StatHolder* foundStatHolder = findStatHolder(cStat.first, static_cast<StatHolder*>(statHolder));
             foundStatHolder->needToUpdate(cStat.second->getIndex(), cStat.second->isItFloat());
             //statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
         }
@@ -66,6 +84,8 @@ StatHolder emptyStatHolder = StatHolder(V_ITEM);
 StatHolder enemyEquipStatHolder = EnemyEquipStatHolder();
 
 StatHolder* Start::findStatHolder(int target, StatHolder* statHolderFrom) {
+    using namespace std;
+
     VOwner owner = statHolderFrom->getOwner(); //step 8
     switch(target) {
         case V_WORLD: return world; break;
@@ -120,7 +140,7 @@ StatHolder* Start::findStatHolder(int target, StatHolder* statHolderFrom) {
             break;
         case V_ENEMY:
             if (owner == V_UNIT) {
-                return ((Unit*)statHolderFrom)->getEnemy();
+                return (static_cast<Unit*>(statHolderFrom)->getEnemy());
             } break;
         default: break;
     }
@@ -131,11 +151,11 @@ int Start::getTime() {
     return world->theTime;
 }
 
-void Start::parseFormula(string line, bool errCheck, int lineNum) {
+void Start::parseFormula(std::string line, bool errCheck, int lineNum) {
     Formula* newFormula = new Formula(1);
-    set<pair<VOwner, Stat*> > statsForFormula;
-    set<pair<VOwner, int> > conditionsForFormula;
-    set<SkillType> skillsForFormula;
+    std::set<std::pair<VOwner, Stat*> > statsForFormula;
+    std::set<std::pair<VOwner, int> > conditionsForFormula;
+    std::set<SkillType> skillsForFormula;
     bool isFloat = false;
     int start = 0;
     line = line + " ";
@@ -154,7 +174,7 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
         if (line[i] == '.') {
             tempIsFloat = true;
         } else if (line[i] == ' ') {
-            string s = line.substr(start, i - start);
+            std::string s = line.substr(start, i - start);
             if ((s[0] >= 48 && s[0] < 58) || (s[0] == '-' && s.size() > 1) || (s[0] == '.' && s.size() > 1)) {
                 if (tempIsFloat) {
                     newFormula->pushFloat(stf(s));
@@ -194,7 +214,7 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
                     case '$': {
                         target = V_UNIT;
                         type = V_SKILL;
-                        map<string, int>::iterator it = skillMap.find(s.substr(1, 100));
+                        std::map<std::string, int>::iterator it = skillMap.find(s.substr(1, 100));
                         if (it == skillMap.end()) printFileErr("There is an ISSUE with a skill in this formula!", lineNum);
                         aStatConSkill = it->second;
                         skillsForFormula.insert((SkillType)aStatConSkill);
@@ -205,17 +225,17 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
                     switch(s[1]) {
                         case '-': {
                             type = V_STAT;
-                            map<string, int>::iterator it = statMap.find(s.substr(2, 100));
+                            std::map<std::string, int>::iterator it = statMap.find(s.substr(2, 100));
                             if (it == statMap.end()) printFileErr("There is an ISSUE with a stat in this formula!", lineNum);
                             aStatConSkill = it->second;
-                            statsForFormula.insert(pair<VOwner, Stat*>(target, getStat(target, aStatConSkill)));
+                            statsForFormula.insert(std::pair<VOwner, Stat*>(target, getStat(target, aStatConSkill)));
                         } break;
                         case '|': {
                             type = V_CONDITION;
-                            map<string, int>::iterator it = conditionMap.find(s.substr(2, 100));
+                            std::map<std::string, int>::iterator it = conditionMap.find(s.substr(2, 100));
                             if (it == conditionMap.end()) printFileErr("There is an ISSUE with a condition in this formula!", lineNum);
                             aStatConSkill = it->second;
-                            conditionsForFormula.insert(pair<VOwner, int>(target, aStatConSkill));
+                            conditionsForFormula.insert(std::pair<VOwner, int>(target, aStatConSkill));
                         } break;
                         default: if (errCheck) {printFileErr("There is something INCORRECT about this formula!", lineNum);} break;
                     }
@@ -226,13 +246,13 @@ void Start::parseFormula(string line, bool errCheck, int lineNum) {
         }
     }
     Stat* newStat = new Stat(tempStr, newFormula, getNumStats((VOwner)tempValues[0]), isFloat);
-    for (set<pair<VOwner, Stat*> >::iterator i = statsForFormula.begin(); i != statsForFormula.end(); i++) {
+    for (std::set<std::pair<VOwner, Stat*> >::iterator i = statsForFormula.begin(); i != statsForFormula.end(); ++i) {
         addAffliction(*i, newStat, (VOwner)tempValues[0]);
     }
-    for (set<pair<VOwner, int> >::iterator i = conditionsForFormula.begin(); i != conditionsForFormula.end(); i++) {
+    for (std::set<std::pair<VOwner, int> >::iterator i = conditionsForFormula.begin(); i != conditionsForFormula.end(); ++i) {
         addConAffliction(i->second, i->first, newStat, (VOwner)tempValues[0]);
     }
-    for (set<SkillType>::iterator i = skillsForFormula.begin(); i != skillsForFormula.end(); i++) {
+    for (std::set<SkillType>::iterator i = skillsForFormula.begin(); i != skillsForFormula.end(); ++i) {
         addSkillAffliction(*i, newStat);
     }
     statMap[tempStr] = addStat((VOwner)tempValues[0], newStat);

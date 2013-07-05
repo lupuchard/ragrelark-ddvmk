@@ -1,5 +1,22 @@
-#include "Area.h"
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+#include "Area.h"
 
 Area::Area(int w): StatHolder(V_AREA) {
     width = w;
@@ -20,32 +37,31 @@ void Area::addZone(Zone* z) {
     zones.push_back(z);
 }
 
-void Area::setName(string n) {
+void Area::setName(std::string n) {
     name = n;
 }
 
-speLoc Area::moveZones(Zone* z, int x, int y) {
-    int zx = 0;
-    int zy = 0;
-    if (x < 0) {
-        zx = -1;
-    } else if (x >= z->getWidth()) {
-        zx = 1;
-        x = 0;
+SpeLoc Area::moveZones(Zone* z, Coord c) {
+    Coord zc;
+    if (c.x < 0) {
+        zc.x = -1;
+    } else if (c.x >= z->getWidth()) {
+        zc.x = 1;
+        c.x = 0;
     }
-    if (y < 0) {
-        zy = -1;
-    } else if (y >= z->getHeight()) {
-        zy = 1;
-        y = 0;
+    if (c.y < 0) {
+        zc.y = -1;
+    } else if (c.y >= z->getHeight()) {
+        zc.y = 1;
+        c.y = 0;
     }
     Zone* newZone = NULL;
     for (unsigned int i = 0; i < zones.size(); i++) {
         if (zones[i] == z) {
-            unsigned int t = i + zx + zy * width;
-            if (t < 0 || t >= zones.size()) {
-                speLoc nope;
-                nope.x = -1;
+            int t = i + zc.index(width);
+            if (t < 0 || (unsigned int)t >= zones.size()) {
+                SpeLoc nope;
+                nope.loc.x = -1;
                 return nope;
             }
             newZone = zones[t];
@@ -53,48 +69,46 @@ speLoc Area::moveZones(Zone* z, int x, int y) {
         }
     }
     if (newZone)  {
-        if (x < 0) x = newZone->getWidth() - 1;
-        if (y < 0) y = newZone->getHeight() - 1;
-        speLoc newSpeLoc = {(short)x, (short)y, newZone};
+        if (c.x < 0) c.x = newZone->getWidth() - 1;
+        if (c.y < 0) c.y = newZone->getHeight() - 1;
+        SpeLoc newSpeLoc = {c, newZone};
         return newSpeLoc;
     }
-    speLoc nope;
-    nope.x = -1;
+    SpeLoc nope;
+    nope.loc.x = -1;
     return nope;
 }
 
-speLoc Area::moveConnection(Zone* zone, int x, int y) {
+SpeLoc Area::moveConnection(Zone* zone, Coord pos) {
     for (unsigned int i = 0; i < connections.size(); i++) {
-        connection c = connections[i];
-        if (c.z1 == zone && c.x1 == x && c.y1 == y) {
-            speLoc newSpeLoc = {c.x2, c.y2, c.z2};
-            if (c.x2 == -2) connections.erase(connections.begin() + i);
+        Connection c = connections[i];
+        if (c.z1 == zone && c.loc1 == pos) {
+            SpeLoc newSpeLoc = {c.loc2, c.z2};
+            if (c.loc2.x == -2) connections.erase(connections.begin() + i);
             return newSpeLoc;
-        } else if (c.z2 == zone && c.x2 == x && c.y2 == y) {
-            speLoc newSpeLoc = {c.x1, c.y1, c.z1};
-            if (c.x1 == -2) connections.erase(connections.begin() + i);
+        } else if (c.z2 == zone && c.loc2 == pos) {
+            SpeLoc newSpeLoc = {c.loc1, c.z1};
+            if (c.loc1.x == -2) connections.erase(connections.begin() + i);
             return newSpeLoc;
         }
     }
-    speLoc nope;
-    nope.x = -1;
+    SpeLoc nope;
+    nope.loc.x = -1;
     return nope;
 }
 
-void Area::changeConnection(Zone* zone, int x, int y, int newX, int newY) {
+void Area::changeConnection(Zone* zone, Coord prevLoc, Coord newLoc) {
     for (unsigned int i = 0; i < connections.size(); i++) {
-        connection* c = &connections[i];
-        if (c->z1 == zone && c->x1 == x && c->y1 == y) {
-            c->x1 = newX;
-            c->y1 = newY;
-        } else if (c->z2 == zone && c->x2 == x && c->y2 == y) {
-            c->x2 = newX;
-            c->y2 = newY;
+        Connection* c = &connections[i];
+        if (c->z1 == zone && c->loc1 == prevLoc) {
+            c->loc1 = newLoc;
+        } else if (c->z2 == zone && c->loc2 == prevLoc) {
+            c->loc2 = newLoc;
         }
     }
 }
 
-void Area::addConnection(connection c) {
+void Area::addConnection(Connection c) {
     connections.push_back(c);
 }
 

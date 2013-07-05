@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <iostream>
 #include "Formula.h"
 
@@ -77,7 +95,7 @@ void Formula::pushFloat(float num) {
         }
     }
     if (Formula::numFloats == MAX_FLOATS) {
-        cout << "maximum float values reached" << endl;
+        std::cout << "maximum float values reached" << std::endl;
     } else {
         commands.push_back(Formula::numFloats);
         Formula::floats[numFloats++] = num;
@@ -150,9 +168,9 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
                 case O_TRU : formulaStack[sp] = (formulaStack[sp] == 0) ? 0 : 1; break;
                 case O_SLF : formulaStack[++sp] = prevVal; break;
                 case O_TIM : formulaStack[++sp] = user->getTime(); break;
-                case O_EEE : formulaStack[++sp] = e; break;
-                case O_PIE : formulaStack[++sp] = pi; break;
-                default: cout << "**Error**: Not a valid operator (float)." << endl; break;
+                case O_EEE : formulaStack[++sp] = E; break;
+                case O_PIE : formulaStack[++sp] = PI; break;
+                default: std::cout << "**Error**: Not a valid operator (float)." << std::endl; break;
             }
         } else if (value == 2) {
             formulaStack[++sp] = commands.at(went++);
@@ -165,7 +183,7 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
             unsigned char c = commands.at(went++);
             formulaStack[++sp] = user->getVarValueF((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
         } else {
-            cout << "formula error" << endl;
+            std::cout << "formula error" << std::endl;
         }
     }
     return formulaStack[sp--];
@@ -220,7 +238,7 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
                 case O_TRU : formulaStack[sp] = (formulaStack[sp] == 0) ? 0 : 1; break;
                 case O_SLF : formulaStack[++sp] = prevVal; break;
                 case O_TIM : formulaStack[++sp] = user->getTime(); break;
-                default: cout << "**Error**: Not a valid operator (int). " << (int)value << endl; break;
+                default: std::cout << "**Error**: Not a valid operator (int). " << (int)value << std::endl; break;
             }
         } else if (value == 2) {
             formulaStack[++sp] = commands.at(went++);
@@ -228,12 +246,12 @@ int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
             formulaStack[++sp] = (commands.at(went) << 24) | (commands.at(went + 1) << 16) | (commands.at(went + 2) << 8) | (commands.at(went + 3));
             went += 4;
         } else if (value == 6) {
-            cout << "**Error**: need to use runFormulaFloat in formulas with float values " << prevVal << endl;
+            std::cout << "**Error**: need to use runFormulaFloat in formulas with float values " << prevVal << std::endl;
         } else if (value == 8) {
             unsigned char c = commands.at(went++);
             formulaStack[++sp] = user->getVarValue((VOwner)(c >> 4), (VType)(c & 7), commands.at(went++), statHolder);
         } else {
-            cout << "formula error" << endl;
+            std::cout << "formula error" << std::endl;
         }
     }
     return formulaStack[sp--]; //step 17

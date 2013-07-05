@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "RagDrawer.h"
 
 RagDrawer::RagDrawer() {
@@ -18,15 +36,15 @@ RagDrawer::~RagDrawer() {
 }
 
 void RagDrawer::drawTile(int x, int y, int z, Texture* tex, int loc) {
-    tex->bind();
+    tex->gl();
 
-    int wid = tex->width / tileSize;
+    int wid = tex->getWidth() / tileSize;
     int x1 = (loc % wid) * tileSize;
     int y1 = (loc / wid) * tileSize;
-    double x1d = ((double)x1 / tex->width);
-    double x2d = ((double)(x1 + tileSize) / tex->width);
-    double y1d = ((double)y1 / tex->height);
-    double y2d = ((double)(y1 + tileSize) / tex->height);
+    double x1d = ((double)x1 / tex->getWidth());
+    double x2d = ((double)(x1 + tileSize) / tex->getWidth());
+    double y1d = ((double)y1 / tex->getHeight());
+    double y2d = ((double)(y1 + tileSize) / tex->getHeight());
 
     glBegin(GL_QUADS);
     glTexCoord2f(x1d, y1d);
@@ -42,15 +60,15 @@ void RagDrawer::drawTile(int x, int y, int z, Texture* tex, int loc) {
 
 //rot: 0 = 0 deg, 1 = 90 deg, 2 = 180 deg, 3 = 270 deg
 void RagDrawer::drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot, bool flip) {
-    tex->bind();
+    tex->gl();
 
-    int wid = tex->width / tileSize;
+    int wid = tex->getWidth() / tileSize;
     int x1 = (loc % wid) * tileSize;
     int y1 = (loc / wid) * tileSize;
-    double x1d = ((double)x1 / tex->width);
-    double x2d = ((double)(x1 + tileSize) / tex->width);
-    double y1d = ((double)y1 / tex->height);
-    double y2d = ((double)(y1 + tileSize) / tex->height);
+    double x1d = ((double)x1 / tex->getWidth());
+    double x2d = ((double)(x1 + tileSize) / tex->getWidth());
+    double y1d = ((double)y1 / tex->getHeight());
+    double y2d = ((double)(y1 + tileSize) / tex->getHeight());
 
     int ix[] = {x, x + tileSize, x + tileSize, x};
     int iy[] = {y, y, y + tileSize, y + tileSize};
@@ -84,12 +102,12 @@ void RagDrawer::drawTileRot(int x, int y, int z, Texture* tex, int loc, int rot,
 }
 
 void RagDrawer::drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, int size) {
-    tex->bind();
+    tex->gl();
 
-    double x1d = ((double)x1 / tex->width);
-    double x2d = ((double)(x1 + size) / tex->width);
-    double y1d = ((double)y1 / tex->height);
-    double y2d = ((double)(y1 + size) / tex->height);
+    double x1d = ((double)x1 / tex->getWidth());
+    double x2d = ((double)(x1 + size) / tex->getWidth());
+    double y1d = ((double)y1 / tex->getHeight());
+    double y2d = ((double)(y1 + size) / tex->getHeight());
 
     glBegin(GL_QUADS);
     glTexCoord2f(x1d, y1d);
@@ -104,12 +122,12 @@ void RagDrawer::drawTileSpe(int x, int y, int z, Texture* tex, int x1, int y1, i
 }
 
 void RagDrawer::drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture* tex, int x1, int y1, int wid1, int hei1) {
-    tex->bind();
+    tex->gl();
 
-    double x1d = ((double)x1 / tex->width);
-    double x2d = ((double)(x1 + wid1) / tex->width);
-    double y1d = ((double)y1 / tex->height);
-    double y2d = ((double)(y1 + hei1) / tex->height);
+    double x1d = ((double)x1 / tex->getWidth());
+    double x2d = ((double)(x1 + wid1) / tex->getWidth());
+    double y1d = ((double)y1 / tex->getHeight());
+    double y2d = ((double)(y1 + hei1) / tex->getHeight());
 
     glBegin(GL_QUADS);
     glTexCoord2f(x1d, y1d);
@@ -124,12 +142,12 @@ void RagDrawer::drawTileSuperSpe(int x, int y, int z, int wid, int hei, Texture*
 }
 
 void RagDrawer::drawTileFull(int x, int y, int z, int wid, int hei, Texture* tex, int tx, int ty, int rot, bool flip) {
-    tex->bind();
+    tex->gl();
 
-    double x1d = ((double)tx / tex->width);
-    double x2d = ((double)(tx + wid) / tex->width);
-    double y1d = ((double)ty / tex->height);
-    double y2d = ((double)(ty + hei) / tex->height);
+    double x1d = ((double)tx / tex->getWidth());
+    double x2d = ((double)(tx + wid) / tex->getWidth());
+    double y1d = ((double)ty / tex->getHeight());
+    double y2d = ((double)(ty + hei) / tex->getHeight());
 
     int ix[] = {x, x + wid, x + wid, x};
     int iy[] = {y, y, y + hei, y + hei};
@@ -162,8 +180,8 @@ void RagDrawer::drawTileFull(int x, int y, int z, int wid, int hei, Texture* tex
     glEnd();
 }
 
-void RagDrawer::drawColorBox(int x1, int y1, int z, int x2, int y2, color c) {
-    glColor4f(c.red / 255., c.green / 255., c.blue / 255., c.alpha / 255.);
+void RagDrawer::drawColorBox(int x1, int y1, int z, int x2, int y2, Color c) {
+    c.gl();
     glDisable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
     glVertex3i(x1, y1, z);
@@ -176,7 +194,7 @@ void RagDrawer::drawColorBox(int x1, int y1, int z, int x2, int y2, color c) {
 
 void RagDrawer::drawUnit(int x, int y, Unit* unit) {
     graphic g = unit->g;
-    drawTile(x, y, Z_UNIT + y, getTexture(unit->g.tex), g.loc);
+    drawTile(x, y, Z_UNIT + y, getTexture(g.tex), g.loc);
     int i = 0;
     if (unit == player->getUnit() || unit->equipment) {
         Item* items;
@@ -214,7 +232,7 @@ void RagDrawer::drawUnit(int x, int y, Unit* unit) {
                 int j;
                 if (pl) j = i;
                 else {
-                    int typ = typeSlots[item->getType()];
+                    int typ = TYPE_SLOTS[item->getType()];
                     switch(typ) {
                         case E_BHANDS: j = E_RHAND; break;
                         case E_BBHANDS: j = E_RHAND; break;
@@ -243,13 +261,13 @@ void RagDrawer::drawUnit(int x, int y, Unit* unit) {
                 //if (gendered) etc.
                 int x0 = xMid - wid / 2 + x;
                 int y0 = yMid - hei / 2 + y;
-                int x1 = (num * 16) % getPlayerTex()->width;
-                int y1 = (num * 256) / getPlayerTex()->width;
+                int x1 = (num * 16) % getPlayerTex()->getWidth();
+                int y1 = (num * 256) / getPlayerTex()->getWidth();
                 drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, getPlayerTex(), x1, y1, wid, hei);
             }
         }
     }
-    int wid = max((int)((float)unit->getStatValue(S_HP) / unit->getStatValue(S_MAXHP) * tileSize), 3);
+    int wid = std::max((int)((float)unit->getStatValue(S_HP) / unit->getStatValue(S_MAXHP) * tileSize), 3);
     if (wid < tileSize) {
         drawTileSuperSpe(x, y + tileSize - 4, Z_UNIT + y + i + 1, wid - 1, 4, getMenuTex(), 96, 0, wid - 1, 4);
         drawTileSuperSpe(x + wid - 1, y + tileSize - 4, Z_UNIT + y + i + 1, 2, 4, getMenuTex(), 126, 0, 2, 4);

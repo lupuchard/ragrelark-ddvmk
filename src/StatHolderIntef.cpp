@@ -1,9 +1,5 @@
 #include "StatHolderIntef.h"
 
-StatHolderIntef::StatHolderIntef() {
-    //ctor
-}
+StatHolderIntef::StatHolderIntef() {}
 
-StatHolderIntef::~StatHolderIntef() {
-    //dtor
-}
+StatHolderIntef::~StatHolderIntef() {}

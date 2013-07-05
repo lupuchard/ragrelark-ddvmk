@@ -1,6 +1,24 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "ItemType.h"
 
-vector<ItemType*> itemTypes;
+std::vector<ItemType*> itemTypes;
 
 ItemType* getItemType(int itemType) {
     return itemTypes[itemType];
@@ -18,14 +36,13 @@ void clearItemTypes() {
     itemTypes.clear();
 }
 
-ItemType::ItemType(string n, string desc, int iI, int tI, int t): StatHolder(V_ITEM) {
-    name = n;
-    description = desc;
+ItemType::ItemType(std::string n, std::string desc, int iI, int tI, int t): StatHolder(V_ITEM), name(n), description(desc) {
     g.loc = iI;
     g.tex = tI;
     g.type = 0;
     g.border = 0;
     equipGType = EQG_NONE;
+    equipGLoc = 0;
     type = t;
     makeHashMaps();
 }
@@ -79,11 +96,11 @@ unsigned char ItemType::getType() {
     return type;
 }
 
-string ItemType::getName() {
+std::string ItemType::getName() {
     return name;
 }
 
-string ItemType::getDescription() {
+std::string ItemType::getDescription() {
     return description;
 }
 
@@ -95,10 +112,10 @@ bool ItemType::hasAbility(unsigned short ability) {
     return abilities.find(ability) != abilities.end();
 }
 
-const set<unsigned short>::iterator ItemType::getAbilitiesBegin() {
+const std::set<unsigned short>::iterator ItemType::getAbilitiesBegin() {
     return abilities.begin();
 }
 
-const set<unsigned short>::iterator ItemType::getAbilitiesEnd() {
+const std::set<unsigned short>::iterator ItemType::getAbilitiesEnd() {
     return abilities.end();
 }

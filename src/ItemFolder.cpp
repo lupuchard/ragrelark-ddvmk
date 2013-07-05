@@ -1,9 +1,5 @@
 #include "ItemFolder.h"
 
-ItemFolder::ItemFolder() {
-    //ctor
-}
+ItemFolder::ItemFolder() {}
 
-ItemFolder::~ItemFolder() {
-    //dtor
-}
+ItemFolder::~ItemFolder() {}

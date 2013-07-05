@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef ABILITY_H
 #define ABILITY_H
 
@@ -5,20 +23,18 @@
 
 #define SPELL_LIGHT 768
 
-using namespace std;
-
 class Ability {
     public:
-        Ability(string name, int manaCost, int difficulty, int timeTake, int classI);
+        Ability(std::string name, int manaCost, int difficulty, int timeTake, int classI);
 
-        string getName();
+        std::string getName();
         int getCost();
         int getDifficulty();
         int getTimeTake();
         int getI();
     protected:
     private:
-        string name;
+        std::string name;
         unsigned short manaCost;
         unsigned short difficulty;
         unsigned short classificationI;

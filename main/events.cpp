@@ -1,14 +1,25 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 
-const string foodTastes[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear."};
 
-/*
-ok here is list
-
-libsdl-image1.2
-libsdl1.2debian
-
-*/
+static const std::string FOOD_TASTES[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear."};
 
 void Start::directionPress(int direction) {
     switch(state) {
@@ -17,7 +28,7 @@ void Start::directionPress(int direction) {
             search(player->getUnit(), player->getZone());
         } else {
             moveUnit(player->getUnit(), player->getZone(), direction);
-            primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->x, player->getUnit()->y);
+            primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->pos);
         } break;
     case STATE_MENU:
         switch (direction) {
@@ -74,7 +85,7 @@ void Start::events() {
                 int y = event.button.y;
                 if (x > WIN1_WIDTH) {
                     if (botPanel == PANEL_NOTES && y > SWIN_HEIGHT / 2 + 30) {
-                        notesSelected = max((y - SWIN_HEIGHT / 2 - 26) / 12, 1);
+                        notesSelected = std::max((y - SWIN_HEIGHT / 2 - 26) / 12, 1);
                         SDL_EnableUNICODE(true);
                     } else if (y > SWIN_HEIGHT / 2 && y <= SWIN_HEIGHT / 2 + 30) {
                         int k = 0;
@@ -202,10 +213,8 @@ void Start::closeDoors() {
     int dir = 0;
     Zone* zone = player->getZone();
     Unit* u = player->getUnit();
-    for (int i = 1; i <= 9; i++) {
-        int x = xDirs[i] + u->x;
-        int y = yDirs[i] + u->y;
-        Location* loc = zone->getLocationAt(x, y);
+    for (int i = 1; i < NUM_COORD_DIRS; i++) {
+        Location* loc = zone->getLocationAt(u->pos + DIRS[i]);
         if (loc->isOpenDoor()) {
             if (dir > 0) {
                 dir = -1;
@@ -215,7 +224,7 @@ void Start::closeDoors() {
         }
     }
     if (dir == 0) {
-        addMessage("There are no open doors around to close.", gray);
+        addMessage("There are no open doors around to close.", GRAY);
     } else if (dir != -1) {
         closeDoor(u, zone, dir, true);
     }
@@ -276,11 +285,11 @@ void Start::openGround() {
 void Start::enterTargetMode() {
     unitsInRange.clear();
     Zone* z = player->getZone();
-    for (int i = 0; i < z->getWidth(); i++) {
-        for (int j = 0; j < z->getHeight(); j++) {
+    for (int j = 0; j < z->getHeight(); j++) {
+        for (int i = 0; i < z->getWidth(); i++) {
             int v = i + j * z->getWidth();
             if (visibilities[v] == 2) {
-                Location* loc = z->getLocationAt(i, j);
+                Location* loc = z->getLocationAt(v);
                 if (loc->hasUnit() && loc->unit != player->getUnit()) {
                     unitsInRange.push_back(loc->unit);
                 }
@@ -291,7 +300,7 @@ void Start::enterTargetMode() {
         state = STATE_TARGET;
         stIndex = 0;
     } else {
-        addMessage("There are no targets in range!", black);
+        addMessage("There are no targets in range!", BLACK);
     }
 }
 
@@ -310,12 +319,12 @@ void Start::action(SkillType skill, int exp) {
         int leve = level / 10;
         int evel = level % 10;
         if (lev > 0) {
-            addMessage("Your " + skillNames[skill] + " has leveled up to " + its(leve) + "." + its(evel) + "!", forest);
+            addMessage("Your " + SKILL_NAMES[skill] + " has leveled up to " + its(leve) + "." + its(evel) + "!", FOREST);
         } else {
-            addMessage("Your " + skillNames[skill] + " has gone down to " + its(leve) + "." + its(evel) + "!", maroon);
+            addMessage("Your " + SKILL_NAMES[skill] + " has gone down to " + its(leve) + "." + its(evel) + "!", MAROON);
         }
-        set<Stat*> skillAfflictions = getSkillAfflictions(skill);
-        for (set<Stat*>::iterator i = skillAfflictions.begin(); i != skillAfflictions.end(); i++) {
+        std::set<Stat*> skillAfflictions = getSkillAfflictions(skill);
+        for (std::set<Stat*>::iterator i = skillAfflictions.begin(); i != skillAfflictions.end(); ++i) {
             Stat* theStat = (Stat*)*i;
             player->getUnit()->needToUpdate(theStat->getIndex(), theStat->isItFloat());
         }
@@ -324,12 +333,12 @@ void Start::action(SkillType skill, int exp) {
     if (toteExp >= expReq) {
         player->getUnit()->modifyStat(S_EXP, -expReq);
         int lev = player->getUnit()->modifyStat(S_LEVEL, 1);
-        const string levelUpWords[] = {"congrats", "wonderful", "sweet", "congradulations", "fantastic", "cool", "fabulous", "incredible", "awesome",
+        static const std::string LEVEL_UP_WORDS[] = {"congrats", "wonderful", "sweet", "congradulations", "fantastic", "cool", "fabulous", "incredible", "awesome",
                         "amazing", "brilliant", "super", "great", "admirable", "exceptional", "marvelous", "terrific", "outstanding", "superb",
                         "epic", "woah", "right on", "crazy", "stupendous", "congratz", "astonishing", "beautiful", "breathtaking", "exalting",
                         "grand", "nice", "impressive", "wondrous", "phenomenal", "nifty", "wow", "fancy", "groovy", "spectacular",
                         "commendable", "favorable", "legendary", "swell", "sensational", "splended", "majestic", "wondrous", "acceptable", "fine, be that way"};
-        addMessage("You leveled up! " + capitalize(levelUpWords[min(lev - 2, 48)]) + "!", black);
+        addMessage("You leveled up! " + capitalize(LEVEL_UP_WORDS[std::min(lev - 2, 48)]) + "!", BLACK);
     }
 }
 
@@ -355,12 +364,12 @@ void Start::sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude) {
         int expLeft = target->getStatValue(S_EXP);
         int bnk = player->getXpBank();
         if (bnk < 0) {
-            int gain = min(expLeft, -bnk);
+            int gain = std::min(expLeft, -bnk);
             expLeft -= gain;
             player->bankXp(gain);
         }
         if (expLeft) {
-            int gain = min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
+            int gain = std::min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
             action(skill, gain);
             target->modifyStat(S_EXP, -gain);
         }
@@ -375,7 +384,7 @@ void Start::debankExp(Unit* debanker, SkillType skill, int amount) {
 
 bool Start::equipItem(Item item) {
     ItemType* itemType = getItemType(item.itemType);
-    int typeSlot = typeSlots[itemType->getType()];
+    int typeSlot = TYPE_SLOTS[itemType->getType()];
     if (typeSlot != E_NONE && typeSlot != E_AMMO) {
         Item oldItem = primeFolder->getEquips()->equipItem(item, itemType->getType());
         int oldItemTypeType = getItemType(oldItem.itemType)->getType();
@@ -394,22 +403,22 @@ bool Start::equipItem(Item item) {
                 primeFolder->getGround()->addItem(&oldItem);
             }
         }
-        if (typeSlots[itemType->getType()] == E_BAG) {
+        if (TYPE_SLOTS[itemType->getType()] == E_BAG) {
             primeFolder->getBag()->setCapacity(itemType->getStatValue(S_CAPACITY));
         }
-        set<Stat*> itemAfflictions = getItemAfflictions();
-        for (set<Stat*>::iterator i = itemAfflictions.begin(); i != itemAfflictions.end(); i++) {
+        std::set<Stat*> itemAfflictions = getItemAfflictions();
+        for (std::set<Stat*>::iterator i = itemAfflictions.begin(); i != itemAfflictions.end(); ++i) {
             Stat* theStat = (Stat*)*i;
             player->getUnit()->needToUpdate(theStat->getIndex(), theStat->isItFloat());
         }
-        player->getUnit()->theTime += timeEquip[typeSlot];
+        player->getUnit()->theTime += TIME_EQUIP[typeSlot];
         return true;
     }
     return false;
 }
 
-const string loadNames[] = {"", "Encumbered", "Heavily Encumbered", "Overloaded", "Overloaded (Stuck)"};
-const color encumberColor = {200, 100, 20};
+static const std::string LOAD_NAMES[] = {"", "Encumbered", "Heavily Encumbered", "Overloaded", "Overloaded (Stuck)"};
+static const Color ENCUMBER_COLOR = {200, 100, 20};
 void Start::itemRemovalCheck() {
     if (folderStack.top()->getNumItems() == 0) {
         folderStack.pop();
@@ -429,7 +438,7 @@ void Start::itemRemovalCheck() {
     if (loadStatus > 4) loadStatus = 4;
     if (prevLoad != loadStatus) {
         if (loadStatus > 0) {
-            addStatus(loadNames[loadStatus], encumberColor, 22);
+            addStatus(LOAD_NAMES[loadStatus], ENCUMBER_COLOR, 22);
         } else {
             removeStatus(22);
         }
@@ -463,7 +472,7 @@ void Start::enterCommand() {
                     Item item = folderStack.top()->removeItem(selected);
                     int itemTypeType = getItemType(item.itemType)->getType();
                     if (!(itemTypeType == 0 || itemTypeType == I_SLOT)) {
-                        addItemToPlace(player->getUnit()->x, player->getUnit()->y, player->getZone(), item);
+                        addItemToPlace(player->getUnit()->pos, player->getZone(), item);
                     }
                     player->getUnit()->theTime += 2;
                     itemRemovalCheck();
@@ -482,7 +491,7 @@ void Start::enterCommand() {
                     ItemType* itemType = getItemType(item->itemType);
                     if (itemType->getType() == 41) {
                         if (player->getUnit()->getStatValue(S_HUNGER) > MAX_HUNGER) {
-                            addMessage("You are way too full to eat right now!", gray);
+                            addMessage("You are way too full to eat right now!", GRAY);
                         } else {
                             if (item->quantityCharge > 1) { //m17
                                 item->quantityCharge--;
@@ -491,10 +500,10 @@ void Start::enterCommand() {
                                 itemRemovalCheck();
                             }
                             eatFood(player->getUnit(), itemType);
-                            addMessage("You eat the " + itemType->getName() + ". " + foodTastes[itemType->getStatValue(S_TASTE)], black);
+                            addMessage("You eat the " + itemType->getName() + ". " + FOOD_TASTES[itemType->getStatValue(S_TASTE)], BLACK);
                         }
                     } else {
-                        addMessage("That is not a food.", gray);
+                        addMessage("That is not a food.", GRAY);
                     }
                 } break;
                 default: break;
@@ -503,7 +512,7 @@ void Start::enterCommand() {
     } else if (state == STATE_TARGET) {
         switch(stateAction) {
             case SA_FIRE: {
-            int range = typeRanges[getItemType(primeFolder->getEquips()->getItem(E_RHAND)->itemType)->getType()];
+            int range = TYPE_RANGES[getItemType(primeFolder->getEquips()->getItem(E_RHAND)->itemType)->getType()];
             if (range) {
                 Item* items = primeFolder->getBag()->getItems();
                 for (int i = 0; i < primeFolder->getBag()->getNumItems(); i++) {
@@ -519,8 +528,8 @@ void Start::enterCommand() {
                         }
                         item.quantityCharge = 1;
                         Unit* enemy = unitsInRange[stIndex];
-                        addItemToPlace(enemy->x, enemy->y, player->getZone(), item);
-                        addProj(player->getUnit()->x * TILE_SIZE, player->getUnit()->y * TILE_SIZE, enemy->x * TILE_SIZE, enemy->y * TILE_SIZE, 10, 0);
+                        addItemToPlace(enemy->pos, player->getZone(), item);
+                        addProj(player->getUnit()->pos.x * TILE_SIZE, player->getUnit()->pos.y * TILE_SIZE, enemy->pos.x * TILE_SIZE, enemy->pos.y * TILE_SIZE, 10, 0);
                         shootUnit(player->getUnit(), unitsInRange[stIndex], player->getZone());
                         primeFolder->getEquips()->removeItem(SECRET_AMMO_INDEX);
                         break;

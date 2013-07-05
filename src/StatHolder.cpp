@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "StatHolder.h"
 
 #define NUM_STAT_HOLDERS_SOFAR 3
@@ -10,31 +28,31 @@ void setFormUser(FormulaUser* fUser) {
     formUser = fUser;
 }
 
-map<completeStat, vector<completeStat>*> afflictions;
-map<int, vector<completeStat>*> conAfflictions;
-set<Stat*> itemAfflictions;
-set<Stat*> enemyAfflictions;
-map<SkillType, set<Stat*> > skillAfflictions;
+std::map<CompleteStat, std::vector<CompleteStat>*> afflictions;
+std::map<int, std::vector<CompleteStat>*> conAfflictions;
+std::set<Stat*> itemAfflictions;
+std::set<Stat*> enemyAfflictions;
+std::map<SkillType, std::set<Stat*> > skillAfflictions;
 
-set<Stat*> getItemAfflictions() {
+std::set<Stat*> getItemAfflictions() {
     return itemAfflictions;
 }
-set<Stat*> getEnemyAfflictions() {
+std::set<Stat*> getEnemyAfflictions() {
     return enemyAfflictions;
 }
-set<Stat*> getSkillAfflictions(SkillType skill) {
+std::set<Stat*> getSkillAfflictions(SkillType skill) {
     return skillAfflictions[skill];
 }
-vector<completeStat>* getAfflictions(Stat* s, VOwner ownertype) {
-    completeStat cStat = pair<VOwner, Stat*>(ownertype, s);
-    map<completeStat, vector<completeStat>*>::iterator p = afflictions.find(cStat);
+std::vector<CompleteStat>* getAfflictions(Stat* s, VOwner ownertype) {
+    CompleteStat cStat = std::pair<VOwner, Stat*>(ownertype, s);
+    std::map<CompleteStat, std::vector<CompleteStat>*>::iterator p = afflictions.find(cStat);
     if (p != afflictions.end()) {
         return p->second;
     }
     return NULL;
 }
-vector<completeStat>* getConAfflictions(int condition){
-    map<int, vector<completeStat>*>::iterator p = conAfflictions.find(condition);
+std::vector<CompleteStat>* getConAfflictions(int condition){
+    std::map<int, std::vector<CompleteStat>*>::iterator p = conAfflictions.find(condition);
     if (p != conAfflictions.end()) {
         return p->second;
     }
@@ -42,23 +60,23 @@ vector<completeStat>* getConAfflictions(int condition){
 }
 
 
-void addAffliction(completeStat afflictingStat, Stat* afflictedStat, VOwner edOwner) {
+void addAffliction(CompleteStat afflictingStat, Stat* afflictedStat, VOwner edOwner) {
     if (edOwner == V_UNIT) {
         switch(afflictingStat.first) {
             case V_ITEM: itemAfflictions.insert(afflictedStat); break;
             case V_ENEMY: enemyAfflictions.insert(afflictedStat); break;
             default: {
                 if (afflictions.find(afflictingStat) == afflictions.end()) {
-                    afflictions[afflictingStat] = new vector<completeStat>;
+                    afflictions[afflictingStat] = new std::vector<CompleteStat>;
                 }
-                afflictions[afflictingStat]->push_back(completeStat(edOwner, afflictedStat));
+                afflictions[afflictingStat]->push_back(CompleteStat(edOwner, afflictedStat));
             } break;
         }
     } else {
         if (afflictions.find(afflictingStat) == afflictions.end()) {
-            afflictions[afflictingStat] = new vector<completeStat>;
+            afflictions[afflictingStat] = new std::vector<CompleteStat>;
         }
-        afflictions[afflictingStat]->push_back(completeStat(edOwner, afflictedStat));
+        afflictions[afflictingStat]->push_back(CompleteStat(edOwner, afflictedStat));
     }
 }
 
@@ -68,23 +86,23 @@ void addConAffliction(int afflictingCondition, VOwner afflictingConOwner, Stat* 
             case V_ENEMY: enemyAfflictions.insert(afflictedStat); break;
             default: {
                 if (conAfflictions.find(afflictingCondition) == conAfflictions.end()) {
-                    conAfflictions[afflictingCondition] = new vector<completeStat>;
+                    conAfflictions[afflictingCondition] = new std::vector<CompleteStat>;
                 }
-                conAfflictions[afflictingCondition]->push_back(completeStat(edOwner, afflictedStat));
+                conAfflictions[afflictingCondition]->push_back(CompleteStat(edOwner, afflictedStat));
             }
         }
     } else {
         if (conAfflictions.find(afflictingCondition) == conAfflictions.end()) {
-            conAfflictions[afflictingCondition] = new vector<completeStat>;
+            conAfflictions[afflictingCondition] = new std::vector<CompleteStat>;
         }
-        conAfflictions[afflictingCondition]->push_back(completeStat(edOwner, afflictedStat));
+        conAfflictions[afflictingCondition]->push_back(CompleteStat(edOwner, afflictedStat));
     }
 }
 
 void addSkillAffliction(SkillType afflictingSkill, Stat* afflictedStat) {
-    map<SkillType, set<Stat*> >::iterator i = skillAfflictions.find(afflictingSkill);
+    std::map<SkillType, std::set<Stat*> >::iterator i = skillAfflictions.find(afflictingSkill);
     if (i == skillAfflictions.end()) {
-        skillAfflictions[afflictingSkill] = set<Stat*>();
+        skillAfflictions[afflictingSkill] = std::set<Stat*>();
         skillAfflictions[afflictingSkill].insert(afflictedStat);
     } else {
         i->second.insert(afflictedStat);
@@ -159,7 +177,7 @@ void StatHolder::addStatV(int stat, int value) {
     intValues = newValues;
     toBeUpdatedInt[i] = true;
     if (hashMapped) {
-        (*tempHashMap)[(unsigned char)stat] = pair<short, bool>((short)value, true);
+        (*tempHashMap)[(unsigned char)stat] = std::pair<short, bool>((short)value, true);
     }
 }
 
@@ -194,7 +212,7 @@ void StatHolder::addStatVF(int stat, float value) {
     floatValues = newValues;
     toBeUpdatedFloat[i] = true;
     if (hashMapped) {
-        (*tempFloatHashMap)[stat] = pair<float, bool>(value, true);
+        (*tempFloatHashMap)[stat] = std::pair<float, bool>(value, true);
     }
 }
 
@@ -219,9 +237,9 @@ void StatHolder::needToUpdate(int stat, bool isFloat) {
 
 short StatHolder::getStatValue(int stat) {
     if (hashMapped) {
-        unordered_map<unsigned char, pair<short, bool> >::iterator i = tempHashMap->find(stat);
+        std::unordered_map<unsigned char, std::pair<short, bool> >::iterator i = tempHashMap->find(stat);
         if (i == tempHashMap->end()) return 0;
-        pair<short, bool> val = i->second;
+        std::pair<short, bool> val = i->second;
         if (val.second) {
             Stat* s = getStat((VOwner)owner, stat);
             int temp = val.first;
@@ -252,9 +270,9 @@ short StatHolder::getStatValue(int stat) {
 
 float StatHolder::getStatValueF(int stat) {
     if (hashMapped) {
-        unordered_map<unsigned char, pair<float, bool> >::iterator i = tempFloatHashMap->find(stat);
+        std::unordered_map<unsigned char, std::pair<float, bool> >::iterator i = tempFloatHashMap->find(stat);
         if (i == tempFloatHashMap->end()) return 0;
-        pair<float, bool> val = i->second;
+        std::pair<float, bool> val = i->second;
         if (val.second) {
             Stat* s = getStat((VOwner)owner, stat);
             float temp = val.first;
@@ -317,7 +335,7 @@ VOwner StatHolder::getOwner() {
 
 void StatHolder::setStat(int stat, int value) {
     if (hashMapped) {
-        (*tempHashMap)[stat] = pair<short, bool>(value, true);
+        (*tempHashMap)[stat] = std::pair<short, bool>(value, true);
         formUser->statChanged(stat, aThis);
     } else {
         int i = binarySearchInt(0, numIntStats - 1, stat);
@@ -331,7 +349,7 @@ void StatHolder::setStat(int stat, int value) {
 
 void StatHolder::setStatF(int stat, float value) {
     if (hashMapped) {
-        (*tempFloatHashMap)[stat] = pair<float, bool>(value, true);
+        (*tempFloatHashMap)[stat] = std::pair<float, bool>(value, true);
         formUser->statChanged(stat, aThis);
     } else {
         int i = binarySearchFloat(0, numFloatStats - 1, stat);
@@ -349,7 +367,7 @@ void StatHolder::statChanged(int stat) {
 
 short StatHolder::modifyStat(int stat, int amount) {
     if (hashMapped) {
-        pair<short, bool> v = (*tempHashMap)[stat];
+        std::pair<short, bool> v = (*tempHashMap)[stat];
         v.first += amount;
         v.second = true;
         (*tempHashMap)[stat] = v;
@@ -368,7 +386,7 @@ short StatHolder::modifyStat(int stat, int amount) {
 
 float StatHolder::modifyStatF(int stat, float amount) {
     if (hashMapped) {
-        pair<float, bool> v = (*tempFloatHashMap)[stat];
+        std::pair<float, bool> v = (*tempFloatHashMap)[stat];
         v.first += amount;
         v.second = true;
         (*tempFloatHashMap)[stat] = v;
@@ -434,13 +452,13 @@ bool StatHolder::hasAnyConditions() {
 
 void StatHolder::makeHashMaps() {
     if (!hashMapped) {
-        tempHashMap = new unordered_map<unsigned char, pair<short, bool> >();
-        tempFloatHashMap = new unordered_map<unsigned char, pair<float, bool> >();
+        tempHashMap = new std::unordered_map<unsigned char, std::pair<short, bool> >();
+        tempFloatHashMap = new std::unordered_map<unsigned char, std::pair<float, bool> >();
         for (int i = 0; i < numIntStats; i++) {
-            (*tempHashMap)[intStats[i]] = pair<short, bool>(intValues[i], toBeUpdatedInt[i]);
+            (*tempHashMap)[intStats[i]] = std::pair<short, bool>(intValues[i], toBeUpdatedInt[i]);
         }
         for (int i = 0; i < numFloatStats; i++) {
-            (*tempFloatHashMap)[floatStats[i]] = pair<float, bool>(floatValues[i], toBeUpdatedFloat[i]);
+            (*tempFloatHashMap)[floatStats[i]] = std::pair<float, bool>(floatValues[i], toBeUpdatedFloat[i]);
         }
         hashMapped = true;
     }
@@ -449,11 +467,11 @@ void StatHolder::makeHashMaps() {
 void StatHolder::removeHashMaps() {
     if (hashMapped) {
         hashMapped = false;
-        for (unordered_map<unsigned char, pair<short, bool> >::iterator i = tempHashMap->begin(); i != tempHashMap->end(); ++i) {
+        for (std::unordered_map<unsigned char, std::pair<short, bool> >::iterator i = tempHashMap->begin(); i != tempHashMap->end(); ++i) {
             setStat(i->first, i->second.first);
             toBeUpdatedInt[i->first] = i->second.second;
         }
-        for (unordered_map<unsigned char, pair<float, bool> >::iterator i = tempFloatHashMap->begin(); i != tempFloatHashMap->end(); ++i) {
+        for (std::unordered_map<unsigned char, std::pair<float, bool> >::iterator i = tempFloatHashMap->begin(); i != tempFloatHashMap->end(); ++i) {
             setStatF(i->first, i->second.first);
             toBeUpdatedFloat[i->first] = i->second.second;
         }

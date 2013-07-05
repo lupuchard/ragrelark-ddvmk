@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Player.h"
 
 int calcXpReq(int level, float mult) {
@@ -13,14 +31,15 @@ Player::Player(PrimeFolder* pFolder) {
     unit = NULL;
     zone = NULL;
     area = NULL;
+    currentZoneMemory = NULL;
     xpBank = 0;
     //trainSpell(SPELL_LIGHT, 100);
 }
 
 Player::~Player() {
     //deletes all the players personal memories of how things were one day
-    for (map<Zone*, zoneMemory*>::iterator i = memoryBank.begin(); i != memoryBank.end(); i++) {
-        zoneMemory* m = i->second;
+    for (std::map<Zone*, ZoneMemory*>::iterator i = memoryBank.begin(); i != memoryBank.end(); ++i) {
+        ZoneMemory* m = i->second;
         delete[] m->bottomTex;
         delete[] m->bottomLoc;
         delete[] m->topTex;
@@ -43,10 +62,10 @@ Unit* Player::getUnit() {
 
 void Player::setZone(Zone* z) {
     zone = z;
-    map<Zone*, zoneMemory*>::iterator it = memoryBank.find(z);
+    std::map<Zone*, ZoneMemory*>::iterator it = memoryBank.find(z);
     if (it == memoryBank.end()) {
         int len = z->getWidth() * z->getHeight();
-        zoneMemory* newZoneMemory = new zoneMemory;
+        ZoneMemory* newZoneMemory = new ZoneMemory;
         memoryBank[z] = newZoneMemory;
         newZoneMemory->bottomTex = new unsigned char[len];
         newZoneMemory->bottomLoc = new unsigned char[len];
@@ -62,18 +81,18 @@ void Player::setZone(Zone* z) {
     }
 }
 
-pair<int, int> Player::getMemoryTop(int x, int y) {
-    int i = x + y * zone->getWidth();
-    return pair<int, int>(currentZoneMemory->topTex[i], currentZoneMemory->topLoc[i]);
+std::pair<int, int> Player::getMemoryTop(Coord pos) {
+    int i = pos.index(zone->getWidth());
+    return std::pair<int, int>(currentZoneMemory->topTex[i], currentZoneMemory->topLoc[i]);
 }
 
-pair<int, int> Player::getMemoryBottom(int x, int y) {
-    int i = x + y * zone->getWidth();
-    return pair<int, int>(currentZoneMemory->bottomTex[i], currentZoneMemory->bottomLoc[i]);
+std::pair<int, int> Player::getMemoryBottom(Coord pos) {
+    int i = pos.index(zone->getWidth());
+    return std::pair<int, int>(currentZoneMemory->bottomTex[i], currentZoneMemory->bottomLoc[i]);
 }
 
-void Player::setMemory(int x, int y, unsigned char bt, unsigned char bl, unsigned char tt, unsigned char tl) {
-    int i = x + y * zone->getWidth();
+void Player::setMemory(Coord pos, unsigned char bt, unsigned char bl, unsigned char tt, unsigned char tl) {
+    int i = pos.index(zone->getWidth());
     currentZoneMemory->bottomTex[i] = bt;
     currentZoneMemory->bottomLoc[i] = bl;
     currentZoneMemory->topTex[i] = tt;
@@ -88,7 +107,7 @@ void Player::setUnitProto(StatHolder* proto) {
     unit = new Unit(name, proto);
 }
 
-void Player::setName(string n) {
+void Player::setName(std::string n) {
     name = n;
 }
 
@@ -132,7 +151,7 @@ PrimeFolder* Player::getPrimeFolder() {
 //the spell index used by the player lacks the two least significant bits
 int Player::getSpellLevel(int spellIndex) {
     int trueSpellIndex = spellIndex >> 2;
-    map<int, playerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
+    std::map<int, PlayerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
     if (itr == playerSpells.end()) return 0;
     else return itr->second.level;
 }
@@ -140,8 +159,8 @@ int Player::getSpellLevel(int spellIndex) {
 int Player::trainSpell(int spellIndex, int xpGained) {
     xpGained = (int)(xpGained * (getSkillLevel(SKL_LEARN) / 10.f + 1.f));
     int trueSpellIndex = spellIndex >> 2;
-    map<int, playerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
-    playerSpell* pSpell;
+    std::map<int, PlayerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
+    PlayerSpell* pSpell;
     if (itr == playerSpells.end()) {
         pSpell = &playerSpells[trueSpellIndex];
         pSpell->level = 0;
@@ -161,15 +180,15 @@ int Player::trainSpell(int spellIndex, int xpGained) {
     return fooey;
 }
 
-const map<int, playerSpell>::iterator Player::getSpellsBegin() {
+const std::map<int, PlayerSpell>::iterator Player::getSpellsBegin() {
     return playerSpells.begin();
 }
-const map<int, playerSpell>::iterator Player::getSpellsEnd() {
+const std::map<int, PlayerSpell>::iterator Player::getSpellsEnd() {
     return playerSpells.end();
 }
 
 int Player::takeFromXpBank(int amount) {
-    int rem = min(amount, xpBank + 10);
+    int rem = std::min(amount, xpBank + 10);
     xpBank -= rem;
     return rem;
 }

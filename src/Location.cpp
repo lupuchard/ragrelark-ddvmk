@@ -1,14 +1,32 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Location.h"
 #include "Unit.h"
 
 Unit* none = new Unit("not a unit", NULL);
-vector<Item> genericBlankVector;
+std::vector<Item> genericBlankVector;
 
-bool opens[] = {false, true, true, false, true, true, false, false, false, true, true, false, true, true, false, false,
+bool OPENS[] = {false, true, true, false, true, true, false, false, false, true, true, false, true, true, false, false,
             true, true, true, true, false, false, false, false, false, true, false, false, true, true, true, true};
-bool cDoors[] = {true, false, false, true, false, false, false, true, true, false, false, true, false, false, true, true,
+bool CDOORS[] = {true, false, false, true, false, false, false, true, true, false, false, true, false, false, true, true,
             false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
-bool oDoors[] = {false, true, false, false, true, false, false, false, false, true, false, false, true, false, false, false,
+bool ODOORS[] = {false, true, false, false, true, false, false, false, false, true, false, false, true, false, false, false,
             false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
 
 Location::Location() {
@@ -18,7 +36,6 @@ Location::Location() {
     light = 0;
     unit = none;
     items = &genericBlankVector;
-
     fog1 = FOG_NONE;
     fog2 = FOG_NONE;
     debris1 = 0;
@@ -32,6 +49,10 @@ Location::Location(int h) {
     light = 0;
     unit = none;
     items = &genericBlankVector;
+    fog1 = FOG_NONE;
+    fog2 = FOG_NONE;
+    debris1 = 0;
+    debris2 = 1;
 }
 
 void Location::clearStuff() {
@@ -54,27 +75,27 @@ void Location::removeUnit() {
 }
 
 bool Location::isOpen() {
-    return opens[structure];
+    return OPENS[structure];
 }
 
 bool isOpen(int str) {
-    return opens[str];
+    return OPENS[str];
 }
 
 bool Location::isClosedDoor() {
-    return cDoors[structure];
+    return CDOORS[structure];
 }
 
 bool isClosedDoor(int str) {
-    return cDoors[str];
+    return CDOORS[str];
 }
 
 bool Location::isOpenDoor() {
-    return oDoors[structure];
+    return ODOORS[structure];
 }
 
 bool isOpenDoor(int str) {
-    return oDoors[str];
+    return ODOORS[str];
 }
 
 int Location::getTotalHeight() {
@@ -85,10 +106,10 @@ int Location::getTotalHeight() {
 //the return statement is for whether or not the item stacked. true = stacked, false = not stacked
 bool Location::addItem(Item item) {
     if (items == &genericBlankVector) {
-        items = new vector<Item>;
+        items = new std::vector<Item>;
     } else {
         ItemType* thisItemType = getItemType(item.itemType);
-        int stackLimit = typeStacks[thisItemType->getType()];
+        int stackLimit = TYPE_STACKS[thisItemType->getType()];
         if (stackLimit > 1) {
             for (unsigned int i = 0; i < items->size(); i++) {
                 if ((*items)[i].itemType == item.itemType && (*items)[i].form == item.form && (*items)[i].quantityCharge < stackLimit) {
@@ -112,7 +133,7 @@ bool Location::addItem(Item item) {
 Item Location::removeItem(int itemI) {
     Item temp = (*items)[itemI];
     items->erase(items->begin() + itemI);
-    if (items->size() == 0) {
+    if (items->empty()) {
         delete items;
         items = &genericBlankVector;
     }

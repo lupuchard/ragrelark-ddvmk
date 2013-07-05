@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "GroundFolder.h"
 
 EnvironmentManager* em;
@@ -6,31 +24,29 @@ void setEnvironmentManager(EnvironmentManager* ev) {
 }
 
 GroundFolder::GroundFolder() {
-    //first = true;
+    zone = NULL;
 }
 
 int GroundFolder::getNumItems() {
-    return zone->getLocationAt(locX, locY)->items->size();
+    return zone->getLocationAt(loc)->items->size();
 }
 Item* GroundFolder::getItem(int index) {
-    return &zone->getLocationAt(locX, locY)->items->at(index);
+    return &zone->getLocationAt(loc)->items->at(index);
 }
 Item* GroundFolder::getItems() {
-    return &zone->getLocationAt(locX, locY)->items->at(0);
+    return &zone->getLocationAt(loc)->items->at(0);
 }
 Item GroundFolder::removeItem(int index) {
     //return location->removeItem(index);
-    return em->removeItemFromPlace(locX, locY, zone, index);
+    return em->removeItemFromPlace(loc, zone, index);
 }
 
-void GroundFolder::setLocation(Zone* z, int x, int y) {
+void GroundFolder::setLocation(Zone* z, Coord c) {
     zone = z;
-    locX = x;
-    locY = y;
+    loc = c;
 }
 
 bool GroundFolder::addItem(Item* item) {
-    //location->addItem(*item);
-    em->addItemToPlace(locX, locY, zone, *item);
+    em->addItemToPlace(loc, zone, *item);
     return true;
 }

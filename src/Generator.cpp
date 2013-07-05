@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Generator.h"
 
 void placeWall(Location* loc, Tile** tiles, bool alt) {
@@ -51,34 +69,33 @@ void Generator::makeConnection(unsigned char* skeleton, ZoneNode* n1, ZoneNode* 
     n2->connections.insert(n1);
 }
 
-set<ZoneNode*> accessable;
+std::set<ZoneNode*> accessable;
 
 void depthSearch(ZoneNode* start) {
     start->done = true;
     accessable.insert(start);
 
     int j = 0;
-    for (set<ZoneNode*>::iterator i = start->connections.begin(); i != start->connections.end(); i++) {
+    for (std::set<ZoneNode*>::iterator i = start->connections.begin(); i != start->connections.end(); ++i) {
         ZoneNode* n = (ZoneNode*)(*i);
         if (!n->done) {
             depthSearch(n);
         }
-
         j++;
         if (j > 1000) {
-            cout << "MEGALOOP depthSearch" << endl;
+            std::cout << "MEGALOOP depthSearch" << std::endl;
         }
     }
 }
 
-Generator::Generator() {}
+Generator::Generator(): toteWidth(0), toteHeight(0) {}
 Generator::~Generator() {}
 
 void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) {
     zone->fill();
     for (int x = 0; x < zone->getWidth(); x++) {
         for (int y = 0; y < zone->getHeight(); y++) {
-            Location* loc = zone->getLocationAt(x, y);
+            Location* loc = zone->getLocationAt(Coord(x, y));
             if (skeleton[x + y * zone->getWidth()] == SKEL_WALL) {
                 placeWall(loc, tiles, false);
                 loc->structure = S_NONE;
@@ -108,7 +125,7 @@ void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) 
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
                         int num = x + i + (y + j) * zone->getWidth();
-                        Location* loc = zone->getLocationAt(x + i, y + j);
+                        Location* loc = zone->getLocationAt(Coord(x + i, y + j));
                         if (skeleton[num] == SKEL_WALL || skeleton[num] == SKEL_DOOR) {
                             placeWall(loc, tiles, true);
                         } else if (skeleton[num] == SKEL_DOOR) {
@@ -128,13 +145,13 @@ void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) 
     int sy = rand() % (zone->getHeight() - hei - 1) + 1;
     for (int x = sx; x < sx + wid; x++) {
         for (int y = sy; y < sy + hei; y++) {
-            Location* loc = zone->getLocationAt(x, y);
+            Location* loc = zone->getLocationAt(Coord(x, y));
             if (loc->height == MAX_HEIGHT) {
                 loc->tile = tiles[16]->getIndex();
                 loc->height = MAX_HEIGHT / 4;
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
-                        Location* loc2 = zone->getLocationAt(x + i, y + j);
+                        Location* loc2 = zone->getLocationAt(Coord(x + i, y + j));
                         if (loc2->structure == S_WOODDOOR) {
                             loc2->structure = S_NONE;
                             placeFloor(loc2, tiles, false);
@@ -197,7 +214,7 @@ unsigned char* Generator::genSkeleton(int width, int height, GenType genType) {
 }
 
 void Generator::genSkeletonCrazy(unsigned char* skeleton, int x, int y, int wid, int hei) {
-    vector<ZoneNode> nodes;
+    std::vector<ZoneNode> nodes;
     int numRooms = wid * hei / (rand() % 40 + 60);
 
     for (int k = 0; k < numRooms; k++) {
@@ -251,7 +268,7 @@ void Generator::genSkeletonCrazy(unsigned char* skeleton, int x, int y, int wid,
         if (accessable.find(n) == accessable.end()) {
             int minDist = 1000000;
             ZoneNode* closest = NULL;
-            for (set<ZoneNode*>::iterator j = accessable.begin(); j != accessable.end(); j++) {
+            for (std::set<ZoneNode*>::iterator j = accessable.begin(); j != accessable.end(); ++j) {
                 ZoneNode* thisN = (ZoneNode*)(*j);
                 int cheapDist = fabs(thisN->x - n->x) + fabs(thisN->y - n->y);
                 if (cheapDist < minDist && n->connections.find(thisN) == n->connections.end()) {
@@ -268,9 +285,9 @@ void Generator::genSkeletonCrazy(unsigned char* skeleton, int x, int y, int wid,
 
 
 
-vector<unsigned char> bsdXs;
-vector<unsigned char> bsdYs;
-void Generator::bspRecurse(unsigned char* skeleton, BspGenNode* next, int left, vector<ZoneNode>* nodes) {
+std::vector<unsigned char> bsdXs;
+std::vector<unsigned char> bsdYs;
+void Generator::bspRecurse(unsigned char* skeleton, BspGenNode* next, int left, std::vector<ZoneNode>* nodes) {
     int wid = next->wid;
     int hei = next->hei;
     left--;
@@ -337,11 +354,11 @@ void Generator::bspRecurse(unsigned char* skeleton, BspGenNode* next, int left, 
                     else skeleton[i + j * toteWidth] = SKEL_FLOOR;
                 }
             }
-        } else cout << "bahahahaha" << endl;
+        } else std::cout << "bahahahaha" << std::endl;
     }
 }
 void Generator::genSkeletonBsptree(unsigned char* skeleton, int x, int y, int width, int height) {
-    vector<ZoneNode> nodes;
+    std::vector<ZoneNode> nodes;
     BspGenNode mainNode;
     mainNode.x = x;
     mainNode.y = y;

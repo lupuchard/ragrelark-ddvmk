@@ -31,53 +31,53 @@ main{
 candle:uncommon
 blue feather:very rare
 big heavy rock:extremely rare
-arrow(1-2):rare
-arrow(3-10):very rare
-arrow(11-40):extremely rare
+simplistic arrow(1-2):rare
+simplistic arrow(3-10):very rare
+simplistic arrow(11-40):extremely rare
 }
 lv1{
-shirt:very rare
-club:very rare
-leather gloves:extremely rare
+shabby shirt:very rare
+simple club:very rare
+sane leather gloves:extremely rare
 gold pens(1-4):rare
-longbow:rrare
+sleek longbow:rrare
 }
 lv2{
-round wooden shield:extremely rare
-leather cap:very rare
+smooth round wooden shield:extremely rare
+splendid leather cap:very rare
 steel dagger:extremely rare
 gold pens(5-8):rare
-longbow:extremely rare
+sleek longbow:extremely rare
 }
 lv3{
-clogs:very rare
-pointy hat:very rare
-leather armor:very rare
+sculptural clogs:very rare
+smart pointy hat:very rare
+sensible leather armor:very rare
 gold pens(9-12):rare
-longbow:very rare
+sleek longbow:very rare
 }
 lv4{
-adventure clothes:very rare
-ring of accuracy:very rare
-reinforced shield:very rare
+silk adventure clothes:very rare
+sly ring of accuracy:very rare
+semi reinforced shield:very rare
 gold pens(13-16):rare
 }
 lv5{
-amulet of intelligence:very rare
-archery gloves:very rare
-simple mace:very rare
+sapphire amulet:very rare
+sharpshooter gloves:very rare
+sadistic mace:very rare
 gold pens(17-20):rare
 }
 lv6{
-ring of regeneration:very rare
-obsidian dagger:very rare
-Speedy Boots:rrare
+sensible ring of regeneration:very rare
+sacred obsidian dagger:very rare
+speedy boots:rrare
 gold pens(21-24):rare
 }
 lv7{
-magma armor:very rare
-Mace of Justice:very rare
-amulet of super sexiness:rrare
+scarlet magma armor:very rare
+superior mace:very rare
+sexy amulet:rrare
 gold pens(25-30):rare
 }
 food{

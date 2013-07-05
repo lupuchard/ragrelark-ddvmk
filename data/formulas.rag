@@ -97,6 +97,8 @@ g_stack
 SLF
 learn
 SLF
+throw
+SLF
 
 ~
 ~
@@ -165,22 +167,20 @@ u-dexterity i-acc + 2 -
 evasion
 u-dexterity i-eva + i-penalty - $dodge 5 / +
 
-megacrit_chance
-(f) 1 E e-evasion u-accuracy - 24 + $crit 200 / - -2 / ^ 3 * 1 + /
-crit_chance
-(f) 1 E e-evasion u-accuracy - 10 + $crit 100 / - -2 / ^ 3 * 1 + /
-hit_chance
-(f) 1 E e-evasion u-accuracy - 0 + -2 / ^ 3 * 1 + /
-scrape_chance
-(f) 1 E e-evasion u-accuracy - 2 - -2 / ^ 3 * 1 + /
+~(f) 1 E e-evasion u-accuracy - 24 + $crit 200 / - -2 / ^ 3 * 1 + /
+~(f) 1 E e-evasion u-accuracy - 10 + $crit 100 / - -2 / ^ 3 * 1 + /
+~(f) 1 E e-evasion u-accuracy - 0 + -2 / ^ 3 * 1 + /
+~(f) 1 E e-evasion u-accuracy - 2 - -2 / ^ 3 * 1 + /
+~(f) u-strength $unarm + 2 / .97 u-defense ^ *
+~(f) u-strength i-damage + $melee + 2 / 0.98 e-defense ^ *
+~(f) 4 i-damage + $range + 2 / 0.98 u-defense ^ *
+~(f) u-affinity
 unarmed_damage
-(f) u-strength $unarm + 2 / .97 u-defense ^ *
+u-strength $unarm + 2 /
 melee_damage
-(f) u-strength i-damage + $melee + 2 / 0.98 e-defense ^ *
+u-strength i-damage + $melee + 2 /
 ranged_damage
-(f) 4 i-damage + $range + 2 / 0.98 u-defense ^ *
-spell_damagegf
-(f) u-affinity
+4 i-damage 4 $range + 2 /
 
 res_pois
 i-resist_poison $rpois +
@@ -238,6 +238,9 @@ SLF
 fly
 SLF
 
+pet
+SLF
+
 graphic_loc
 SLF
 graphic_tex
@@ -261,10 +264,6 @@ max_mana
 mana
 accuracy
 evasion
-megacrit_chance
-crit_chance
-hit_chance
-scrape_chance
 unarmed_damage
 melee_damage
 hp_regen

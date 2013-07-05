@@ -135,7 +135,7 @@ TILEDMAPSREFER
 16,1->archery gloves
 16,2->clogs
 16,3->Speedy Boots
-17,0->shirt
+17,0->shabby shirt
 17,1->leather armor
 17,2->adventure clothes
 17,3->magma armor
@@ -145,7 +145,7 @@ TILEDMAPSREFER
 19,1->reinforced shield
 20,1->steel dagger
 20,2->obsidian dagger
-21,0->club
+21,0->simple club
 21,1->simple mace
 21,2->Mace of Justice
 22,0->longbow

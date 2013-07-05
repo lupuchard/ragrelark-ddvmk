@@ -1,11 +1,28 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Zone.h"
 
 Location* def = new Location(0);
 
-Zone::Zone(string nam, int w, int h, int light, bool fill): StatHolder(V_ZONE) {
+Zone::Zone(std::string nam, int w, int h, int light, bool fill): StatHolder(V_ZONE), name(nam) {
     width = w;
     height = h;
-    name = nam;
     filled = fill;
     if (fill) locs = new Location[width * height];
     lightness = light;
@@ -39,7 +56,7 @@ void Zone::fill() {
     }
 }
 
-string Zone::getName() {
+std::string Zone::getName() {
     return name;
 }
 
@@ -55,19 +72,19 @@ unsigned char Zone::getLightness() {
     return lightness;
 }
 
-Location* Zone::getLocationAt(int x, int y) {
-    return &locs[x + y * width];
+Location* Zone::getLocationAt(Coord l) {
+    return &locs[l.index(width)];
 }
 
 Location* Zone::getLocationAt(int i) {
     return &locs[i];
 }
 
-Location* Zone::safeGetLocationAt(int x, int y) {
-    if (x < 0 || y < 0 || x >= width || y >= width) {
+Location* Zone::safeGetLocationAt(Coord l) {
+    if (l.inBounds(width, height)) {
         return def;
     }
-    return getLocationAt(x, y);
+    return getLocationAt(l);
 }
 
 void Zone::fillTiles(int* tiles) {
@@ -95,8 +112,8 @@ void Zone::tagDungeon(int index, int depth) {
     stackIndex = index;
     stackDepth = depth;
 }
-pair<int, int> Zone::dungeonTag() {
-    return pair<int, int>(stackIndex, stackDepth);
+std::pair<int, int> Zone::dungeonTag() {
+    return std::pair<int, int>(stackIndex, stackDepth);
 }
 
 int Zone::getFoon() {

@@ -1,14 +1,33 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 #include "dataLoader.h"
 
-void Start::printFileErr(string said, int line) {
-    cout << "FILE SYNTAX (line " << line << ") " << said << endl;
+void Start::printFileErr(std::string said, int line) {
+    std::cout << "FILE SYNTAX (line " << line << ") " << said << std::endl;
 }
-void Start::printFileProb(string said, int line) {
-    cout << "FILE READPROB (line " << line << ") " << said << endl;
+void Start::printFileProb(std::string said, int line) {
+    std::cout << "FILE READPROB (line " << line << ") " << said << std::endl;
 }
 
-bool Start::errorChecker(string filename) {
+bool Start::errorChecker(std::string filename) {
+    using namespace std;
     int lineNum = 0;
 
     ifstream fin;
@@ -148,8 +167,8 @@ bool Start::errorChecker(string filename) {
                 } break;
             case (UNIT + 1): {
                 finished = true;
-                unsigned int i = 0;
                 if (line[0] != '*') {
+                    unsigned int i = 0;
                     while(line[i] != '=') {
                         i++;
                         if (line[i] == ' ') {
@@ -160,10 +179,7 @@ bool Start::errorChecker(string filename) {
                             return false;
                         }
                     }
-                    if (line.substr(0, i) == "split") status = UNIT + 2;
-                    else if (!isNum(line.substr(i + 1, 100))) printFileErr("The right side of the equals must be an integer (u).", lineNum);
                 } } continue;
-            case (UNIT + 2): status = UNIT + 1; continue;
             case MOBSPAW:
                 finished = false;
                 if (line[line.size() - 1] != '{') printFileErr("The first line must end with a '{'.", lineNum);
@@ -245,7 +261,7 @@ bool Start::errorChecker(string filename) {
             case (MAPSTACK + 2): {
                 finished = true;
                 unsigned int b = 0;
-                while (line[b] != ' ' && b < line.size()) b++;
+                while (b < line.size() && line[b] != ' ') b++;
                 b++;
                 if (b > 3) {
                     while (b < line.size()) {
@@ -254,7 +270,6 @@ bool Start::errorChecker(string filename) {
                     }
                 } else printFileErr("wrong", lineNum);
                 } continue;
-            if (line.substr(0, 3) != "lt " || !isNum(line.substr(3, 100))) printFileErr("The format of this line is \"lt NUMBER\"", lineNum); break;
             case TILEDMAPS: finished = true; continue; //TODO this error check
             case TILEDMAPSREFER: finished = true; continue; //TODO this error check
             case SKILLS: finished = true; continue; //TODO this error check

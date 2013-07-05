@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/Helpful Functions/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;data/mobs/;" />
+		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/utility/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;data/mobs/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -32,6 +32,7 @@
 					<Add library="SDL" />
 					<Add library="SDL_image" />
 					<Add library="fov" />
+					<Add library="X11" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -58,6 +59,8 @@
 					<Add library="SDL" />
 					<Add library="SDL_image" />
 					<Add library="fov" />
+					<Add library="GLU" />
+					<Add library="X11" />
 				</Linker>
 			</Target>
 			<Target title="Test">
@@ -66,6 +69,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++0x" />
 					<Add directory="src" />
 					<Add directory="include" />
 					<Add directory="../Ragrelark" />
@@ -145,16 +149,16 @@
 			<Option virtualFolder="data/items/" />
 		</Unit>
 		<Unit filename="depenencies/base64/base64.cpp">
-			<Option virtualFolder="code/Helpful Functions/" />
+			<Option virtualFolder="code/utility/" />
 		</Unit>
 		<Unit filename="depenencies/base64/base64.h">
-			<Option virtualFolder="code/Helpful Functions/" />
+			<Option virtualFolder="code/utility/" />
 		</Unit>
 		<Unit filename="depenencies/tinyxml2/tinyxml2.cpp">
-			<Option virtualFolder="code/Helpful Functions/" />
+			<Option virtualFolder="code/utility/" />
 		</Unit>
 		<Unit filename="depenencies/tinyxml2/tinyxml2.h">
-			<Option virtualFolder="code/Helpful Functions/" />
+			<Option virtualFolder="code/utility/" />
 		</Unit>
 		<Unit filename="include/Ability.h">
 			<Option virtualFolder="code/classes/Mobs/" />
@@ -173,6 +177,12 @@
 		</Unit>
 		<Unit filename="include/Blobber.h">
 			<Option virtualFolder="code/classes/Generation/" />
+		</Unit>
+		<Unit filename="include/Color.h">
+			<Option virtualFolder="code/classes/Graphics/" />
+		</Unit>
+		<Unit filename="include/Coord.h">
+			<Option virtualFolder="code/utility/" />
 		</Unit>
 		<Unit filename="include/DungeonStack.h">
 			<Option virtualFolder="code/classes/Places/" />
@@ -421,6 +431,12 @@
 		<Unit filename="src/Blobber.cpp">
 			<Option virtualFolder="code/classes/Generation/" />
 		</Unit>
+		<Unit filename="src/Color.cpp">
+			<Option virtualFolder="code/classes/Graphics/" />
+		</Unit>
+		<Unit filename="src/Coord.cpp">
+			<Option virtualFolder="code/utility/" />
+		</Unit>
 		<Unit filename="src/DungeonStack.cpp">
 			<Option virtualFolder="code/classes/Places/" />
 			<Option target="Debug" />
@@ -562,12 +578,12 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="util/usefulParsing.cpp">
-			<Option virtualFolder="code/Helpful Functions/" />
+			<Option virtualFolder="code/utility/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="util/usefulParsing.h">
-			<Option virtualFolder="code/Helpful Functions/" />
+			<Option virtualFolder="code/utility/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

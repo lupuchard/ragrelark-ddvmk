@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 
 /*
@@ -60,11 +78,11 @@ void Start::logic() {
             interval3 = interval3 % INTERVAL_3_TIM;
             int hung = pUnit->modifyStat(S_HUNGER, -(int)(pUnit->getStatValue(S_METABOLISM) * 1.7361111 * i3times)); //base metabolism is 100 calories per hour
             if (hung < MAX_HUNGER * .05f) {
-                addStatus("starving", red, ST_HUNG);
+                addStatus("starving", RED, ST_HUNG);
             } else if (hung < MAX_HUNGER * .15) {
-                addStatus("near starving", maroon, ST_HUNG);
+                addStatus("near starving", MAROON, ST_HUNG);
             } else if (hung < MAX_HUNGER * .4) {
-                addStatus("very hungry", salmon, ST_HUNG);
+                addStatus("very hungry", SALMON, ST_HUNG);
             } else if (hung <= MAX_HUNGER) {
                 removeStatus(ST_HUNG);
             }
@@ -72,8 +90,8 @@ void Start::logic() {
         pUnit->modifyStat(S_STAMINA, timePassed);
         world->theTime = pUnit->theTime;
 
-        set<pair<Unit*, Zone*> >::iterator iter = areaUnits.begin();
-        for (; iter != areaUnits.end(); iter++) {
+        std::set<std::pair<Unit*, Zone*> >::iterator iter = areaUnits.begin();
+        for (; iter != areaUnits.end(); ++iter) {
             Unit* unit = iter->first;
             if (unit != player->getUnit()) {
                 //if (unit->getStatValue(S_SWARM) && ((Swarmer*)unit)->howMany() >= 2) cout << "hmm " << unit->getStatValue(S_AI) << endl;
@@ -104,7 +122,7 @@ void Start::logic() {
                 if (manaa) {
                     int mana = unit->getStatValue(S_MANA);
                     if (mana != maxMana) {
-                        debankExp(unit, SKL_CHANN, min(manaa, maxMana - mana));
+                        debankExp(unit, SKL_CHANN, std::min(manaa, maxMana - mana));
                         unit->modifyStat(S_MANA, manaa);
                     }
                 }

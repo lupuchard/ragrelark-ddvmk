@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 #include "graphics.h"
 
@@ -8,36 +26,23 @@
 #define SHOWN_ITEM_STATS_MIN 7
 #define SHOWN_ITEM_STATS_MAX 24
 
-const string menuActionNames[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(R)ead", "E(x)amine"};
+static const std::string MENU_ACTION_NAMES[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(R)ead", "E(x)amine"};
 
-const char arrowX[] = {0, 16, 32, 48, 64,  0, 16, 32, 48, 64};
-const char arrowY[] = {0,  0,  0,  0,  0, 16, 16, 16, 16, 16};
+static const char ARROW_X[] = {0, 16, 32, 48, 64,  0, 16, 32, 48, 64};
+static const char ARROW_Y[] = {0,  0,  0,  0,  0, 16, 16, 16, 16, 16};
 
 int interval = 0;
 
 int curArrowY = WIN1_HEIGHT / 2;
 int selectedShift = 0;
 
-map<int, pair<string, color> > statusies;
+std::map<int, std::pair<std::string, Color> > statusies;
 
-void Start::addStatus(string name, color c, int type) {
-    statusies[type] = pair<string, color>(name, c);
+void Start::addStatus(std::string name, Color c, int type) {
+    statusies[type] = std::pair<std::string, Color>(name, c);
 }
 void Start::removeStatus(int type) {
     statusies.erase(type);
-}
-
-color Start::dark(color c) {
-    c.red   /= 2;
-    c.green /= 2;
-    c.blue  /= 2;
-    return c;
-}
-color Start::light(color c) {
-    c.red   = (256 - c.red)   / 2 + c.red;
-    c.green = (256 - c.green) / 2 + c.green;
-    c.blue  = (256 - c.blue)  / 2 + c.blue;
-    return c;
 }
 
 void Start::render() {
@@ -96,7 +101,8 @@ void Start::renderBars() {
     float hun = (float)pUnit->getStatValue(S_HUNGER);
     float sta = (float)pUnit->getStatValue(S_STAMINA);
     float percents[] = {(float)hp / mhp, (float)mp / mmp, hun / 5000.f, sta / 10000.f, (float)exp / expReq};
-    string strings[] = {"HP: " + its(hp) + "/" + its(mhp), "Mana: " + its(mp) + "/" + its(mmp), "Satiety: " + its(hun / 50) + "%", "Stamina: " + its(sta / 100) + "%", "Exp: " + its(exp) + "/" + its(expReq)};
+    std::string strings[] = {"HP: " + its(hp) + "/" + its(mhp), "Mana: " + its(mp) + "/" + its(mmp), "Satiety: " + its(hun / 50) + "%"
+                            , "Stamina: " + its(sta / 100) + "%", "Exp: " + its(exp) + "/" + its(expReq)};
     static const bool danger[] = {true, false, true, true, false};
     static short dangerInterval = 0;
     dangerInterval++;
@@ -128,7 +134,7 @@ void Start::renderBars() {
             }
             glColor4f(1, 1, 1, flo / 2);
             ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU, wid1, 14, getMenuTex(), 106, 186 + k * 14, wid1, 14);
-            color c = white; c.alpha = flo / 6;
+            Color c = WHITE; c.alpha = flo / 6;
             ragd.drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 1, i + 5 + wid1, WIN1_HEIGHT - 7, c);
         }
         int wid = (int)(percents[k] * 96);
@@ -136,12 +142,12 @@ void Start::renderBars() {
         glColor4f(flu, flu, flu, 1);
         ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU + 2, wid, 14, getMenuTex(), 106, 186 + k * 14, wid, 14);
         if (danger[k] && percents[k] < .2) {
-            color c = white; c.alpha = .5 - dangerInterval / 20.;
+            Color c = WHITE; c.alpha = .5 - dangerInterval / 20.;
             ragd.drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 3, i + 5 + wid, WIN1_HEIGHT - 7, c);
         }
-        glColor4f(1, 1, 1, 1);
+        WHITE.gl();
         ragd.drawTileSuperSpe(i, WIN1_HEIGHT - 24, Z_MENU + 4, 106, 20, getMenuTex(), 0, 192, 106, 20);
-        renderText(strings[k], 4, i + 53, WIN1_HEIGHT - 20, Z_MENU + 5, CENTER, black);
+        renderText(strings[k], 4, i + 53, WIN1_HEIGHT - 20, Z_MENU + 5, CENTER, BLACK);
         k++;
     }
 }
@@ -151,7 +157,7 @@ void Start::renderSidePanels() {
     ragd.drawTileSuperSpe(WIN1_WIDTH, 30                  , Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
     ragd.drawTileSuperSpe(WIN1_WIDTH, 30 + SWIN_HEIGHT / 2, Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
 
-    static const string panelNames[] = {"", "", "Stats", "Skills", "Inv", "", "", "Map", "Notes"};
+    static const std::string panelNames[] = {"", "", "Stats", "Skills", "Inv", "", "", "Map", "Notes"};
     int k = 0;
     for (int i = PANEL_TOPSTART + 1; i < PANEL_TOPEND; i++) {
         int xd = 252;
@@ -161,7 +167,7 @@ void Start::renderSidePanels() {
             siz = 3;
         }
         ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, 0, Z_MENU, 65, 30, getMenuTex(), xd, 162, 65, 30);
-        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12, Z_MENU + 1, CENTER, black);
+        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12, Z_MENU + 1, CENTER, BLACK);
         k++;
     }
     k = 0;
@@ -173,30 +179,30 @@ void Start::renderSidePanels() {
             siz = 3;
         }
         ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, SWIN_HEIGHT / 2, Z_MENU, 65, 30, getMenuTex(), xd, 162, 65, 30);
-        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12 + SWIN_HEIGHT / 2, Z_MENU + 1, CENTER, black);
+        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12 + SWIN_HEIGHT / 2, Z_MENU + 1, CENTER, BLACK);
         k++;
     }
 
     static const int toff = 50;
     static const int loff = 20;
     if (topPanel == PANEL_STATS) {
-        static const string statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
+        static const std::string statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
         Unit* p = player->getUnit();
-        renderText("  HP: " + its(p->getStatValue(S_HP)) + "/" + its(p->getStatValue(S_MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, forest);
-        renderText("  MANA: " + its(p->getStatValue(S_MANA)) + "/" + its(p->getStatValue(S_MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, navy);
+        renderText("  HP: " + its(p->getStatValue(S_HP)) + "/" + its(p->getStatValue(S_MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, FOREST);
+        renderText("  MANA: " + its(p->getStatValue(S_MANA)) + "/" + its(p->getStatValue(S_MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, NAVY);
         for (int i = S_STR; i <= S_CHA; i++) {
             int base = p->getStatValue(i - 9);
             int main = p->getStatValue(i);
-            string s;
+            std::string s;
             if (main != base) s = statNames[i - S_STR] + "\\p" + its(main) + "\\z(" + its(base) + ")";
             else s = statNames[i - S_STR] + "\\z" + its(main);
-            renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, black);
+            renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, BLACK);
         }
-        renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, black);
-        renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, dark(teal));
+        renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, BLACK);
+        renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, TEAL.darken());
 
-        renderText("Level " + its(player->getUnit()->getStatValue(S_LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, black);
-        renderText("\\q" + its(player->getUnit()->theTime) + "\\z ticks", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 80, Z_MENU + 1, RIGHT, dark(red));
+        renderText("Level " + its(player->getUnit()->getStatValue(S_LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, BLACK);
+        renderText("\\q" + its(player->getUnit()->theTime) + "\\z ticks", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 80, Z_MENU + 1, RIGHT, RED.darken());
     } else if (topPanel == PANEL_SKILLS) {
         static const int numFunctionalSkills = 12;
         static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CHANN, SKL_QCAST, SKL_LEARN, SKL_SEARC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
@@ -205,33 +211,33 @@ void Start::renderSidePanels() {
         for (int i = 0; i < numFunctionalSkills; i++) {
             int level = player->getSkillLevel(functionalSkills[i]);
             if (/*level*/true) {
-                renderText(capitalize(skillNames[functionalSkills[i]]), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, dark(olive));
+                renderText(capitalize(SKILL_NAMES[functionalSkills[i]]), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, OLIVE.darken());
                 int eve = player->getSkillExpPercent(functionalSkills[i]);
-                string s = " (";
+                std::string s = " (";
                 if (eve < 10) s = "  (";
                 int leve = level / 10;
                 int evel = level % 10;
-                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, dark(olive));
+                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, OLIVE.darken());
                 k++;
             }
         }
-        for (map<int, playerSpell>::iterator i = player->getSpellsBegin(); i != player->getSpellsEnd(); i++) {
+        for (std::map<int, PlayerSpell>::iterator i = player->getSpellsBegin(); i != player->getSpellsEnd(); ++i) {
             int level = i->second.level;
             if (/*level*/true) {
                 int spellIndex = i->first << 2;
-                renderText(capitalize(getAbility(spellIndex)->getName()), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, dark(teal));
+                renderText(capitalize(getAbility(spellIndex)->getName()), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, TEAL.darken());
                 int eve = i->second.exp * 100 / (int)(pow(level + 1, 1.1) * 2.f);
-                string s = " (";
+                std::string s = " (";
                 if (eve < 10) s = "  (";
                 int leve = level / 10;
                 int evel = level % 10;
-                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, dark(teal));
+                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, TEAL.darken());
                 k++;
             }
         }
         if (!k) {
-            renderText("I'm sorry, but you currently", 2, WIN1_WIDTH + loff, toff, Z_MENU + 2, LEFT, black);
-            renderText("lack any skill levels.", 2, WIN1_WIDTH + loff, toff + 20, Z_MENU + 2, LEFT, black);
+            renderText("I'm sorry, but you currently", 2, WIN1_WIDTH + loff, toff, Z_MENU + 2, LEFT, BLACK);
+            renderText("lack any skill levels.", 2, WIN1_WIDTH + loff, toff + 20, Z_MENU + 2, LEFT, BLACK);
         }
     }
 
@@ -243,53 +249,46 @@ void Start::renderSidePanels() {
         int k = 0;
         for (int j = z->getHeight() - 1; j >= 0; j--) {
             for (int i = 0; i < z->getWidth(); i++) {
-                Location* loc = z->getLocationAt(i, j);
-                color c;
-                if (player->getUnit()->x == i && player->getUnit()->y == j) {
-                    c = magenta;
+                Coord pos = Coord(i, j);
+                Location* loc = z->getLocationAt(pos);
+                Color c;
+                if (player->getUnit()->pos == pos) {
+                    c = MAGENTA;
                 } else if (visibilities[j * z->getWidth() + i] < 2) {
-                    pair<int, int> p = player->getMemoryBottom(i, j);
+                    std::pair<int, int> p = player->getMemoryBottom(pos);
                     if (p.first == 5) {
-                        c = black;
+                        c = BLACK;
                     } else {
                         if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
-                            c = silver;
+                            c = SILVER;
                         } else if (loc->isClosedDoor() || loc->isOpenDoor()) {
-                            c = brown;
+                            c = BROWN;
                         } else if (loc->structure == S_HIDDENDOOR) {
-                            c.red = MAX_HEIGHT * 2;
-                            c.green = MAX_HEIGHT * 2;
-                            c.blue = MAX_HEIGHT * 2;
+                            c = Color(MAX_HEIGHT * 2);
                         } else {
-                            c.red = loc->height * 2;
-                            c.green = loc->height * 2;
-                            c.blue = loc->height * 2;
+                            c = Color(loc->height * 2);
                         }
                     }
                 } else if (loc->hasUnit()) {
-                    c = red;
+                    c = RED;
                 } else if (loc->structure != S_NONE) {
                     if (loc->structure == S_STAIRUP || loc->structure == S_STAIRDOWN) {
-                        c = silver;
+                        c = SILVER;
                     } else if (loc->isOpenDoor()) {
-                        c = dark(tann);
+                        c = TAN.darken();
                     } else if (loc->isClosedDoor()) {
-                        c = brown;
+                        c = BROWN;
                     } else if (loc->structure == S_ROCK) {
-                        c = charcoal;
+                        c = CHARCOAL;
                     } else if (loc->structure == S_HIDDENDOOR) {
-                        c.red = MAX_HEIGHT * 3 + 32;
-                        c.green = MAX_HEIGHT * 3 + 32;
-                        c.blue = MAX_HEIGHT * 3 + 32;
+                        c = Color(MAX_HEIGHT * 3 + 32);
                     } else {
-                        c = pink;
+                        c = PINK;
                     }
                 } else if (loc->hasItems()) {
-                    c = green;
+                    c = GREEN;
                 } else {
-                    c.red = loc->height * 3 + 32;
-                    c.green = loc->height * 3 + 32;
-                    c.blue = loc->height * 3 + 32;
+                    c = Color(loc->height * 3 + 32);
                 }
                 datas[k++] = c.red;
                 datas[k++] = c.green;
@@ -303,14 +302,14 @@ void Start::renderSidePanels() {
         glPixelZoom(3, 3);
         glDrawPixels(z->getWidth(), z->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, datas);
 
-        renderText(player->getZone()->getName(), 2, loff + WIN1_WIDTH, SWIN_HEIGHT / 2 + toff + 240, Z_MENU + 1, LEFT, charcoal);
+        renderText(player->getZone()->getName(), 2, loff + WIN1_WIDTH, SWIN_HEIGHT / 2 + toff + 240, Z_MENU + 1, LEFT, CHARCOAL);
     } else if (botPanel == PANEL_NOTES) {
         for (int i = 0; i < NUM_NOTELINES; i++) {
-            renderText(theNotes[i], 2, WIN1_WIDTH + loff, i * 12 + SWIN_HEIGHT / 2 + 30, Z_MENU + 1, LEFT, black);
+            renderText(theNotes[i], 2, WIN1_WIDTH + loff, i * 12 + SWIN_HEIGHT / 2 + 30, Z_MENU + 1, LEFT, BLACK);
         }
         if (notesSelected && notesSelected < NUM_NOTELINES) {
             if (interval % 32 < 16) {
-                drawBox(WIN1_WIDTH + 8 * theNotes[notesSelected].size() + loff - 4, notesSelected * 12 + SWIN_HEIGHT / 2 + 28, Z_MENU + 2, 1, 0, black);
+                drawBox(WIN1_WIDTH + 8 * theNotes[notesSelected].size() + loff - 4, notesSelected * 12 + SWIN_HEIGHT / 2 + 28, Z_MENU + 2, 1, 0, BLACK);
             }
         }
     }
@@ -330,28 +329,20 @@ void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
     ragd.drawTileSuperSpe(x2 - 16, y2 - 16, Z_MENU, 16  , 16  , getMenuTex(), 32, 64, 16, 16);
 }
 
-color selectStatColor(int value, int i) {
+Color selectStatColor(int value, int i) {
     if (i == S_PENALTY) value = -value;
-    color c;
-    c.alpha = 0;
     if (value == 0) {
-        return black;
+        return BLACK;
     } else if (value > 0) {
-        c.red = 0;
-        c.green = 4 * min(value, 32);
-        c.blue = 128 - 4 * min(value, 32);
-    } else {
-        c.red = 63 + 8 * min(-value, 24);
-        c.green = 0;
-        c.blue = 0;
+        return Color(0, 4 * std::min(value, 32), 128 - 4 * std::min(value, 32));
     }
-    return c;
+    return Color(63 + 8 * std::min(-value, 24), 0, 0);
 }
 
 void Start::renderMenu() {
-    static const color weightColors[] = {tar, black, black, dark(dark(purple)), dark(purple), purple};
-    static const color valueColors[] = {tar, black, dark(brown), dark(amber), olive, yellow};
-    static const string dTypeNames[] = {"none", "bludgeon", "slashing", "piercing", "maaaaagic"};
+    static const Color weightColors[] = {TAR, BLACK, BLACK, PURPLE.darken().darken(), PURPLE.darken(), PURPLE};
+    static const Color valueColors[] = {TAR, BLACK, BROWN.darken(), AMBER.darken(), OLIVE, YELLOW};
+    static const std::string dTypeNames[] = {"none", "bludgeon", "slashing", "piercing", "maaaaagic"};
     if (state == STATE_MENU) {
         if (selected >= MAX_MENU_ITEMS + selectedShift) {
             selectedShift = selected - MAX_MENU_ITEMS + 1;
@@ -361,12 +352,12 @@ void Start::renderMenu() {
 
         ItemFolder* topFolder = folderStack.top();
         int numItems = topFolder->getNumItems();
-        int numDisplayedItems = min(min(MAX_MENU_ITEMS, numItems), numItems - selectedShift);
+        int numDisplayedItems = std::min(std::min(MAX_MENU_ITEMS, numItems), numItems - selectedShift);
         int height = 28 * numDisplayedItems + 88;
         int offset = (WIN1_HEIGHT - height) / 2;
 
         int place = offset + 72 + 28 * (selected - selectedShift);
-        int dist = abs(curArrowY - place);
+        int dist = std::abs(curArrowY - place);
         int speed = 3 + dist / 20;
         if (curArrowY < place - speed) {
             curArrowY += speed;
@@ -385,44 +376,44 @@ void Start::renderMenu() {
             graphic g = itemType->getGraphic(items[k].quantityCharge);
             int d = offset + 64 + 28 * i;
             ragd.drawTile(28 + 8 * (k % 2), d, Z_MENU + i + 1, getTexture(g.tex), g.loc);
-            renderText(capitalize(itemType->getName()), 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, black);
-            if (items[k].quantityCharge > 1 && typeStacks[itemType->getType()]) {
-                renderText(its(items[k].quantityCharge), 1, 50 + 8 * (k % 2), d + 16, Z_MENU + i + 2, LEFT, black);
+            renderText(capitalize(itemType->getName()), 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, BLACK);
+            if (items[k].quantityCharge > 1 && TYPE_STACKS[itemType->getType()]) {
+                renderText(its(items[k].quantityCharge), 1, 50 + 8 * (k % 2), d + 16, Z_MENU + i + 2, LEFT, BLACK);
             }
         }
 
-        ragd.drawTileSpe(8, curArrowY, Z_MENU + 20, getMenuTex(), arrowX[(interval % 40) / 4], arrowY[(interval % 40) / 4], 16);
+        ragd.drawTileSpe(8, curArrowY, Z_MENU + 20, getMenuTex(), ARROW_X[(interval % 40) / 4], ARROW_Y[(interval % 40) / 4], 16);
         if (selectedShift > 0) {
-            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset          + abs(interval % 24 / 2 - 6) + 36, Z_MENU, 24, 16, getMenuTex(), 48, 48, 32, -16);
+            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset          + std::abs(interval % 24 / 2 - 6) + 36, Z_MENU, 24, 16, getMenuTex(), 48, 48, 32, -16);
         }
         if (numItems - selectedShift > MAX_MENU_ITEMS) {
-            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset + height - abs(interval % 24 / 2 - 6) - 10, Z_MENU, 24, 16, getMenuTex(), 48, 32, 32,  16);
+            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset + height - std::abs(interval % 24 / 2 - 6) - 10, Z_MENU, 24, 16, getMenuTex(), 48, 32, 32,  16);
         }
         glColor4f(1, 1, 1, .5);
         ragd.drawTileSuperSpe(2, offset + 18, Z_MENU, IM_WID + 36, 16, getMenuTex(), 0, 80, 64, 16);
-        glColor4f(1, 1, 1, 1);
-        renderText(menuActionNames[menuAction]    , 2, 4              , offset + 20, Z_MENU + 1, LEFT  , black);
-        renderText(menuActionNames[menuAction + 1], 3, 20 + IM_WID / 2, offset + 20, Z_MENU + 1, CENTER, black);
-        renderText(menuActionNames[menuAction + 2], 2, 36 + IM_WID    , offset + 20, Z_MENU + 1, RIGHT , black);
+        WHITE.gl();
+        renderText(MENU_ACTION_NAMES[menuAction]    , 2, 4              , offset + 20, Z_MENU + 1, LEFT  , BLACK);
+        renderText(MENU_ACTION_NAMES[menuAction + 1], 3, 20 + IM_WID / 2, offset + 20, Z_MENU + 1, CENTER, BLACK);
+        renderText(MENU_ACTION_NAMES[menuAction + 2], 2, 36 + IM_WID    , offset + 20, Z_MENU + 1, RIGHT , BLACK);
 
         Item selectedItem = items[selected];
         ItemType* selectedItemType = getItemType(selectedItem.itemType);
         int selectedItemTypeType = selectedItemType->getType();
         if (selectedItemTypeType >= 20) {
-            static vector<pair<string, color> > lines;
+            static std::vector<std::pair<std::string, Color> > lines;
             static unsigned int descLen;
             static Item prevItem;
             if (prevItem.itemType != selectedItem.itemType || prevItem.quantityCharge != selectedItem.quantityCharge || prevItem.form != selectedItem.form) {
                 prevItem = items[selected];
                 lines.clear();
 
-                string desc = selectedItemType->getDescription() + " ";
-                string nextLine = " ";
+                std::string desc = selectedItemType->getDescription() + " ";
+                std::string nextLine = " ";
                 int lastWord = 0;
                 for(unsigned int i = 0; i < desc.size(); i++) {
                     if (desc[i] == ' ') {
                         if (nextLine.size() + (i - lastWord) > 29) {
-                            lines.push_back(pair<string, color>(nextLine, dark(glaucous)));
+                            lines.push_back(std::pair<std::string, Color>(nextLine, GLAUCOUS.darken()));
                             nextLine = desc.substr(lastWord, i - lastWord);
                         } else {
                             nextLine += " " + desc.substr(lastWord, i - lastWord);
@@ -430,32 +421,27 @@ void Start::renderMenu() {
                         lastWord = i + 1;
                     }
                 }
-                lines.push_back(pair<string, color>(nextLine, dark(glaucous)));
+                lines.push_back(std::pair<std::string, Color>(nextLine, GLAUCOUS.darken()));
                 descLen = lines.size();
-                lines.push_back(pair<string, color>("", black));
+                lines.push_back(std::pair<std::string, Color>("", BLACK));
 
                 //first it displays weight and value
                 int weightValue = selectedItemType->getStatValue(S_WEIGHT);
-                lines.push_back(pair<string, color>(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
+                lines.push_back(std::pair<std::string, Color>(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
                 int valueValue = selectedItemType->getStatValue(S_VALUE);
-                lines.push_back(pair<string, color>(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
+                lines.push_back(std::pair<std::string, Color>(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
 
                 //then it displays damage and AC
-                color c;
-                c.alpha = 0;
+                Color c;
                 if (selectedItemType->hasStat(S_IDAMAGE, false)) {
                     int damVal = selectedItemType->getStatValue(S_IDAMAGE);
-                    c.red = 2 * min(damVal, 32);
-                    c.blue = 2 * min(damVal, 32);
-                    c.green = 2 * min(damVal, 32);
-                    lines.push_back(pair<string, color>(" " + its(damVal) + " Damage (" + capitalize(dTypeNames[weapDamTypes[selectedItemType->getStatValue(S_DTYPE)]]) + ")", c));
+                    c = Color(2 * std::min(damVal, 32));
+                    lines.push_back(std::pair<std::string, Color>(" " + its(damVal) + " Damage (" + capitalize(dTypeNames[WEAP_DAM_TYPES[selectedItemType->getStatValue(S_DTYPE)]]) + ")", c));
                 }
                 if (selectedItemType->hasStat(S_AC, false)) {
                     int acVal = selectedItemType->getStatValue(S_AC);
-                    c.red = 2 * min(acVal, 32);
-                    c.blue = 2 * min(acVal, 32);
-                    c.green = 2 * min(acVal, 32);
-                    lines.push_back(pair<string, color>(" " + its(acVal) + " AC", c));
+                    c = Color(2 * std::min(acVal, 32));
+                    lines.push_back(std::pair<std::string, Color>(" " + its(acVal) + " AC", c));
                 }
 
                 //then it displays all other visible stats
@@ -464,18 +450,18 @@ void Start::renderMenu() {
                     if (selectedItemType->hasStat(i, theStat->isItFloat())) {
                         if (theStat->isItFloat()) {
                             float value = selectedItemType->getStatValueF(i);
-                            lines.push_back(pair<string, color>(" " + its0((int)value) + " " + capitalize(theStat->getName()), selectStatColor((int)value, i)));
+                            lines.push_back(std::pair<std::string, Color>(" " + its0((int)value) + " " + capitalize(theStat->getName()), selectStatColor((int)value, i)));
                         } else {
                             int value = selectedItemType->getStatValue(i);
-                            lines.push_back(pair<string, color>(" " + its0(value) + " " + capitalize(theStat->getName()), selectStatColor(value, i)));
+                            lines.push_back(std::pair<std::string, Color>(" " + its0(value) + " " + capitalize(theStat->getName()), selectStatColor(value, i)));
                         }
                     }
                 }
 
-                lines.push_back(pair<string, color>("", black));
+                lines.push_back(std::pair<std::string, Color>("", BLACK));
                 //then it displays any abilities it may have
-                for (set<unsigned short>::iterator i = selectedItemType->getAbilitiesBegin(); i != selectedItemType->getAbilitiesEnd(); i++) {
-                    lines.push_back(pair<string, color>("  " + capitalize(getAbility(*i)->getName()), dark(teal)));
+                for (std::set<unsigned short>::iterator i = selectedItemType->getAbilitiesBegin(); i != selectedItemType->getAbilitiesEnd(); ++i) {
+                    lines.push_back(std::pair<std::string, Color>("  " + capitalize(getAbility(*i)->getName()), TEAL.darken()));
                 }
             }
             height = 32 + 30 + 12 * lines.size();
@@ -484,7 +470,7 @@ void Start::renderMenu() {
             glColor4f(1, 1, 1, .5);
             int nLen = selectedItemType->getName().size();
             ragd.drawTileSuperSpe(IM_WID + 132 - nLen * 7, offset + 9, Z_MENU + 1, 14 * nLen + 8, 32, getMenuTex(), 0, 80, 64, 16);
-            renderText(capitalize(selectedItemType->getName()), 5, IM_WID + 136, offset + 16, Z_MENU + 2, CENTER, black);
+            renderText(capitalize(selectedItemType->getName()), 5, IM_WID + 136, offset + 16, Z_MENU + 2, CENTER, BLACK);
             int f = 4;
             for (unsigned int i = 0; i < lines.size(); i++) {
                 if (i == descLen) f = 3;
@@ -495,6 +481,7 @@ void Start::renderMenu() {
 }
 
 void Start::renderMessages() {
+    using namespace std;
     ragd.drawTileSuperSpe(0, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 0, 96, 32, 96);
     int x;
     for (x = 32; x < CWIN_WIDTH - 64; x += 32) {
@@ -504,24 +491,24 @@ void Start::renderMessages() {
     ragd.drawTileSuperSpe(CWIN_WIDTH - 32, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 64, 96, 32, 96);
 
     for (int i = 7 - min((int)messages.size(), 7); i < 7; i++) {
-        pair<string, color> completeMess = messages[messages.size() - 7 + i];
+        pair<string, Color> completeMess = messages[messages.size() - 7 + i];
         renderText(completeMess.first, 2, 10, WIN1_HEIGHT + 15 + 11 * i, Z_MENU + 1, LEFT, completeMess.second);
     }
 
     int len = 1;
     int fl = 0;
     static unsigned int limit = WIN1_WIDTH / 8 - 2;
-    for (map<int, pair<string, color> >::iterator i = statusies.begin(); i != statusies.end();) {
+    for (map<int, pair<string, Color> >::iterator i = statusies.begin(); i != statusies.end();) {
         string s = i->second.first;
         if (s.size() + len > limit) {
             fl++;
             len = 1;
         }
-        color c = i->second.second;
+        Color c = i->second.second;
         renderText(s, 3, len * 8, WIN1_HEIGHT - 40, Z_MENU, LEFT, c);
         len += s.size() + 2;
         if (++i != statusies.end()) {
-            renderText(", ", 3, len * 8, WIN1_HEIGHT - 40 - fl * 14, Z_MENU, LEFT, black);
+            renderText(", ", 3, len * 8, WIN1_HEIGHT - 40 - fl * 14, Z_MENU, LEFT, BLACK);
             len += 2;
         }
     }
@@ -538,10 +525,9 @@ bool is_to_be_deleted(Unit* u) {
 }
 
 void Start::renderGround() {
-
     Zone* z = player->getZone();
-    int x = player->getUnit()->x;
-    int y = player->getUnit()->y;
+    int x = player->getUnit()->pos.x;
+    int y = player->getUnit()->pos.y;
 
     glPushMatrix();
     glTranslatef(-(int)ragd.camX + WIN1_WIDTH / 2 - 16, -(int)ragd.camY + WIN1_HEIGHT / 2 - 16, 0);
@@ -549,6 +535,7 @@ void Start::renderGround() {
     ragd.camX = x * TILE_SIZE;
     ragd.camY = y * TILE_SIZE;
 
+    using namespace std;
     int maxXTiles = WIN1_WIDTH / TILE_SIZE;
     int maxYTiles = WIN1_HEIGHT / TILE_SIZE;
     int iMin = max(0, x - maxXTiles / 2 - 1);
@@ -565,24 +552,25 @@ void Start::renderGround() {
         for (int j = jMin; j < jMax; j++) {
             renderAtEnd[tot] = {-1, -1, -1};
             tot++;
+            Coord pos = Coord(i, j);
             int locX = i * TILE_SIZE;
             int locY = j * TILE_SIZE;
             bool isMemory = false;
             if (visibilities[i + j * z->getWidth()] < 2) {
-                pair<int, int> botMems = player->getMemoryBottom(i, j);
+                pair<int, int> botMems = player->getMemoryBottom(pos);
                 if (botMems.first == 5) {
-                    ragd.drawColorBox(locX, locY, Z_EFFECT - 1, locX + TILE_SIZE, locY + TILE_SIZE, black);
-                    glColor4f(1, 1, 1, 1);
+                    ragd.drawColorBox(locX, locY, Z_EFFECT - 1, locX + TILE_SIZE, locY + TILE_SIZE, BLACK);
+                    WHITE.gl();
                     continue;
                 }
                 isMemory = true;
             }
-            Location* loc = z->getLocationAt(i, j);
+            Location* loc = z->getLocationAt(pos);
             int h = loc->height;
             if (loc->isOpenDoor() || loc->isClosedDoor() || loc->structure == S_HIDDENDOOR) {
                 h = MAX_HEIGHT;
             }
-            float darkness = (double)(h*2 + 16) / (MAX_HEIGHT*3);
+            float darkness = (double)(h * 2 + 16) / (MAX_HEIGHT*3);
 
             if (isMemory) {
                 darkness /= 2;
@@ -606,24 +594,25 @@ void Start::renderGround() {
                 ragd.drawTile(locX, locY, TZ, tex, g.loc);
             } else if (g.type == TT_SMOOTH || g.type == TT_SMOOTHDOWN || g.type == TT_SMOOTHUP) {
                 int b = g.border;
-                int wid = tex->width / TILE_SIZE;
+                int wid = tex->getWidth() / TILE_SIZE;
                 int x1 = (g.loc % wid) * TILE_SIZE;
                 int y1 = (g.loc / wid) * TILE_SIZE;
 
-                Location* locs[8] = {z->safeGetLocationAt(i-1, j-1), z->safeGetLocationAt(i, j-1), z->safeGetLocationAt(i+1, j-1),
-                                z->safeGetLocationAt(i-1, j), z->safeGetLocationAt(i+1, j),
-                                z->safeGetLocationAt(i-1, j+1), z->safeGetLocationAt(i, j+1), z->safeGetLocationAt(i+1, j+1)};
+                Location* locs[8] = {z->safeGetLocationAt(pos + DIRS[7]), z->safeGetLocationAt(pos + DIRS[8]), z->safeGetLocationAt(pos + DIRS[9]),
+                                     z->safeGetLocationAt(pos + DIRS[4]), z->safeGetLocationAt(pos + DIRS[6]),
+                                     z->safeGetLocationAt(pos + DIRS[1]), z->safeGetLocationAt(pos + DIRS[2]), z->safeGetLocationAt(pos + DIRS[3])};
+                // TODO fix all this
                 Tile* tiles[8];
-                for (int i = 0; i < 8; i++) tiles[i] = getTile(locs[i]->tile);
+                for (int k = 0; k < 8; k++) tiles[k] = getTile(locs[k]->tile);
 
                 bool sm[8];
                 for (int k = 0; k < 8; k++) {
-                    sm[k] = tiles[k]->getGraphic().border == b && tiles[k] != tile;
+                    sm[k] = (tiles[k]->getGraphic().border == b) && (tiles[k] != tile);
                 }
 
                 if (g.type == TT_SMOOTHUP || g.type == TT_SMOOTHDOWN) {
                     int heights[8];
-                    for (int i = 0; i < 8; i++) heights[i] = locs[i]->height;
+                    for (int k = 0; k < 8; k++) heights[k] = locs[k]->height;
 
                     for (int k = 0; k < 8; k++) {
                         if ((heights[k] >= h - 2 && g.type == 2) || (heights[k] <= h + 2 && g.type == 3)) {
@@ -678,11 +667,11 @@ void Start::renderGround() {
             }
             if (isMemory) {
                 glColor4f(.5, .5, .5, 1);
-                pair<int, int> botMems = player->getMemoryBottom(i, j);
+                pair<int, int> botMems = player->getMemoryBottom(pos);
                 if (botMems.first != 7 && botMems.first != 5) {
                     ragd.drawTile(locX, locY, Z_EFFECT - 2, getTexture(botMems.first), botMems.second);
                 }
-                pair<int, int> topMems = player->getMemoryTop(i, j);
+                pair<int, int> topMems = player->getMemoryTop(pos);
                 if (topMems.first != 7 && botMems.first != 5) {
                     ragd.drawTile(locX, locY, Z_EFFECT - 1, getTexture(topMems.first), topMems.second);
                 }
@@ -734,7 +723,7 @@ void Start::renderGround() {
         }
     }
     glColor4f(1, 1, 1, 1);
-    drawBox(x + 50, y + 50, Z_EFFECT, 4, interval, scarlet);
+    drawBox(x + 50, y + 50, Z_EFFECT, 4, interval, SCARLET);
     updateEffects(x, y);
     if (state == STATE_TARGET) {
         //51-55
@@ -742,7 +731,7 @@ void Start::renderGround() {
         int num = (interval % 40) / 4;
         if (num >= 5) num += 62;
         else num += 51;
-        ragd.drawTile(unitsInRange[stIndex]->x * TILE_SIZE, unitsInRange[stIndex]->y * TILE_SIZE, Z_MENU, getMenuTex(), num);
+        ragd.drawTile(unitsInRange[stIndex]->pos.x * TILE_SIZE, unitsInRange[stIndex]->pos.y * TILE_SIZE, Z_MENU, getMenuTex(), num);
     }
 }
 
@@ -779,29 +768,29 @@ int offX[] = {  0, 132, 0, 128, 132, 266};
 int offY[] = {192,   0, 0, 157, 72 ,   0};
 int numX[] = {32, 16, 16, 16, 20, 16};
 
-//                    a      b     c     d           e       f        g      h          i       j     k     l     m        n     o       p       q      r    s       t     u     v       w      x     y       z
-color textColors[] = {azure, blue, cyan, chartreuse, forest, fuchsia, green, harlequin, indigo, jade, rose, lime, magenta, navy, orange, purple, brown, red, salmon, tann, gray, violet, white, grey, yellow, black};
-void Start::renderText(string text, int size, int x, int y, int z, int align, color c) {
+//                    a      b     c     d           e       f        g      h          i       j     k     l     m
+Color textColors[] = {AZURE, BLUE, CYAN, CHARTREUSE, FOREST, FUCHSIA, GREEN, HARLEQUIN, INDIGO, JADE, ROSE, LIME, MAGENTA,
+//                      n     o       p       q      r    s       t    u     v       w      x     y       z
+                        NAVY, ORANGE, PURPLE, BROWN, RED, SALMON, TAN, GRAY, VIOLET, WHITE, GREY, YELLOW, BLACK};
+void Start::renderText(std::string text, int size, int x, int y, int z, int align, Color c) {
     int a = 0;
     if (align == CENTER) {
         a = text.size() * fontWid[size] / 2;
     } else if (align == RIGHT) {
         a = text.size() * fontWid[size];
     }
-
     int w = fontWid[size];
     int h = fontHei[size];
-    glColor3f(c.red / 255., c.green / 255., c.blue / 255.);
+    c.gl();
     int j = 0;
     for (unsigned int i = 0; i < text.size(); i++, j++) {
         if (text[i] == '\\') {
             i++; j--;
-            color newC = textColors[text[i] - 'a'];
-            glColor3f(newC.red / 255., newC.green / 255., newC.blue / 255.);
+            Color newC = textColors[text[i] - 'a'];
+            newC.gl();
         } else {
             ragd.drawTileSuperSpe(x + j * w - a, y, z, w, h, getFontTex(), offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
         }
     }
-
-    glColor3f(1, 1, 1);
+    WHITE.gl();
 }

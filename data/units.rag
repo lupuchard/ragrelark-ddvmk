@@ -73,7 +73,7 @@ ai=1
 unarmed_type=2
 
 split=2
-tslim1
+spawn=tslim1
 *
 END
 
@@ -100,7 +100,7 @@ ai=1
 unarmed_type=2
 
 split=2
-sslim1
+spawn=sslim1
 *
 END
 

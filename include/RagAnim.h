@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef RAGANIM_H
 #define RAGANIM_H
 
@@ -5,7 +23,7 @@
 
 enum animType{ANIM_NONE, ANIM_UNIT, ANIM_MOVEDIR, ANIM_MOVELOC, ANIM_ATTACK};
 
-typedef struct ANMAT_ {
+struct Animation {
     short type;
     unsigned char value;
     unsigned char dir;
@@ -16,20 +34,20 @@ typedef struct ANMAT_ {
     int ZY;
     float temp;
     Unit* target;
-    ANMAT_* nextAnim;
-} animation; //28 bytes
+    Animation* nextAnim;
+}; //28 bytes
 
-typedef struct REND_ {
-    animation* anim;
+struct Renderable {
+    Animation* anim;
     int z;
-    REND_(animation* a, int pz): anim(a), z(pz) { }
-    friend bool operator<(const REND_ &a, const REND_ &b) {
+    Renderable(Animation* a, int pz): anim(a), z(pz) { }
+    friend bool operator<(const Renderable &a, const Renderable &b) {
         if (a.z == b.z) {
             return a.anim < b.anim;
         }
         return a.z < b.z;
     }
-} renderable;
+};
 
 class RagAnim {
     public:
@@ -37,21 +55,21 @@ class RagAnim {
         RagAnim(RagDrawer* ragDrawer);
         virtual ~RagAnim();
 
-        void addAnim(animation* anim);
-        void drawAnim(animation* anim, int z);
+        void addAnim(Animation* anim);
+        void drawAnim(Animation* anim, int z);
         void unitAnimTest(Unit* u, int x, int y);
         void renderAnims();
         void updateAnims();
 
-        void rMoveDir(Unit* unit, int dir, int x, int y);
-        void rMoveLoc(Unit* unit, int x, int y, int endX, int endY);
-        void rAttack(int x, int y, int dir, int dType, int hType);
+        void rMoveDir(Unit* unit, int dir, Coord loc);
+        void rMoveLoc(Unit* unit, Coord begin, Coord end);
+        void rAttack(Coord loc, int dir, int dType, int hType);
     protected:
     private:
         RagDrawer* ragd;
         int tileSize;
-        vector<animation*> anims;
-        set<renderable> renderables;
+        std::vector<Animation*> anims;
+        std::set<Renderable> renderables;
 };
 
 #endif // RAGANIM_H

@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef DUNGEONSTACK_H
 #define DUNGEONSTACK_H
 
@@ -10,7 +28,7 @@ void setMobSpawner(MobSpawner* mobSpawner);
 
 class DungeonStack {
     public:
-        DungeonStack(string name, int depth, GenType genType);
+        DungeonStack(std::string name, int depth, GenType genType);
         virtual ~DungeonStack();
 
         void setLight(int light, float change = 0.f);
@@ -23,22 +41,22 @@ class DungeonStack {
         void setTileset(Tile** tileset);
 
         void createZones();
-        void genLevel(int level, vector<pair<Unit*, Zone*> >* unitsAdded);
+        void genLevel(int level, std::vector<std::pair<Unit*, Zone*> >* unitsAdded);
 
         Zone* getZone(int depth);
         int getDepth();
 
-        pair<short, short> addEntryStairs(); //creates stairs on the top floor and gives you their location
+        Coord addEntryStairs(); //creates stairs on the top floor and gives you their location
         int getNumStairs(int floor); //floor refers to the floor the stairs go down from (0 is the top floor)
-        pair<short, short> getStairLoc(int floor, int index);
+        Coord getStairLoc(int floor, int index);
     private:
         Zone** zones;
         unsigned char* skeleton;
         int depth;
         int depthReached;
         GenType genType;
-        vector<short> environments;
-        string name;
+        std::vector<short> environments;
+        std::string name;
 
         Tile** tileset;
 
@@ -59,8 +77,7 @@ class DungeonStack {
 
         int numStairs;
         float stairsChange;
-        short** stairXs;
-        short** stairYs;
+        Coord** stairLocs;
 };
 
 #endif // DUNGEONSTACK_H

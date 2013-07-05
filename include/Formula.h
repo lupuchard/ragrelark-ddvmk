@@ -1,10 +1,27 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <vector>
 #include <math.h>
 #include <string>
 #include <map>
 #include "usefulParsing.h"
 #include "FormulaUser.h"
-using namespace std;
 
 #ifndef FORMULA_H
 #define FORMULA_H
@@ -40,8 +57,8 @@ PIE  // the value pi (***) (+)
 */
 enum FOpr{O_ADD, O_SUB, O_MUL, O_DIV, O_MOD, O_POW, O_SWP, O_SIN, O_MAX, O_MIN, O_NOT, O_IFE, O_IFG, O_TRU, O_SLF, O_TIM, O_EEE, O_PIE};
 
-const double e  = 2.718281828459045;
-const double pi = 3.141592653589793;
+static const double E  = 2.718281828459045;
+static const double PI = 3.141592653589793;
 
 /*
  THE FORMULA CLASS
@@ -77,7 +94,7 @@ class Formula {
         int getLength();
     protected:
     private:
-        vector<unsigned char> commands; // A list of the commands that this formula goes through. A single command may take up multiple chars in this list.
+        std::vector<unsigned char> commands; // A list of the commands that this formula goes through. A single command may take up multiple chars in this list.
         static float floats[MAX_FLOATS];// The floats used across all formulas. There can only be a maximum of MAX_FLOATS, so it is suggested to refraim from use.
         static int numFloats;           // The number of floats currently used.
 };

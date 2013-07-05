@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef PLAYER_H
 #define PLAYER_H
 
@@ -7,7 +25,7 @@
 
 #define NUM_SKILLS 56
 
-const string skillNames[NUM_SKILLS] =
+static const std::string SKILL_NAMES[NUM_SKILLS] =
     {"athleticism", "melee combat", "unarmed combat", "lifting", "fortitude", "resist poison", "resist burn", "resist cold", "channeling", "quick casting", "concentration", "aff4",
     "learning", "knowledge", "int3", "int4", "searching", "sight", "hearing", "far shot", "dodge", "ranged combat", "throwing", "critical",
     "bartering", "intimidation", "charm", "cha4", "armor", "shields", "def3", "def4",
@@ -19,12 +37,12 @@ typedef struct {
     unsigned char* bottomLoc;
     unsigned char* topTex;
     unsigned char* topLoc;
-} zoneMemory;
+} ZoneMemory;
 
 typedef struct {
     int exp;
     unsigned short level;
-} playerSpell;
+} PlayerSpell;
 
 class Player {
     public:
@@ -38,11 +56,11 @@ class Player {
         void setZone(Zone* z);
         void setArea(Area* a);
         void setUnitProto(StatHolder* p);
-        void setName(string name);
+        void setName(std::string name);
 
-        pair<int, int> getMemoryBottom(int x, int y);
-        pair<int, int> getMemoryTop(int x, int y);
-        void setMemory(int x, int y, unsigned char bt, unsigned char bl, unsigned char tt, unsigned char tl);
+        std::pair<int, int> getMemoryBottom(Coord c);
+        std::pair<int, int> getMemoryTop(Coord c);
+        void setMemory(Coord c, unsigned char bt, unsigned char bl, unsigned char tt, unsigned char tl);
 
         int gainSkillExp(SkillType skill, int xpGained); //returns the change in the skills level after the xp gain
         unsigned short getSkillLevel(SkillType skill);
@@ -50,24 +68,24 @@ class Player {
 
         int getSpellLevel(int spellIndex);
         int trainSpell(int spellIndex, int xpGained);
-        const map<int, playerSpell>::iterator getSpellsBegin();
-        const map<int, playerSpell>::iterator getSpellsEnd();
+        const std::map<int, PlayerSpell>::iterator getSpellsBegin();
+        const std::map<int, PlayerSpell>::iterator getSpellsEnd();
 
         int takeFromXpBank(int amount);
         void bankXp(int amount);
         int getXpBank();
     protected:
     private:
-        string name;
+        std::string name;
         Unit* unit;
         Zone* zone;
         Area* area;
         PrimeFolder* primeFolder;
-        map<Zone*, zoneMemory*> memoryBank;
-        zoneMemory* currentZoneMemory;
+        std::map<Zone*, ZoneMemory*> memoryBank;
+        ZoneMemory* currentZoneMemory;
         int skillExps[NUM_SKILLS];
         unsigned short skillLevels[NUM_SKILLS];
-        map<int, playerSpell> playerSpells;
+        std::map<int, PlayerSpell> playerSpells;
 
         int xpBank;
 };

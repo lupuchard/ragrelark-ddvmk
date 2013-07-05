@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Start.h"
 
 void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
@@ -23,10 +41,10 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                 bool success = false;
                 if (ch >= 10) success = true;
                 else if (ch > 0) {
-                    cout << "ch " << (int)ch << endl;
+                    //cout << "ch " << (int)ch << endl;
                     if (rand() % 10 < ch) success = true;
                 } else {
-                    addMessage("You are not skilled enough to cast that spell!", black);
+                    addMessage("You are not skilled enough to cast that spell!", BLACK);
                     return;
                 }
                 unit->modifyStat(S_MANA, -ability->getCost());
@@ -40,15 +58,15 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                     //calc power
                     switch(spellI) {
                     case SPELL_LIGHT:
-                        if (unit == player->getUnit()) addMessage("You shed some light on the situation.", black);
-                        myFovCirclePerm(zone, unit->x, unit->y, 6, 1);
+                        if (unit == player->getUnit()) addMessage("You shed some light on the situation.", BLACK);
+                        myFovCirclePerm(zone, unit->pos, 6, 1);
                         playerFieldOfView(true);
                         break;
-                    default: if (spellI) addMessage("Hmm.", black); break;
+                    default: if (spellI) addMessage("Hmm.", BLACK); break;
                     }
                 } else {
-                    if (unit == player->getUnit()) addMessage("You miscast " + ability->getName() + ".", black);
-                    else addMessage("The " + unit->name + " messes up.", black);
+                    if (unit == player->getUnit()) addMessage("You miscast " + ability->getName() + ".", BLACK);
+                    else addMessage("The " + unit->name + " messes up.", BLACK);
                 }
                 if (unit == player->getUnit()) {
                     int expGained = 0;
@@ -56,7 +74,7 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                     if (target) {
                         int expLeft = target->getStatValue(S_EXP);
                         if (expLeft) {
-                            int expGained = min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
+                            int expGained = std::min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
                             target->modifyStat(S_EXP, -expGained);
                         }
                         sapExp(unit, target, SKL_QCAST, 1);
@@ -72,9 +90,9 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                         int leve = level / 10;
                         int evel = level % 10;
                         if (lev > 0) {
-                            addMessage("Your ability to cast " + ability->getName() + " has increased to " + its(leve) + "." + its(evel) + "!", forest);
+                            addMessage("Your ability to cast " + ability->getName() + " has increased to " + its(leve) + "." + its(evel) + "!", FOREST);
                         } else {
-                            addMessage("Your ability to cast " + ability->getName() + " has increased to " + its(leve) + "." + its(evel) + "!", maroon);
+                            addMessage("Your ability to cast " + ability->getName() + " has increased to " + its(leve) + "." + its(evel) + "!", MAROON);
                         }
                     }
                     int expReq = player->getUnit()->getStatValue(S_EXPREQ);
@@ -89,13 +107,13 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                     }
                 }
             } else if (unit == player->getUnit()) {
-                addMessage("You do not have enough mana to cast the spell '" + ability->getName() + "'.", black);
+                addMessage("You do not have enough mana to cast the spell '" + ability->getName() + "'.", BLACK);
             }
         } else if (unit == player->getUnit()) {
-            if (level) addMessage("You do not know that spell well enough yet to cast it without a spellbook.", black);
-            else addMessage("You do not know that spell.", black);
+            if (level) addMessage("You do not know that spell well enough yet to cast it without a spellbook.", BLACK);
+            else addMessage("You do not know that spell.", BLACK);
         }
     } else {
-        addMessage("That is not an existing spell.", black);
+        addMessage("That is not an existing spell.", BLACK);
     }
 }

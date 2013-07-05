@@ -1,3 +1,21 @@
+/*
+ *  Copyright 2013 Luke Puchner-Hardman
+ *
+ *  This file is part of Ragrelark.
+ *  Ragrelark is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Ragrelark is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "MobSpawner.h"
 
 bool operator<(const RandItemType& left, const RandItemType& right) {
@@ -18,7 +36,7 @@ bool operator<(const RandItemType& left, const RandItemType& right) {
 MobSpawner::MobSpawner(EnvironmentManager* em) {
     enviroManager = em;
     for (int i = 0; i < MAX_MOBS; i++) {
-        taggedMobs[i] = mob("x", NULL);
+        taggedMobs[i] = Mob("x", NULL);
     }
 }
 
@@ -52,16 +70,14 @@ MobSpawner::~MobSpawner() {
 int altXs[NUM_ALTS] = {0,  0,  1,  0, -1, -1,  1,  1, -1,  0,  2,  0, -2, -1,  1,  2,  2,  1, -1, -2, -2, -2,  2,  2, -2,  0,  3,  0, -3, -1,  1,  3,  3,  1, -1, -3, -3};
 int altYs[NUM_ALTS] = {0,  1,  0, -1,  0,  1,  1, -1, -1,  2,  0, -2,  0,  2,  2,  1, -1, -2, -2, -1,  1,  2,  2, -2, -2,  3,  0, -3,  0,  3,  3,  1, -1, -3, -3, -1,  1};
 
-Location* MobSpawner::getNear(Zone* z, int* x, int* y, bool avoidMobs, int baseHeight) {
+Location* MobSpawner::getNear(Zone* z, Coord* pos, bool avoidMobs, int baseHeight) {
     for (int i = 1; i < NUM_ALTS; i++) {
-        int ax = altXs[i] + *x;
-        int ay = altYs[i] + *y;
-        if (ax >= 0 && ay >= 0 && ax < z->getWidth() && ay < z->getWidth()) {
-            Location* nextLoc = z->getLocationAt(ax, ay);
+        Coord a = *pos + Coord(altXs[i], altYs[i]);
+        if (a.inBounds(z->getWidth(), z->getHeight())) {
+            Location* nextLoc = z->getLocationAt(a);
             if (!(avoidMobs && nextLoc->hasUnit()) && !getTile(nextLoc->tile)->blocksMove() &&
                     (baseHeight >= 0 && nextLoc->height != MAX_HEIGHT && fabs(baseHeight - nextLoc->height) <= 2)) {
-                *x = ax;
-                *y = ay;
+                *pos = a;
                 return nextLoc;
             }
         }
@@ -69,8 +85,8 @@ Location* MobSpawner::getNear(Zone* z, int* x, int* y, bool avoidMobs, int baseH
     return NULL;
 }
 
-int MobSpawner::addItemSpawnSet(string name) {
-    itemSpawnSet* s = new itemSpawnSet();
+int MobSpawner::addItemSpawnSet(std::string name) {
+    ItemSpawnSet* s = new ItemSpawnSet();
     int num = itemSpawnSets.size();
     itemSpawnSets.push_back(s);
     itemSpawnSetNameMap[name] = s;
@@ -86,17 +102,17 @@ void MobSpawner::addItemToSpawnSet(unsigned short item, unsigned int weight, uns
     itemSpawnSets[itemSpawnSetI]->insert(si);
 }
 
-int MobSpawner::addEnvironment(string name) {
-    environment e;
+int MobSpawner::addEnvironment(std::string name) {
+    Environment e;
     e.name = name;
-    e.encounterLevels = vector<encounterLevel*>();
-    e.itemSets = vector<set<itemSpawnSet*> >();
+    e.encounterLevels = std::vector<EncounterLevel*>();
+    e.itemSets = std::vector<std::set<ItemSpawnSet*> >();
     spawnings.push_back(e);
     return spawnings.size() - 1;
 }
 
-void MobSpawner::addEncounters(int type, int level, encounterLevel* encounters) {
-    environment* e = &spawnings[type];
+void MobSpawner::addEncounters(int type, int level, EncounterLevel* encounters) {
+    Environment* e = &spawnings[type];
     int curLevel = e->encounterLevels.size();
     while(curLevel <= level) {
         e->encounterLevels.push_back(NULL);
@@ -105,17 +121,17 @@ void MobSpawner::addEncounters(int type, int level, encounterLevel* encounters) 
     e->encounterLevels[level] = encounters;
 }
 
-void MobSpawner::addItemsToEncounterLevel(int type, int level, string itemSetName) {
-    environment* e = &spawnings[type];
+void MobSpawner::addItemsToEncounterLevel(int type, int level, std::string itemSetName) {
+    Environment* e = &spawnings[type];
     int curLevel = e->itemSets.size();
     while(curLevel <= level) {
-        e->itemSets.push_back(set<itemSpawnSet*>());
+        e->itemSets.push_back(std::set<ItemSpawnSet*>());
         curLevel++;
     }
     e->itemSets[level].insert(itemSpawnSetNameMap[itemSetName]);
 }
 
-int MobSpawner::hashMob(string tag) {
+int MobSpawner::hashMob(std::string tag) {
     int n = 0;
     for (unsigned int i = 0; i < tag.size(); i++) {
         n += tag[i] * (pow(10, i));
@@ -124,11 +140,13 @@ int MobSpawner::hashMob(string tag) {
 }
 
 /* Returns the index if unit in storage. */
-int MobSpawner::addMob(string name, string tag, StatHolder* u) {
-    mob theMob = mob(name, u);
+int MobSpawner::addMob(std::string name, std::string tag, StatHolder* u) {
+    using namespace std;
+    Mob mob = Mob(name, u);
     int num = hashMob(tag);
+    if (num == 0) cout << "there is a mob hashed zero named " + name + " and this might be a problem i think" << endl;
     if (taggedMobs[num].first == "x") {
-        taggedMobs[num] = theMob;
+        taggedMobs[num] = mob;
     } else {
         cout << "HASHMAP ERROR: Collision with tag \"" << tag << "\"into \"" << taggedMobs[num].first << "\"'s " << num << "." << endl;
     }
@@ -136,23 +154,21 @@ int MobSpawner::addMob(string name, string tag, StatHolder* u) {
     return 0;
 }
 
-pair<string, StatHolder*> MobSpawner::getMob(string tag) {
-    mob theMob = taggedMobs[hashMob(tag)];
-    if (theMob.first == "x") cout << "HASHMAP ERROR: Mob with tag \"" << tag << "\" does not exist." << endl;
-    return theMob;
+std::pair<std::string, StatHolder*> MobSpawner::getMob(std::string tag) {
+    Mob mob = taggedMobs[hashMob(tag)];
+    if (mob.first == "x") std::cout << "HASHMAP ERROR: Mob with tag \"" << tag << "\" does not exist." << std::endl;
+    return mob;
 }
 
-bool MobSpawner::placeMob(Unit* mob, Zone* z, int x, int y, bool allowAlt) {
-    Location* loc = z->getLocationAt(x, y);
+bool MobSpawner::placeMob(Unit* mob, Zone* z, Coord pos, bool allowAlt) {
+    Location* loc = z->getLocationAt(pos);
     if (loc->hasUnit() || loc->height == MAX_HEIGHT) {
         if (allowAlt) {
-            int nx = x;
-            int ny = y;
-            Location* place = getNear(z, &nx, &ny, true, loc->height);
+            Coord n = pos;
+            Location* place = getNear(z, &n, true, loc->height);
             if (place) {
                 place->unit = mob;
-                mob->x = nx;
-                mob->y = ny;
+                mob->pos = n;
                 return true;
             }
         }
@@ -163,33 +179,33 @@ bool MobSpawner::placeMob(Unit* mob, Zone* z, int x, int y, bool allowAlt) {
     return false;
 }
 
-Unit* MobSpawner::spawnMobSpeTag(int mobTag, Zone* z, int x, int y, bool allowAlt) {
-    return spawnMobSpe(taggedMobs[mobTag], z, x, y, allowAlt);
+Unit* MobSpawner::spawnMobSpeTag(int mobTag, Zone* z, Coord pos, bool allowAlt) {
+    return spawnMobSpe(taggedMobs[mobTag], z, pos, allowAlt);
 }
 
-Unit* MobSpawner::spawnMobSpe(mob m, Zone* z, int x, int y, bool allowAlt) {
+Unit* MobSpawner::spawnMobSpe(Mob m, Zone* z, Coord pos, bool allowAlt) {
+    int pet = m.second->getStatValue(S_PET);
+    if (pet && !(rand() % 30)) m = taggedMobs[pet];
     Unit* newUnit;
     if (m.second->getStatValue(S_SWARM)) {
         newUnit = new Swarmer(m.first, m.second);
     } else {
         newUnit = new Unit(m.first, m.second);
     }
-    newUnit->x = x;
-    newUnit->y = y;
+    newUnit->pos = pos;
     newUnit->theTime = 0; //should be set later
-    if (placeMob(newUnit, z, x, y, allowAlt)) {
+    if (placeMob(newUnit, z, pos, allowAlt)) {
         return newUnit;
     }
-    cout << "HAPPENS?" << endl;
     delete newUnit;
     return NULL;
 }
 
-void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environments, int level, int howMany, vector<pair<int, int> > possibleLocs, vector<pair<Unit*, Zone*> >* unitsAdded) {
+void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environments, int level, int howMany, std::vector<Coord> possibleLocs, std::vector<std::pair<Unit*, Zone*> >* unitsAdded) {
     //first it calculates the total weight by adding up the weights of all spawnable mobs
     int totalWeight = 0;
     for (int i = 0; i < numEnvironments; i++) {
-        encounterLevel* e = spawnings[environments[i]].encounterLevels[level];
+        EncounterLevel* e = spawnings[environments[i]].encounterLevels[level];
         if (e) {
             for (unsigned int i = 0; i < e->size(); i++) {
                 totalWeight += (*e)[i].weight;
@@ -202,14 +218,14 @@ void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environme
         double sel = (double)rand() / RAND_MAX;
         double current = 0;
         for (int i = 0; i < numEnvironments; i++) {
-            encounterLevel* e = spawnings[environments[i]].encounterLevels[level];
+            EncounterLevel* e = spawnings[environments[i]].encounterLevels[level];
             if (e) {
                 for (unsigned int i = 0; i < e->size(); i++) {
                     current += (double)(*e)[i].weight / totalWeight;
                     if (sel < current) {
                         //this mob has been chosen to spawn
 
-                        pair<int, int> location = possibleLocs[rand() %  possibleLocs.size()]; //first it selects a random position
+                        Coord location = possibleLocs[rand() %  possibleLocs.size()]; //first it selects a random position
                         int min = (*e)[i].mobMod.min;
                         int max = (*e)[i].mobMod.max;
                         int num;
@@ -221,9 +237,9 @@ void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environme
                         if (index == -2) foo = (*e)[i].mobMod.mobEquipSet->getRandIndex();
 
                         for (int k = 0; k < num; k++) {
-                            Unit* u = spawnMobSpe((*e)[i].theMob, z, location.first, location.second);
+                            Unit* u = spawnMobSpe((*e)[i].mob, z, location);
                             if (u) {
-                                unitsAdded->push_back(pair<Unit*, Zone*>(u, z));
+                                unitsAdded->push_back(std::pair<Unit*, Zone*>(u, z));
                                 if (index != -3) {
                                     MobEquips* equipment = new MobEquips;
                                     MobEquipSet* equipSet = (*e)[i].mobMod.mobEquipSet;
@@ -254,56 +270,55 @@ void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environme
     }
 }
 
-void MobSpawner::createItems(Zone* z, int numEnvironments, short* environments, int level, int howMany, vector<pair<int, int> > possibleLocs) {
-    itemSpawnSet allItems;
+void MobSpawner::createItems(Zone* z, int numEnvironments, short* environments, int level, int howMany, std::vector<Coord> possibleLocs) {
+    ItemSpawnSet allItems;
     unsigned int total = 0;
     for (int i = 0; i < numEnvironments; i++) {
-        environment* e = &spawnings[environments[i]];
+        Environment* e = &spawnings[environments[i]];
         if ((unsigned int)level < e->itemSets.size()) {
-            for (set<itemSpawnSet*>::iterator i = e->itemSets[level].begin(); i != e->itemSets[level].end(); i++) {
-                itemSpawnSet* val = *i;
+            for (std::set<ItemSpawnSet*>::iterator i = e->itemSets[level].begin(); i != e->itemSets[level].end(); ++i) {
+                ItemSpawnSet* val = *i;
                 allItems.insert(val->begin(), val->end());
             }
         }
     }
-    for (itemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); i++) {
+    for (ItemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); ++i) {
         total += i->getWeight();
     }
     for (int j = 0; j < howMany; j++) {
         double r = (double)rand() / (double)RAND_MAX;
         int totalSoFar = 0;
-        for (itemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); i++) {
+        for (ItemSpawnSet::iterator i = allItems.begin(); i != allItems.end(); ++i) {
             totalSoFar += i->getWeight();
             double p = (double)totalSoFar / total;
             if (r < p) {
-                pair<int, int> coords = possibleLocs[rand() %  possibleLocs.size()]; //fooey
+                Coord coord = possibleLocs[rand() %  possibleLocs.size()]; //fooey
                 Item item = i->genItem();
-                enviroManager->addItemToPlace(coords.first, coords.second, z, item);
+                enviroManager->addItemToPlace(coord, z, item);
                 break;
             }
         }
     }
 }
 
-void MobSpawner::overgrowth(Zone* zone, GenType genType, int sx, int sy, int ex, int ey) {
+void MobSpawner::overgrowth(Zone* zone, GenType genType, Coord start, Coord end) {
     static const int plantTag = hashMob("2growt");
     if (genType == GEN_DUNGEON) {
-        int num = (ex - sx) * (ey - sy) / 1000;
+        int num = (end.x - start.x) * (end.y - start.y) / 1000;
         for (int i = 0; i < num; i++) {
-            int x = rand() % zone->getWidth();
-            int y = rand() % zone->getHeight(); //random location
+            Coord loc = Coord(rand() % zone->getWidth(), rand() % zone->getHeight()); //random location
             int rad = rand() % 4 + 2; //random size
             blobber.makeCircle(rad);
             const bool** circle = blobber.getBlob();
             for (int i = 0; i < blobber.getWidth(); i++) {
                 for (int j = 0; j < blobber.getHeight(); j++) {
                     if (circle[i][j]) {
-                        int xi = x + i - rad;
-                        int yj = y + j - rad;
-                        if (xi >= sx && xi < ex && yj >= sy && yj < ey) {
-                            Location* locAt = zone->getLocationAt(xi, yj);
+                        int xi = loc.x + i - rad;
+                        int yj = loc.y + j - rad;
+                        if (xi >= start.x && xi < end.x && yj >= start.y && yj < end.y) {
+                            Location* locAt = zone->getLocationAt(Coord(xi, yj));
                             if (locAt->height != MAX_HEIGHT && locAt->height > MAX_HEIGHT / 4 && !locAt->hasUnit() && locAt->structure == S_NONE) {
-                                spawnMobSpeTag(plantTag, zone, xi, yj, true);
+                                spawnMobSpeTag(plantTag, zone, Coord(xi, yj), true);
                             }
                         }
                     }
