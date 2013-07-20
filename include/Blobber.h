@@ -30,7 +30,6 @@ class Blobber {
         const bool** getBlob();
         unsigned short getWidth();
         unsigned short getHeight();
-    protected:
     private:
         bool** blobArr;
         unsigned short blobWidth;

@@ -29,7 +29,6 @@ class EnemyEquipStatHolder: public StatHolder {
         float getStatValueF(int stat);
 
         void setMobEquips(MobEquips* mobEquips);
-    protected:
     private:
         MobEquips* mobEquips;
 };

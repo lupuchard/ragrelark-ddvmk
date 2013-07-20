@@ -32,13 +32,10 @@
 #define Z_SPLAT 20
 #define Z_GROUND 10
 
-//static const char X_DIRS[10] = {0, -1,  0,  1, -1,  0,  1, -1,  0,  1};
-//static const char Y_DIRS[10] = {0,  1,  1,  1,  0,  0,  0, -1, -1, -1};
-
 class RagDrawer {
     public:
         RagDrawer();
-        RagDrawer(int tileSize, Player* player);
+        RagDrawer(int tileSize, Player* player, Texture* utilTex);
         virtual ~RagDrawer();
 
         /// Draws a tile from a texture.
@@ -63,10 +60,10 @@ class RagDrawer {
 
         double camX;
         double camY;
-    protected:
     private:
         int tileSize;
         Player* player;
+        Texture* utilTex;
 };
 
 #endif // RAGDRAWER_H

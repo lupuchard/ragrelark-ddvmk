@@ -37,7 +37,7 @@ void Area::addZone(Zone* z) {
     zones.push_back(z);
 }
 
-void Area::setName(std::string n) {
+void Area::setName(String n) {
     name = n;
 }
 

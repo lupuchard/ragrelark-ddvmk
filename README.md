@@ -3,10 +3,9 @@ ragrelark-ddvmk
 
 A graphical roguelike in progress.
 
-Uses SDL, SDL_image and OpenGL.
+Uses SDL and OpenGL.
 
 There's a Code::Blocks project file for compiling.
-The executable in the Ragrelark.zip is for Linux and is somewhat outdated.
 
 __Main controls:__
 * Numpad for movement.
@@ -20,6 +19,3 @@ __Main controls:__
 * C: close door
 * ctrl: backwards in inventory
 * space: select
-
-![The great outdooooors.](/LUKK3/ragrelark-ddvmk/blob/master/pics/ragrpic1.png)
-![Simple dungeon.](/LUKK3/ragrelark-ddvmk/blob/master/pics/ragrepic2.png)

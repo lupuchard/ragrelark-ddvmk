@@ -1,0 +1,108 @@
+---
+Name: apple
+Desc: A generic tasty fruit. Tastes like fruit.
+Texture: items.png
+Tile: [9, 1]
+Type: food
+feed: 91
+weight: 4
+taste: 2
+...
+---
+Name: cheese
+Desc: Ordinary cheddar cheese.
+Texture: items3.png
+Tile: [9, 1]
+Type: food
+feed: 121
+weight: 5
+taste: 1
+...
+---
+Name: carrot
+Desc: The best vegetable.
+Texture: items.png
+Tile: [12, 1]
+Type: food
+feed: 30
+weight: 4
+taste: 2
+...
+---
+Name: banana
+Desc: Imported all the way from Bananaland.
+Texture: items.png
+Tile: [8, 1]
+Type: food
+feed: 105
+weight: 4
+taste: 1
+...
+---
+Name: grapes
+Desc: Tasty.
+Texture: items.png
+Tile: [7, 1]
+Type: food
+feed: 4
+weight: 0
+taste: 1
+...
+---
+Name: lemon
+Desc: Sour.
+Texture: items.png
+Tile: [10, 1]
+Type: food
+feed: 20
+weight: 3
+taste: 6
+...
+---
+Name: citris fruit
+Desc: It's like a clementine or an orange or something. They all look the same to you.
+Texture: items.png
+Tile: [7, 2]
+Type: food
+feed: 6
+weight: 4
+taste: 2
+...
+---
+Name: broccoli
+Texture: items.png
+Tile: [14, 1]
+Type: food
+feed: 30
+weight: 3
+taste: 5
+...
+---
+Name: ice cream
+Texture: items.png
+Tile: [14, 4]
+Type: food
+feed: 200
+weight: 5
+taste: 7
+...
+---
+Name: pear
+Desc: Apple's less popular sibling.
+Texture: items.png
+Tile: [7, 5]
+Type: food
+feed: 96
+weight: 4
+taste: 1
+...
+---
+Name: mango
+Desc: The tropical fruit. When someone thinks of "tropical fruit" they think of this, unless they are thinking of pineapple.
+Texture: items.png
+Tile: [8, 4]
+Type: food
+feed: 140
+weight: 4
+taste: 7
+...

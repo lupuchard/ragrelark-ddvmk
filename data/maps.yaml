@@ -1,0 +1,29 @@
+---
+Name: dungon
+Area: foomfield
+Stack:
+  Tileset: ruins
+  Num_Floors: 24
+  Gen: dungeon
+  Light: 6
+  Spawn: [dungeon, goblins, ogres]
+  Stairs: 6
+  Dim: [52, 52]
+  Diff: 0
+  DiffMod: .3334
+...
+---
+Name: yesland
+Area: foomfield
+File: prototype.tmx
+...
+---
+Name: upland
+Area: foomfield
+File: mainfield.tmx
+
+Connections:
+  - {From: [49, 43], To: yesland}
+  - {From: [9, 5]  , To: yesland}
+  - {From: [61, 12], To: dungon}
+...

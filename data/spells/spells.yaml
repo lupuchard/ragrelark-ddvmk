@@ -1,0 +1,7 @@
+---
+Name: light
+Trigger: [fire, light]
+Cost: 4
+Diff: 12
+Delay: 21
+...

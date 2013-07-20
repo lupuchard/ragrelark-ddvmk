@@ -22,6 +22,7 @@ BagFolder::BagFolder(int s) {
     size = s;
     items.reserve(size);
 }
+BagFolder::~BagFolder() {}
 
 int BagFolder::getNumItems() {
     return items.size();
@@ -42,8 +43,7 @@ Item BagFolder::removeItem(int index) {
 }
 
 bool BagFolder::addItem(Item* item) {
-    int itemTypeType = getItemType(item->itemType)->getType();
-    int stackAmount = TYPE_STACKS[itemTypeType];
+    int stackAmount = item->getType()->getStack();
     if (stackAmount > 1) {
         for (unsigned int i = 0; i < items.size(); i++) {
             Item* thisItem = &items[i];

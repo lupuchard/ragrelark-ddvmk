@@ -32,12 +32,8 @@ void Start::cleanup() {
     delete world;
     delete mobSpawner;
     delete primeFolder;
-    for (std::map<unsigned int, RandItemType*>::iterator i = tiledItems.begin(); i != tiledItems.end(); ++i) {
-        delete i->second;
-    }
-    cleanAbilities();
-    tiledItems.clear();
-    tiledTiles.clear();
+    delete tiledLoader;
+    Ability::clean();
     folders.clear();
     formulas.clear();
     deleteData();

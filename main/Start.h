@@ -19,17 +19,7 @@
 #ifndef START_H
 #define START_H
 
-#include <fstream>
-#include <iomanip>
-#include <stack>
-#include <set>
-#include <deque>
-#include <cstdlib>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <GL/glx.h>
-#include <algorithm>
-#include <boost/algorithm/string.hpp>
+#include "main.h"
 #include "fov/fov.h"
 
 #include "Player.h"
@@ -38,6 +28,7 @@
 #include "PrimeFolder.h"
 #include "graphics.h"
 #include "Ability.h"
+#include "TiledLoader.h"
 
 #define BOOST_IOSTREAMS_NO_LIB
 
@@ -45,10 +36,6 @@
 #define ST_POIS 21
 #define ST_ENCUM 22
 #define ST_HUNG 23
-
-//2000-3000 calories per day
-//apple = 91 calories
-//763-291-6339
 
 #define MAX_MESSAGES 100
 #define NUM_NOTELINES 26
@@ -81,7 +68,13 @@ class Start: FormulaUser, EnvironmentManager {
         void prepare();
         void execute();
 
-        void addMessage(std::string message, Color c);
+        void addMessage(String message, Color c);
+
+        Skill* skll(SkillE skillIndex);
+        //Stat*  stUn(UnitStatE statIndex);
+        //Stat*  stIt(ItemStatE statIndex);
+
+        void parsePlayer(YAML::Node n);
 
         /* --initiator.cpp-- */
         bool init();
@@ -94,9 +87,9 @@ class Start: FormulaUser, EnvironmentManager {
         /* --events.cpp-- */
         void events();
         void directionPress(int dir);
-        void sapExp(Unit* sapper, Unit* target, SkillType skill, int multitude);
-        void debankExp(Unit* debanker, SkillType skill, int amount);
-        void action(SkillType skill, int exp);
+        void sapExp(Unit* sapper, Unit* target, Skill* skill, int multitude);
+        void debankExp(Unit* debanker, Skill* skill, int amount);
+        void action(Skill* skill, int exp);
         void openInventory();
         void openBag();
         void openEquipment();
@@ -129,10 +122,10 @@ class Start: FormulaUser, EnvironmentManager {
         void renderMessages();
         void renderCircleSelect();
         void renderBars();
-        void renderText(std::string text, int size, int x, int y, int z, int align, Color c);
+        void renderText(String text, int size, int x, int y, int z, int align, Color c);
         void startRenderer();
         void makeSplatter(Unit* unit, Zone* zone, Coord loc);
-        void addStatus(std::string name, Color c, int type);
+        void addStatus(String name, Color c, int type);
         void removeStatus(int type);
         /* --- */
 
@@ -158,14 +151,14 @@ class Start: FormulaUser, EnvironmentManager {
         int actionTimePassed(int time, int speed);
         double chanceHit(double m);
         double defDam(double preDam, int defense);
-        std::string defenderNoun(Unit* attacker, Unit* defender);
+        String defenderNoun(Unit* attacker, Unit* defender);
         Color colorHit(bool crit, bool dodge);
         void hitSapping(Unit* attacker, Unit* defender, int criticality);
 
-        void hitCMod(Unit* defender, float& damage, float accuracy, float crit, int& hitType, battleSummary& sum);
+        void hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, battleSummary& sum);
         void strikeUnit(Unit* unit, Zone* zone, int dir, bool safe);
         void shootUnit(Unit* attacker, Unit* defender, Zone* zone);
-        battleSummary attackUnit(int power, float accuracy, float crit, int weaponType, Unit* defender, Zone* zone, int dir);
+        battleSummary attackUnit(int power, float accuracy, int weaponType, Unit* defender, Zone* zone, int dir);
         void projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from);
         void reactToAttack(Unit* unit, int dir, Zone* zone);
         void killUnit(Unit* unit, Zone* zone);
@@ -182,26 +175,19 @@ class Start: FormulaUser, EnvironmentManager {
         /* --- */
 
         ItemFolder* getItemFolder(Item item);
-        void createItemFolder(Item* item);
         void putItemFolder(Item* item, ItemFolder* folder);
 
         void addItemToPlace(Coord pos, Zone* z, Item item);
         Item removeItemFromPlace(Coord pos, Zone* z, int index);
 
         /* --dataLoader.cpp-- */
-        void loadData(World* w, Player* p);
-        void openFile(std::string fileName, World* w, Player* p);
-        Zone* loadTileFile(std::string fileName, std::string zoneName);
-        void finishDataSetup();
+        void loadData();
+        void yamlSingle(String file, boost::function<void(YAML::Node)> parseFunc);
+        void yamlMulti(String directory, boost::function<void(YAML::Node)> parseFunc);
         void deleteData();
-        bool errorChecker(std::string filename);
-        void printFileErr(std::string said, int line);
-        void printFileProb(std::string said, int line);
-        /* --- */
-
-        /* --resourceLoader.cpp-- */
-        void loadImage(std::string filename);
-        void buildFont();
+        bool errorChecker(String filename);
+        void printFileErr(String said, int line);
+        void printFileProb(String said, int line);
         /* --- */
 
         /* --formulas.cpp-- */
@@ -211,19 +197,21 @@ class Start: FormulaUser, EnvironmentManager {
         void conditionChanged(int condition, StatHolderIntef* statHolder);
         int getTime();
         StatHolder* findStatHolder(int target, StatHolder* statHolder);
-        void parseFormula(std::string line, bool errCheck, int lineNum);
         /* --- */
 
         /* --cleaner.cpp-- */
         void cleanup();
         /* --- */
-    protected:
     private:
         SDL_Surface* display;
         SDL_Event event;
         Player* player;
         World* world;
         Area* activeArea;
+        std::vector<Unit*> unitDeleteList;
+        MobSpawner* mobSpawner;
+        std::set<std::pair<Unit*, Zone*> > areaUnits;
+        void findAreaUnits();
 
         bool done;
         short selected;
@@ -232,6 +220,7 @@ class Start: FormulaUser, EnvironmentManager {
         std::stack<ItemFolder*> folderStack;
         PrimeFolder* primeFolder;
         std::map<unsigned short, std::vector<ItemFolder*> > folders;
+        unsigned char visibilities[MAX_ZONE_SIZE]; //0 = nope, 1 = LOS, 2 = lit
 
         /*target & dir*/
         std::vector<Unit*> unitsInRange;
@@ -242,14 +231,10 @@ class Start: FormulaUser, EnvironmentManager {
         int topPanel;
         int botPanel;
         int notesSelected;
-        std::string theNotes[NUM_NOTELINES];
+        String theNotes[NUM_NOTELINES];
 
-        bool gotsStructureTex; //TODO arrayify (with enum)
-        bool gotsMenuTex;
-        bool gotsFontTex;
-        bool gotsSplatterTex;
-        bool gotsAttackAnimsTex;
-        bool gotsPlayerTex;
+        Texture *structureTex, *menuTex, *fontTex, *splatterTex, *attackAnimsTex, *playerTex;
+        TiledLoader* tiledLoader;
 
         RagDrawer ragd;
         RagAnim raga;
@@ -257,59 +242,14 @@ class Start: FormulaUser, EnvironmentManager {
         unsigned char loadStatus;
 
         bool shiftIsDown;
-        std::vector<std::pair<std::string, Color> > messages;
+        std::vector<std::pair<String, Color> > messages;
+        int intervals[4];
+        long frameTime;
 
-        /* temp data for loading */
-        short tempValues[16];
-        Coord tempCoord;
-        std::string tempStr;
-        std::string tempStr2;
-        Zone* tempZone;
-        Zone* tempZone2;
-        Area* tempArea;
-        DungeonStack* tempDun;
-
-        std::map<std::string, std::vector<Zone*>*> areaZones;
-        std::map<std::string, std::vector<Tile*> > tileGroups;
-        std::map<std::string, int> itemTypeMap;
-        std::map<std::string, int> statMap;
-        std::map<std::string, int> conditionMap;
-        std::map<std::string, int> spellMap;
-        std::map<std::string, int> skillMap;
-        std::map<std::string, Tile*> tileMap;
-        std::map<std::string, MobEquipSet*> mobEquipsMap;
-        std::vector<Item> itemsToEquip;
-        /* end temp values for loading */
-
-        std::vector<std::pair<StatHolder*, std::string> > spawnPrototypes;
-        std::vector<int> defaultStats;
-        std::vector<Unit*> unitDeleteList;
-
-        std::map<std::string, Area*> areas;
-        std::map<std::string, Zone*> zones;
-        std::map<std::string, DungeonStack*> dungeons;
+        int foon;
 
         std::vector<Formula*> formulas;
         int base;
-
-        unsigned char visibilities[MAX_ZONE_SIZE]; //0 = nope, 1 = LOS, 2 = lit
-
-        int interval0;//TODO an array
-        int interval1;
-        int interval2;
-        int interval3;
-        int foon;
-
-        std::map<unsigned int, Tile*> tiledTiles;
-        std::map<unsigned int, RandItemType*> tiledItems;
-        std::map<unsigned int, int> tiledMobs;
-
-        std::set<std::pair<Unit*, Zone*> > areaUnits; //the zone is the zone the unit is in the zone is where the unit is
-        void findAreaUnits();
-
-        long frameTime;
-
-        MobSpawner* mobSpawner;
 };
 
 #endif // START_H

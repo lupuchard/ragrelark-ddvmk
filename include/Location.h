@@ -70,6 +70,8 @@ class Location {
         bool hasItems();
 
         void clearStuff();
+    private:
+        void init();
 };
 
 #endif // LOCATION_H

@@ -18,43 +18,63 @@
 
 #include <string>
 #include "StatHolder.h"
+#include "Texture.h"
 
 #ifndef TILE_H
 #define TILE_H
 
-enum TileType{TT_NORMAL, TT_SMOOTH, TT_SMOOTHUP, TT_SMOOTHDOWN, TT_LONGHORZ = 11, TT_OVER = 20};
+enum TileType{TT_NORMAL, TT_SMOOTH, TT_SMOOTHUP, TT_SMOOTHDOWN, TT_LONGHORZ = 11};
 
-typedef struct {
-    unsigned char loc;
-    unsigned char tex;
+struct Graphic {
+    unsigned short loc;
     unsigned char type;
     unsigned char border;
-} graphic;
+    Texture* tex;
+
+    Graphic(): loc(0), type(0), border(0), tex(NULL) {}
+};
+
+class Tile;
+struct TileSet {
+    String name;
+    std::vector<Tile*> tiles;
+};
 
 class Tile : public StatHolder {
     public:
-        Tile(int loc, int tex, int type, int border);
-        void setOver(Tile* t);
-        void setBlock(bool blockM, bool blockL);
+        Tile(String name, Graphic g, bool blockM = false, bool blockL = false, Tile* over = NULL);
 
-        graphic getGraphic();
+        Graphic getGraphic();
+        /// the tile that this one renders over, and therefore must render under this one
         Tile* getOver();
+        /// true = it blocks light, false = it doesnt
         bool blocksLight();
+        /// true = it blocks movement, false = it doesnt
         bool blocksMove();
 
-        void setIndex(int index);
         unsigned short getIndex();
-    protected:
+
+        //statics
+        static void add(Tile* tile);
+        static Tile* get(int index);
+        static Tile* get(String name);
+        static bool has(String name);
+        static void parseSets(YAML::Node node);
+        static void addSet(TileSet* tileSet);
+        static TileSet* getSet(String name);
+        static bool hasSet(String name);
+        static void clean();
     private:
-        graphic g;
+        Graphic graphic;
         Tile* over;
         bool blockLight;
         bool blockMove;
         unsigned short index;
-};
+        String name;
 
-void addTile(Tile* tile);
-Tile* getTile(int index);
-void clearTiles();
+        static std::vector<Tile*> tiles;
+        static std::map<String, Tile*> tileNameMap;
+        static std::map<String, TileSet*> tileSets;
+};
 
 #endif // TILE_H

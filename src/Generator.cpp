@@ -18,31 +18,31 @@
 
 #include "Generator.h"
 
-void placeWall(Location* loc, Tile** tiles, bool alt) {
+void placeWall(Location* loc, TileSet* t, bool alt) {
     int foo = rand() % 20;
     int k = alt * 8;
     if (foo == 0) {
-        loc->tile = tiles[7 + k]->getIndex();
+        loc->tile = t->tiles[7 + k]->getIndex();
     } else if (foo < 4) {
-        loc->tile = tiles[6 + k]->getIndex();
+        loc->tile = t->tiles[6 + k]->getIndex();
     } else if (foo < 8) {
-        loc->tile = tiles[5 + k]->getIndex();
+        loc->tile = t->tiles[5 + k]->getIndex();
     } else {
-        loc->tile = tiles[4 + k]->getIndex();
+        loc->tile = t->tiles[4 + k]->getIndex();
     }
     loc->height = MAX_HEIGHT;
 }
-void placeFloor(Location* loc, Tile** tiles, bool alt) {
+void placeFloor(Location* loc, TileSet* t, bool alt) {
     int foo = rand() % 20;
     int k = alt * 8;
     if (foo == 0) {
-        loc->tile = tiles[3 + k]->getIndex();
+        loc->tile = t->tiles[3 + k]->getIndex();
     } else if (foo < 4) {
-        loc->tile = tiles[2 + k]->getIndex();
+        loc->tile = t->tiles[2 + k]->getIndex();
     } else if (foo < 8) {
-        loc->tile = tiles[1 + k]->getIndex();
+        loc->tile = t->tiles[1 + k]->getIndex();
     } else {
-        loc->tile = tiles[0 + k]->getIndex();
+        loc->tile = t->tiles[0 + k]->getIndex();
     }
     loc->height = MAX_HEIGHT / 2;
 }
@@ -91,7 +91,7 @@ void depthSearch(ZoneNode* start) {
 Generator::Generator(): toteWidth(0), toteHeight(0) {}
 Generator::~Generator() {}
 
-void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) {
+void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, TileSet* tiles) {
     zone->fill();
     for (int x = 0; x < zone->getWidth(); x++) {
         for (int y = 0; y < zone->getHeight(); y++) {
@@ -104,7 +104,7 @@ void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) 
                 loc->structure = S_NONE;
             } else if (skeleton[x + y * zone->getWidth()] == SKEL_DOOR) {
                 placeFloor(loc, tiles, false);
-                loc->tile = tiles[4]->getIndex();
+                loc->tile = tiles->tiles[4]->getIndex();
                 int r = rand() % 100;
                 if (r == 50) loc->structure = S_WOODDOOR_BROKE;
                 else if (r == 51) loc->structure = S_NORMDOOR;
@@ -130,7 +130,7 @@ void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) 
                             placeWall(loc, tiles, true);
                         } else if (skeleton[num] == SKEL_DOOR) {
                             placeFloor(loc, tiles, false);
-                            loc->tile = tiles[12]->getIndex();
+                            loc->tile = tiles->tiles[12]->getIndex();
                         } else {
                             placeFloor(loc, tiles, true);
                         }
@@ -147,7 +147,7 @@ void Generator::fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles) 
         for (int y = sy; y < sy + hei; y++) {
             Location* loc = zone->getLocationAt(Coord(x, y));
             if (loc->height == MAX_HEIGHT) {
-                loc->tile = tiles[16]->getIndex();
+                loc->tile = tiles->tiles[16]->getIndex();
                 loc->height = MAX_HEIGHT / 4;
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {

@@ -23,7 +23,7 @@ EnemyEquipStatHolder::EnemyEquipStatHolder(): StatHolder(V_ITEM), mobEquips(NULL
 short EnemyEquipStatHolder::getStatValue(int stat) {
     int val = 0;
     for (int i = 0; i < mobEquips->len; i++) {
-        val += getItemType(mobEquips->equips[i].itemType)->getStatValue(stat);
+        val += mobEquips->equips[i].getType()->getStatValue(stat);
     }
     return val;
 }
@@ -31,7 +31,7 @@ short EnemyEquipStatHolder::getStatValue(int stat) {
 float EnemyEquipStatHolder::getStatValueF(int stat) {
     float val = 0;
     for (int i = 0; i < mobEquips->len; i++) {
-        val += getItemType(mobEquips->equips[i].itemType)->getStatValueF(stat);
+        val += mobEquips->equips[i].getType()->getStatValueF(stat);
     }
     return val;
 }

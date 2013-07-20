@@ -48,8 +48,7 @@ class Generator {
         virtual ~Generator();
 
         unsigned char* genSkeleton(int width, int height, GenType genType);
-        void fillSkeleton(unsigned char* skeleton, Zone* zone, Tile** tiles);
-    protected:
+        void fillSkeleton(unsigned char* skeleton, Zone* zone, TileSet* tiles);
     private:
         void genSkeletonCrazy(unsigned char* skeleton, int x, int y, int width, int height);
         void genSkeletonBsptree(unsigned char* skeleton, int x, int y, int width, int height);

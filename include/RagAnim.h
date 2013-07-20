@@ -52,7 +52,7 @@ struct Renderable {
 class RagAnim {
     public:
         RagAnim();
-        RagAnim(RagDrawer* ragDrawer);
+        RagAnim(RagDrawer* ragDrawer, Texture* animTex);
         virtual ~RagAnim();
 
         void addAnim(Animation* anim);
@@ -64,12 +64,12 @@ class RagAnim {
         void rMoveDir(Unit* unit, int dir, Coord loc);
         void rMoveLoc(Unit* unit, Coord begin, Coord end);
         void rAttack(Coord loc, int dir, int dType, int hType);
-    protected:
     private:
         RagDrawer* ragd;
         int tileSize;
         std::vector<Animation*> anims;
         std::set<Renderable> renderables;
+        Texture* animTex;
 };
 
 #endif // RAGANIM_H

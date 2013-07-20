@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="data/;data/maps/;code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/utility/;data/items/;code/main/loading/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;data/tiles/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;data/mobs/;" />
+		<Option virtualFolders="code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/utility/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -33,6 +33,9 @@
 					<Add library="SDL_image" />
 					<Add library="fov" />
 					<Add library="X11" />
+					<Add library="yaml-cpp" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_system" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -55,12 +58,15 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="GL" />
+					<Add library="GLU" />
 					<Add library="SDLmain" />
 					<Add library="SDL" />
 					<Add library="SDL_image" />
 					<Add library="fov" />
-					<Add library="GLU" />
 					<Add library="X11" />
+					<Add library="yaml-cpp" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_system" />
 				</Linker>
 			</Target>
 			<Target title="Test">
@@ -81,73 +87,32 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="data/armor.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/base.rag">
-			<Option virtualFolder="data/" />
-		</Unit>
-		<Unit filename="data/books.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/coins.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/dungeontiles.rag">
-			<Option virtualFolder="data/tiles/" />
-		</Unit>
-		<Unit filename="data/extraitems.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/food.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/formulas.rag">
-			<Option virtualFolder="data/" />
-		</Unit>
-		<Unit filename="data/humanoids.rag">
-			<Option virtualFolder="data/mobs/" />
-		</Unit>
-		<Unit filename="data/items.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/jewlery.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/maps2.rag">
-			<Option virtualFolder="data/maps/" />
-		</Unit>
-		<Unit filename="data/maptiles.rag">
-			<Option virtualFolder="data/tiles/" />
-		</Unit>
-		<Unit filename="data/mobspaw.rag">
-			<Option virtualFolder="data/mobs/" />
-		</Unit>
-		<Unit filename="data/moreitems.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
-		<Unit filename="data/plaintiles.rag">
-			<Option virtualFolder="data/tiles/" />
-		</Unit>
-		<Unit filename="data/spells.rag">
-			<Option virtualFolder="data/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="data/swarmers.rag">
-			<Option virtualFolder="data/mobs/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="data/treetiles.rag">
-			<Option virtualFolder="data/tiles/" />
-		</Unit>
-		<Unit filename="data/units.rag">
-			<Option virtualFolder="data/mobs/" />
-		</Unit>
-		<Unit filename="data/weapons.rag">
-			<Option virtualFolder="data/items/" />
-		</Unit>
+		<Unit filename="data/areas.yaml" />
+		<Unit filename="data/conditions.yaml" />
+		<Unit filename="data/item_slots.yaml" />
+		<Unit filename="data/item_type_types.yaml" />
+		<Unit filename="data/items/armor.yaml" />
+		<Unit filename="data/items/books.yaml" />
+		<Unit filename="data/items/coins.yaml" />
+		<Unit filename="data/items/food.yaml" />
+		<Unit filename="data/items/jewlery.yaml" />
+		<Unit filename="data/items/misc.yaml" />
+		<Unit filename="data/items/weapons.yaml" />
+		<Unit filename="data/items_tiled.yaml" />
+		<Unit filename="data/maps.yaml" />
+		<Unit filename="data/monsters/humanoids.yaml" />
+		<Unit filename="data/monsters/swarmers.yaml" />
+		<Unit filename="data/monsters/units.yaml" />
+		<Unit filename="data/player.yaml" />
+		<Unit filename="data/prototype_stats.yaml" />
+		<Unit filename="data/skills.yaml" />
+		<Unit filename="data/spawn/items/items1.yaml" />
+		<Unit filename="data/spawn/mob_equipment.yaml" />
+		<Unit filename="data/spells/spells.yaml" />
+		<Unit filename="data/stats.yaml" />
+		<Unit filename="data/tiles/dungeon.yaml" />
+		<Unit filename="data/tiles/plain.yaml" />
+		<Unit filename="data/units_tiled.yaml" />
 		<Unit filename="depenencies/base64/base64.cpp">
 			<Option virtualFolder="code/utility/" />
 		</Unit>
@@ -309,6 +274,11 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="include/TiledLoader.h">
+			<Option virtualFolder="code/utility/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="include/Unit.h">
 			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
@@ -345,17 +315,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/dataLoader.cpp">
-			<Option virtualFolder="code/main/loading/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="main/dataLoader.h">
-			<Option virtualFolder="code/main/loading/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="main/dataLoaderError.cpp">
-			<Option virtualFolder="code/main/loading/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -379,6 +339,9 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="main/main.h">
+			<Option virtualFolder="code/main/" />
+		</Unit>
 		<Unit filename="main/particles.cpp">
 			<Option virtualFolder="code/main/graphics/" />
 			<Option target="Debug" />
@@ -394,25 +357,30 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="main/resourceLoader.cpp">
-			<Option virtualFolder="code/main/loading/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="main/test.cpp">
-			<Option virtualFolder="code/main/main main/" />
-			<Option target="Test" />
-		</Unit>
-		<Unit filename="main/tiledLoader.cpp">
-			<Option virtualFolder="code/main/loading/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="main/unitHandler.cpp">
 			<Option virtualFolder="code/main/activity/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="resources/attackAnims.png" />
+		<Unit filename="resources/equipment.png" />
+		<Unit filename="resources/font.png" />
+		<Unit filename="resources/items.png" />
+		<Unit filename="resources/items2.png" />
+		<Unit filename="resources/items3.png" />
+		<Unit filename="resources/menu.png" />
+		<Unit filename="resources/monsters.png" />
+		<Unit filename="resources/moretiles.png" />
+		<Unit filename="resources/player.png" />
+		<Unit filename="resources/splatters.png" />
+		<Unit filename="resources/structures.png" />
+		<Unit filename="resources/tilemaps/mainfield.tmx" />
+		<Unit filename="resources/tilemaps/prototype.tmx" />
+		<Unit filename="resources/tilemaps/tiledutil/dark.png" />
+		<Unit filename="resources/tilemaps/tiledutil/item.png" />
+		<Unit filename="resources/tilemaps/tiledutil/mobs.png" />
+		<Unit filename="resources/tilemaps/tiledutil/tile.png" />
+		<Unit filename="resources/tiles.png" />
 		<Unit filename="src/Ability.cpp">
 			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
@@ -447,22 +415,12 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="src/EnvironmentManager.cpp">
-			<Option virtualFolder="code/classes/Places/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="src/EquipmentFolder.cpp">
 			<Option virtualFolder="code/classes/Items/Folders/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Formula.cpp">
-			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/FormulaUser.cpp">
 			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
 			<Option target="Debug" />
 			<Option target="Release" />
@@ -479,11 +437,6 @@
 		</Unit>
 		<Unit filename="src/Item.cpp">
 			<Option virtualFolder="code/classes/Items/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/ItemFolder.cpp">
-			<Option virtualFolder="code/classes/Items/Folders/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -542,11 +495,6 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="src/StatHolderIntef.cpp">
-			<Option virtualFolder="code/classes/Attributes &amp; Formulas/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="src/Swarmer.cpp">
 			<Option virtualFolder="code/classes/Mobs/" />
 			<Option target="Debug" />
@@ -559,6 +507,11 @@
 		</Unit>
 		<Unit filename="src/Tile.cpp">
 			<Option virtualFolder="code/classes/Generation/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/TiledLoader.cpp">
+			<Option virtualFolder="code/classes/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>

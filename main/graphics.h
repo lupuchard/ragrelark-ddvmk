@@ -29,8 +29,6 @@
 #define SWIN_WIDTH 260
 #define SWIN_HEIGHT 700
 
-#define TILE_SIZE 32
-
 enum peType{P_NONE, P_DARKDUST, P_ARROW};
 enum align{LEFT, CENTER, RIGHT};
 

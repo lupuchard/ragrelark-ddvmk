@@ -23,7 +23,9 @@ int calcXpReq(int level, float mult) {
 }
 
 Player::Player(PrimeFolder* pFolder) {
-    for (int i = 0; i < NUM_SKILLS; i++) {
+    skillExps = new int[Stat::getNumSkills()];
+    skillLevels = new unsigned short[Stat::getNumSkills()];
+    for (int i = 0; i < Stat::getNumSkills(); i++) {
         skillExps[i] = 0;
         skillLevels[i] = 0;
     }
@@ -33,6 +35,7 @@ Player::Player(PrimeFolder* pFolder) {
     area = NULL;
     currentZoneMemory = NULL;
     xpBank = 0;
+
     //trainSpell(SPELL_LIGHT, 100);
 }
 
@@ -46,6 +49,8 @@ Player::~Player() {
         delete[] m->topLoc;
         delete m;
     }
+    delete[] skillExps;
+    delete[] skillLevels;
 }
 
 Zone* Player::getZone() {
@@ -107,41 +112,42 @@ void Player::setUnitProto(StatHolder* proto) {
     unit = new Unit(name, proto);
 }
 
-void Player::setName(std::string n) {
+void Player::setName(String n) {
     name = n;
 }
 
-int Player::gainSkillExp(SkillType skill, int xpGained) {
-    skillExps[skill] += xpGained;
-    if (skillExps[skill] < 0) {
-        if (skillLevels[skill] >= 0) {
+int Player::gainSkillExp(Skill* skill, int xpGained) {
+    int i = skill->index;
+    skillExps[i] += xpGained;
+    if (skillExps[i] < 0) {
+        if (skillLevels[i] >= 0) {
             int prevXpReq;
-            if (skillLevels[skill] == 1) prevXpReq = 100;
-            else prevXpReq = calcXpReq(skillLevels[skill] - 1, 30.f);
-            skillExps[skill] += prevXpReq;
-            skillLevels[skill]--;
+            if (skillLevels[i] == 1) prevXpReq = 100;
+            else prevXpReq = calcXpReq(skillLevels[i] - 1, 30.f);
+            skillExps[i] += prevXpReq;
+            skillLevels[i]--;
             return -1;
         }
         return 0;
     }
-    int xpReq = calcXpReq(skillLevels[skill], 30.f);
+    int xpReq = calcXpReq(skillLevels[i], 30.f);
     int fooey = 0;
-    while (skillExps[skill] >= xpReq) {
-        skillExps[skill] -= xpReq;
-        skillLevels[skill]++;
+    while (skillExps[i] >= xpReq) {
+        skillExps[i] -= xpReq;
+        skillLevels[i]++;
         fooey++;
-        xpReq = calcXpReq(skillLevels[skill], 30.f);
+        xpReq = calcXpReq(skillLevels[i], 30.f);
     }
     return fooey;
 }
 
-unsigned short Player::getSkillLevel(SkillType skill) {
-    return skillLevels[skill];
+unsigned short Player::getSkillLevel(Skill* skill) {
+    return skillLevels[skill->index];
 }
 
-int Player::getSkillExpPercent(SkillType skill) {
-    int xpReq = (int)(pow(skillLevels[skill] + 1, 1.1) * 30.);
-    return skillExps[skill] * 100 / xpReq;
+int Player::getSkillExpPercent(Skill* skill) {
+    int xpReq = (int)(pow(skillLevels[skill->index] + 1, 1.1) * 30.);
+    return skillExps[skill->index] * 100 / xpReq;
 }
 
 PrimeFolder* Player::getPrimeFolder() {
@@ -157,7 +163,7 @@ int Player::getSpellLevel(int spellIndex) {
 }
 
 int Player::trainSpell(int spellIndex, int xpGained) {
-    xpGained = (int)(xpGained * (getSkillLevel(SKL_LEARN) / 10.f + 1.f));
+    //xpGained = (int)(xpGained * (getSkillLevel(SKL_LEARN) / 10.f + 1.f));
     int trueSpellIndex = spellIndex >> 2;
     std::map<int, PlayerSpell>::iterator itr = playerSpells.find(trueSpellIndex);
     PlayerSpell* pSpell;

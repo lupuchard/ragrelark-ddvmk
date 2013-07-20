@@ -23,7 +23,7 @@
 
 class Swarmer: public Unit {
     public:
-        Swarmer(std::string n, StatHolder* prototype);
+        Swarmer(String n, StatHolder* prototype);
         virtual ~Swarmer();
 
         short getStatValue(int stat);

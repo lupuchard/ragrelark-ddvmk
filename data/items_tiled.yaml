@@ -1,0 +1,60 @@
+[0,0]: [gold pens, 1, 2]
+[1,0]: [gold pens, 3, 6]
+[2,0]: [gold pens, 7, 15]
+[3,0]: [gold pens, 16, 39]
+[4,0]: [gold pens, 40, 99]
+[5,0]: [gold pens, 100, 249]
+[6,0]: [gold pens, 250]
+[0,1]: [silver pens, 1, 2]
+[1,1]: [silver pens, 3, 6]
+[2,1]: [silver pens, 7, 15]
+[3,1]: [silver pens, 16, 39]
+[4,1]: [silver pens, 40, 99]
+[5,1]: [silver pens, 100, 249]
+[6,1]: [silver pens, 250]
+[0,2]: [copper pens, 1, 2]
+[1,2]: [copper pens, 3, 6]
+[2,2]: [copper pens, 7, 15]
+[3,2]: [copper pens, 16, 39]
+[4,2]: [copper pens, 40, 99]
+[5,2]: [copper pens, 100, 249]
+[6,2]: [copper pens, 250]
+[7,0]: [grapes, 10, 15]
+[8,0]: banana
+[9,0]: apple
+[10,0]: lemon
+[12,0]: carrot
+[14,0]: broccoli
+[7,1]: citris fruit
+[14,3]: ice cream
+[7,4]: pear
+[8,3]: mango
+
+[0,5]: blue feather
+[1,5]: big heavy rock
+[0,6]: candle
+
+[16,0]: sane leather gloves
+[16,1]: sharpshooter gloves
+[16,2]: sculptural clogs
+[16,3]: speedy boots
+[17,0]: shabby shirt
+[17,1]: sensible leather armor
+[17,2]: silk adventure clothes
+[17,3]: sizzling magma armor
+[18,0]: smart pointy hat
+[18,1]: splendid leather cap
+[19,0]: smooth round wooden shield
+[19,1]: semi reinforced shield
+[20,1]: steely dagger
+[20,2]: sacred obsidian dagger
+[21,0]: simple club
+[21,1]: sadistic mace
+[21,2]: superior mace
+[22,0]: sleek longbow
+[23,0]: simplistic arrow
+[24,0]: sensible ring of regeneration
+[24,1]: sly ring of accuracy
+[25,0]: serene amulet of intelligence
+[25,1]: sexy amulet
+[26,0]: adventure spellbook

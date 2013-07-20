@@ -1,0 +1,228 @@
+---
+Name: shabby shirt
+Texture: equipment.png
+Tile: [1, 0]
+Equipped: {Texture: player.png, Tile: [0, 2], Size: small}
+Type: clothes
+weight: 9
+ac: 1
+luck_bonus: 1
+...
+---
+Name: sensible leather armor
+Desc: Not for vegans.
+Texture: equipment.png
+Tile: [1, 1]
+Equipped: {Texture: player.png, Tile: [2, 2], Size: tall}
+Type: light armor
+weight: 9
+penalty: 1
+ac: 4
+luck_bonus: 1
+...
+---
+Name: silk adventure clothes
+Desc: A high quality silk shirt, some pants, and a cape.
+Texture: equipment.png
+Tile: [1, 2]
+Equipped: {Texture: player.png, Tile: [3, 2], Size: tall}
+Type: clothes
+weight: 9
+ac: 3
+hp_bonus: 6
+luck_bonus: 1
+...
+---
+Name: sizzling magma armor
+Desc: What the hell.
+Texture: equipment.png
+Tile: [1, 3]
+Equipped: {Texture: player.png, Tile: [4, 2], Size: tall}
+Type: heavy armor
+weight: 99
+penalty: 3
+ac: 10
+light: 2
+str: 2
+luck_bonus: 1
+...
+---
+Name: stylish iron armor
+Desc: Iron armor that is stylish.
+Texture: equipment.png
+Tile: [1, 4]
+Type: heavy armor
+weight: 99
+penalty: 2
+ac: 6
+luck_bonus: 1
+...
+---
+Name: secure golden armor
+Texture: equipment.png
+Tile: [1, 5]
+Type: heavy armor
+weight: 99
+penalty: 2
+ac: 5
+aff: 2
+luck_bonus: 1
+...
+---
+Name: spoff plate armor
+Desc: Scientifically proven to be the spoffiest armor.
+Texture: equipment.png
+Tile: [1, 6]
+Type: heavy armor
+weight: 99
+penalty: 2
+ac: 8
+luck_bonus: 1
+...
+---
+Name: sane leather gloves
+Desc: These are actually for gardening.
+Texture: equipment.png
+Tile: [0, 0]
+Equipped: {Texture: player.png, Tile: [0, 8], Size: long}
+Type: gloves
+weight: 9
+ac: 1
+luck_bonus: 1
+...
+---
+Name: sharpshooter gloves
+Desc: Gloves of archery.
+Texture: equipment.png
+Tile: [0, 1]
+Equipped: {Texture: player.png, Tile: [0, 9], Size: long}
+Type: gloves
+weight: 9
+ac: 1
+per: 1
+accuracy: 2
+luck_bonus: 1
+...
+---
+Name: silky blue gloves
+Desc: Gloves of silkery.
+Texture: equipment.png
+Tile: [0, 2]
+Type: gloves
+weight: 9
+ac: 1
+aff: 1
+int: 1
+per: 1
+luck_bonus: 1
+...
+---
+Name: superb gloves
+Desc: Gloves of superbery.
+Texture: equipment.png
+Tile: [0, 3]
+Type: gloves
+weight: 9
+ac: 2
+luck_bonus: 1
+...
+---
+Name: splendid leather cap
+Desc: I don't know whether to call it a helmet or a hat.
+Texture: equipment.png
+Tile: [2, 1]
+Equipped: {Texture: player.png, Tile: [0, 4], Size: small}
+Type: helmet
+weight: 9
+ac: 2
+luck_bonus: 1
+...
+---
+Name: smart pointy hat
+Desc: Having a point on a hat helps channel mystical energy. This is a true science fact.
+Texture: equipment.png
+Tile: [2, 0]
+Equipped: {Texture: player.png, Tile: [1, 4], Size: small}
+Type: hat
+weight: 9
+ac: 1
+aff: 1
+luck_bonus: 1
+...
+---
+Name: scholarly hat
+Desc: You'll look so very smart yes.
+Texture: equipment.png
+Tile: [2, 2]
+Type: hat
+weight: 9
+int: 2
+ac: 1
+luck_bonus: 1
+...
+---
+Name: sculptural clogs
+Desc: They are loud and uncompfortable.
+Texture: equipment.png
+Tile: [4, 0]
+Equipped: {Texture: player.png, Tile: [0, 6], Size: long}
+Type: shoes
+ac: 1
+movement_speed: -1
+luck_bonus: 1
+...
+---
+Name: speedy boots
+Desc: Speedy Boots of Speed (TM)
+Texture: equipment.png
+Tile: [4, 1]
+Equipped: {Texture: player.png, Tile: [0, 7], Size: long}
+Type: boots
+ac: 1
+movement_speed: 5
+luck_bonus: 1
+...
+---
+Name: smooth round wooden shield
+Texture: equipment.png
+Tile: [3, 0]
+Equipped: {Texture: player.png, Tile: [0, 10], Size: tall}
+Type: shield
+ac: 1
+evasion: 1
+penalty: 1
+luck_bonus: 1
+...
+---
+Name: semi reinforced shield
+Desc: A wooden shield that has been improved with iron stuff.
+Texture: equipment.png
+Tile: [3, 1]
+Equipped: {Texture: player.png, Tile: [1, 10], Size: tall}
+Type: shield
+ac: 1
+evasion: 2
+penalty: 1
+luck_bonus: 1
+...
+---
+Name: specific goblin shield
+Desc: A heavy shield made of hard wood.
+Texture: equipment.png
+Tile: [3, 2]
+Equipped: {Texture: player.png, Tile: [2, 10], Size: tall}
+Type: shield
+ac: 2
+penalty: 2
+luck_bonus: 1
+...
+---
+Name: sensible wooden board
+Texture: equipment.png
+Tile: [3, 3]
+Equipped: {Texture: player.png, Tile: [3, 10], Size: tall}
+Type: shield
+ac: 1
+penalty: 2
+luck_bonus: 1
+...

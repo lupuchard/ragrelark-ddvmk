@@ -1,0 +1,21 @@
+---
+Name: ruins
+Tiles:
+  - dfloor
+  - dfloor2
+  - dfloor3
+  - dfloor4
+  - dwall
+  - dwall2
+  - dwall3
+  - dwall4
+  - gfloor1
+  - gfloor2
+  - gfloor3
+  - gfloor4
+  - gwall1
+  - gwall2
+  - gwall3
+  - gwall4
+  - dpit
+...

@@ -27,6 +27,8 @@ void setEnvironmentManager(EnvironmentManager* ev);
 class GroundFolder: public ItemFolder {
     public:
         GroundFolder();
+        virtual ~GroundFolder();
+
         int getNumItems();
         Item* getItem(int index);
         Item* getItems();

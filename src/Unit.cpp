@@ -27,27 +27,28 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT), name(n) {
         }
     }
     if (prototype) {
-        g.loc = prototype->getStatValue(S_GLOC);
-        int spe = prototype->getStatValue(S_GTYPE);
-        if (spe) g.loc += rand() % spe;
-        g.tex = prototype->getStatValue(S_GTEX);
-        unsigned char* stats = prototype->getIntStats();
-        for (int i = 0; i < prototype->getNumIntStats(); i++) {
-            if (getStat(V_UNIT, stats[i])->getFormula()->getLength() > 1) {
-                StatHolder::addStatV(stats[i], prototype->getStatValue(stats[i]));
+        graphic.loc = prototype->getStatValue(Stat::GLOC);
+        int spe = prototype->getStatValue(Stat::GTYPE);
+        if (spe) graphic.loc += rand() % spe;
+        graphic.tex = Texture::get(prototype->getStatValue(Stat::GTEX));
+
+        // TODO improve
+        for (int i = 0; i < Stat::getNum(V_UNIT); i++) {
+            Stat* stat = Stat::get(V_UNIT, i);
+            int si = stat->getIndex();
+            if (stat->getFormula()->getLength() > 1) {
+                if (stat->isItFloat()) {
+                    StatHolder::addStatVF(si, prototype->getStatValueF(si));
+                } else {
+                    StatHolder::addStatV(si, prototype->getStatValue(si));
+                }
             }
         }
-        unsigned char* statsF = prototype->getFloatStats();
-        for (int i = 0; i < prototype->getNumFloatStats(); i++) {
-            if (getStat(V_UNIT, statsF[i])->getFormula()->getLength() > 1) {
-                StatHolder::addStatVF(statsF[i], prototype->getStatValueF(stats[i]));
-            }
-        }
+
         unitPrototype = prototype;
-        StatHolder::setStat(S_HP, prototype->getStatValue(S_MAXHP));
-        StatHolder::setStat(S_MANA, prototype->getStatValue(S_MAXMANA));
+        StatHolder::setStat(Stat::HP, prototype->getStatValue(Stat::MAXHP));
+        StatHolder::setStat(Stat::MANA, prototype->getStatValue(Stat::MAXMANA));
     }
-    g.border = 0;
     StatHolder::aThis = this;
     pointOnPath = -1;
     currentPath = NULL;
@@ -56,8 +57,6 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT), name(n) {
 }
 
 Unit::~Unit() {
-    //removeHashMaps();
-    //unitPrototype->removeHashMaps();
     if (equipment) {
         delete[] equipment->equips;
         delete equipment;
@@ -134,7 +133,7 @@ void Unit::setEnemy(Unit* enemy) {
     bool toUpdate = enemy != currentEnemy;
     if (toUpdate) {
         currentEnemy = enemy;
-        set<Stat*> enemyAfflictions = getEnemyAfflictions();
+        set<Stat*> enemyAfflictions = Stat::getEnemyAfflictions();
         for (set<Stat*>::iterator i = enemyAfflictions.begin(); i != enemyAfflictions.end(); ++i) {
             Stat* theStat = (Stat*)*i;
             StatHolder::statChanged(theStat->getIndex());

@@ -45,7 +45,7 @@ class Area: public StatHolder {
         Area(int width);
         virtual ~Area();
 
-        void setName(std::string name);
+        void setName(String name);
 
         void addZone(Zone* zone);
         unsigned int getNumZones();
@@ -59,9 +59,8 @@ class Area: public StatHolder {
         SpeLoc moveConnection(Zone* zone, Coord where);
         void changeConnection(Zone* zone, Coord prevLoc, Coord newLoc);
         SpeLoc moveZones(Zone* z, Coord where);
-    protected:
     private:
-        std::string name;
+        String name;
         std::vector<Zone*> zones;
         std::vector<DungeonStack*> dungeonStacks;
         std::vector<Connection> connections;

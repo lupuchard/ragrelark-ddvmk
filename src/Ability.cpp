@@ -19,33 +19,14 @@
 #include "Ability.h"
 #include <map>
 
-std::map<int, Ability*> abilities;
-void addAbility(Ability* ability) {
-    abilities[ability->getI()] = ability;
-}
-Ability* getAbility(int index) {
-    std::map<int, Ability*>::iterator i = abilities.find(index);
-    if (i == abilities.end()) return NULL;
-    return i->second;
-}
-Ability* getAbility(bool wind, bool earth, bool water, bool fire, bool phys, bool ment, bool light, bool dark, int power) {
-    return abilities[(wind << 7) | (earth << 1) | (water << 3) | (fire << 9) | (phys << 4) | (ment << 6) | (light << 8) | (dark << 2) | power];
-}
-void cleanAbilities() {
-    for (std::map<int, Ability*>::iterator i = abilities.begin(); i != abilities.end(); ++i) {
-        delete i->second;
-    }
-    abilities.clear();
-}
-
-Ability::Ability(std::string n, int mCost, int d, int tt, int i): name(n) {
+Ability::Ability(String n, int mCost, int d, int tt, int i): name(n) {
     manaCost = mCost;
     difficulty = d;
     timeTake = tt;
     classificationI = i;
 }
 
-std::string Ability::getName() {
+String Ability::getName() {
     return name;
 }
 
@@ -63,4 +44,56 @@ int Ability::getI() {
 
 int Ability::getTimeTake() {
     return timeTake;
+}
+
+std::map<int, Ability*> Ability::abilities;
+std::map<String, Ability*> Ability::abilityNameMap;
+std::map<String, int> Ability::elemNameMap;
+
+void Ability::parseElem(YAML::Node fileNode) {
+    int i = 0;
+    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter, i++) {
+        elemNameMap[iter->as<String>()] = i;
+    }
+}
+void Ability::parse(YAML::Node fileNode) {
+    String name = readYAMLStr(fileNode, "Name", "nil", "Ability lacks a name!");
+    int manaCost = readYAMLInt(fileNode, "Cost", 1, "Ability last a mana cost!");
+    int difficulty = readYAMLInt(fileNode, "Diff", 10, "Ability lacks a difficulty!");
+    int timeTake = readYAMLInt(fileNode, "Delay", 20, "Ability lacks a delay!");
+
+    int index = 0;
+    YAML::Node trigger = fileNode["Trigger"];
+    for (YAML::Node::iterator iter = trigger.begin(); iter != trigger.end(); ++iter) {
+        index |= 1 << elemNameMap[iter->as<String>()];
+    }
+
+    Ability* newAbility = new Ability(name, manaCost, difficulty, timeTake, index);
+    abilities[index] = newAbility;
+    abilityNameMap[name] = newAbility;
+}
+
+Ability* Ability::get(int index) {
+    std::map<int, Ability*>::iterator i = abilities.find(index);
+    if (i == abilities.end()) return NULL;
+    return i->second;
+}
+
+Ability* Ability::get(bool wind, bool earth, bool water, bool fire, bool phys, bool ment, bool light, bool dark, int power) {
+    return abilities[(wind << 1) | (earth << 2) | (water << 3) | (fire << 4) | (phys << 5) | (ment << 6) | (light << 7) | (dark << 8) | power];
+}
+
+Ability* Ability::get(String name) {
+    return abilityNameMap[name];
+}
+
+bool Ability::has(String name) {
+    return abilityNameMap.find(name) != abilityNameMap.end();
+}
+
+void Ability::clean() {
+    for (std::map<int, Ability*>::iterator i = abilities.begin(); i != abilities.end(); ++i) {
+        delete i->second;
+    }
+    abilities.clear();
 }

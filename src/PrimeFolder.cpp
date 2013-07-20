@@ -21,16 +21,28 @@
 PrimeFolder::PrimeFolder() {
     equips = new EquipmentFolder();
     ground = new GroundFolder();
-    bag = new BagFolder(5);
-    allThem[0] = Item(15);
-    allThem[1] = Item(14);
-    allThem[2] = Item(13);
+    bag = new BagFolder(50);
 }
 
 PrimeFolder::~PrimeFolder() {
     delete bag;
     delete equips;
     delete ground;
+}
+
+void PrimeFolder::parseInv(YAML::Node node) {
+    allThem[0] = Item(parseOne(node["Bag"]));
+    allThem[1] = Item(parseOne(node["Equipment"]));
+    allThem[2] = Item(parseOne(node["Ground"]));
+}
+
+ItemType* PrimeFolder::parseOne(YAML::Node node) {
+    YAML::Node n = node["Tile"];
+    Graphic g;
+    g.loc = n[0].as<int>() + n[1].as<int>() * TEX_TILE_WIDTH;
+    g.tex = Texture::get(node["Texture"].as<String>());
+    ItemType* newItemType = new ItemType(node["Name"].as<String>(), "", g, ItemType::getTypeI(node["Type"].as<String>()));
+    return newItemType;
 }
 
 int PrimeFolder::getNumItems() {
@@ -64,7 +76,3 @@ EquipmentFolder* PrimeFolder::getEquips() {
 GroundFolder* PrimeFolder::getGround() {
     return ground;
 }
-
-/*void PrimeFolder::setBag(BagFolder* b) {
-    bag = b;
-}*/

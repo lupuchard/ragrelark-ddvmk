@@ -20,7 +20,7 @@
 
 Location* def = new Location(0);
 
-Zone::Zone(std::string nam, int w, int h, int light, bool fill): StatHolder(V_ZONE), name(nam) {
+Zone::Zone(String nam, int w, int h, int light, bool fill): StatHolder(V_ZONE), name(nam) {
     width = w;
     height = h;
     filled = fill;
@@ -56,7 +56,7 @@ void Zone::fill() {
     }
 }
 
-std::string Zone::getName() {
+String Zone::getName() {
     return name;
 }
 
@@ -82,9 +82,9 @@ Location* Zone::getLocationAt(int i) {
 
 Location* Zone::safeGetLocationAt(Coord l) {
     if (l.inBounds(width, height)) {
-        return def;
+        return getLocationAt(l);
     }
-    return getLocationAt(l);
+    return def;
 }
 
 void Zone::fillTiles(int* tiles) {

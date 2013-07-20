@@ -25,7 +25,7 @@ void setMobSpawner(MobSpawner* mobSp) {
     mobSpawner = mobSp;
 }
 
-DungeonStack::DungeonStack(std::string n, int depthS, GenType genTypeS): name(n) {
+DungeonStack::DungeonStack(String n, int depthS, GenType genTypeS): name(n) {
     zones = new Zone*[depthS];
     depth = depthS;
     depthReached = 0;
@@ -71,8 +71,8 @@ void DungeonStack::setDifficulty(int diff, float change) {
     levelChange = change;
 }
 
-void DungeonStack::setEnvironments(int numEnvironments, short* enviros) {
-    environments.insert(environments.begin(), enviros, enviros + numEnvironments);
+void DungeonStack::addEnvironment(short enviro) {
+    environments.push_back(enviro);
 }
 
 void DungeonStack::setNumStairs(int stairs, float change) {
@@ -97,7 +97,7 @@ void DungeonStack::setItemDensity(float itePerSquare, float change) {
     iDensityChange = change;
 }
 
-void DungeonStack::setTileset(Tile** ts) {
+void DungeonStack::setTileset(TileSet* ts) {
     tileset = ts;
 }
 

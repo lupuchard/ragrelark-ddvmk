@@ -20,6 +20,8 @@
 #include "Area.h"
 #include "Location.h"
 #include "StatHolder.h"
+#include "DungeonStack.h"
+#include "TiledLoader.h"
 
 #ifndef WORLD_H
 #define WORLD_H
@@ -28,15 +30,21 @@ class World: public StatHolder {
     public:
         World();
         virtual ~World();
+
         void addArea(Area* a);
-        void setDim(int wid, int hei);
         int theTime;
-    protected:
+
+        Area* getArea(int index);
+        Area* getArea(String name);
+        Zone* getZone(String name);
+
+        void parseArea(YAML::Node fileNode);
+        void parseZone(YAML::Node fileNode, TiledLoader* tiledLoader, MobSpawner* mobSpawner);
     private:
-        int width;
-        int height;
         std::vector<Area*> areas;
-        Location* worldMap;
+        std::map<String, Area*> areaNameMap;
+        std::map<String, Zone*> zoneNameMap;
+        std::map<String, DungeonStack*> dunNameMap;
 };
 
 #endif // WORLD_H

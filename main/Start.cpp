@@ -21,20 +21,11 @@
 Start::Start() {
     done = false;
 
-    gotsStructureTex = false;
-    gotsMenuTex = false;
-    gotsFontTex = false;
-    gotsSplatterTex = false;
-    gotsAttackAnimsTex = false;
-
     selected = 0;
     state = STATE_PLAY;
     stateAction = SA_NONE;
 
-    interval0 = 0;
-    interval1 = 0;
-    interval2 = 0;
-    interval3 = 0;
+    for(unsigned int i = 0; i < 4; i++) intervals[i] = 0;
     foon = 0;
 
     topPanel = PANEL_TOPSTART + 1;
@@ -50,25 +41,21 @@ Start::Start() {
     prepare();
 }
 
-Start::~Start() {
-
-}
+Start::~Start() { }
 
 void Start::prepare() {
-
-    setFormUser(this);
-    setEnvironmentManager(this);
+    Stat::setFormUser(this);
     setEnvironmentManager(this);
     mobSpawner = new MobSpawner(this);
     setMobSpawner(mobSpawner);
+    tiledLoader = new TiledLoader(this, mobSpawner);
 
     world = new World();
-    primeFolder = new PrimeFolder();
-    player = new Player(primeFolder);
 
     done = !init();
 
-    loadData(world, player);
+    loadData();
+    startRenderer();
 
     Item* primeFolders = primeFolder->getItems();
     putItemFolder(primeFolders + 2, primeFolder->getGround());
@@ -77,8 +64,6 @@ void Start::prepare() {
     folderStack.push(primeFolder);
 
     primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->pos);
-
-    finishDataSetup();
 
     for (int i = 0; i < MAX_ZONE_SIZE; i++) {
         visibilities[i] = 0;
@@ -115,35 +100,15 @@ int main() {
 }
 
 ItemFolder* Start::getItemFolder(Item item) {
-    if (getItemType(item.itemType)->getType() >= 10 && getItemType(item.itemType)->getType() <= 14) {
+    if (item.getType()->isFolder()) {
         int num = item.form * 256 + item.quantityCharge;
         return folders[item.itemType][num];
     }
     return primeFolder;
 }
 
-void Start::createItemFolder(Item* item) {
-    int itemTypeType = getItemType(item->itemType)->getType();
-    if (itemTypeType >= 10 && itemTypeType <= 14) {
-        if (folders.find(item->itemType) != folders.end()) {
-            int size = folders[item->itemType].size();
-            item->quantityCharge = size / 256;
-            item->form = size % 256;
-        }
-        switch(itemTypeType) {
-            case 10: break;
-            case 11: folders[item->itemType].push_back(new GroundFolder()); break;
-            case 12: folders[item->itemType].push_back(new EquipmentFolder()); break;
-            case 13: folders[item->itemType].push_back(new BagFolder(10)); break;
-            case 14: folders[item->itemType].push_back(new PrimeFolder()); break;
-            default: break;
-        }
-    }
-}
-
 void Start::putItemFolder(Item* item, ItemFolder* itemFolder) {
-    int itemTypeType = getItemType(item->itemType)->getType();
-    if (itemTypeType >= 10 && itemTypeType <= 14) {
+    if (item->getType()->isFolder()) {
         if (folders.find(item->itemType) != folders.end()) {
             int size = folders[item->itemType].size();
             item->quantityCharge = size / 256;
@@ -155,8 +120,8 @@ void Start::putItemFolder(Item* item, ItemFolder* itemFolder) {
 
 #define MESSAGE_LEN_LIMIT 78
 
-void Start::addMessage(std::string message, Color c) {
-    std::pair<std::string, Color> completeMess = std::make_pair(message, c);
+void Start::addMessage(String message, Color c) {
+    std::pair<String, Color> completeMess = std::make_pair(message, c);
     static int forbs = 1;
     int ind = messages.size() - 1;
     if (ind > 0 && messages[ind].first.substr(0, message.size()) == message) {
@@ -192,7 +157,6 @@ void Start::findAreaUnits() {
                     Location* loc = zone->getLocationAt(Coord(j, k));
                     if (loc->hasUnit()) {
                         areaUnits.insert(std::pair<Unit*, Zone*>(loc->unit, zone));
-                        loc->unit->makeHashMaps();
                     }
                 }
             }
@@ -202,8 +166,8 @@ void Start::findAreaUnits() {
 
 void Start::addItemToPlace(Coord c, Zone* z, Item item) {
     z->getLocationAt(c)->addItem(item);
-    ItemType* itemType = getItemType(item.itemType);
-    int light = itemType->getStatValue(S_LIGHT);
+    ItemType* itemType = item.getType();
+    int light = itemType->getStatValue(Stat::LIGHT);
     if (light > 0) {
         myFovCirclePerm(z, c, light, 1);
         if (z == player->getZone()) {
@@ -214,8 +178,8 @@ void Start::addItemToPlace(Coord c, Zone* z, Item item) {
 
 Item Start::removeItemFromPlace(Coord c, Zone* z, int index) {
     Item item = z->getLocationAt(c)->removeItem(index);
-    ItemType* itemType = getItemType(item.itemType);
-    int light = itemType->getStatValue(S_LIGHT);
+    ItemType* itemType = item.getType();
+    int light = itemType->getStatValue(Stat::LIGHT);
     if (light > 0) {
         myFovCirclePerm(z, c, light, -1);
         if (z == player->getZone()) {
@@ -223,4 +187,24 @@ Item Start::removeItemFromPlace(Coord c, Zone* z, int index) {
         }
     }
     return item;
+}
+
+Skill* Start::skll(SkillE skillIndex) {
+    return Stat::getSkill(skillIndex);
+}
+/*Stat*  Start::stUn(UnitStatE statIndex) {
+    return Stat::get(V_UNIT, statIndex);
+}
+Stat*  Start::stIt(ItemStatE statIndex) {
+    return Stat::get(V_ITEM, statIndex);
+}*/
+
+void Start::parsePlayer(YAML::Node n) {
+    player->setName(readYAMLStr(n, "Name", "anonymous"));
+    player->setUnitProto(mobSpawner->getMob(readYAMLStr(n, "Unit", "player")).second);
+    player->setArea(world->getArea(readYAMLStr(n, "Area", "no area specified")));
+    Zone* zone = world->getZone(readYAMLStr(n, "Zone", "no zone specified"));
+    player->setZone(zone);
+    player->getUnit()->pos = Coord(n["Loc"][0].as<int>(), n["Loc"][1].as<int>());
+    zone->getLocationAt(player->getUnit()->pos)->unit = player->getUnit();
 }

@@ -18,42 +18,12 @@
 
 #include "Texture.h"
 
-std::vector<Texture*> textures;
-Texture* structureTex;
-Texture* menuTex;
-Texture* fontTex;
-Texture* splatterTex;
-Texture* attackAnimsTex;
-Texture* playerTex;
-
-int addTexture(Texture* texture) {
-    textures.push_back(texture);
-    return textures.size() - 1;
-}
-void setStructureTex(Texture* texture) { structureTex = texture; }
-void setMenuTex(Texture* texture) { menuTex = texture; }
-void setFontTex(Texture* texture) { fontTex = texture; }
-void setSplatterTex(Texture* texture) { splatterTex = texture; }
-void setAttackAnimsTex(Texture* texture) { attackAnimsTex = texture; }
-void setPlayerTex(Texture* texture) { playerTex = texture; }
-Texture* getStructureTex() { return structureTex; }
-Texture* getMenuTex() { return menuTex; }
-Texture* getFontTex() { return fontTex; }
-Texture* getSplatterTex() { return splatterTex; }
-Texture* getAttackAnimsTex() { return attackAnimsTex; }
-Texture* getPlayerTex() { return playerTex; }
-Texture* getTexture(int index) {
-    return textures[index];
-}
-void clearTextures() {
-    for (unsigned int i = 0; i < textures.size(); i++) {
-        delete textures[i];
-    }
-    textures.clear();
-}
-
-Texture::Texture(std::string file, Color back) {
+Texture::Texture(String file, Color back) {
     SDL_Surface* surface = IMG_Load(file.c_str());
+    index = 0;
+    if (!surface) {
+        surface = IMG_Load(("resources/" + file).c_str());
+    }
     if (!surface) {
         std::cout << "File not found or not an image: " << file << std::endl;
     } else {
@@ -65,15 +35,12 @@ Texture::Texture(std::string file, Color back) {
 
         int bytesPerPixel = surface->format->BytesPerPixel;
         if(bytesPerPixel == 4) {
-            //std::cout << "Loading image \"" << file << "\" as RGBA." << std::endl;
             glPixelStorei(GL_UNPACK_ALIGNMENT, GL_RGBA);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
         } else if (bytesPerPixel == 3) {
-            //std::cout << "Loading image \"" << file << "\" as RGB." << std::endl;
             glPixelStorei(GL_UNPACK_ALIGNMENT, GL_RGB);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, surface->pixels);
         } else if (surface->format->BitsPerPixel <= 8 ) {
-            //std::cout << "Loading image \"" << file << "\" as indexed." << std::endl;
             //assuming it's a palette, and converting it to rgba
 
             int paletteSize = surface->format->palette->ncolors;
@@ -123,4 +90,36 @@ int Texture::getWidth() {
 
 int Texture::getHeight() {
     return height;
+}
+
+int Texture::getIndex() {
+    return index;
+}
+
+std::vector<Texture*> Texture::textures;
+std::map<String, Texture*> Texture::textureFileMap;
+
+Texture* Texture::get(String filename) {
+    std::map<String, Texture*>::iterator iter = textureFileMap.find(filename);
+    if (iter == textureFileMap.end()) {
+        Texture* newTexture = new Texture(filename);
+        newTexture->index = textures.size();
+        if (newTexture->index > 127) std::cout << "Warning: There are too many textures.\n";
+        textures.push_back(newTexture);
+        textureFileMap[filename] = newTexture;
+        return newTexture;
+    } else {
+        return iter->second;
+    }
+}
+
+Texture* Texture::get(int index) {
+    return textures[index];
+}
+void Texture::clean() {
+    for (unsigned int i = 0; i < textures.size(); i++) {
+        delete textures[i];
+    }
+    textures.clear();
+    textureFileMap.clear();
 }

@@ -1,0 +1,11 @@
+---
+Name: adventure spellbook
+Desc: The basic spells necessary for the wizarding adventurer.
+Texture: items2.png
+Tile: [0, 0]
+Equipped: {Texture: player.png, Tile: [0, 21], Size: small}
+Type: spellbook
+weight: 9
+value: 20
+Spells: [light]
+...

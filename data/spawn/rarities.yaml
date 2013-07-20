@@ -1,0 +1,10 @@
+ultra common: 10000
+extra common: 3500
+very common : 1000
+common      : 350
+uncommon    : 100
+rare        : 35
+very rare   : 10
+extra rare  : 3
+ultra rare  : 1
+nonexistant : 0

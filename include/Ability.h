@@ -19,31 +19,40 @@
 #ifndef ABILITY_H
 #define ABILITY_H
 
+#include "main.h"
 #include <string>
 
 #define SPELL_LIGHT 768
 
 class Ability {
     public:
-        Ability(std::string name, int manaCost, int difficulty, int timeTake, int classI);
+        Ability(String name, int manaCost, int difficulty, int timeTake, int classI);
 
-        std::string getName();
+        String getName();
         int getCost();
         int getDifficulty();
         int getTimeTake();
         int getI();
-    protected:
+
+        //statics
+        static void parse(YAML::Node fileNode);
+        static void parseElem(YAML::Node fileNode);
+        static Ability* get(int index);
+        static Ability* get(bool wind, bool earth, bool water, bool fire, bool phys, bool ment, bool light, bool dark, int power);
+        static Ability* get(String name);
+        static bool has(String name);
+        static void clean();
     private:
-        std::string name;
+        String name;
         unsigned short manaCost;
         unsigned short difficulty;
         unsigned short classificationI;
         unsigned short timeTake;
-};
 
-void addAbility(Ability* ability);
-Ability* getAbility(int index);
-Ability* getAbility(bool wind, bool earth, bool water, bool fire, bool phys, bool ment, bool light, bool dark, int power);
-void cleanAbilities();
+        //statics
+        static std::map<int, Ability*> abilities;
+        static std::map<String, Ability*> abilityNameMap;
+        static std::map<String, int> elemNameMap;
+};
 
 #endif // ABILITY_H

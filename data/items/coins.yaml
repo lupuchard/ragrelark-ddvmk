@@ -1,0 +1,30 @@
+---
+Name: copper pens
+Desc: This is peasant money right here.
+Texture: items.png
+Tile: [0, 3]
+Type: coin
+weight: 0
+value: 1
+g_stack: 1
+...
+---
+Name: silver pens
+Desc: Each is worth 30 cp.
+Texture: items.png
+Tile: [0, 2]
+Type: coin
+weight: 0
+value: 30
+g_stack: 1
+...
+---
+Name: gold pens
+Desc: Each is worth 20 sp.
+Texture: items.png
+Tile: [0, 1]
+Type: coin
+weight: 0
+value: 600
+g_stack: 1
+...

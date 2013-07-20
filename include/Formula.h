@@ -16,10 +16,6 @@
  *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <vector>
-#include <math.h>
-#include <string>
-#include <map>
 #include "usefulParsing.h"
 #include "FormulaUser.h"
 
@@ -92,9 +88,10 @@ class Formula {
         double runFloat(FormulaUser* user, StatHolderIntef*, double prevVal);
 
         int getLength();
-    protected:
     private:
         std::vector<unsigned char> commands; // A list of the commands that this formula goes through. A single command may take up multiple chars in this list.
+
+        //statics
         static float floats[MAX_FLOATS];// The floats used across all formulas. There can only be a maximum of MAX_FLOATS, so it is suggested to refraim from use.
         static int numFloats;           // The number of floats currently used.
 };

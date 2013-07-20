@@ -22,3 +22,7 @@ ValgrindOut.xml
 *.lai
 *.la
 *.a
+
+CppCheckResults.xml
+ValgrindOut.xml
+valsupp.supp

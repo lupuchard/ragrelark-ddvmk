@@ -21,7 +21,7 @@
 std::set<unsigned short> direct;
 std::set<unsigned short> inverse;
 
-Swarmer::Swarmer(std::string n, StatHolder* prototype): Unit(n, prototype) { }
+Swarmer::Swarmer(String n, StatHolder* prototype): Unit(n, prototype) { }
 Swarmer::~Swarmer() {
     for (unsigned int i = 0; i < others.size(); i++) {
         delete others[i];
@@ -29,10 +29,10 @@ Swarmer::~Swarmer() {
 }
 
 short Swarmer::getStatValue(int stat) {
-    if (stat == S_HP) {
-        int h = Unit::getStatValue(S_HP);
+    if (stat == Stat::HP) {
+        int h = Unit::getStatValue(Stat::HP);
         for (unsigned int i = 0; i < others.size(); i++) {
-            h += others[i]->getStatValue(S_HP);
+            h += others[i]->getStatValue(Stat::HP);
         }
         return h;
     } else if (direct.find(stat) != direct.end()) {
@@ -45,19 +45,19 @@ short Swarmer::getStatValue(int stat) {
 }
 
 short Swarmer::modifyStat(int stat, int amount) {
-    if (stat == S_HP) {
+    if (stat == Stat::HP) {
         if (others.empty()) {
-            int rem = Unit::modifyStat(S_HP, amount);
+            int rem = Unit::modifyStat(Stat::HP, amount);
             return rem;
         } else {
             int target = rand() % others.size();
-            int rem = others[target]->modifyStat(S_HP, amount);
+            int rem = others[target]->modifyStat(Stat::HP, amount);
             if (rem > 0) {
                 return rem;
             } else {
                 delete others[target];
                 others.erase(others.begin() + target);
-                Unit::g.loc = Unit::getStatValue(S_GLOC) + others.size();
+                Unit::graphic.loc = Unit::getStatValue(Stat::GLOC) + others.size();
                 return 1;
             }
         }
@@ -90,12 +90,12 @@ void Swarmer::add(Swarmer* unit) {
         unit->take(0);
     }
     others.push_back(unit);
-    Unit::g.loc = Unit::getStatValue(S_GLOC) + others.size();
+    Unit::graphic.loc = Unit::getStatValue(Stat::GLOC) + others.size();
 }
 
 Unit* Swarmer::take(int unit) {
     Unit* temp = others[unit];
     others.erase(others.begin() + unit);
-    Unit::g.loc = Unit::getStatValue(S_GLOC) + others.size();
+    Unit::graphic.loc = Unit::getStatValue(Stat::GLOC) + others.size();
     return temp;
 }

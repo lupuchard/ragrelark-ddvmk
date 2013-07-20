@@ -18,51 +18,25 @@
 
 #include <iostream>
 #include "Tile.h"
-using namespace std;
 
-vector<Tile*> tiles;
-void addTile(Tile* tile) {
-    tile->setIndex(tiles.size());
-    tiles.push_back(tile);
-}
-Tile* getTile(int index) {
-    return tiles[index];
-}
-void clearTiles() {
-    for (unsigned int i = 0; i < tiles.size(); i++) {
-        delete tiles[i];
-    }
-    tiles.clear();
-}
+Tile::Tile(String name, Graphic g, bool blockM, bool blockL, Tile* over): StatHolder(V_TILE) {
+    graphic = g;
 
-Tile::Tile(int loc, int tex, int type, int border): StatHolder(V_TILE) {
-    g.loc = loc;
-    g.tex = tex;
-    g.type = type;
-    g.border = border;
-
-    blockMove = false;
-    blockLight = false;
+    blockMove = blockM;
+    blockLight = blockL;
 
     index = -1;
-    over = NULL;
-}
+    this->over = over;
 
-graphic Tile::getGraphic() {
-    return g;
-}
-
-void Tile::setOver(Tile* t) {
-    over = t;
+    this->name = name;
 }
 
 Tile* Tile::getOver() {
     return over;
 }
 
-void Tile::setBlock(bool blockM, bool blockL) {
-    blockLight = blockL;
-    blockMove = blockM;
+Graphic Tile::getGraphic() {
+    return graphic;
 }
 
 bool Tile::blocksLight() {
@@ -73,10 +47,58 @@ bool Tile::blocksMove() {
     return blockMove;
 }
 
-void Tile::setIndex(int i) {
-    index = i;
-}
-
 unsigned short Tile::getIndex() {
     return index;
+}
+
+std::vector<Tile*> Tile::tiles;
+std::map<String, Tile*> Tile::tileNameMap;
+std::map<String, TileSet*> Tile::tileSets;
+
+void Tile::add(Tile* tile) {
+    tile->index = tiles.size();
+    tiles.push_back(tile);
+    tileNameMap[tile->name] = tile;
+}
+Tile* Tile::get(int index) {
+    return tiles[index];
+}
+Tile* Tile::get(String n) {
+    return tileNameMap[n];
+}
+bool Tile::has(String name) {
+    return tileNameMap.find(name) != tileNameMap.end();
+}
+void Tile::parseSets(YAML::Node node) {
+    TileSet* tileSet = new TileSet;
+    tileSet->name = readYAMLStr(node, "Name", "nil", "Name expected.");
+    YAML::Node tilesNode = node["Tiles"];
+    if (tilesNode.IsSequence()) {
+        for (YAML::const_iterator iter = tilesNode.begin(); iter != tilesNode.end(); ++iter) {
+            String s = iter->as<String>();
+            if (has(s)) {
+                tileSet->tiles.push_back(get(s));
+            } else std::cout << "'" << s << "' is not an existing tile.\n";
+        }
+        addSet(tileSet);
+    } else std::cout << " err: Tiles expected.\n";
+}
+void Tile::addSet(TileSet* tileSet) {
+    tileSets[tileSet->name] = tileSet;
+}
+TileSet* Tile::getSet(String name) {
+    return tileSets[name];
+}
+bool Tile::hasSet(String name) {
+    return tileSets.find(name) != tileSets.end();
+}
+void Tile::clean() {
+    for (unsigned int i = 0; i < tiles.size(); i++) {
+        delete tiles[i];
+    }
+    for (std::map<String, TileSet*>::iterator iter = tileSets.begin(); iter != tileSets.end(); ++iter) {
+        delete iter->second;
+    }
+    tiles.clear();
+    tileSets.clear();
 }

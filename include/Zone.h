@@ -32,12 +32,12 @@ enum GenType{GEN_NONE = 0, GEN_MYDUN = 1, GEN_BSP = 2, GEN_DUNGEON = 10};
 
 class Zone: public StatHolder {
     public:
-        Zone(std::string name, int width, int height, int lightness, bool fill);
+        Zone(String name, int width, int height, int lightness, bool fill);
         virtual ~Zone();
         int getWidth();
         int getHeight();
         unsigned char getLightness();
-        std::string getName();
+        String getName();
         Location* getLocationAt(Coord pos);
         Location* getLocationAt(int i);
         Location* safeGetLocationAt(Coord pos);
@@ -53,14 +53,13 @@ class Zone: public StatHolder {
         std::pair<int, int> dungeonTag();
 
         int getFoon();
-    protected:
     private:
         Location* locs;
         bool filled;
         unsigned char lightness; //0 - 11, 0 = blind, 1 - 10 = normal, 11 = surface
         unsigned short width;
         unsigned short height;
-        std::string name;
+        String name;
         unsigned short ind;
 
         char stackIndex;

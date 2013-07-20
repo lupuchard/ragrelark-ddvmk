@@ -45,7 +45,7 @@ double Start::defDam(double preDam, int defense) {
 
 //this method runs to tell the unit in the zone what to do, it chooses it's action
 void Start::ai(Unit* unit, Zone* zone) {
-    int ai = unit->getStatValue(S_AI); //the type of AI the monster uses, currently only two.
+    int ai = unit->getStatValue(Stat::AI); //the type of AI the monster uses, currently only two.
     bool inZone = zone == player->getZone(); //whether the player is in this zone or not. monsters outside the zone will always just sit still
     Unit* target = player->getUnit();
     switch(ai) {
@@ -112,29 +112,29 @@ void Start::followPath(Unit* unit, Zone* zone) {
 void Start::playerWalkStaminaDrain(int* movSpeed, int tim, Unit* unit) {
     if (unit == player->getUnit()) {
         switch(loadStatus) {
-            case 0: unit->modifyStat(S_STAMINA, -tim / 2); break;
+            case 0: unit->modifyStat(Stat::STAMINA, -tim / 2); break;
             case 1:
                 *movSpeed -= 1;
-                unit->modifyStat(S_STAMINA, -tim);
-                debankExp(unit, SKL_LIFT, 1);
+                unit->modifyStat(Stat::STAMINA, -tim);
+                //debankExp(unit, SKL_LIFT, 1);
                 break;
             case 2:
                 *movSpeed -= 2;
-                unit->modifyStat(S_STAMINA, -tim * 3 / 2);
-                debankExp(unit, SKL_LIFT, 2);
+                unit->modifyStat(Stat::STAMINA, -tim * 3 / 2);
+                //debankExp(unit, SKL_LIFT, 2);
                 break;
             case 3:
                 *movSpeed -= 3;
-                unit->modifyStat(S_STAMINA, -tim * 2);
-                debankExp(unit, SKL_LIFT, 3);
+                unit->modifyStat(Stat::STAMINA, -tim * 2);
+                //debankExp(unit, SKL_LIFT, 3);
                 break;
             default:
                 *movSpeed -= 4;
-                unit->modifyStat(S_STAMINA, -tim * 5 / 2);
-                debankExp(unit, SKL_LIFT, 4);
+                unit->modifyStat(Stat::STAMINA, -tim * 5 / 2);
+                //debankExp(unit, SKL_LIFT, 4);
                 break;
         }
-        int stam = unit->getStatValue(S_STAMINA);
+        int stam = unit->getStatValue(Stat::STAMINA);
         if (stam < 2000) {
             *movSpeed -= 2;
         } else if (stam < 5000) {
@@ -145,7 +145,7 @@ void Start::playerWalkStaminaDrain(int* movSpeed, int tim, Unit* unit) {
 
 /* Moves a unit in a zone in a direction!!???!? */
 void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
-    bool cond = unit->hasAnyConditions();
+    /*bool cond = unit->hasAnyConditions();
     if (cond && unit->getCondition(C_CONFUSION)) {
         int newDir = rand() % 11;
         if (newDir == 10) {
@@ -155,7 +155,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                 removeStatus(ST_CONF);
             }
         } else if (newDir) dir = newDir;
-    }
+    }*/
     if (!(unit == player->getUnit() && loadStatus == 4)) {
         Coord prevPos = unit->pos;
         Coord newPos = prevPos + DIRS[dir];
@@ -164,7 +164,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
         if (newPos.x >= 0 && newPos.y >= 0 && newPos.x < zone->getWidth() && newPos.y < zone->getHeight()) {
             Location* nextLoc = zone->getLocationAt(newPos);
             if (nextLoc->hasUnit()) {
-                int swarm = unit->getStatValue(S_SWARM);
+                int swarm = unit->getStatValue(Stat::SWARM);
                 if (swarm && nextLoc->unit->getProto() == unit->getProto()) {
                     Swarmer* unitS = static_cast<Swarmer*>(unit);
                     Swarmer* nextS = static_cast<Swarmer*>(nextLoc->unit);
@@ -191,10 +191,10 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                 Location* prevLoc = zone->getLocationAt(unit->pos);
                 int prevHeight = prevLoc->getTotalHeight();
                 int height = nextLoc->getTotalHeight();
-                if (nextLoc->isOpen() && !getTile(nextLoc->tile)->blocksMove()) {
-                    int movSpeed = unit->getStatValue(S_MOVESPEED);
+                if (nextLoc->isOpen() && !Tile::get(nextLoc->tile)->blocksMove()) {
+                    int movSpeed = unit->getStatValue(Stat::MOVESPEED);
                     normalMove = true;
-                    if (prevHeight != height && !unit->getStatValue(S_FLY)) {
+                    if (prevHeight != height && !unit->getStatValue(Stat::FLY)) {
                         if (fabs(prevHeight - height) <= 2) {
                             if (prevHeight < height) movSpeed--;
                         } else {
@@ -231,7 +231,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                         Zone* z = i->second;
                         if (z == zone) {
                             Unit* u = i->first;
-                            int ai = u->getStatValue(S_AI);
+                            int ai = u->getStatValue(Stat::AI);
                             switch(ai) {
                             case 1: if (visibilities[u->pos.index(zone->getWidth())]) {
                                 //cout << "happen " << newX << " " << newY << endl;
@@ -270,7 +270,7 @@ void Start::pushRock(Unit* unit, Zone* zone, int dir) {
                     int tim;
                     if (diags) tim = T_WALK_DI;
                     else tim = T_WALK_ST;
-                    int movSpeed = unit->getStatValue(S_MOVESPEED);
+                    int movSpeed = unit->getStatValue(Stat::MOVESPEED);
                     if (unit == player->getUnit()) {
                         playerWalkStaminaDrain(&movSpeed, tim, unit);
                     }
@@ -292,7 +292,7 @@ void Start::goTheStairs(Unit* unit, Zone* zone) {
                 Zone* z = i->second;
                 if (z == zone) {
                     Unit* u = i->first;
-                    int ai = u->getStatValue(S_AI);
+                    int ai = u->getStatValue(Stat::AI);
                     switch(ai) {
                     case 1: if (visibilities[u->pos.index(zone->getWidth())]) {
                         makePath(u, unit->pos, zone, P_STAIRS);
@@ -308,14 +308,14 @@ void Start::goTheStairs(Unit* unit, Zone* zone) {
     }
 }
 
-void Start::hitCMod(Unit* defender, float& damage, float accuracy, float crit, int& hitType, battleSummary& sum) {
+void Start::hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, battleSummary& sum) {
     float howLuckyAreYou = (float)rand() / RAND_MAX;
-    int fiz = defender->getStatValue(S_EVA) - accuracy;
-    if (howLuckyAreYou > chanceHit(fiz + 24 - crit / 2.f)) {
+    int fiz = defender->getStatValue(Stat::EVA) - accuracy;
+    if (howLuckyAreYou > chanceHit(fiz + 24)) {
         damage *= 5;
         hitType = 4;
         sum.criticality = 4;
-    } else if (howLuckyAreYou > chanceHit(fiz + 10 - crit)) {
+    } else if (howLuckyAreYou > chanceHit(fiz + 10)) {
         damage *= 2;
         hitType = 3;
         sum.criticality = 3;
@@ -335,7 +335,7 @@ void Start::hitCMod(Unit* defender, float& damage, float accuracy, float crit, i
     }
 }
 
-std::string Start::defenderNoun(Unit* attacker, Unit* defender) {
+String Start::defenderNoun(Unit* attacker, Unit* defender) {
     if (defender == player->getUnit()) {
         if (defender == attacker) return "yourself";
         else return "you";
@@ -347,17 +347,17 @@ std::string Start::defenderNoun(Unit* attacker, Unit* defender) {
 
 void Start::hitSapping(Unit* attacker, Unit* defender, int criticality) {
     switch(criticality) {
-        case 4: sapExp(attacker, defender, SKL_CRIT, 3); break;
-        case 3: sapExp(attacker, defender, SKL_CRIT, 1); break;
-        case 1: sapExp(attacker, defender, SKL_CRIT, 1);
-                sapExp(defender, attacker, SKL_DODGE, 1); break;
-        case 0: sapExp(defender, attacker, SKL_DODGE, 1); break;
+        //case 4: sapExp(attacker, defender, SKL_CRIT, 3); break;
+        //case 3: sapExp(attacker, defender, SKL_CRIT, 1); break;
+        case 1: //sapExp(attacker, defender, SKL_CRIT, 1);
+                sapExp(defender, attacker, Stat::getSkill(SKL_DODGE), 1); break;
+        case 0: sapExp(defender, attacker, Stat::getSkill(SKL_DODGE), 1); break;
         default: break;
     }
 }
 
 Color critColors[] = {Color{95, 31, 31, 0}, Color{63, 0, 0, 0}, MAROON, BRICK, RED};
-std::string hitWord(int criticality, int attackType) {
+String hitWord(int criticality, int attackType) {
     switch(criticality) {
         case 4:
         switch(attackType) {
@@ -401,7 +401,7 @@ std::string hitWord(int criticality, int attackType) {
     return "miss";
 }
 void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
-    if (unit == player->getUnit() && unit->getStatValue(S_STAMINA) < 2000) {
+    if (unit == player->getUnit() && unit->getStatValue(Stat::STAMINA) < 2000) {
         addMessage("You are too exausted to attack!", GRAY);
     } else {
         Coord newPos = unit->pos + DIRS[dir];
@@ -412,7 +412,8 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 Unit* defender = loc->unit;
 
                 int weapType = 0;
-                bool unarmed = true;
+                bool unarmed = false;
+                /*bool unarmed = true;
                 if (unit == player->getUnit()) {
                     Item* item = primeFolder->getEquips()->getItem(E_RHAND);
                     ItemType* itemType = getItemType(item->itemType);
@@ -433,26 +434,24 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                             break;
                         }
                     }
-                }
-                unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(S_ATTACKSPEED));
+                }*/ // TODO unarmed again
+                unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(Stat::ATTACKSPEED));
                 battleSummary bs;
-                float sk = 0;
                 if (unit == player->getUnit()) {
-                    sk = player->getSkillLevel(SKL_CRIT) / 100.f;
-                    unit->modifyStat(S_STAMINA, -T_ATTACK);
+                    unit->modifyStat(Stat::STAMINA, -T_ATTACK);
                 }
 
                 int attackType;
-                if (unarmed) attackType = unit->getStatValue(S_UNARMED);
+                if (unarmed) attackType = unit->getStatValue(Stat::UNARMED);
                 else attackType = weapType;
-                std::string u1name;
-                std::string u2name = defenderNoun(unit, defender);
+                String u1name;
+                String u2name = defenderNoun(unit, defender);
 
-                bs = attackUnit(unit->getStatValue(S_UNARMDAMAGE), unit->getStatValue(S_ACC), sk, attackType, defender, zone, dir);
+                bs = attackUnit(unit->getStatValue(Stat::UNARMDAMAGE), unit->getStatValue(Stat::ACC), attackType, defender, zone, dir);
 
                 Color c = critColors[bs.criticality];
-                std::string verb = hitWord(bs.criticality, attackType);
-                std::string extra;
+                String verb = hitWord(bs.criticality, attackType);
+                String extra;
                 if (unit == player->getUnit()) {
                     u1name = "you";
                 } else {
@@ -462,10 +461,10 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 }
 
                 if (!bs.killed && bs.hit) {
-                    if (unarmed) sapExp(unit, defender, SKL_UNARM, 1);
-                    else sapExp(unit, defender, SKL_MELEE, 1);
-                    sapExp(defender, unit, SKL_FORT, 1);
-                    int conditionAffectC = unit->getStatValue(S_ATTCONDCHANCE);
+                    if (unarmed) sapExp(unit, defender, skll(SKL_UNARMED), 1);
+                    //else sapExp(unit, defender, SKL_MELEE, 1);
+                    //sapExp(defender, unit, SKL_FORT, 1);
+                    /*int conditionAffectC = unit->getStatValue(S_ATTCONDCHANCE);
                     if (conditionAffectC > 0 && rand() % 100 <= conditionAffectC) {
                         int conditionAffect = unit->getStatValue(S_ATTCOND);
                         if (defender == player->getUnit()) {
@@ -482,7 +481,7 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                         } else {
                             defender->setCondition(conditionAffect, true);
                         }
-                    }
+                    }*/
                 }
                 addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
             }
@@ -490,35 +489,35 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
     }
 }
 
-const int damStats[] = {S_MELDAMAGE, S_RANDAMAGE};
-const SkillType damSkills[] = {SKL_MELEE, SKL_RANGE};
-battleSummary Start::attackUnit(int power, float accuracy, float crit, int weapType, Unit* defender, Zone* zone, int dir) {
+const int damStats[] = {Stat::MELDAMAGE, Stat::RANDAMAGE};
+//const Skill* damSkills[] = {SKL_MELEE, SKL_RANGE};
+battleSummary Start::attackUnit(int power, float accuracy, int weapType, Unit* defender, Zone* zone, int dir) {
     battleSummary sum = {false, false, false, false};
 
-    float damage = defDam(power, defender->getStatValue(S_DEFENSE));
+    float damage = defDam(power, defender->getStatValue(Stat::DEFENSE));
     damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
     int hitType;
 
-    hitCMod(defender, damage, accuracy, crit, hitType, sum);
+    hitCMod(defender, damage, accuracy, hitType, sum);
 
     raga.rAttack(defender->pos, dir, WEAP_DAM_TYPES[weapType], hitType);
 
     if (damage) {
         sum.hit = true;
-        int hp = defender->modifyStat(S_HP, -(int)damage);
+        int hp = defender->modifyStat(Stat::HP, -(int)damage);
         int splatterChance;
         if (hp <= 0) {
             splatterChance = 10;
         } else {
             splatterChance = 10 * damage / hp;
         }
-        splatterChance *= defender->getStatValue(S_SPLATTER);
+        splatterChance *= defender->getStatValue(Stat::SPLATTER);
         if (rand() % 200 < splatterChance) {
             makeSplatter(defender, zone, defender->pos);
         }
 
         if (hp <= 0) {
-            if (defender != player->getUnit()) player->bankXp(defender->getStatValue(S_EXP));
+            if (defender != player->getUnit()) player->bankXp(defender->getStatValue(Stat::EXP));
             killUnit(defender, zone);
             sum.killed = true;
         } else {
@@ -529,26 +528,24 @@ battleSummary Start::attackUnit(int power, float accuracy, float crit, int weapT
 }
 
 void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
-    if (attacker == player->getUnit() && attacker->getStatValue(S_STAMINA) < 1500) {
+    if (attacker == player->getUnit() && attacker->getStatValue(Stat::STAMINA) < 1500) {
         addMessage("You are too exausted to shoot!", GRAY);
     } else {
         attacker->setEnemy(defender);
-        attacker->theTime += actionTimePassed(T_ATTACK, attacker->getStatValue(S_ATTACKSPEED));
-        float sk = 0;
+        attacker->theTime += actionTimePassed(T_ATTACK, attacker->getStatValue(Stat::ATTACKSPEED));
         if (attacker == player->getUnit()) {
-            sk = player->getSkillLevel(SKL_CRIT) / 100.f;
-            attacker->modifyStat(S_STAMINA, -(T_ATTACK / 2));
+            attacker->modifyStat(Stat::STAMINA, -(T_ATTACK / 2));
         }
         battleSummary bs;
-        bs = attackUnit(attacker->getStatValue(S_RANDAMAGE), attacker->getStatValue(S_ACC), sk, WEAP_ARROW, defender, zone, 0);
+        bs = attackUnit(attacker->getStatValue(Stat::RANDAMAGE), attacker->getStatValue(Stat::ACC), WEAP_ARROW, defender, zone, 0);
         if (bs.hit) {
-            sapExp(attacker, defender, SKL_RANGE, 1);
-            sapExp(defender, attacker, SKL_FORT, 1);
+            //sapExp(attacker, defender, SKL_RANGE, 1);
+            //sapExp(defender, attacker, SKL_FORT, 1);
         }
         Color c = critColors[bs.criticality];
-        std::string verb = hitWord(bs.criticality, WEAP_ARROW);
-        std::string u1name;
-        std::string u2name = defenderNoun(attacker, defender);
+        String verb = hitWord(bs.criticality, WEAP_ARROW);
+        String u1name;
+        String u2name = defenderNoun(attacker, defender);
         if (attacker == player->getUnit()) {
             u1name = "you fire and";
         } else {
@@ -561,26 +558,26 @@ void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
 }
 
 void Start::projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from) {
-    std::string verb, u1name, u2name;
+    String verb, u1name, u2name;
 
-    ItemType* itemType = getItemType(item.itemType);
+    ItemType* itemType = item.getType();
 
-    int dam = itemType->getStatValue(S_IDAMAGE);
-    int thro = itemType->getStatValue(S_THRO);
-    int damty = itemType->getStatValue(S_DTYPE);
-    int weight = itemType->getStatValue(S_WEIGHT);
+    //int dam = itemType->getStatValue(Stat::IDAMAGE);
+    int thro = itemType->getStatValue(Stat::THRO);
+    int damty = itemType->getStatValue(Stat::DTYPE);
+    int weight = itemType->getStatValue(Stat::WEIGHT);
 
-    int damage = dam + (weight * power) / 100 + thro;
+    //int damage = dam + (weight * power) / 100 + thro;
 
     if (damty) damty = WEAP_OBJ;
     Location* loc = zone->getLocationAt(to);
     if (loc->unit) {
-        attackUnit(damage, accuracy, 0, damty, loc->unit, zone, 0);
+        //attackUnit(damage, accuracy, damty, loc->unit, zone, 0);
     }
 }
 
 void Start::reactToAttack(Unit* unit, int dir, Zone* zone) {
-    int ai = unit->getStatValue(S_AI);
+    int ai = unit->getStatValue(Stat::AI);
     switch(ai) {
         case AI_PASSIVE: {
             makePath(unit, unit->pos - DIRS[dir], zone, P_FLEE);
@@ -592,7 +589,7 @@ void Start::reactToAttack(Unit* unit, int dir, Zone* zone) {
 
 int poisonWeights[] = {1, 2, 4, 1, 1, 1, 1, 1, 1, 3, 3, 1, 2, 2, 3, 3};
 void Start::applyPoison(int condition, int duration, Unit* unit, Unit* poisoner) {
-    int r = rand() % 100;
+    /*int r = rand() % 100;
     int res = unit->getStatValue(S_RESPOIS);
     if (r < res / 5) {
         if (unit == player->getUnit()) addMessage("You resist the poison!", BLACK);
@@ -649,7 +646,7 @@ void Start::applyPoison(int condition, int duration, Unit* unit, Unit* poisoner)
     }
     if (unit == player->getUnit()) {
         //cout << "happens? " << endl;
-        std::string statusString = "Poison";
+        String statusString = "Poison";
         if (weightBefore >= 2) {
             statusString += " " + toRomanNumerals(weightBefore);
         }
@@ -683,12 +680,12 @@ void Start::applyPoison(int condition, int duration, Unit* unit, Unit* poisoner)
             statusString += ")";
         }
         addStatus(statusString, PURPLE.darken(), ST_POIS);
-    }
+    }*/
 }
 
 void Start::makeSplatter(Unit* unit, Zone* zone, Coord pos) {
     Location* loc = zone->getLocationAt(pos);
-    int bloodColor = unit->getStatValue(S_BLOOD);
+    int bloodColor = unit->getStatValue(Stat::BLOOD);
     if (loc->debris1 > bloodColor * 32 && loc->debris1 < (bloodColor + 1) * 32) {
         loc->debris1++;
     } else if (loc->debris2 > bloodColor * 32 && loc->debris2 < (bloodColor + 1) * 32) {
@@ -708,10 +705,10 @@ void Start::killUnit(Unit* unit, Zone* zone) {
             locOfDeath->addItem(unit->equipment->equips[i]);
         }
     }
-    int split = unit->getStatValue(S_SPLIT);
+    int split = unit->getStatValue(Stat::SPLIT);
     if (split) {
         for (int i = 0; i < split; i++) {
-            Unit* newUnit = mobSpawner->spawnMobSpeTag(unit->getStatValue(S_SPAWN), zone, unit->pos, world->theTime);
+            Unit* newUnit = mobSpawner->spawnMob(mobSpawner->getMob(unit->getStatValue(Stat::SPAWN)), zone, unit->pos, world->theTime);
             if (newUnit) {
                 areaUnits.insert(std::pair<Unit*, Zone*>(newUnit, zone));
                 newUnit->theTime = world->theTime;
@@ -723,13 +720,13 @@ void Start::killUnit(Unit* unit, Zone* zone) {
     if (unit == player->getUnit()) {
         addMessage("GAME OVER HAHA", BLACK);
     }
-    if (unit->g.border) unitDeleteList.push_back(unit);
+    if (unit->graphic.border) unitDeleteList.push_back(unit);
     else delete unit;
 }
 
 void Start::openDoor(Unit* unit, Zone* zone, int dir, bool safe) {
     Coord doorPos = unit->pos + DIRS[dir];
-    if (unit->getStatValue(S_AI) > 1 && (safe || doorPos.inBounds(zone->getWidth(), zone->getHeight()))) {
+    if (unit->getStatValue(Stat::AI) > 1 && (safe || doorPos.inBounds(zone->getWidth(), zone->getHeight()))) {
         Location* nextLoc = zone->getLocationAt(doorPos);
         int str = nextLoc->structure;
         if (isClosedDoor(str)) {
@@ -782,9 +779,9 @@ void Start::search(Unit* unit, Zone* zone) {
             Location* loc = zone->getLocationAt(c);
             if (loc->structure == S_HIDDENDOOR) {
                 int c = 10;
-                if (unit == player->getUnit()) c += player->getSkillLevel(SKL_SEARC);
+                //if (unit == player->getUnit()) c += player->getSkillLevel(SKL_SEARC);
                 if (rand() % 100 < c) {
-                    debankExp(unit, SKL_SEARC, 5);
+                    //debankExp(unit, SKL_SEARC, 5);
                     if (unit == player->getUnit()) addMessage("You found a secret door!", BLACK);
                     loc->structure = S_FOUNDDOOR;
                     return;
@@ -796,7 +793,7 @@ void Start::search(Unit* unit, Zone* zone) {
 }
 
 void Start::eatFood(Unit* unit, ItemType* food) {
-    int hung = unit->modifyStat(S_HUNGER, food->getStatValue(S_FEED));
+    int hung = unit->modifyStat(Stat::HUNGER, food->getStatValue(Stat::FEED));
     unit->theTime += T_EAT;
     if (unit == player->getUnit()) {
         if (hung > MAX_HUNGER) {
@@ -816,7 +813,7 @@ void Start::changeLoc(Unit* unit, Zone* zone, Coord loc) {
             Unit* u = iter->first;
             if (iter->second == player->getZone() && u != player->getUnit()) {
                 bool newPath = visibilities[u->pos.index(zone->getWidth())];
-                if (u->getStatValue(S_AI) != 1) {
+                if (u->getStatValue(Stat::AI) != 1) {
                     newPath = false;
                 } else if (u->pointOnPath > -1) {
                     Path* aPath = u->currentPath;

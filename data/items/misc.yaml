@@ -1,0 +1,27 @@
+---
+Name: candle
+Desc: A rather small and mundane light source.
+Texture: items.png
+Tile: [0, 9]
+Type: light source
+weight: 5
+value: 5
+light: 3
+...
+---
+Name: big heavy rock
+Desc: Useless.
+Texture: items.png
+Tile: [1, 6]
+Type: resource
+weight: 1000
+...
+---
+Name: blue feather
+Desc: A shiny blue feather from the rare bluebird.
+Texture: items.png
+Tile: [0, 6]
+Type: monster part
+weight: 1
+value: 10
+...

@@ -1,0 +1,28 @@
+combat:
+  - blades
+  - bludgeoning
+  - unarmed
+  - throwing
+  - shooting
+  - polearms
+defense:
+  - stealth
+  - dodge
+  - shields
+  - armor
+  - resist
+  - concentration
+utility:
+  - traps
+  - survival
+  - athletics
+  - intimidation
+  - diplomacy
+  - identification
+spells:
+  - holy
+  - wind
+  - fire
+  - unholy
+  - earth
+  - water

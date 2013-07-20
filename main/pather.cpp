@@ -20,12 +20,12 @@
 #include <queue>
 
 /* This file handles the pathing alporithm. At the end it also does the fov stuffs. */
-#define STRUCTURE_TEX 1
-#define SPLATTERS_TEX 9
 
 /*friend bool operator<(const loc &a, const loc &b) {
     return a.x * MAX_ZONE_SIZE + a.y < b.x * MAX_ZONE_SIZE + b.y;
 }*/
+
+// maybe change to jps?
 
 Coord start;
 Coord goal;
@@ -106,8 +106,8 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
         dest.y = zone->getHeight() - 1; add = 4;
     }
 
-    int swarm = unit->getStatValue(S_SWARM);
-    int fly = unit->getStatValue(S_FLY);
+    int swarm = unit->getStatValue(Stat::SWARM);
+    int fly = unit->getStatValue(Stat::FLY);
 
     pType = pathingType;
     bool considerOtherUnits = pathingType != P_PASSUNITS;
@@ -116,7 +116,7 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
 
     if (start.x == goal.x && start.y == goal.y) return;
 
-    int ai = unit->getStatValue(S_AI);
+    int ai = unit->getStatValue(Stat::AI);
     int wid = zone->getWidth();
     int hei = zone->getHeight();
     std::priority_queue<Node*, std::vector<Node*>, CompareNode> open;
@@ -169,7 +169,7 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
                         if (unitS->howMany() + nextS->howMany() <= swarm) unitInWay = false;
                     }
                 }
-                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || getTile(locAt->tile)->blocksMove() ||
+                if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || Tile::get(locAt->tile)->blocksMove() ||
                         (considerOtherUnits && unitInWay && !(((pathingType != P_FLEE) && (l == dest))))) {
                     val = 2;
                 }
@@ -300,35 +300,36 @@ void Start::playerFieldOfView(bool isNew) {
             unsigned char texs[2] = {7, 7};
             unsigned char locs[2] = {0, 0};
             if (loc->hasUnit()) {
-                graphic g = loc->unit->g;
-                texs[v] = g.tex;
+                Graphic g = loc->unit->graphic;
+                texs[v] = g.tex->getIndex();
                 locs[v] = g.loc;
                 v++;
             }
-            //vector<graphic> itemGraphics;
-            Item* items = &(*loc->items)[0];
-            int numItems = loc->items->size();
-            for (int j = numItems - 1; j >= 0 && v < 2; j--) {
-                graphic g = getItemType(items[j].itemType)->getGraphic(items[j].quantityCharge);
-                texs[v] = g.tex;
-                locs[v] = g.loc;
-                v++;
+            if (loc->hasItems()) {
+                Item* items = &(*loc->items)[0];
+                int numItems = loc->items->size();
+                for (int j = numItems - 1; j >= 0 && v < 2; j--) {
+                    Graphic g = items[j].getType()->getGraphic(items[j].quantityCharge);
+                    texs[v] = g.tex->getIndex();
+                    locs[v] = g.loc;
+                    v++;
+                }
             }
             if (v < 2) {
                 int struc = loc->structure;
                 if (struc != S_NONE) {
-                    texs[v] = STRUCTURE_TEX;
+                    texs[v] = structureTex->getIndex();
                     locs[v] = struc;
                     v++;
                 }
             }
             if (v < 2 && loc->debris1) {
-                texs[v] = SPLATTERS_TEX;
+                texs[v] = splatterTex->getIndex();
                 locs[v] = loc->debris1;
                 v++;
             }
             if (v < 2 && loc->debris2) {
-                texs[v] = SPLATTERS_TEX;
+                texs[v] = splatterTex->getIndex();
                 locs[v] = loc->debris2;
             }
             int x = i % zWidth;
@@ -340,7 +341,7 @@ void Start::playerFieldOfView(bool isNew) {
     Unit* unit = player->getUnit();
     int lightness = zone->getLightness();
     for (int i = 0; i < primeFolder->getEquips()->getNumItems(); i++) {
-        int l = getItemType(primeFolder->getEquips()->getItem(i)->itemType)->getStatValue(S_LIGHT);
+        int l = primeFolder->getEquips()->getItem(i)->getType()->getStatValue(Stat::LIGHT);
         if (l > lightness) lightness = l;
     }
     Coord p = unit->pos;
@@ -378,7 +379,7 @@ bool fovOpaque(void* map, int x, int y) {
     Zone* zone = static_cast<Zone*>(map);
     if (x < 0 || y < 0 || x >= zone->getWidth() || y >= zone->getHeight()) return true;
     Location* loc = zone->getLocationAt(Coord(x, y));
-    if (getTile(loc->tile)->blocksLight()) {
+    if (Tile::get(loc->tile)->blocksLight()) {
         unsigned short r = (RANDA * x + RANDB * y + RANDC * zone->getFoon() + RANDM) ^ RANDN;
         return r % 50 > 24;
     }

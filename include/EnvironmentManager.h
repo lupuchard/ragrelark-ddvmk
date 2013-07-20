@@ -23,12 +23,8 @@
 
 class EnvironmentManager {
     public:
-        EnvironmentManager();
-        virtual ~EnvironmentManager();
         virtual void addItemToPlace(Coord pos, Zone* z, Item item) = 0;
         virtual Item removeItemFromPlace(Coord pos, Zone* z, int index) = 0;
-    protected:
-    private:
 };
 
 #endif // ENVIRONMENTMANAGER_H

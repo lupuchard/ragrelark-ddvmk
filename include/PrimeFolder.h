@@ -22,11 +22,13 @@
 #include "GroundFolder.h"
 #include "EquipmentFolder.h"
 #include "BagFolder.h"
+#include "Texture.h"
 
 class PrimeFolder: public ItemFolder {
     public:
         PrimeFolder();
         virtual ~PrimeFolder();
+        void parseInv(YAML::Node node);
         int getNumItems();
         Item* getItem(int index);
         Item* getItems();
@@ -35,9 +37,10 @@ class PrimeFolder: public ItemFolder {
         BagFolder* getBag();
         EquipmentFolder* getEquips();
         GroundFolder* getGround();
-        //void setBag(BagFolder* b);
     protected:
     private:
+        ItemType* parseOne(YAML::Node node);
+
         BagFolder* bag;
         EquipmentFolder* equips;
         GroundFolder* ground;

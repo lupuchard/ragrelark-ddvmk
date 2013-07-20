@@ -16,28 +16,16 @@
  *  along with Ragrelark.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CTEXTURE_H
-#define CTEXTURE_H
+#ifndef TEXTURE_H
+#define TEXTURE_H
 
-#include <iostream>
-#include <string>
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_opengl.h>
-#include <GL/gl.h>
-#include <vector>
-
+#include "main.h"
 #include "Color.h"
-
-#ifndef TEXTURE_H_H
-#define TEXTURE_H_H
 
 class Texture {
     public:
         /// Loads a new texture from that file. The given background will be made transparent.
-        Texture(std::string file, Color background = NULL_COLOR);
+        Texture(String file, Color background = NULL_COLOR);
         ~Texture();
 
         /// Binds the texture.
@@ -45,31 +33,25 @@ class Texture {
 
         /// Returns the width of the texture.
         int getWidth();
-
         /// Returns the height of the texture.
         int getHeight();
+
+        int getIndex();
+
+        //statics
+        static Texture* get(int index);
+        static Texture* get(String filename);
+
+        static void clean();
     private:
         int width;
         int height;
         GLuint id;
+        int index;
+
+        //statics
+        static std::vector<Texture*> textures;
+        static std::map<String, Texture*> textureFileMap;
 };
 
-int addTexture(Texture* texture);
-void setStructureTex(Texture* texture);
-void setMenuTex(Texture* texture);
-void setFontTex(Texture* texture);
-void setSplatterTex(Texture* texture);
-void setAttackAnimsTex(Texture* texture);
-void setPlayerTex(Texture* texture);
-Texture* getStructureTex();
-Texture* getMenuTex();
-Texture* getFontTex();
-Texture* getSplatterTex();
-Texture* getAttackAnimsTex();
-Texture* getPlayerTex();
-Texture* getTexture(int index);
-void clearTextures();
-
-#endif // TEXTURE_H_H
-
-#endif
+#endif // TEXTURE_H

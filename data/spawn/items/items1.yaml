@@ -1,0 +1,57 @@
+main:
+  - {Item: candle          , Rarity: very common}
+  - {Item: blue feather    , Rarity: uncommon}
+  - {Item: big heavy rock  , Rarity: rare}
+  - {Item: simplistic arrow, Rarity: common  , Quantity: [1, 2]}
+  - {Item: simplistic arrow, Rarity: uncommon, Quantity: [1, 2]}
+  - {Item: simplistic arrow, Rarity: rare    , Quantity: [1, 2]}
+lv1:
+  - {Item: shabby shirt    , Rarity: uncommon}
+  - {Item: simple club     , Rarity: uncommon}
+  - {Item: sane leather gloves, Rarity: rare}
+  - {Item: gold pens       , Rarity: common  , Quantity: [1, 4]}
+  - {Item: sleek longbow   , Rarity: very rare}
+lv2:
+  - {Item: smooth round wooden shield, Rarity: rare}
+  - {Item: splendid leather cap, Rarity: uncommon}
+  - {Item: steely dagger   , Rarity: rare}
+  - {Item: gold pens       , Rarity: common  , Quantity: [5, 8]}
+  - {Item: sleek longbow   , Rarity: rare}
+lv3:
+  - {Item: sculptural clogs, Rarity: uncommon}
+  - {Item: smart pointy hat, Rarity: uncommon}
+  - {Item: sensible leather armor, Rarity: uncommon}
+  - {Item: gold pens       , Rarity: common  , Quantity: [9, 12]}
+  - {Item: sleek longbow   , Rarity: uncommon}
+lv4:
+  - {Item: silk adventure clothes, Rarity: uncommon}
+  - {Item: sly ring of accuracy, Rarity: uncommon}
+  - {Item: semi reinforced shield, Rarity: uncommon}
+  - {Item: gold pens       , Rarity: common  , Quantity: [13, 16]}
+lv5:
+  - {Item: sapphire amulet , Rarity: uncommon}
+  - {Item: sharpshooter gloves, Rarity: uncommon}
+  - {Item: sadistic mace   , Rarity: uncommon}
+  - {Item: gold pens       , Rarity: common  , Quantity: [17, 20]}
+lv6:
+  - {Item: sensible ring of regeneration, Rarity: uncommon}
+  - {Item: sacred obsidian dagger, Rarity: uncommon}
+  - {Item: speedy boots    , Rarity: very rare}
+  - {Item: gold pens       , Rarity: common, Quantity: [21, 24]}
+lv7:
+  - {Item: sizzling magma armor, Rarity: uncommon}
+  - {Item: superior mace   , Rarity: uncommon}
+  - {Item: sexy amulet     , Rarity: extra rare}
+  - {Item: gold pens       , Rarity: common  , Quantity: [25, 30]}
+food:
+  - {Item: apple       , Rarity: uncommon}
+  - {Item: cheese      , Rarity: rare}
+  - {Item: carrot      , Rarity: rare}
+  - {Item: banana      , Rarity: rare}
+  - {Item: pear        , Rarity: rare}
+  - {Item: citris fruit, Rarity: rare}
+  - {Item: lemon       , Rarity: rare}
+  - {Item: grapes      , Rarity: rare, Quantity: [5, 20]}
+  - {Item: broccoli    , Rarity: rare}
+  - {Item: mango       , Rarity: very rare}
+  - {Item: ice cream   , Rarity: extra rare}

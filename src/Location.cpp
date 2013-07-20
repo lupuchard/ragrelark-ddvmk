@@ -20,7 +20,6 @@
 #include "Unit.h"
 
 Unit* none = new Unit("not a unit", NULL);
-std::vector<Item> genericBlankVector;
 
 bool OPENS[] = {false, true, true, false, true, true, false, false, false, true, true, false, true, true, false, false,
             true, true, true, true, false, false, false, false, false, true, false, false, true, true, true, true};
@@ -30,35 +29,27 @@ bool ODOORS[] = {false, true, false, false, true, false, false, false, false, tr
             false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
 
 Location::Location() {
+    init();
+}
+
+Location::Location(int h) {
+    init();
+    height = h;
+}
+
+void Location::init() {
     tile = 0;
     structure = 0;
     height = 0;
     light = 0;
     unit = none;
-    items = &genericBlankVector;
-    fog1 = FOG_NONE;
-    fog2 = FOG_NONE;
-    debris1 = 0;
-    debris2 = 0;
-}
-
-Location::Location(int h) {
-    tile = 0;
-    structure = 0;
-    height = h;
-    light = 0;
-    unit = none;
-    items = &genericBlankVector;
-    fog1 = FOG_NONE;
-    fog2 = FOG_NONE;
-    debris1 = 0;
-    debris2 = 1;
+    items = NULL;
+    fog1 = fog2 = FOG_NONE;
+    debris1 = debris2 = 0;
 }
 
 void Location::clearStuff() {
-    if (hasUnit()) {
-        delete unit;
-    }
+    if (hasUnit()) delete unit;
     if (hasItems()) delete items;
 }
 
@@ -67,7 +58,7 @@ bool Location::hasUnit() {
 }
 
 bool Location::hasItems() {
-    return items != &genericBlankVector;
+    return items;
 }
 
 void Location::removeUnit() {
@@ -103,13 +94,13 @@ int Location::getTotalHeight() {
     return height;
 }
 
-//the return statement is for whether or not the item stacked. true = stacked, false = not stacked
+//the return statement is for whether or not the item stacked. true = stacked, false = not stacked, fileNotFound = destacked
 bool Location::addItem(Item item) {
-    if (items == &genericBlankVector) {
+    if (!items) {
         items = new std::vector<Item>;
     } else {
-        ItemType* thisItemType = getItemType(item.itemType);
-        int stackLimit = TYPE_STACKS[thisItemType->getType()];
+        ItemType* thisItemType = item.getType();
+        int stackLimit = thisItemType->getStack();
         if (stackLimit > 1) {
             for (unsigned int i = 0; i < items->size(); i++) {
                 if ((*items)[i].itemType == item.itemType && (*items)[i].form == item.form && (*items)[i].quantityCharge < stackLimit) {
@@ -135,7 +126,7 @@ Item Location::removeItem(int itemI) {
     items->erase(items->begin() + itemI);
     if (items->empty()) {
         delete items;
-        items = &genericBlankVector;
+        items = NULL;
     }
     return temp;
 }

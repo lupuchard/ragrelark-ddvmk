@@ -20,17 +20,17 @@
 
 RagAnim::RagAnim() {
     ragd = NULL;
+    animTex = NULL;
     tileSize = 4;
 }
 
-RagAnim::RagAnim(RagDrawer* ragDrawer) {
+RagAnim::RagAnim(RagDrawer* ragDrawer, Texture* animTex) {
     ragd = ragDrawer;
+    this->animTex = animTex;
     tileSize = ragd->getTileSize();
 }
 
-RagAnim::~RagAnim() {
-    //dtor
-}
+RagAnim::~RagAnim() { }
 
 #define TIME_MOVE_ANIM 10
 #define C1 0.0
@@ -85,9 +85,9 @@ void RagAnim::drawAnim(Animation* anim, int z) {
                 glColor4f(0.5, 0.5, 0.5, florp);
             }
             glColor4f(1, 1, 1, florp);
-            ragd->drawTileRot(anim->startX, anim->startY, z, getAttackAnimsTex(), dTypeLocs[dType] + hTypeLocs[hType] + frame + hTypeNumFrames[hType] * dirIndices[anim->dir % 6],
+            ragd->drawTileRot(anim->startX, anim->startY, z, animTex, dTypeLocs[dType] + hTypeLocs[hType] + frame + hTypeNumFrames[hType] * dirIndices[anim->dir % 6],
                         (anim->dir + 2) / 6, (anim->dir + 2) % 6 > 2);
-            glColor4f(1, 1, 1, 1);
+            WHITE.gl();
         } break;
         case ANIM_UNIT: ragd->drawUnit(anim->startX, anim->startY, anim->target); break;
         default: break;
@@ -103,8 +103,8 @@ void RagAnim::updateAnims() {
         Animation* anim = anims[i];
         if (anim->time >= anim->end) {
             if (anim->target) {
-                if (anim->target->g.border == 0) std::cout << "something has gone TERRABLE wrong" << std::endl;
-                anim->target->g.border--;
+                if (anim->target->graphic.border == 0) std::cout << "something has gone TERRABLE wrong" << std::endl;
+                anim->target->graphic.border--;
             }
             if (anim->nextAnim) {
                 Animation* temp = anim;
@@ -165,7 +165,7 @@ void RagAnim::unitAnimTest(Unit* u, int x, int y) {
 }
 
 void RagAnim::rMoveDir(Unit* unit, int dir, Coord c) {
-    if (unit->g.border == 255) return;
+    if (unit->graphic.border == 255) return;
     Animation* moveAnim = new Animation;
     moveAnim->type = (unsigned short)ANIM_MOVEDIR;
     moveAnim->dir = (unsigned char)dir;
@@ -174,12 +174,12 @@ void RagAnim::rMoveDir(Unit* unit, int dir, Coord c) {
     moveAnim->time = 0;
     moveAnim->end = TIME_MOVE_ANIM;
     moveAnim->target = unit;
-    unit->g.border++;
+    unit->graphic.border++;
     addAnim(moveAnim);
 }
 
 void RagAnim::rMoveLoc(Unit* unit, Coord begin, Coord end) {
-    if (unit->g.border == 255) return;
+    if (unit->graphic.border == 255) return;
     Animation* moveAnim = new Animation;
     moveAnim->type = (unsigned short)ANIM_MOVELOC;
     moveAnim->value = (unsigned char)(end.x + 1);
@@ -189,7 +189,7 @@ void RagAnim::rMoveLoc(Unit* unit, Coord begin, Coord end) {
     moveAnim->time = 0;
     moveAnim->end = TIME_MOVE_ANIM;
     moveAnim->target = unit;
-    unit->g.border++;
+    unit->graphic.border++;
     addAnim(moveAnim);
 }
 

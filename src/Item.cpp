@@ -29,3 +29,12 @@ Item::Item(int iType) {
     quantityCharge = 0;
     form = 0;
 }
+Item::Item(ItemType* itemType) {
+    this->itemType = itemType->getIndex();
+    quantityCharge = 0;
+    form = 0;
+}
+
+ItemType* Item::getType() {
+    return ItemType::get(itemType);
+}

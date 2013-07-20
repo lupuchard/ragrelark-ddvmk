@@ -23,12 +23,14 @@ RagDrawer::RagDrawer() {
     player = NULL;
     camX = 0;
     camY = 0;
+    utilTex = NULL;
 }
-RagDrawer::RagDrawer(int ts, Player* p) {
+RagDrawer::RagDrawer(int ts, Player* p, Texture* utilTex) {
     tileSize = ts;
     player = p;
     camX = 0;
     camY = 0;
+    this->utilTex = utilTex;
 }
 
 RagDrawer::~RagDrawer() {
@@ -193,84 +195,46 @@ void RagDrawer::drawColorBox(int x1, int y1, int z, int x2, int y2, Color c) {
 }
 
 void RagDrawer::drawUnit(int x, int y, Unit* unit) {
-    graphic g = unit->g;
-    drawTile(x, y, Z_UNIT + y, getTexture(g.tex), g.loc);
+    Graphic g = unit->graphic;
+    drawTile(x, y, Z_UNIT + y, g.tex, g.loc);
     int i = 0;
     if (unit == player->getUnit() || unit->equipment) {
         Item* items;
         int numItems;
-        bool pl;
         if (unit == player->getUnit()) {
             items = player->getPrimeFolder()->getEquips()->getItems();
             numItems = player->getPrimeFolder()->getEquips()->getNumItems();
-            pl = true;
         } else {
             items = unit->equipment->equips;
             numItems = unit->equipment->len;
-            pl = false;
         }
         for (i = 0; i < numItems; i++) {
-            ItemType* item = getItemType(items[i].itemType);
-            bool gendered = false;
+            ItemType* item = items[i].getType();
+            if (!item->getSlot()) continue;
+            Coord mid = item->getSlot()->onBody;
+            if (mid == ORIGIN) continue;
             int wid = 0;
             int hei = 0;
-            switch(item->getEquipGType()) {
-                case EQG_NONE: break;
-                case EQG_NORM: wid = 32; hei = 32; break;
-                case EQG_GNORM: wid = 32; hei = 32; gendered = true; break;
-                case EQG_SMALL: wid = 16; hei = 16; break;
-                case EQG_GSMALL: wid = 16; hei = 16; gendered = true; break;
-                case EQG_TALL: wid = 16; hei = 32; break;
-                case EQG_GTALL: wid = 16; hei = 32; gendered = true; break;
-                case EQG_LONG: wid = 32; hei = 16; break;
-                case EQG_GLONG: wid = 32; hei = 16; gendered = true; break;
-                default: break;
+            Graphic g = item->getEquippedGraphic();
+            switch(g.type) {
+                case EQG_NONE: continue;
+                case EQG_LARGE: wid = TILE_SIZE; hei = TILE_SIZE; break;
+                case EQG_SMALL: wid = TILE_SIZE / 2; hei = TILE_SIZE / 2; break;
+                case EQG_TALL: wid = TILE_SIZE / 2; hei = TILE_SIZE; break;
+                case EQG_LONG: wid = TILE_SIZE; hei = TILE_SIZE / 2; break;
+                default: continue;
             }
-            if (wid) {
-                int xMid = 0;
-                int yMid = 0;
-                int j;
-                if (pl) j = i;
-                else {
-                    int typ = TYPE_SLOTS[item->getType()];
-                    switch(typ) {
-                        case E_BHANDS: j = E_RHAND; break;
-                        case E_BBHANDS: j = E_RHAND; break;
-                        case E_RING: j = E_RING1; break;
-                        default: j = typ;
-                    }
-                }
-                switch(j) {
-                    case E_HEAD: xMid = 16; yMid = 8; break;
-                    case E_FACE: xMid = 16; yMid = 8; break;
-                    case E_BACK: xMid = 16; yMid = 16; break;
-                    case E_BAG: xMid = 16; yMid = 16; break;
-                    case E_NECK: xMid = 16; yMid = 8; break;
-                    case E_BODY: xMid = 16; yMid = 16; break;
-                    case E_LHAND: xMid = 24; yMid = 16; break;
-                    case E_RHAND: xMid = 8; yMid = 16; break;
-                    case E_HANDS: xMid = 16; yMid = 16; break;
-                    case E_WAIST: xMid = 16; yMid = 16; break;
-                    case E_WRIST: xMid = 16; yMid = 16; break;
-                    case E_FEET: xMid = 16; yMid = 24; break;
-                    case E_RING1: xMid = 8; yMid = 16; break;
-                    case E_RING2: xMid = 24; yMid = 16; break;
-                    default: break;
-                }
-                int num = item->getEquipGLoc();
-                //if (gendered) etc.
-                int x0 = xMid - wid / 2 + x;
-                int y0 = yMid - hei / 2 + y;
-                int x1 = (num * 16) % getPlayerTex()->getWidth();
-                int y1 = (num * 256) / getPlayerTex()->getWidth();
-                drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, getPlayerTex(), x1, y1, wid, hei);
-            }
+            int x0 = mid.x - wid / 2 + x;
+            int y0 = mid.y - hei / 2 + y;
+            int x1 = g.loc % (TEX_TILE_WIDTH * 2) * (TILE_SIZE / 2);
+            int y1 = g.loc / (TEX_TILE_WIDTH * 2) * (TILE_SIZE / 2);
+            drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, g.tex, x1, y1, wid, hei);
         }
-    }
-    int wid = std::max((int)((float)unit->getStatValue(S_HP) / unit->getStatValue(S_MAXHP) * tileSize), 3);
+    } // TODO equip graphics
+    int wid = std::max((int)((float)unit->getStatValue(Stat::HP) / unit->getStatValue(Stat::MAXHP) * tileSize), 3);
     if (wid < tileSize) {
-        drawTileSuperSpe(x, y + tileSize - 4, Z_UNIT + y + i + 1, wid - 1, 4, getMenuTex(), 96, 0, wid - 1, 4);
-        drawTileSuperSpe(x + wid - 1, y + tileSize - 4, Z_UNIT + y + i + 1, 2, 4, getMenuTex(), 126, 0, 2, 4);
+        drawTileSuperSpe(x, y + tileSize - 4, Z_UNIT + y + i + 1, wid - 1, 4, utilTex, 96, 0, wid - 1, 4);
+        drawTileSuperSpe(x + wid - 1, y + tileSize - 4, Z_UNIT + y + i + 1, 2, 4, utilTex, 126, 0, 2, 4);
     }
 }
 

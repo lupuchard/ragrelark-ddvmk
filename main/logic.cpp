@@ -35,17 +35,14 @@ void Start::logic() {
     Unit* pUnit = player->getUnit();
     if (pUnit->theTime > world->theTime) {
         int timePassed = pUnit->theTime - world->theTime;
-        interval0 += timePassed;
-        interval1 += timePassed;
-        interval2 += timePassed;
-        interval3 += timePassed;
-        int i0times = interval0 / INTERVAL_0_TIM;
-        int i1times = interval1 / INTERVAL_1_TIM;
-        int i2times = interval2 / INTERVAL_2_TIM;
-        int i3times = interval3 / INTERVAL_3_TIM;
+        for (unsigned int i = 0; i < 4; i++) intervals[i] += timePassed;
+        int i0times = intervals[0] / INTERVAL_0_TIM;
+        int i1times = intervals[1] / INTERVAL_1_TIM;
+        int i2times = intervals[2] / INTERVAL_2_TIM;
+        int i3times = intervals[3] / INTERVAL_3_TIM;
 
         if (i0times > 0) {
-            int poisonLeft = pUnit->getStatValue(S_POISON);
+            /*int poisonLeft = pUnit->getStatValue(S_POISON);
             if (poisonLeft > 0) {
                 int poisoning = 0;
                 if (pUnit->getCondition(8)) {
@@ -66,17 +63,17 @@ void Start::logic() {
                     }
                     removeStatus(ST_POIS);
                 }
-            }
+            }*/
         }
         if (i1times > 0) {
-            interval1 = interval1 % INTERVAL_1_TIM;
+            intervals[1] %= INTERVAL_1_TIM;
         }
         if (i2times > 0) {
-            interval2 = interval2 % INTERVAL_2_TIM;
+            intervals[2] %= INTERVAL_2_TIM;
         }
         if (i3times > 0) {
-            interval3 = interval3 % INTERVAL_3_TIM;
-            int hung = pUnit->modifyStat(S_HUNGER, -(int)(pUnit->getStatValue(S_METABOLISM) * 1.7361111 * i3times)); //base metabolism is 100 calories per hour
+            intervals[3] %= INTERVAL_3_TIM;
+            int hung = pUnit->modifyStat(Stat::HUNGER, -(int)(pUnit->getStatValue(Stat::METABOLISM) * 1.7361111 * i3times)); //base metabolism is 100 calories per hour
             if (hung < MAX_HUNGER * .05f) {
                 addStatus("starving", RED, ST_HUNG);
             } else if (hung < MAX_HUNGER * .15) {
@@ -87,7 +84,7 @@ void Start::logic() {
                 removeStatus(ST_HUNG);
             }
         }
-        pUnit->modifyStat(S_STAMINA, timePassed);
+        pUnit->modifyStat(Stat::STAMINA, timePassed);
         world->theTime = pUnit->theTime;
 
         std::set<std::pair<Unit*, Zone*> >::iterator iter = areaUnits.begin();
@@ -107,23 +104,23 @@ void Start::logic() {
             }
             for (int i = 0; i < i2times; i++) {
                 double foon1 = rand() / (double)RAND_MAX;
-                float hpr = unit->getStatValueF(S_HPREGEN) * unit->getStatValue(S_MAXHP) / 10.f;
+                float hpr = unit->getStatValueF(Stat::HPREGEN) * unit->getStatValue(Stat::MAXHP) / 10.f;
                 int hpa = (int)hpr;
                 hpr = fmodf(hpr, 1.f);
                 if (foon1 < hpr) hpa++;
-                if (hpa) unit->modifyStat(S_HP, hpa);
+                if (hpa) unit->modifyStat(Stat::HP, hpa);
 
                 double foon2 = rand() / (double)RAND_MAX;
-                int maxMana = unit->getStatValue(S_MAXMANA);
-                float manar = unit->getStatValueF(S_MANAREGEN) * maxMana / 10.f;
+                int maxMana = unit->getStatValue(Stat::MAXMANA);
+                float manar = unit->getStatValueF(Stat::MANAREGEN) * maxMana / 10.f;
                 int manaa = (int)manar;
                 manar = fmodf(manar, 1.f);
                 if (foon2 < manar) manaa++;
                 if (manaa) {
-                    int mana = unit->getStatValue(S_MANA);
+                    int mana = unit->getStatValue(Stat::MANA);
                     if (mana != maxMana) {
-                        debankExp(unit, SKL_CHANN, std::min(manaa, maxMana - mana));
-                        unit->modifyStat(S_MANA, manaa);
+                        //debankExp(unit, SKL_CHANN, std::min(manaa, maxMana - mana));
+                        unit->modifyStat(Stat::MANA, manaa);
                     }
                 }
             }

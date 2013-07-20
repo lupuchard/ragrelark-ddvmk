@@ -25,6 +25,8 @@
 class BagFolder: public ItemFolder {
     public:
         BagFolder(int size);
+        virtual ~BagFolder();
+
         int getNumItems();
         Item* getItem(int index);
         Item* getItems();

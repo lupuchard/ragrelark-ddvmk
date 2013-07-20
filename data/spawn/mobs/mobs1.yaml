@@ -1,0 +1,102 @@
+---
+Name: dungeon
+Mobs:
+  0:
+    tiny goo slime  : {Freq: 3}
+    rat             : {Freq: 8, Group: [1, 3]}
+    bat             : {Freq: 8, Group: [1, 3]}
+    pig             : {Freq: 1}
+  1:
+    small goo slime : {Freq: 12}
+    tiny goo slime  : {Freq: 1}
+    rat             : {Freq: 6, Group: [3, 5]}
+    bat             : {Freq: 1, Group: [3, 5]}
+  2:
+    small goo slime : {Freq: 12}
+    giant scorpion  : {Freq: 6}
+    bat             : {Freq: 2, Group: [5, 9]}
+  3:
+    plantling       : {Freq: 8}
+    giant scorpion  : {Freq: 8}
+    small goo slime : {Freq: 4}
+    kilopede        : {Freq: 1}
+  4:
+    goo slime       : {Freq: 2}
+    plantling       : {Freq: 6}
+    giant scorpion  : {Freq: 6}
+    kilopede        : {Freq: 1}
+    deep wolf       : {Freq: 4}
+  5:
+    goo slime       : {Freq: 4}
+    plantling       : {Freq: 6}
+    giant scorpion  : {Freq: 6}
+    kilopede        : {Freq: 2}
+    deep wolf       : {Freq: 2}
+  6:
+    goo slime       : {Freq: 8}
+    plantling       : {Freq: 8}
+    kilopede        : {Freq: 2}
+  7:
+    goo slime       : {Freq: 16}
+    kilopede        : {Freq: 2}
+    deep wolf       : {Freq: 2, Group: 2}
+Items:
+  main: [0, 7]
+  food: [0, 7]
+  lv1: [0, 1]
+  lv2: [1, 2]
+  lv3: [2, 3]
+  lv4: [3, 4]
+  lv5: [4, 5]
+  lv6: [5, 6]
+  lv7: [6, 7]
+...
+---
+Name: goblins
+Mobs:
+  1:
+    goblin   : {Freq: 8, Equip: goblin_1}
+  2:
+    goblin   : {Freq: 8, Equip: goblin}
+    hobgoblin: {Freq: 1, Equip: goblin_1}
+  3:
+    goblin   : {Freq: 4, Equip: goblin_1, Group: [2, 3]}
+    hobgoblin: {Freq: 3, Equip: goblin}
+  4:
+    goblin  : [{Freq: 7, Equip: goblin  , Group: [1, 3]},
+               {Freq: 2, Equip: "goblin_?", Group: [1, 3]}]
+  5:
+    goblin assassin: {Freq: 1, Equip: goblin_6}
+    goblin   : {Freq: 8, Equip: goblin  , Group: [1, 4]}
+  6:
+    goblin   : {Freq: 7, Equip: goblin  , Group: [2, 4]}
+    hobgoblin: {Freq: 2, Equip: goblin  , Group: [1, 3]}
+  7:
+    goblin   : {Freq: 7, Equip: goblin  , Group: [2, 5]}
+    hobgoblin: {Freq: 2, Equip: goblin  , Group: [2, 3]}
+  8:
+    goblin   : {Freq: 8, Equip: goblin  , Group: [3, 5]}
+    goblin assassin: {Freq: 1, Equip: goblin_6, Group: [1, 3]}
+  9:
+    goblin   : {Freq: 6, Equip: goblin  , Group: [3, 6]}
+    hobgoblin: {Freq: 2, Equip: goblin  , Group: [2, 4]}
+...
+---
+Name: ogres
+Mobs:
+  3:
+    ogre:  {Freq: 4, Equip: ogre_1}
+  4:
+    ogre:  {Freq: 4, Equip: ogre}
+  5:
+    ogre:  {Freq: 3, Equip: ogre_0}
+    two headed ogre: {Freq: 1, Equip: ogre}
+  6:
+    ogre: [{Freq: 2, Equip: ogre_1, Group: 2},
+           {Freq: 2, Equip: ogre, Group: [1, 2]}]
+  7-8:
+    ogre:  {Freq: 4, Equip: ogre, Group: 2}
+  9:
+    ogre:  {Freq: 3, Equip: ogre, Group: 2}
+    two headed ogre: {Freq: 1, Equip: ogre, Group: 2}
+...

@@ -22,22 +22,31 @@
 #include <vector>
 #include <stdlib.h>
 #include <iostream>
+#include "ItemType.h"
 
 class MobEquipSet {
     public:
         MobEquipSet();
 
         int addEquips(int weight);
-        void addEquipToEquips(int equips, int equip);
+        void addEquipToEquips(int equips, ItemType* equip);
 
-        int getEquips(unsigned int index, int* equips);
-        int getRandEquips(int* equips);
-        int getRandEquipsNear(unsigned int index, int* equips);
+        void getEquips(unsigned int index, std::vector<ItemType*>& equips);
+        void getRandEquips(std::vector<ItemType*>& equips);
+        void getRandEquipsNear(unsigned int index, std::vector<ItemType*>& equips);
         int getRandIndex();
         int getNumEquipTypes();
-    protected:
+
+        //statics
+        static void parseAll(YAML::Node);
+        static MobEquipSet* get(String name);
+        static bool has(String name);
+        static void clean();
     private:
-        std::vector<std::pair<int, std::vector<int> > > allEquips;
+        std::vector<std::pair<int, std::vector<ItemType*> > > allEquips;
+
+        //statics
+        static std::map<String, MobEquipSet*> mobEquipSetNameMap;
 };
 
 #endif // MOBEQUIPSET_H

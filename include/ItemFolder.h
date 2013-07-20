@@ -24,8 +24,6 @@
 
 class ItemFolder {
     public:
-        ItemFolder();
-        virtual ~ItemFolder();
         virtual int getNumItems() = 0;
         virtual Item* getItem(int index) = 0;
         virtual Item* getItems() = 0;

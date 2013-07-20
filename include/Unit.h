@@ -43,13 +43,13 @@ enum MobActionState{MAS_NONE, MAS_ATTACK, MAS_FLEE};
 
 class Unit: public StatHolder {
     public:
-        Unit(std::string n, StatHolder* prototype);
+        Unit(String n, StatHolder* prototype);
         virtual ~Unit();
         void move(int dir);
         Coord pos;
         int theTime;
-        std::string name;
-        graphic g;
+        String name;
+        Graphic graphic;
 
         Path* currentPath;
         short pointOnPath;

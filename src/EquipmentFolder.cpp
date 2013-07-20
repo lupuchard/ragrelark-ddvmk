@@ -18,20 +18,21 @@
 
 #include "EquipmentFolder.h"
 
-Item emptySlots[HA_REAL_NUM_EQUIP_SLOTS] = {Item(0), Item(1), Item(2), Item(3), Item(4),
-                                    Item(5), Item(6), Item(7), Item(8), Item(9),
-                                    Item(10), Item(11), Item(12), Item(12), Item(0)};
-
 /* headgear, face, back, bag, neck, body, lhand, rhand, hands, waist, wrist, feet, ring, ring */
 
 EquipmentFolder::EquipmentFolder(): StatHolder(V_ITEM) {
-    for (int i = 0; i < HA_REAL_NUM_EQUIP_SLOTS; i++) {
-        equipment[i] = emptySlots[i];
+    equipment = new Item[ItemType::getNumSlots()];
+    for (int i = 0; i < ItemType::getNumSlots(); i++) {
+        equipment[i] = Item(ItemType::getEmptySlot(i));
     }
 }
 
+EquipmentFolder::~EquipmentFolder() {
+    delete[] equipment;
+}
+
 int EquipmentFolder::getNumItems() {
-    return NUM_EQUIP_SLOTS;
+    return ItemType::getNumSlots();
 }
 Item* EquipmentFolder::getItem(int index) {
     return &equipment[index];
@@ -41,64 +42,79 @@ Item* EquipmentFolder::getItems() {
 }
 Item EquipmentFolder::removeItem(int index) {
     Item item = equipment[index];
-    equipment[index] = emptySlots[index];
+    equipment[index] = Item(ItemType::getEmptySlot(index));
     return item;
 }
 bool EquipmentFolder::addItem(Item* item) {
     return false;
 }
-Item EquipmentFolder::equipItem(Item item, int itemTypeType) {
-    Item returnItem = emptySlots[0];
-    int typeSlot = TYPE_SLOTS[itemTypeType];
-    if (typeSlot >= 0 && typeSlot <= E_FEET) {
-        if (typeSlot == E_LHAND) {
-            if (TYPE_SLOTS[getItemType(equipment[E_RHAND].itemType)->getType()] == E_BHANDS) {
-                returnItem = equipment[E_RHAND];
-                equipment[E_RHAND] = emptySlots[E_RHAND];
-            } else {
-                returnItem = equipment[typeSlot];
+bool EquipmentFolder::equipItem(Item item, std::list<Item>& remove) {
+    ItemType* type = item.getType();
+    ItemSlot* slot = type->getSlot();
+    if (!slot) return false;
+    if (slot->quantity > 1) {
+        bool success = false;
+        for (int i = slot->index; i < slot->index + slot->quantity; i++) {
+            if (equipment[i].getType() == ItemType::getEmptySlot(slot->index)) {
+                equipment[i] = item;
+                success = true;
             }
-        } else {
-            returnItem = equipment[typeSlot];
         }
-        equipment[typeSlot] = item;
-    } else if (typeSlot == E_RING) {
-        if (equipment[E_RING1].itemType == emptySlots[E_RING1].itemType) {
-            equipment[E_RING1] = item;
-        } else {
-            returnItem = equipment[E_RING2];
-            equipment[E_RING2] = item;
+        if (!success) {
+            remove.push_back(equipment[slot->index]);
+            equipment[slot->index] = item;
         }
-    } else if (typeSlot == E_BHANDS) {
-        if (equipment[E_RHAND].itemType == emptySlots[E_RHAND].itemType) {
-            returnItem = equipment[E_LHAND];
-            equipment[E_LHAND] = emptySlots[E_LHAND];
-            equipment[E_RHAND] = item;
-        } else if (equipment[E_LHAND].itemType == emptySlots[E_LHAND].itemType) {
-            returnItem = equipment[E_RHAND];
-            equipment[E_RHAND] = item;
-        } else {
-            returnItem.quantityCharge = 2;
+    } else if (!slot->covers.empty()) {
+        for (std::set<ItemSlot*>::iterator iter = slot->covers.begin(); iter != slot->covers.end(); ++iter) {
+            ItemSlot* slot = *iter;
+            if (equipment[slot->index].getType() != ItemType::getEmptySlot(slot->index)) {
+                std::set<ItemSlot*> over = equipment[slot->index].getType()->getSlot()->over;
+                if (over.find(slot) != over.end()) {
+                    remove.push_back(equipment[slot->index]);
+                    equipment[slot->index] = Item(ItemType::getEmptySlot(slot->index));
+                }
+            }
         }
+        equipment[slot->index] = item;
+    } else if (!slot->over.empty()) {
+        for (std::set<ItemSlot*>::iterator iter = slot->over.begin(); iter != slot->over.end(); ++iter) {
+            ItemSlot* slot = *iter;
+            if (equipment[slot->index].getType() != ItemType::getEmptySlot(slot->index)) {
+                remove.push_back(equipment[slot->index]);
+            }
+        }
+        equipment[slot->index] = item;
+    } else {
+        if (equipment[slot->index].getType() != ItemType::getEmptySlot(slot->index)) {
+            remove.push_back(equipment[slot->index]);
+        }
+        equipment[slot->index] = item;
     }
-    return returnItem;
+    return true;
 }
 
 short EquipmentFolder::getStatValue(int stat) {
     int value = 0;
-    for (int i = 0; i < HA_REAL_NUM_EQUIP_SLOTS; i++) {
-        value += getItemType(equipment[i].itemType)->getStatValue(stat);
+    for (int i = 0; i < ItemType::getNumSlots(); i++) {
+        value += equipment[i].getType()->getStatValue(stat);
     }
+    value += extra.getType()->getStatValue(stat);
     return value;
 }
 float EquipmentFolder::getStatValueF(int stat) {
     float value = 0;
-    for (int i = 0; i < HA_REAL_NUM_EQUIP_SLOTS; i++) {
-        value += getItemType(equipment[i].itemType)->getStatValueF(stat);
+    for (int i = 0; i < ItemType::getNumSlots(); i++) {
+        value += equipment[i].getType()->getStatValueF(stat);
     }
+    value += extra.getType()->getStatValueF(stat);
     return value;
 }
 
-void EquipmentFolder::needToUpdate(int stat) {
-    //nope
+void EquipmentFolder::needToUpdate(int stat) { }
+
+void EquipmentFolder::setExtra(Item item) {
+    extra = item;
+}
+void EquipmentFolder::removeExtra() {
+    extra = Item(ItemType::getEmptySlot(0));
 }

@@ -28,17 +28,17 @@ void setMobSpawner(MobSpawner* mobSpawner);
 
 class DungeonStack {
     public:
-        DungeonStack(std::string name, int depth, GenType genType);
+        DungeonStack(String name, int depth, GenType genType);
         virtual ~DungeonStack();
 
         void setLight(int light, float change = 0.f);
         void setDifficulty(int diff, float change = 0.f);
-        void setEnvironments(int numEnvironments, short* environments);
+        void addEnvironment(short environment);
         void setNumStairs(int stairs, float change = 0.f);
         void setDimensions(int width, int height, float widthChange = 0.f, float heightChange = 0.f);
         void setEnemyDensity(float enemyPerSquare, float change);
         void setItemDensity(float itemsPerSquare, float change);
-        void setTileset(Tile** tileset);
+        void setTileset(TileSet* tileSet);
 
         void createZones();
         void genLevel(int level, std::vector<std::pair<Unit*, Zone*> >* unitsAdded);
@@ -56,9 +56,9 @@ class DungeonStack {
         int depthReached;
         GenType genType;
         std::vector<short> environments;
-        std::string name;
+        String name;
 
-        Tile** tileset;
+        TileSet* tileset;
 
         int width;
         int height;

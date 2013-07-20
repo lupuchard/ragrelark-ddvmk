@@ -30,12 +30,11 @@ class RandItemType {
         unsigned int getWeight() const;
         unsigned char getMin() const;
         unsigned char getMax() const;
-    protected:
     private:
         unsigned short itemBase;
-        unsigned int weight;
         unsigned char min;
         unsigned char max;
+        unsigned int weight;
 };
 
 #endif // RANDITEMTYPE_H

@@ -26,7 +26,7 @@
 #define SHOWN_ITEM_STATS_MIN 7
 #define SHOWN_ITEM_STATS_MAX 24
 
-static const std::string MENU_ACTION_NAMES[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(R)ead", "E(x)amine"};
+static const String MENU_ACTION_NAMES[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(R)ead", "E(x)amine"};
 
 static const char ARROW_X[] = {0, 16, 32, 48, 64,  0, 16, 32, 48, 64};
 static const char ARROW_Y[] = {0,  0,  0,  0,  0, 16, 16, 16, 16, 16};
@@ -36,10 +36,10 @@ int interval = 0;
 int curArrowY = WIN1_HEIGHT / 2;
 int selectedShift = 0;
 
-std::map<int, std::pair<std::string, Color> > statusies;
+std::map<int, std::pair<String, Color> > statusies;
 
-void Start::addStatus(std::string name, Color c, int type) {
-    statusies[type] = std::pair<std::string, Color>(name, c);
+void Start::addStatus(String name, Color c, int type) {
+    statusies[type] = std::pair<String, Color>(name, c);
 }
 void Start::removeStatus(int type) {
     statusies.erase(type);
@@ -76,14 +76,14 @@ void Start::renderCircleSelect() {
         static const int cy = WIN1_HEIGHT + 8;
         static const int locsX[] = {0, 0, 1, 1, 0, 0, 1, 0, 0, 1};
         static const int locsY[] = {0, 1, 3, 1, 2, 4, 2, 0, 3, 0};
-        ragd.drawTileSpe(cx, cy, Z_MENU + 20, getMenuTex(), 0, 212, siz);
+        ragd.drawTileSpe(cx, cy, Z_MENU + 20, menuTex, 0, 212, siz);
         int k = 1;
         for (int j = 2; j >= 0; j--) {
             for (int i = 0; i < 3; i++) {
                 int x = locsX[k] * 56;
                 if (circleSelect[k]) x += 28;
                 int y = locsY[k] * 28 + 308;
-                ragd.drawTileSpe(cx + 1 + i * 29, cy + 1 + j * 29, Z_MENU + 30, getMenuTex(), x, y, 28);
+                ragd.drawTileSpe(cx + 1 + i * 29, cy + 1 + j * 29, Z_MENU + 30, menuTex, x, y, 28);
                 k++;
             }
         }
@@ -92,16 +92,16 @@ void Start::renderCircleSelect() {
 
 void Start::renderBars() {
     Unit* pUnit = player->getUnit();
-    int hp  = pUnit->getStatValue(S_HP);
-    int mhp = pUnit->getStatValue(S_MAXHP);
-    int mp  = pUnit->getStatValue(S_MANA);
-    int mmp = pUnit->getStatValue(S_MAXMANA);
-    int exp = pUnit->getStatValue(S_EXP);
-    int expReq = pUnit->getStatValue(S_EXPREQ);
-    float hun = (float)pUnit->getStatValue(S_HUNGER);
-    float sta = (float)pUnit->getStatValue(S_STAMINA);
+    int hp  = pUnit->getStatValue(Stat::HP);
+    int mhp = pUnit->getStatValue(Stat::MAXHP);
+    int mp  = pUnit->getStatValue(Stat::MANA);
+    int mmp = pUnit->getStatValue(Stat::MAXMANA);
+    int exp = pUnit->getStatValue(Stat::EXP);
+    int expReq = pUnit->getStatValue(Stat::EXPREQ);
+    float hun = (float)pUnit->getStatValue(Stat::HUNGER);
+    float sta = (float)pUnit->getStatValue(Stat::STAMINA);
     float percents[] = {(float)hp / mhp, (float)mp / mmp, hun / 5000.f, sta / 10000.f, (float)exp / expReq};
-    std::string strings[] = {"HP: " + its(hp) + "/" + its(mhp), "Mana: " + its(mp) + "/" + its(mmp), "Satiety: " + its(hun / 50) + "%"
+    String strings[] = {"HP: " + its(hp) + "/" + its(mhp), "Mana: " + its(mp) + "/" + its(mmp), "Satiety: " + its(hun / 50) + "%"
                             , "Stamina: " + its(sta / 100) + "%", "Exp: " + its(exp) + "/" + its(expReq)};
     static const bool danger[] = {true, false, true, true, false};
     static short dangerInterval = 0;
@@ -133,20 +133,20 @@ void Start::renderBars() {
                 flo = prevTims[k] / 10.;
             }
             glColor4f(1, 1, 1, flo / 2);
-            ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU, wid1, 14, getMenuTex(), 106, 186 + k * 14, wid1, 14);
+            ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU, wid1, 14, menuTex, 106, 186 + k * 14, wid1, 14);
             Color c = WHITE; c.alpha = flo / 6;
             ragd.drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 1, i + 5 + wid1, WIN1_HEIGHT - 7, c);
         }
         int wid = (int)(percents[k] * 96);
         float flu = percents[k] / 2 + 0.5;
         glColor4f(flu, flu, flu, 1);
-        ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU + 2, wid, 14, getMenuTex(), 106, 186 + k * 14, wid, 14);
+        ragd.drawTileSuperSpe(i + 5, WIN1_HEIGHT - 21, Z_MENU + 2, wid, 14, menuTex, 106, 186 + k * 14, wid, 14);
         if (danger[k] && percents[k] < .2) {
             Color c = WHITE; c.alpha = .5 - dangerInterval / 20.;
             ragd.drawColorBox(i + 5, WIN1_HEIGHT - 21, Z_MENU + 3, i + 5 + wid, WIN1_HEIGHT - 7, c);
         }
         WHITE.gl();
-        ragd.drawTileSuperSpe(i, WIN1_HEIGHT - 24, Z_MENU + 4, 106, 20, getMenuTex(), 0, 192, 106, 20);
+        ragd.drawTileSuperSpe(i, WIN1_HEIGHT - 24, Z_MENU + 4, 106, 20, menuTex, 0, 192, 106, 20);
         renderText(strings[k], 4, i + 53, WIN1_HEIGHT - 20, Z_MENU + 5, CENTER, BLACK);
         k++;
     }
@@ -154,10 +154,10 @@ void Start::renderBars() {
 
 void Start::renderSidePanels() {
     int hei = SWIN_HEIGHT / 2 - 30;
-    ragd.drawTileSuperSpe(WIN1_WIDTH, 30                  , Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
-    ragd.drawTileSuperSpe(WIN1_WIDTH, 30 + SWIN_HEIGHT / 2, Z_MENU, SWIN_WIDTH, hei, getMenuTex(), 252, 192, SWIN_WIDTH, hei);
+    ragd.drawTileSuperSpe(WIN1_WIDTH, 30                  , Z_MENU, SWIN_WIDTH, hei, menuTex, 252, 192, SWIN_WIDTH, hei);
+    ragd.drawTileSuperSpe(WIN1_WIDTH, 30 + SWIN_HEIGHT / 2, Z_MENU, SWIN_WIDTH, hei, menuTex, 252, 192, SWIN_WIDTH, hei);
 
-    static const std::string panelNames[] = {"", "", "Stats", "Skills", "Inv", "", "", "Map", "Notes"};
+    static const String panelNames[] = {"", "", "Stats", "Skills", "Inv", "", "", "Map", "Notes"};
     int k = 0;
     for (int i = PANEL_TOPSTART + 1; i < PANEL_TOPEND; i++) {
         int xd = 252;
@@ -166,7 +166,7 @@ void Start::renderSidePanels() {
             xd = 317;
             siz = 3;
         }
-        ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, 0, Z_MENU, 65, 30, getMenuTex(), xd, 162, 65, 30);
+        ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, 0, Z_MENU, 65, 30, menuTex, xd, 162, 65, 30);
         renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12, Z_MENU + 1, CENTER, BLACK);
         k++;
     }
@@ -178,7 +178,7 @@ void Start::renderSidePanels() {
             xd = 317;
             siz = 3;
         }
-        ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, SWIN_HEIGHT / 2, Z_MENU, 65, 30, getMenuTex(), xd, 162, 65, 30);
+        ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, SWIN_HEIGHT / 2, Z_MENU, 65, 30, menuTex, xd, 162, 65, 30);
         renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12 + SWIN_HEIGHT / 2, Z_MENU + 1, CENTER, BLACK);
         k++;
     }
@@ -186,34 +186,34 @@ void Start::renderSidePanels() {
     static const int toff = 50;
     static const int loff = 20;
     if (topPanel == PANEL_STATS) {
-        static const std::string statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
+        static const String statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
         Unit* p = player->getUnit();
-        renderText("  HP: " + its(p->getStatValue(S_HP)) + "/" + its(p->getStatValue(S_MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, FOREST);
-        renderText("  MANA: " + its(p->getStatValue(S_MANA)) + "/" + its(p->getStatValue(S_MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, NAVY);
-        for (int i = S_STR; i <= S_CHA; i++) {
+        renderText("  HP: " + its(p->getStatValue(Stat::HP)) + "/" + its(p->getStatValue(Stat::MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, FOREST);
+        renderText("  MANA: " + its(p->getStatValue(Stat::MANA)) + "/" + its(p->getStatValue(Stat::MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, NAVY);
+        for (int i = Stat::STR; i <= Stat::CHA; i++) {
             int base = p->getStatValue(i - 9);
             int main = p->getStatValue(i);
-            std::string s;
-            if (main != base) s = statNames[i - S_STR] + "\\p" + its(main) + "\\z(" + its(base) + ")";
-            else s = statNames[i - S_STR] + "\\z" + its(main);
-            renderText(s, 2, loff + WIN1_WIDTH, toff + (i - S_STR + 2) * 20, Z_MENU + 1, LEFT, BLACK);
+            String s;
+            if (main != base) s = statNames[i - Stat::STR] + "\\p" + its(main) + "\\z(" + its(base) + ")";
+            else s = statNames[i - Stat::STR] + "\\z" + its(main);
+            renderText(s, 2, loff + WIN1_WIDTH, toff + (i - Stat::STR + 2) * 20, Z_MENU + 1, LEFT, BLACK);
         }
-        renderText("Defense: \\q" + its(p->getStatValue(S_DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, BLACK);
+        renderText("Defense: \\q" + its(p->getStatValue(Stat::DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, BLACK);
         renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, TEAL.darken());
 
-        renderText("Level " + its(player->getUnit()->getStatValue(S_LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, BLACK);
+        renderText("Level " + its(player->getUnit()->getStatValue(Stat::LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, BLACK);
         renderText("\\q" + its(player->getUnit()->theTime) + "\\z ticks", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 80, Z_MENU + 1, RIGHT, RED.darken());
     } else if (topPanel == PANEL_SKILLS) {
-        static const int numFunctionalSkills = 12;
+        /*static const int numFunctionalSkills = 12;
         static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CHANN, SKL_QCAST, SKL_LEARN, SKL_SEARC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
         int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
         int k = 0;
         for (int i = 0; i < numFunctionalSkills; i++) {
             int level = player->getSkillLevel(functionalSkills[i]);
-            if (/*level*/true) {
+            if (true) {
                 renderText(capitalize(SKILL_NAMES[functionalSkills[i]]), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, OLIVE.darken());
                 int eve = player->getSkillExpPercent(functionalSkills[i]);
-                std::string s = " (";
+                String s = " (";
                 if (eve < 10) s = "  (";
                 int leve = level / 10;
                 int evel = level % 10;
@@ -223,11 +223,11 @@ void Start::renderSidePanels() {
         }
         for (std::map<int, PlayerSpell>::iterator i = player->getSpellsBegin(); i != player->getSpellsEnd(); ++i) {
             int level = i->second.level;
-            if (/*level*/true) {
+            if (true) {
                 int spellIndex = i->first << 2;
                 renderText(capitalize(getAbility(spellIndex)->getName()), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, TEAL.darken());
                 int eve = i->second.exp * 100 / (int)(pow(level + 1, 1.1) * 2.f);
-                std::string s = " (";
+                String s = " (";
                 if (eve < 10) s = "  (";
                 int leve = level / 10;
                 int evel = level % 10;
@@ -238,7 +238,7 @@ void Start::renderSidePanels() {
         if (!k) {
             renderText("I'm sorry, but you currently", 2, WIN1_WIDTH + loff, toff, Z_MENU + 2, LEFT, BLACK);
             renderText("lack any skill levels.", 2, WIN1_WIDTH + loff, toff + 20, Z_MENU + 2, LEFT, BLACK);
-        }
+        }*/ // TODO menu skill rendering
     }
 
     if (botPanel == PANEL_MINIMAP) {
@@ -318,19 +318,19 @@ void Start::renderSidePanels() {
 void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
     int cWid = x2 - x1 - 32;
     int cHei = y2 - y1 - 32;
-    ragd.drawTileSuperSpe(x1     , y1     , Z_MENU, 16  , 16  , getMenuTex(), 0 , 32, 16, 16);
-    ragd.drawTileSuperSpe(x1 + 16, y1     , Z_MENU, cWid, 16  , getMenuTex(), 16, 32, 16, 16);
-    ragd.drawTileSuperSpe(x2 - 16, y1     , Z_MENU, 16  , 16  , getMenuTex(), 32, 32, 16, 16);
-    ragd.drawTileSuperSpe(x1     , y1 + 16, Z_MENU, 16  , cHei, getMenuTex(), 0 , 48, 16, 16);
-    ragd.drawTileSuperSpe(x1 + 16, y1 + 16, Z_MENU, cWid, cHei, getMenuTex(), 16, 48, 16, 16);
-    ragd.drawTileSuperSpe(x2 - 16, y1 + 16, Z_MENU, 16  , cHei, getMenuTex(), 32, 48, 16, 16);
-    ragd.drawTileSuperSpe(x1     , y2 - 16, Z_MENU, 16  , 16  , getMenuTex(), 0 , 64, 16, 16);
-    ragd.drawTileSuperSpe(x1 + 16, y2 - 16, Z_MENU, cWid, 16  , getMenuTex(), 16, 64, 16, 16);
-    ragd.drawTileSuperSpe(x2 - 16, y2 - 16, Z_MENU, 16  , 16  , getMenuTex(), 32, 64, 16, 16);
+    ragd.drawTileSuperSpe(x1     , y1     , Z_MENU, 16  , 16  , menuTex, 0 , 32, 16, 16);
+    ragd.drawTileSuperSpe(x1 + 16, y1     , Z_MENU, cWid, 16  , menuTex, 16, 32, 16, 16);
+    ragd.drawTileSuperSpe(x2 - 16, y1     , Z_MENU, 16  , 16  , menuTex, 32, 32, 16, 16);
+    ragd.drawTileSuperSpe(x1     , y1 + 16, Z_MENU, 16  , cHei, menuTex, 0 , 48, 16, 16);
+    ragd.drawTileSuperSpe(x1 + 16, y1 + 16, Z_MENU, cWid, cHei, menuTex, 16, 48, 16, 16);
+    ragd.drawTileSuperSpe(x2 - 16, y1 + 16, Z_MENU, 16  , cHei, menuTex, 32, 48, 16, 16);
+    ragd.drawTileSuperSpe(x1     , y2 - 16, Z_MENU, 16  , 16  , menuTex, 0 , 64, 16, 16);
+    ragd.drawTileSuperSpe(x1 + 16, y2 - 16, Z_MENU, cWid, 16  , menuTex, 16, 64, 16, 16);
+    ragd.drawTileSuperSpe(x2 - 16, y2 - 16, Z_MENU, 16  , 16  , menuTex, 32, 64, 16, 16);
 }
 
 Color selectStatColor(int value, int i) {
-    if (i == S_PENALTY) value = -value;
+    //if (i == Stat::PENALTY) value = -value;
     if (value == 0) {
         return BLACK;
     } else if (value > 0) {
@@ -342,7 +342,7 @@ Color selectStatColor(int value, int i) {
 void Start::renderMenu() {
     static const Color weightColors[] = {TAR, BLACK, BLACK, PURPLE.darken().darken(), PURPLE.darken(), PURPLE};
     static const Color valueColors[] = {TAR, BLACK, BROWN.darken(), AMBER.darken(), OLIVE, YELLOW};
-    static const std::string dTypeNames[] = {"none", "bludgeon", "slashing", "piercing", "maaaaagic"};
+    static const String dTypeNames[] = {"none", "bludgeon", "slashing", "piercing", "maaaaagic"};
     if (state == STATE_MENU) {
         if (selected >= MAX_MENU_ITEMS + selectedShift) {
             selectedShift = selected - MAX_MENU_ITEMS + 1;
@@ -372,48 +372,47 @@ void Start::renderMenu() {
         Item* items = topFolder->getItems();
         for (int i = 0; i < numDisplayedItems; i++) {
             int k = i + selectedShift;
-            ItemType* itemType = getItemType(items[k].itemType);
-            graphic g = itemType->getGraphic(items[k].quantityCharge);
+            ItemType* itemType = items[k].getType();
+            Graphic g = itemType->getGraphic(items[k].quantityCharge);
             int d = offset + 64 + 28 * i;
-            ragd.drawTile(28 + 8 * (k % 2), d, Z_MENU + i + 1, getTexture(g.tex), g.loc);
+            ragd.drawTile(28 + 8 * (k % 2), d, Z_MENU + i + 1, g.tex, g.loc);
             renderText(capitalize(itemType->getName()), 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, BLACK);
-            if (items[k].quantityCharge > 1 && TYPE_STACKS[itemType->getType()]) {
+            if (items[k].quantityCharge > 1 && itemType->getStack()) {
                 renderText(its(items[k].quantityCharge), 1, 50 + 8 * (k % 2), d + 16, Z_MENU + i + 2, LEFT, BLACK);
             }
         }
 
-        ragd.drawTileSpe(8, curArrowY, Z_MENU + 20, getMenuTex(), ARROW_X[(interval % 40) / 4], ARROW_Y[(interval % 40) / 4], 16);
+        ragd.drawTileSpe(8, curArrowY, Z_MENU + 20, menuTex, ARROW_X[(interval % 40) / 4], ARROW_Y[(interval % 40) / 4], 16);
         if (selectedShift > 0) {
-            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset          + std::abs(interval % 24 / 2 - 6) + 36, Z_MENU, 24, 16, getMenuTex(), 48, 48, 32, -16);
+            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset          + std::abs(interval % 24 / 2 - 6) + 36, Z_MENU, 24, 16, menuTex, 48, 48, 32, -16);
         }
         if (numItems - selectedShift > MAX_MENU_ITEMS) {
-            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset + height - std::abs(interval % 24 / 2 - 6) - 10, Z_MENU, 24, 16, getMenuTex(), 48, 32, 32,  16);
+            ragd.drawTileSuperSpe(IM_WID / 2 + 4, offset + height - std::abs(interval % 24 / 2 - 6) - 10, Z_MENU, 24, 16, menuTex, 48, 32, 32,  16);
         }
         glColor4f(1, 1, 1, .5);
-        ragd.drawTileSuperSpe(2, offset + 18, Z_MENU, IM_WID + 36, 16, getMenuTex(), 0, 80, 64, 16);
+        ragd.drawTileSuperSpe(2, offset + 18, Z_MENU, IM_WID + 36, 16, menuTex, 0, 80, 64, 16);
         WHITE.gl();
         renderText(MENU_ACTION_NAMES[menuAction]    , 2, 4              , offset + 20, Z_MENU + 1, LEFT  , BLACK);
         renderText(MENU_ACTION_NAMES[menuAction + 1], 3, 20 + IM_WID / 2, offset + 20, Z_MENU + 1, CENTER, BLACK);
         renderText(MENU_ACTION_NAMES[menuAction + 2], 2, 36 + IM_WID    , offset + 20, Z_MENU + 1, RIGHT , BLACK);
 
         Item selectedItem = items[selected];
-        ItemType* selectedItemType = getItemType(selectedItem.itemType);
-        int selectedItemTypeType = selectedItemType->getType();
-        if (selectedItemTypeType >= 20) {
-            static std::vector<std::pair<std::string, Color> > lines;
+        ItemType* selectedItemType = selectedItem.getType();
+        if (!selectedItemType->isSlot() && !selectedItemType->isFolder()) {
+            static std::vector<std::pair<String, Color> > lines;
             static unsigned int descLen;
             static Item prevItem;
             if (prevItem.itemType != selectedItem.itemType || prevItem.quantityCharge != selectedItem.quantityCharge || prevItem.form != selectedItem.form) {
                 prevItem = items[selected];
                 lines.clear();
 
-                std::string desc = selectedItemType->getDescription() + " ";
-                std::string nextLine = " ";
+                String desc = selectedItemType->getDescription() + " ";
+                String nextLine = " ";
                 int lastWord = 0;
                 for(unsigned int i = 0; i < desc.size(); i++) {
                     if (desc[i] == ' ') {
                         if (nextLine.size() + (i - lastWord) > 29) {
-                            lines.push_back(std::pair<std::string, Color>(nextLine, GLAUCOUS.darken()));
+                            lines.push_back(std::pair<String, Color>(nextLine, GLAUCOUS.darken()));
                             nextLine = desc.substr(lastWord, i - lastWord);
                         } else {
                             nextLine += " " + desc.substr(lastWord, i - lastWord);
@@ -421,47 +420,47 @@ void Start::renderMenu() {
                         lastWord = i + 1;
                     }
                 }
-                lines.push_back(std::pair<std::string, Color>(nextLine, GLAUCOUS.darken()));
+                lines.push_back(std::pair<String, Color>(nextLine, GLAUCOUS.darken()));
                 descLen = lines.size();
-                lines.push_back(std::pair<std::string, Color>("", BLACK));
+                lines.push_back(std::pair<String, Color>("", BLACK));
 
                 //first it displays weight and value
-                int weightValue = selectedItemType->getStatValue(S_WEIGHT);
-                lines.push_back(std::pair<std::string, Color>(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
-                int valueValue = selectedItemType->getStatValue(S_VALUE);
-                lines.push_back(std::pair<std::string, Color>(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
+                int weightValue = selectedItemType->getStatValue(Stat::WEIGHT);
+                lines.push_back(std::pair<String, Color>(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
+                int valueValue = selectedItemType->getStatValue(Stat::VALUE);
+                lines.push_back(std::pair<String, Color>(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
 
                 //then it displays damage and AC
-                Color c;
+                /*Color c;
                 if (selectedItemType->hasStat(S_IDAMAGE, false)) {
                     int damVal = selectedItemType->getStatValue(S_IDAMAGE);
                     c = Color(2 * std::min(damVal, 32));
-                    lines.push_back(std::pair<std::string, Color>(" " + its(damVal) + " Damage (" + capitalize(dTypeNames[WEAP_DAM_TYPES[selectedItemType->getStatValue(S_DTYPE)]]) + ")", c));
+                    lines.push_back(std::pair<String, Color>(" " + its(damVal) + " Damage (" + capitalize(dTypeNames[WEAP_DAM_TYPES[selectedItemType->getStatValue(S_DTYPE)]]) + ")", c));
                 }
                 if (selectedItemType->hasStat(S_AC, false)) {
                     int acVal = selectedItemType->getStatValue(S_AC);
                     c = Color(2 * std::min(acVal, 32));
-                    lines.push_back(std::pair<std::string, Color>(" " + its(acVal) + " AC", c));
-                }
+                    lines.push_back(std::pair<String, Color>(" " + its(acVal) + " AC", c));
+                }*/
 
                 //then it displays all other visible stats
                 for (int i = SHOWN_ITEM_STATS_MIN; i <= SHOWN_ITEM_STATS_MAX; i++) {
-                    Stat* theStat = getStat(V_ITEM, i);
+                    Stat* theStat = Stat::get(V_ITEM, i);
                     if (selectedItemType->hasStat(i, theStat->isItFloat())) {
                         if (theStat->isItFloat()) {
                             float value = selectedItemType->getStatValueF(i);
-                            lines.push_back(std::pair<std::string, Color>(" " + its0((int)value) + " " + capitalize(theStat->getName()), selectStatColor((int)value, i)));
+                            lines.push_back(std::pair<String, Color>(" " + its0((int)value) + " " + capitalize(theStat->getName()), selectStatColor((int)value, i)));
                         } else {
                             int value = selectedItemType->getStatValue(i);
-                            lines.push_back(std::pair<std::string, Color>(" " + its0(value) + " " + capitalize(theStat->getName()), selectStatColor(value, i)));
+                            lines.push_back(std::pair<String, Color>(" " + its0(value) + " " + capitalize(theStat->getName()), selectStatColor(value, i)));
                         }
                     }
                 }
 
-                lines.push_back(std::pair<std::string, Color>("", BLACK));
+                lines.push_back(std::pair<String, Color>("", BLACK));
                 //then it displays any abilities it may have
                 for (std::set<unsigned short>::iterator i = selectedItemType->getAbilitiesBegin(); i != selectedItemType->getAbilitiesEnd(); ++i) {
-                    lines.push_back(std::pair<std::string, Color>("  " + capitalize(getAbility(*i)->getName()), TEAL.darken()));
+                    lines.push_back(std::pair<String, Color>("  " + capitalize(Ability::get(*i)->getName()), TEAL.darken()));
                 }
             }
             height = 32 + 30 + 12 * lines.size();
@@ -469,7 +468,7 @@ void Start::renderMenu() {
             drawMenuBox(IM_WID + 40, offset, IM_WID + 232, offset + height);
             glColor4f(1, 1, 1, .5);
             int nLen = selectedItemType->getName().size();
-            ragd.drawTileSuperSpe(IM_WID + 132 - nLen * 7, offset + 9, Z_MENU + 1, 14 * nLen + 8, 32, getMenuTex(), 0, 80, 64, 16);
+            ragd.drawTileSuperSpe(IM_WID + 132 - nLen * 7, offset + 9, Z_MENU + 1, 14 * nLen + 8, 32, menuTex, 0, 80, 64, 16);
             renderText(capitalize(selectedItemType->getName()), 5, IM_WID + 136, offset + 16, Z_MENU + 2, CENTER, BLACK);
             int f = 4;
             for (unsigned int i = 0; i < lines.size(); i++) {
@@ -482,13 +481,13 @@ void Start::renderMenu() {
 
 void Start::renderMessages() {
     using namespace std;
-    ragd.drawTileSuperSpe(0, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 0, 96, 32, 96);
+    ragd.drawTileSuperSpe(0, WIN1_HEIGHT + 4, Z_MENU, 32, 96, menuTex, 0, 96, 32, 96);
     int x;
     for (x = 32; x < CWIN_WIDTH - 64; x += 32) {
-        ragd.drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 32, 96, 32, 96);
+        ragd.drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, 32, 96, menuTex, 32, 96, 32, 96);
     }
-    ragd.drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, CWIN_WIDTH - x - 32, 96, getMenuTex(), 32, 96, CWIN_WIDTH - x - 32, 96);
-    ragd.drawTileSuperSpe(CWIN_WIDTH - 32, WIN1_HEIGHT + 4, Z_MENU, 32, 96, getMenuTex(), 64, 96, 32, 96);
+    ragd.drawTileSuperSpe(x, WIN1_HEIGHT + 4, Z_MENU, CWIN_WIDTH - x - 32, 96, menuTex, 32, 96, CWIN_WIDTH - x - 32, 96);
+    ragd.drawTileSuperSpe(CWIN_WIDTH - 32, WIN1_HEIGHT + 4, Z_MENU, 32, 96, menuTex, 64, 96, 32, 96);
 
     for (int i = 7 - min((int)messages.size(), 7); i < 7; i++) {
         pair<string, Color> completeMess = messages[messages.size() - 7 + i];
@@ -521,7 +520,7 @@ typedef struct {
 } rendaten;
 
 bool is_to_be_deleted(Unit* u) {
-    return !(u->g.border);
+    return !(u->graphic.border);
 }
 
 void Start::renderGround() {
@@ -576,14 +575,13 @@ void Start::renderGround() {
                 darkness /= 2;
             }
             glColor4f(darkness, darkness, darkness, 1);
-            Tile* tile = getTile(loc->tile);
-            graphic g = tile->getGraphic();
-            if (g.type == TT_OVER) {
-                renderAtEnd[tot - 1] = {g.loc, g.tex, darkness};
+            Tile* tile = Tile::get(loc->tile);
+            Graphic g = tile->getGraphic();
+            if (tile->getOver()) {
+                renderAtEnd[tot - 1] = {g.loc, g.tex->getIndex(), darkness};
                 tile = tile->getOver();
                 g = tile->getGraphic();
             }
-            Texture* tex = getTexture(g.tex);
             int TZ;
             if (isMemory) {
                 TZ = Z_EFFECT - 3;
@@ -591,10 +589,10 @@ void Start::renderGround() {
                 TZ = Z_GROUND;
             }
             if (g.type == TT_NORMAL) {
-                ragd.drawTile(locX, locY, TZ, tex, g.loc);
+                ragd.drawTile(locX, locY, TZ, g.tex, g.loc);
             } else if (g.type == TT_SMOOTH || g.type == TT_SMOOTHDOWN || g.type == TT_SMOOTHUP) {
                 int b = g.border;
-                int wid = tex->getWidth() / TILE_SIZE;
+                int wid = g.tex->getWidth() / TILE_SIZE;
                 int x1 = (g.loc % wid) * TILE_SIZE;
                 int y1 = (g.loc / wid) * TILE_SIZE;
 
@@ -603,7 +601,7 @@ void Start::renderGround() {
                                      z->safeGetLocationAt(pos + DIRS[1]), z->safeGetLocationAt(pos + DIRS[2]), z->safeGetLocationAt(pos + DIRS[3])};
                 // TODO fix all this
                 Tile* tiles[8];
-                for (int k = 0; k < 8; k++) tiles[k] = getTile(locs[k]->tile);
+                for (int k = 0; k < 8; k++) tiles[k] = Tile::get(locs[k]->tile);
 
                 bool sm[8];
                 for (int k = 0; k < 8; k++) {
@@ -621,82 +619,82 @@ void Start::renderGround() {
                     }
                 }
                 if (sm[3] && sm[1]) {
-                    ragd.drawTileSpe(locX            , locY, TZ, tex, x1, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX            , locY, TZ, g.tex, x1, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (!sm[3] && sm[1]) {
-                    ragd.drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, g.tex, x1 + TILE_SIZE, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (sm[3] && !sm[1]) {
-                    ragd.drawTileSpe(locX, locY, TZ, tex, x1, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, g.tex, x1, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 } else if (!sm[3] && sm[0] && !sm[1]) {
-                    ragd.drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, g.tex, x1 + TILE_SIZE, y1, TILE_SIZE / 2);
                 } else if (!sm[3] && !sm[0] && !sm[1]) {
-                    ragd.drawTileSpe(locX, locY, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY, TZ, g.tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 }
                 if (sm[1] && sm[4]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, g.tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (!sm[1] && sm[4]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, g.tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 } else if (sm[1] && !sm[4]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, g.tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE, TILE_SIZE / 2);
                 } else if (!sm[1] && sm[2] && !sm[4]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, g.tex, x1 + TILE_SIZE * 3 / 2, y1, TILE_SIZE / 2);
                 } else if (!sm[1] && !sm[2] && !sm[4]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY, TZ, g.tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 2, TILE_SIZE / 2);
                 }
                 if (sm[4] && sm[6]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (!sm[4] && sm[6]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (sm[4] && !sm[6]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 } else if (!sm[4] && sm[7] && !sm[6]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE * 3 / 2, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
                 } else if (!sm[4] && !sm[7] && !sm[6]) {
-                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX + TILE_SIZE / 2, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE / 2, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 }
                 if (sm[6] && sm[3]) {
-                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, g.tex, x1, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (!sm[6] && sm[3]) {
-                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, g.tex, x1, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 } else if (sm[6] && !sm[3]) {
-                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 5 / 2, TILE_SIZE / 2);
                 } else if (!sm[6] && sm[5] && !sm[3]) {
-                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE, y1 + TILE_SIZE / 2, TILE_SIZE / 2);
                 } else if (!sm[6] && !sm[5] && !sm[3]) {
-                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
+                    ragd.drawTileSpe(locX, locY + TILE_SIZE / 2, TZ, g.tex, x1 + TILE_SIZE, y1 + TILE_SIZE * 3 / 2, TILE_SIZE / 2);
                 }
             }
             if (isMemory) {
                 glColor4f(.5, .5, .5, 1);
                 pair<int, int> botMems = player->getMemoryBottom(pos);
                 if (botMems.first != 7 && botMems.first != 5) {
-                    ragd.drawTile(locX, locY, Z_EFFECT - 2, getTexture(botMems.first), botMems.second);
+                    ragd.drawTile(locX, locY, Z_EFFECT - 2, Texture::get(botMems.first), botMems.second);
                 }
                 pair<int, int> topMems = player->getMemoryTop(pos);
                 if (topMems.first != 7 && botMems.first != 5) {
-                    ragd.drawTile(locX, locY, Z_EFFECT - 1, getTexture(topMems.first), topMems.second);
+                    ragd.drawTile(locX, locY, Z_EFFECT - 1, Texture::get(topMems.first), topMems.second);
                 }
             } else {
                 glColor4f(1, 1, 1, 1);
                 int struc = loc->structure;
                 if (struc != S_NONE) {
-                    ragd.drawTile(locX, locY, Z_STRUCT, getStructureTex(), struc);
+                    ragd.drawTile(locX, locY, Z_STRUCT, structureTex, struc);
                 }
 
                 glColor4f(1, 1, 1, 0.5);
                 if (loc->debris2) {
-                    ragd.drawTile(locX, locY, Z_SPLAT, getSplatterTex(), loc->debris2);
+                    ragd.drawTile(locX, locY, Z_SPLAT, splatterTex, loc->debris2);
                 }
                 if (loc->debris1) {
-                    ragd.drawTile(locX, locY, Z_SPLAT + 1, getSplatterTex(), loc->debris1);
+                    ragd.drawTile(locX, locY, Z_SPLAT + 1, splatterTex, loc->debris1);
                 }
-                glColor4f(1, 1, 1, 1);
+                WHITE.gl();
                 if (loc->hasItems()) {
                     Item* items = &(*loc->items)[0];
                     int numItems = loc->items->size();
                     for (int k = 0; k < numItems; k++) {
-                        ItemType* itemType = getItemType(items[k].itemType);
-                        graphic g = itemType->getGraphic(items[k].quantityCharge);
-                        ragd.drawTile(locX, locY, Z_ITEM + k, getTexture(g.tex), g.loc);
+                        ItemType* itemType = items[k].getType();
+                        Graphic g = itemType->getGraphic(items[k].quantityCharge);
+                        ragd.drawTile(locX, locY, Z_ITEM + k, g.tex, g.loc);
                     }
                 }
                 if (loc->hasUnit()) {
@@ -705,7 +703,7 @@ void Start::renderGround() {
             }
         }
     }
-    glColor4f(1, 1, 1, 1);
+    WHITE.gl();
 
     raga.renderAnims();
 
@@ -717,13 +715,13 @@ void Start::renderGround() {
                 int locY = j * TILE_SIZE;
                 float darkness = renderAtEnd[tot].darkness;
                 glColor4f(darkness, darkness, darkness, 1);
-                ragd.drawTile(locX, locY, Z_FOREGROUND, getTexture(renderAtEnd[tot].tex), renderAtEnd[tot].loc);
+                ragd.drawTile(locX, locY, Z_FOREGROUND, Texture::get(renderAtEnd[tot].tex), renderAtEnd[tot].loc);
             }
             tot++;
         }
     }
-    glColor4f(1, 1, 1, 1);
-    drawBox(x + 50, y + 50, Z_EFFECT, 4, interval, SCARLET);
+    WHITE.gl();
+
     updateEffects(x, y);
     if (state == STATE_TARGET) {
         //51-55
@@ -731,7 +729,7 @@ void Start::renderGround() {
         int num = (interval % 40) / 4;
         if (num >= 5) num += 62;
         else num += 51;
-        ragd.drawTile(unitsInRange[stIndex]->pos.x * TILE_SIZE, unitsInRange[stIndex]->pos.y * TILE_SIZE, Z_MENU, getMenuTex(), num);
+        ragd.drawTile(unitsInRange[stIndex]->pos.x * TILE_SIZE, unitsInRange[stIndex]->pos.y * TILE_SIZE, Z_MENU, menuTex, num);
     }
 }
 
@@ -755,8 +753,15 @@ void Start::startRenderer() {
 
 	frameTime = 0;
 
-	ragd = RagDrawer(TILE_SIZE, player);
-	raga = RagAnim(&ragd);
+	structureTex    = Texture::get("structures.png");
+    menuTex         = Texture::get("menu.png");
+    fontTex         = Texture::get("font.png");
+    splatterTex     = Texture::get("splatters.png");
+    attackAnimsTex  = Texture::get("attackAnims.png");
+    playerTex       = Texture::get("player.png");
+
+    ragd = RagDrawer(TILE_SIZE, player, menuTex);
+	raga = RagAnim(&ragd, attackAnimsTex);
 
 	createEffect(P_ARROW, 0, 0);
 }
@@ -772,7 +777,7 @@ int numX[] = {32, 16, 16, 16, 20, 16};
 Color textColors[] = {AZURE, BLUE, CYAN, CHARTREUSE, FOREST, FUCHSIA, GREEN, HARLEQUIN, INDIGO, JADE, ROSE, LIME, MAGENTA,
 //                      n     o       p       q      r    s       t    u     v       w      x     y       z
                         NAVY, ORANGE, PURPLE, BROWN, RED, SALMON, TAN, GRAY, VIOLET, WHITE, GREY, YELLOW, BLACK};
-void Start::renderText(std::string text, int size, int x, int y, int z, int align, Color c) {
+void Start::renderText(String text, int size, int x, int y, int z, int align, Color c) {
     int a = 0;
     if (align == CENTER) {
         a = text.size() * fontWid[size] / 2;
@@ -789,7 +794,7 @@ void Start::renderText(std::string text, int size, int x, int y, int z, int alig
             Color newC = textColors[text[i] - 'a'];
             newC.gl();
         } else {
-            ragd.drawTileSuperSpe(x + j * w - a, y, z, w, h, getFontTex(), offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
+            ragd.drawTileSuperSpe(x + j * w - a, y, z, w, h, fontTex, offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
         }
     }
     WHITE.gl();

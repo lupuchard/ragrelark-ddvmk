@@ -19,13 +19,13 @@
 #include "Start.h"
 
 void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
-    Ability* ability = getAbility(spellI);
+    Ability* ability = Ability::get(spellI);
     if (ability) {
         int level = 0;
         if (unit == player->getUnit()) {
             level += player->getSpellLevel(spellI);
             for (int i = 0; i < primeFolder->getEquips()->getNumItems(); i++) {
-                if (getItemType(primeFolder->getEquips()->getItem(i)->itemType)->hasAbility(spellI)) {
+                if (ItemType::get(primeFolder->getEquips()->getItem(i)->itemType)->hasAbility(spellI)) {
                     level += 5;
                     if (level < 10) level = 10;
                     break;
@@ -33,9 +33,9 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
             }
         }
         if (level >= 10) {
-            int mana = unit->getStatValue(S_MANA);
+            int mana = unit->getStatValue(Stat::MANA);
             if (mana >= ability->getCost()) {
-                int netLevel = level + unit->getStatValue(S_AFF);
+                int netLevel = level + unit->getStatValue(Stat::AFF);
                 int ch = netLevel - ability->getDifficulty();
 
                 bool success = false;
@@ -47,11 +47,11 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                     addMessage("You are not skilled enough to cast that spell!", BLACK);
                     return;
                 }
-                unit->modifyStat(S_MANA, -ability->getCost());
+                unit->modifyStat(Stat::MANA, -ability->getCost());
                 int sp = 0;
-                if (unit == player->getUnit()) {
+                /*if (unit == player->getUnit()) {
                     sp = player->getSkillLevel(SKL_QCAST) / 4;
-                }
+                }*/
                 unit->theTime += actionTimePassed(ability->getTimeTake(), sp);
                 Unit* target = NULL;
                 if (success) {
@@ -72,18 +72,18 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                     int expGained = 0;
 
                     if (target) {
-                        int expLeft = target->getStatValue(S_EXP);
+                        int expLeft = target->getStatValue(Stat::EXP);
                         if (expLeft) {
-                            int expGained = std::min(expLeft, (int)target->getStatValue(S_LEVEL) + 1);
-                            target->modifyStat(S_EXP, -expGained);
+                            int expGained = std::min(expLeft, (int)target->getStatValue(Stat::LEVEL) + 1);
+                            target->modifyStat(Stat::EXP, -expGained);
                         }
-                        sapExp(unit, target, SKL_QCAST, 1);
+                        //sapExp(unit, target, SKL_QCAST, 1);
                     } else {
                         expGained = player->takeFromXpBank(ability->getDifficulty() / 10);
-                        debankExp(unit, SKL_QCAST, ability->getDifficulty() / 10);
+                        //debankExp(unit, SKL_QCAST, ability->getDifficulty() / 10);
                     }
 
-                    int toteExp = player->getUnit()->modifyStat(S_EXP, expGained);
+                    int toteExp = player->getUnit()->modifyStat(Stat::EXP, expGained);
                     int lev = player->trainSpell(spellI, expGained);
                     if (lev) {
                         int level = player->getSpellLevel(spellI);
@@ -95,14 +95,14 @@ void Start::castSpell(unsigned int spellI, Unit* unit, Zone* zone) {
                             addMessage("Your ability to cast " + ability->getName() + " has increased to " + its(leve) + "." + its(evel) + "!", MAROON);
                         }
                     }
-                    int expReq = player->getUnit()->getStatValue(S_EXPREQ);
+                    int expReq = player->getUnit()->getStatValue(Stat::EXPREQ);
                     if (toteExp >= expReq) {
-                        player->getUnit()->modifyStat(S_EXP, -expReq);
-                        player->getUnit()->modifyStat(S_LEVEL, 1);
+                        player->getUnit()->modifyStat(Stat::EXP, -expReq);
+                        player->getUnit()->modifyStat(Stat::LEVEL, 1);
                     }
                     foon += expGained;
                     if (foon > 10) {
-                        debankExp(unit, SKL_LEARN, foon / 10);
+                        //debankExp(unit, SKL_LEARN, foon / 10);
                         foon %= 10;
                     }
                 }

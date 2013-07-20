@@ -26,9 +26,12 @@ void setEnvironmentManager(EnvironmentManager* ev) {
 GroundFolder::GroundFolder() {
     zone = NULL;
 }
+GroundFolder::~GroundFolder() {}
 
 int GroundFolder::getNumItems() {
-    return zone->getLocationAt(loc)->items->size();
+    Location* l = zone->getLocationAt(loc);
+    if (l->items) return l->items->size();
+    return 0;
 }
 Item* GroundFolder::getItem(int index) {
     return &zone->getLocationAt(loc)->items->at(index);
@@ -37,7 +40,6 @@ Item* GroundFolder::getItems() {
     return &zone->getLocationAt(loc)->items->at(0);
 }
 Item GroundFolder::removeItem(int index) {
-    //return location->removeItem(index);
     return em->removeItemFromPlace(loc, zone, index);
 }
 

@@ -22,20 +22,6 @@
 int Formula::numFloats = 0;
 float Formula::floats[MAX_FLOATS];
 
-/*
-1 = operator
-2 = 1 byte int
-3 = 2 byte int*
-4 = 4 byte int
-5 = 8 byte int*
-6 = float
-7 = double*
-8 = variable
-
-* = not really
-
-*/
-
 /* Create a formula with an estimated length.
  * A length too low will slow the creation of the formula while a length too high will waste memory.
  * Remember that the length of the formula is not equal to the number of commands but to the number
@@ -68,19 +54,6 @@ void Formula::pushInt(int num) {
         commands.push_back(2);
         commands.push_back(num);
     }
-    /*if (num >= -3 && num <= 28) {
-        commands.push_back(128 + (num + 3));
-    } else if (num >= -4096 && num <= 4095) {
-        num += 4096;
-        commands.push_back((num >> 8) | 160);
-        commands.push_back(num & 0xFF);
-    } else {
-        commands.push_back(224);
-        commands.push_back((num >> 24) & 0xFF);
-        commands.push_back((num >> 16) & 0xFF);
-        commands.push_back((num >> 8) & 0xFF);
-        commands.push_back(num & 0xFF);
-    }*/
 }
 
 /* Pushes a float onto the stack. Can only be a max of MAX_FLOATS different floats among all formulas.
@@ -113,10 +86,6 @@ void Formula::pushVar(int target, int type, int index) {
     commands.push_back(index);
 }
 
-/*int getNum(unsigned char value1, unsigned char value2) {
-    return (((value1 & 0x1F) << 8) | value2) - 4096;
-}*/
-
 /* Runs a formula using float maths. Is slower but gets better results than run().
  * The statHolder should have the stat. The user should be the world and the prevVal should be the previous value of the stat that the formula is being run for. */
 double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double prevVal) {
@@ -127,8 +96,6 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
     while(went < commands.size()) {
         unsigned char value = commands.at(went++);
         if (value == 1) {
-            //cout << "Operate: " << value << " - " << formulaStack[sp - 1] << ", " << formulaStack[sp] << endl;
-
             switch(commands.at(went++)) {
                 case O_ADD : sp--;
                 formulaStack[sp] = formulaStack[sp] + formulaStack[sp + 1];
@@ -190,16 +157,13 @@ double Formula::runFloat(FormulaUser* user, StatHolderIntef* statHolder, double 
 }
 
 int Formula::run(FormulaUser* user, StatHolderIntef* statHolder, int prevVal) {
-    //cout << "Formula begin!" << endl;
     unsigned int went = 0; //step 5
     int temp;
     int formulaStack[commands.size() / 3 + 1];
     int sp = -1;
     while(went < commands.size()) {
         unsigned char value = commands.at(went++);
-        //if (watIWant) cout << "next " << formulaStack[sp] << " " << (int)value << endl;
         if (value == 1) {
-            //cout << "Operate: " << (int)value << " - " << formulaStack[sp - 1] << ", " << formulaStack[sp] << endl;
             switch(commands.at(went++)) {
                 case O_ADD : sp--;
                 formulaStack[sp] = formulaStack[sp] + formulaStack[sp + 1];
