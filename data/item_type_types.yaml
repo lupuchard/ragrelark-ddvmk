@@ -103,20 +103,24 @@
   Name: axe
   Slot: main hand
   Skill: blades
+  Weap_Type: axe
 81:
   Name: mace
   Slot: main hand
   Skill: bludgeoning
+  Weap_Type: mace
 82:
   Name: bow
   Slot: both hands
   Skill: shooting
   Ranged: yes
   Ammo: arrow
+  Weap_Type: shoot
 83:
   Name: dagger
   Slot: main hand
   Skill: blades
+  Weap_Type: dagger
 84:
   Name: dart
 85:
@@ -125,47 +129,58 @@
   Skill: shooting
   Ranged: yes
   Ammo: sling ammo
+  Weap_Type: shoot
 86:
   Name: crossbow
   Slot: both hands
   Skill: shooting
   Ammo: bolt
+  Weap_Type: shoot
 87:
   Name: spear
   Slot: both hands
   Skill: polearms
+  Weap_Type: spear
 88:
   Name: staff
   Slot: both hands
   Skill: bludgeoning
+  Weap_Type: club
 89:
   Name: club
   Slot: main hand
   Skill: bludgeoning
+  Weap_Type: club
 91:
   Name: hammer
   Slot: both hands
   Skill: bludgeoning
+  Weap_Type: hammer
 92:
   Name: knife
   Slot: main hand
   Skill: blades
+  Weap_Type: dagger
 94:
   Name: trident
   Slot: both hands
   Skill: polearms
+  Weap_Type: spear
 97:
   Name: flail
   Slot: main hand
   Skill: bludgeoning
+  Weap_Type: mace
 98:
   Name: sword
   Slot: main hand
   Skill: blades
+  Weap_Type: sword
 99:
   Name: greatsword
   Slot: both hands
   Skill: blades
+  Weap_Type: sword
 109:
   Name: shuriken
   Stack: 250

@@ -1,5 +1,5 @@
 ---
-Name: copper pens
+Name: copper pen
 Desc: This is peasant money right here.
 Texture: items.png
 Tile: [0, 3]
@@ -9,7 +9,7 @@ value: 1
 g_stack: 1
 ...
 ---
-Name: silver pens
+Name: silver pen
 Desc: Each is worth 30 cp.
 Texture: items.png
 Tile: [0, 2]
@@ -19,7 +19,7 @@ value: 30
 g_stack: 1
 ...
 ---
-Name: gold pens
+Name: gold pen
 Desc: Each is worth 20 sp.
 Texture: items.png
 Tile: [0, 1]

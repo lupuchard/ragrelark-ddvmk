@@ -127,6 +127,8 @@ int ItemType::numSlots;
 std::vector<ItemType*> ItemType::emptySlots;
 std::vector<ItemSlot*> ItemType::itemSlots;
 std::map<String, ItemSlot*> ItemType::itemSlotNameMap;
+std::vector<WeapType*> ItemType::weapTypes;
+std::map<String, WeapType*> ItemType::weapTypeNameMap;
 
 void ItemType::parse(YAML::Node fileNode) {
     String name = readYAMLStr(fileNode, "Name", "nil", "Item lacks a name!");
@@ -268,9 +270,28 @@ void ItemType::parseTypes(YAML::Node fileNode) {
         type.folder = readYAMLInt(curNode, "Folder", 0);
         type.isSlot = readYAMLInt(curNode, "IsSlot", 0);
         type.edible = readYAMLInt(curNode, "Edible", 0);
+
         String ammo = readYAMLStr(curNode, "Ammo", "xx");
         if (ammo == "xx") type.ammo = NULL;
-        else type.ammo = &itemTypeTypes[itemTypeTypeNameMap[ammo]];
+        else {
+            std::map<String, int>::iterator iter = itemTypeTypeNameMap.find(ammo);
+            if (iter != itemTypeTypeNameMap.end()) type.ammo = &itemTypeTypes[iter->second];
+            else {
+                std::cout << "'" << ammo << "' is not an existing ammo.\n";
+                type.ammo = NULL;
+            }
+        }
+
+        String weapType = readYAMLStr(curNode, "Weap_Type", "xx");
+        if (weapType == "xx") type.weapType = NULL;
+        else {
+            std::map<String, WeapType*>::iterator iter = weapTypeNameMap.find(weapType);
+            if (iter != weapTypeNameMap.end()) type.weapType = iter->second;
+            else {
+                std::cout << "'" << weapType << "' is not an existing weap type.\n";
+                type.weapType = NULL;
+            }
+        }
 
         int index = iter->first.as<int>();
         itemTypeTypes[index] = type;
@@ -307,6 +328,60 @@ int ItemType::add(ItemType* itemType) {
     itemTypeNameMap[itemType->name] = itemType;
     return itemType->index;
 }
+void verbify(YAML::Node node, String& verb, String& verbs, String& default1, String& defaults) {
+    if (node.IsSequence()) {
+        verb = node[0].as<String>();
+        verbs = node[1].as<String>();
+    } else if (node) {
+        verb = node.as<String>();
+        verbs = pluralize(verb);
+    } else {
+        verb = default1;
+        verbs = defaults;
+    }
+}
+void ItemType::parseWeapTypes(YAML::Node node) {
+    bool defaulted = false;
+    String scrapeDef, scrapesDef, hitDef, hitsDef, critDef, critsDef, megacritDef, megacritsDef;
+    for (YAML::const_iterator iter = node.begin(); iter != node.end(); ++iter) {
+        YAML::Node dtypeNode = *iter;
+        String name = readYAMLStr(dtypeNode, "Name", "-", "Weap type expects name.");
+        String damName = readYAMLStr(dtypeNode, "Type", "none", "Weap type expects damage type.");
+        DamType type = D_NONE;
+        if (damName == "bludgeon") type = D_BLUDGEON;
+        else if (damName == "slash") type = D_SLASH;
+        else if (damName == "pierce") type = D_PIERCE;
+        else if (damName == "spell") type = D_SPELL;
+        else if (damName != "none") std::cout << "'" << damName << "' is not a damage type." << std::endl;
+
+        String scrape, scrapes, hit, hits, crit, crits, megacrit, megacrits;
+        verbify(dtypeNode["Verb_Scrape"]  , scrape  , scrapes  , scrapeDef  , scrapesDef);
+        verbify(dtypeNode["Verb_Hit"]     , hit     , hits     , hitDef     , hitsDef);
+        verbify(dtypeNode["Verb_Crit"]    , crit    , crits    , critDef    , critsDef);
+        verbify(dtypeNode["Verb_Megacrit"], megacrit, megacrits, megacritDef, megacritsDef);
+        if (!defaulted) {
+            defaulted = true;
+            scrapeDef   = scrape;   scrapesDef   = scrapes;
+            hitDef      = hit;      hitsDef      = hits;
+            critDef     = crit;     critsDef     = crits;
+            megacritDef = megacrit; megacritsDef = megacrits;
+        }
+
+        WeapType* weapType = new WeapType(type, scrape, scrapes, hit, hits, crit, crits, megacrit, megacrits);
+        weapType->index = weapTypes.size();
+        weapTypes.push_back(weapType);
+        weapTypeNameMap[name] = weapType;
+    }
+}
+bool ItemType::hasWeapType(String type) {
+    return weapTypeNameMap.find(type) != weapTypeNameMap.end();
+}
+WeapType* ItemType::getWeapType(int type) {
+    return weapTypes[type];
+}
+WeapType* ItemType::getWeapType(String type) {
+    return weapTypeNameMap[type];
+}
 void ItemType::clean() {
     itemTypeTypeNameMap.clear();
     for (unsigned int i = 0; i < itemTypes.size(); i++) {
@@ -320,4 +395,6 @@ void ItemType::clean() {
     itemSlots.clear();
     itemSlotNameMap.clear();
     emptySlots.clear();
+    weapTypes.clear();
+    weapTypeNameMap.clear();
 }

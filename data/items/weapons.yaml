@@ -2,81 +2,80 @@
 Name: splendid spear
 Dest: A long weapon for jabbing in the face.
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [0, 16], Size: tall}
 Tile: [5, 0]
 Type: spear
 damage: 3
 weight: 99
-damage_type: 10
 luck_bonus: 1
 ...
 ---
 Name: special spear
 Dest: A long weapon for jabbing out the face.
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [1, 16], Size: tall}
 Tile: [5, 1]
 Type: spear
 damage: 4
 weight: 99
-damage_type: 10
 penalty: 1
 luck_bonus: 1
 ...
 ---
 Name: silvery spear
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [2, 16], Size: tall}
 Tile: [5, 2]
 Type: spear
 damage: 4
 weight: 99
-damage_type: 10
 luck_bonus: 1
 ...
 ---
-Name: stern spear
+Name: stern glaive
 Desc: A long weapon for cutting off the face.
 Texture: equipment.png
 Tile: [5, 3]
+Equipped: {Texture: player.png, Tile: [3, 16], Size: tall}
 Type: spear
 damage: 5
 weight: 99
 penalty: 1
-damage_type: 10
 luck_bonus: 1
 ...
 ---
 Name: scarlet ribbon spear
 Texture: equipment.png
 Tile: [5, 4]
+Equipped: {Texture: player.png, Tile: [4, 16], Size: tall}
 Type: spear
 damage: 5
 hp_regen: 1
 weight: 99
 penalty: 1
-damage_type: 10
 luck_bonus: 1
 ...
 ---
 Name: salty trident
 Texture: equipment.png
 Tile: [5, 5]
+Equipped: {Texture: player.png, Tile: [5, 16], Size: tall}
 Type: trident
 damage: 5
 weight: 99
 penalty: 1
-damage_type: 10
 luck_bonus: 1
 ...
-
 ---
 Name: shand spear
 Texture: equipment.png
 Tile: [5, 6]
+Equipped: {Texture: player.png, Tile: [6, 16], Size: tall}
 Type: spear
 damage: 6
 int: 2
 weight: 99
 penalty: 1
-damage_type: 10
 luck_bonus: 1
 ...
 ---
@@ -84,24 +83,22 @@ Name: small throwing axe
 Desc: Somebody painted part of it green.
 Texture: equipment.png
 Tile: [6, 0]
+Equipped: {Texture: player.png, Tile: [3, 14], Size: small}
 Type: axe
 damage: 2
 weight: 9
 throw: 3
-damage_type: 9
 luck_bonus: 1
 ...
-
 ---
 Name: shitty axe
-Desc: It's not even good at TREES.
 Texture: equipment.png
 Tile: [6, 1]
+Equipped: {Texture: player.png, Tile: [2, 14], Size: small}
 Type: axe
 damage: 2
 weight: 9
 penalty: 1
-damage_type: 9
 luck_bonus: 1
 ...
 ---
@@ -109,10 +106,10 @@ Name: sturdy axe
 Desc: It's a pretty good axe.
 Texture: equipment.png
 Tile: [6, 2]
+Equipped: {Texture: player.png, Tile: [2, 15], Size: small}
 Type: axe
 damage: 3
 weight: 9
-damage_type: 9
 luck_bonus: 1
 throw: 1
 ...
@@ -120,35 +117,34 @@ throw: 1
 Name: strong battleaxe
 Texture: equipment.png
 Tile: [6, 3]
+Equipped: {Texture: player.png, Tile: [4, 14], Size: tall}
 Type: axe
 damage: 5
 weight: 99
 penalty: 1
-damage_type: 9
 luck_bonus: 1
 ...
-
 ---
 Name: sad axe
 Desc: :(
 Texture: equipment.png
 Tile: [6, 4]
+Equipped: {Texture: player.png, Tile: [3, 15], Size: small}
 Type: axe
 damage: 4
 weight: 9
 penalty: 1
-damage_type: 9
 luck_bonus: 1
 ...
 ---
 Name: scintillating ono
 Texture: equipment.png
 Tile: [6, 5]
+Equipped: {Texture: player.png, Tile: [5, 14], Size: tall}
 Type: axe
 damage: 4
 weight: 9
 acc: 1
-damage_type: 9
 luck_bonus: 1
 throw: 1
 ...
@@ -157,10 +153,10 @@ Name: sondric megaxe
 Desc: An incredibly famous and powerful weapon.
 Texture: equipment.png
 Tile: [6, 6]
+Equipped: {Texture: player.png, Tile: [6, 14], Size: tall}
 Type: axe
 damage: 7
 weight: 99
-damage_type: 9
 luck_bonus: 1
 ...
 ---
@@ -168,6 +164,7 @@ Name: soxtric battleaxe
 Desc: It's really heavy.
 Texture: equipment.png
 Tile: [7, 6]
+Equipped: {Texture: player.png, Tile: [7, 14], Size: tall}
 Type: axe
 weight: 999
 damage: 8
@@ -179,10 +176,10 @@ luck_bonus: 1
 Name: spiked club
 Texture: equipment.png
 Tile: [8, 1]
+Equipped: {Texture: player.png, Tile: [4, 12], Size: tall}
 Type: club
 damage: 2
 weight: 9
-damage_type: 7
 luck_bonus: 1
 ...
 ---
@@ -194,23 +191,19 @@ Equipped: {Texture: player.png, Tile: [0, 12], Size: tall}
 Type: club
 damage: 1
 weight: 9
-damage_type: 7
 luck_bonus: 1
 ...
-
 ---
 Name: sizeable club
 Texture: equipment.png
 Tile: [8, 4]
-Equipped: {Texture: player.png, Tile: [0, 18], Size: tall}
+Equipped: {Texture: player.png, Tile: [2, 12], Size: tall}
 Type: club
 damage: 6
 weight: 99
-damage_type: 7
 penalty: 5
 luck_bonus: 1
 ...
-
 ---
 Name: sadistic mace
 Texture: equipment.png
@@ -220,49 +213,45 @@ Type: mace
 damage: 4
 weight: 99
 attack_speed: -1
-damage_type: 7
 luck_bonus: 1
 ...
-
 ---
 Name: superior mace
 Texture: equipment.png
 Tile: [8, 3]
-Type: mace
 Equipped: {Texture: player.png, Tile: [2, 12], Size: tall}
+Type: mace
 damage: 6
 weight: 105
 attack_speed: -1
 str: 2
 con: 1
-damage_type: 7
 luck_bonus: 1
 ...
-
 ---
 Name: severe flail
 Desc: Severely dangerous, that is.
 Texture: equipment.png
 Tile: [8, 5]
+Equipped: {Texture: player.png, Tile: [5, 12], Size: tall}
 Type: flail
 damage: 4
 penalty: 1
 weight: 99
 luck_bonus: 1
 ...
-
 ---
 Name: stoonish chain on stick
 Desc: The ball fell off.
 Texture: equipment.png
 Tile: [8, 6]
+Equipped: {Texture: player.png, Tile: [6, 12], Size: tall}
 Type: flail
 damage: 2
 penalty: 1
 weight: 99
 luck_bonus: 1
 ...
-
 ---
 Name: sharp dagger
 Texture: equipment.png
@@ -271,11 +260,9 @@ Equipped: {Texture: player.png, Tile: [0, 14], Size: tall}
 Type: dagger
 damage: 2
 weight: 35
-damage_type: 8
 throw: 2
 luck_bonus: 1
 ...
-
 ---
 Name: steely dagger
 Texture: equipment.png
@@ -285,144 +272,130 @@ Type: dagger
 damage: 2
 acc: 1
 weight: 32
-damage_type: 8
 throw: 2
 luck_bonus: 1
 ...
-
 ---
 Name: sacred obsidian dagger
 Desc: Very, very sharp.
 Texture: equipment.png
 Tile: [7, 2]
-Equipped: {Texture: player.png, Tile: [1, 14], Size: tall}
+Equipped: {Texture: player.png, Tile: [1, 14], Size: small}
 Type: dagger
 damage: 3
 accuracy: 1
 weight: 9
-damage_type: 8
 throw: 2
 luck_bonus: 1
 ...
-
 ---
 Name: sweet punching dagger
 Texture: equipment.png
 Tile: [7, 3]
+Equipped: {Texture: player.png, Tile: [1, 15], Size: small}
 Type: dagger
 damage: 2
 acc: 1
 throw: -2
-damage_type: 8
 luck_bonus: 1
 ...
-
 ---
 Name: serrated knife
 Desc: If you want a clean cut.
 Texture: equipment.png
 Tile: [7, 4]
+Equipped: {Texture: player.png, Tile: [0, 14], Size: tall}
 Type: knife
 damage: 2
 weight: 9
-damage_type: 8
 luck_bonus: 1
 ...
-
 ---
 Name: shiny dagger
 Texture: equipment.png
 Tile: [7, 5]
-Equipped: {Texture: player.png, Tile: [0, 14], Size: tall}
+Equipped: {Texture: player.png, Tile: [8, 14], Size: small}
 Type: dagger
 damage: 3
 per: 1
 weight: 9
-damage_type: 8
 luck_bonus: 1
 ...
-
 ---
 Name: sleek longbow
 Texture: equipment.png
 Tile: [9, 0]
-Equipped: {Texture: player.png, Tile: [0, 16], Size: tall}
+Equipped: {Texture: player.png, Tile: [0, 18], Size: tall}
 Type: bow
 damage: 1
 weight: 9
-damage_type: 12
 luck_bonus: 1
 ...
-
 ---
 Name: swift longbow
 Desc: It looks like a giant wing.
 Texture: equipment.png
 Tile: [9, 1]
+Equipped: {Texture: player.png, Tile: [1, 18], Size: tall}
 Type: bow
 damage: 1
 weight: 9
 acc: 3
-damage_type: 12
 luck_bonus: 1
 ...
-
 ---
 Name: shady bow
 Texture: equipment.png
 Tile: [9, 2]
+Equipped: {Texture: player.png, Tile: [2, 18], Size: tall}
 Type: bow
 damage: 2
 weight: 9
 per: 3
-damage_type: 12
 luck_bonus: 1
 ...
-
 ---
 Name: skillful bow
 Texture: equipment.png
 Tile: [9, 3]
+Equipped: {Texture: player.png, Tile: [3, 18], Size: tall}
 Type: bow
 damage: 1
 weight: 99
 str: 1
-damage_type: 12
 luck_bonus: 1
 ...
-
 ---
 Name: sophisticated bow
 Texture: equipment.png
 Tile: [9, 4]
+Equipped: {Texture: player.png, Tile: [4, 18], Size: tall}
 Type: bow
 damage: 2
 weight: 9
 int: 2
-damage_type: 12
 luck_bonus: 1
 ...
-
 ---
-Name: serious bow
+Name: serious longbow
 Texture: equipment.png
 Tile: [9, 5]
+Equipped: {Texture: player.png, Tile: [5, 18], Size: tall}
 Type: bow
 damage: 2
 weight: 9
 acc: 1
-damage_type: 12
 luck_bonus: 1
 ...
 ---
 Name: syf bow
 Texture: equipment.png
 Tile: [9, 6]
+Equipped: {Texture: player.png, Tile: [6, 18], Size: tall}
 Type: bow
 damage: 2
 weight: 9
 acc: 4
-damage_type: 12
 ...
 ---
 Name: simplistic arrow
@@ -432,7 +405,6 @@ Tile: [11, 0]
 Type: arrow
 damage: 1
 weight: 9
-damage_type: 12
 luck_bonus: 1
 ...
 ---
@@ -442,7 +414,6 @@ Tile: [11, 1]
 Type: arrow
 damage: 2
 weight: 9
-damage_type: 12
 luck_bonus: 1
 ...
 ---
@@ -454,7 +425,6 @@ Type: arrow
 damage: 2
 weight: 9
 acc: -1
-damage_type: 12
 luck_bonus: 1
 ...
 ---
@@ -465,7 +435,6 @@ Tile: [11, 3]
 Type: arrow
 damage: 1
 weight: 9
-damage_type: 12
 light: 2
 luck_bonus: 1
 ...
@@ -477,7 +446,6 @@ Tile: [11, 4]
 Type: shuriken
 damage: 1
 weight: 9
-damage_type: 12
 luck_bonus: 1
 throw: 3
 ...
@@ -488,7 +456,6 @@ Tile: [11, 5]
 Type: shuriken
 damage: 2
 weight: 9
-damage_type: 12
 luck_bonus: 1
 throw: 2
 ...
@@ -499,7 +466,6 @@ Tile: [11, 6]
 Type: shuriken
 damage: 2
 weight: 9
-damage_type: 12
 luck_bonus: 1
 throw: 4
 ...
@@ -507,6 +473,7 @@ throw: 4
 Name: sanguine staff
 Texture: equipment.png
 Tile: [10, 0]
+Equipped: {Texture: player.png, Tile: [7, 12], Size: tall}
 Type: staff
 damage: 1
 weight: 99
@@ -519,6 +486,7 @@ Name: spooky staff
 Desc: Used by only the most unoriginal of necromancers.
 Texture: equipment.png
 Tile: [10, 1]
+Equipped: {Texture: player.png, Tile: [8, 12], Size: tall}
 Type: staff
 damage: 1
 weight: 99
@@ -529,6 +497,7 @@ luck_bonus: 1
 Name: super mace
 Texture: equipment.png
 Tile: [10, 2]
+Equipped: {Texture: player.png, Tile: [9, 12], Size: tall}
 Type: mace
 damage: 4
 weight: 99
@@ -542,6 +511,7 @@ Name: scorching staff
 Desc: The orb on the end of the staff absorbs heat from around it, which actually makes it feel chilly. The heat can be released for a devastating effect.
 Texture: equipment.png
 Tile: [10, 3]
+Equipped: {Texture: player.png, Tile: [10, 12], Size: tall}
 Type: staff
 damage: 2
 weight: 99

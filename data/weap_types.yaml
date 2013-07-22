@@ -1,0 +1,91 @@
+-
+  Name: norm
+  Type: bludgeon
+  Verb_Scrape: scrape
+  Verb_Hit: hit
+  Verb_Crit: critically hit
+  Verb_Megacrit: megacrit
+-
+  Name: claws
+  Type: slash
+  Verb_Scrape: [scratch, scratches]
+  Verb_Hit: claw
+  Verb_Megacrit: rend
+-
+  Name: tentacle
+  Type: bludgeon
+  Verb_Scrape: rub
+  Verb_Crit: tentacle slap
+-
+  Name: body
+  Type: bludgeon
+  Verb_Norm: slam
+-
+  Name: fists
+  Type: bludgeon
+  Verb_Scrape: pap
+  Verb_Hit: [punch, punches]
+  Verb_Crit: kick
+-
+  Name: head
+  Type: bludgeon
+  Verb_Hit: headbutt
+  Verb_Crit: [ram into, rams into]
+-
+  Name: mouth
+  Type: pierce
+  Verb_Hit: bite
+  Verb_Crit: [chomp into, chomps into]
+  Verb_Megacrit: [crunch, crunches]
+-
+  Name: paper
+  Type: slash
+  Verb_Scrape: fwap
+  Verb_Crit: paper cut
+-
+  Name: club
+  Type: bludgeon
+  Verb_Scrape: tap
+  Verb_Hit: smack
+  Verb_Megacrit: clobber
+-
+  Name: hammer
+  Type: bludgeon
+  Verb_Scrape: bonk
+  Verb_Crit: hammer
+  Verb_Megacrit: hammer time
+-
+  Name: mace
+  Type: bludgeon
+  Verb_Scrape: barely whack
+  Verb_Crit: bash
+  Verb_Megacrit: sock
+-
+  Name: dagger
+  Type: pierce
+  Verb_Crit: stab
+-
+  Name: axe
+  Type: slash
+  Verb_Hit: axe
+  Verb_Crit: chop
+-
+  Name: sword
+  Type: slash
+  Verb_Scrape: cut
+  Verb_Crit: slash
+-
+  Name: spear
+  Type: pierce
+  Verb_Scrape: poke
+  Verb_Hit: jab
+  Verb_Megacrit: impale
+-
+  Name: scythe
+  Type: slash
+  Verb_Hit: slash
+-
+  Name: shoot
+  Type: pierce
+  Verb_Scrape: poorly shoot
+  Verb_Hit: shoot

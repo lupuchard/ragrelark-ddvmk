@@ -50,6 +50,7 @@ luck_bonus: 1
 Name: stylish iron armor
 Desc: Iron armor that is stylish.
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [5, 2], Size: tall}
 Tile: [1, 4]
 Type: heavy armor
 weight: 99
@@ -61,6 +62,8 @@ luck_bonus: 1
 Name: secure golden armor
 Texture: equipment.png
 Tile: [1, 5]
+Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [6, 2], Size: tall}
 Type: heavy armor
 weight: 99
 penalty: 2
@@ -72,6 +75,7 @@ luck_bonus: 1
 Name: spoff plate armor
 Desc: Scientifically proven to be the spoffiest armor.
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [7, 2], Size: tall}
 Tile: [1, 6]
 Type: heavy armor
 weight: 99
@@ -107,6 +111,7 @@ luck_bonus: 1
 Name: silky blue gloves
 Desc: Gloves of silkery.
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [2, 9], Size: long}
 Tile: [0, 2]
 Type: gloves
 weight: 9
@@ -120,6 +125,7 @@ luck_bonus: 1
 Name: superb gloves
 Desc: Gloves of superbery.
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [2, 8], Size: long}
 Tile: [0, 3]
 Type: gloves
 weight: 9
@@ -154,6 +160,7 @@ Name: scholarly hat
 Desc: You'll look so very smart yes.
 Texture: equipment.png
 Tile: [2, 2]
+Equipped: {Texture: player.png, Tile: [1, 5], Size: small}
 Type: hat
 weight: 9
 int: 2
@@ -226,3 +233,4 @@ ac: 1
 penalty: 2
 luck_bonus: 1
 ...
+#left: 1 glove, 2 gauntlets, 4 hat/helms, 3 shields, 5 shoes

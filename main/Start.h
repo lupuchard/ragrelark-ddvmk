@@ -50,15 +50,22 @@ enum{STATE_PLAY, STATE_MENU, STATE_DIR, STATE_TARGET, STATE_SPELL};
 enum Panels{PANEL_EMPTY, PANEL_TOPSTART, PANEL_STATS, PANEL_SKILLS, PANEL_INVENTORY, PANEL_TOPEND, PANEL_BOTTOMSTART, PANEL_MINIMAP, PANEL_NOTES, PANEL_BOTTOMEND};
 enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, AI_NEUTRAL = 4};
 
-enum AttackType{ATT_STRIKE, ATT_SHOOT, ATT_SPELL};
 enum{SA_NONE, SA_ATTACK, SA_FIRE, SA_OPENDOOR, SA_CLOSEDOOR};
+
+enum FlavorClass{F_NONE, F_POISON_PHYS, F_POISON_MENT, F_POISON_REGEN, F_POISON_EXTRA, F_CONFUSION};
+struct Flavor {
+    std::map<FlavorClass, int> flavors;
+    void add(FlavorClass f, int potency = 1) {
+        flavors[f] = potency;
+    }
+};
 
 typedef struct {
     int criticality;
     bool killed;
     bool hit;
     bool dodge;
-} battleSummary;
+} BattleSummary;
 
 class Start: FormulaUser, EnvironmentManager {
     public:
@@ -71,8 +78,6 @@ class Start: FormulaUser, EnvironmentManager {
         void addMessage(String message, Color c);
 
         Skill* skll(SkillE skillIndex);
-        //Stat*  stUn(UnitStatE statIndex);
-        //Stat*  stIt(ItemStatE statIndex);
 
         void parsePlayer(YAML::Node n);
 
@@ -130,7 +135,7 @@ class Start: FormulaUser, EnvironmentManager {
         /* --- */
 
         /* --particles.cpp-- */
-        void createEffect(peType type, int x, int y);
+        void createEffect(PeType type, int x, int y);
         void updateEffects(int xShift, int yShift);
         void addProj(int x0, int y0, int x1, int y1, int length, int ind);
         void drawCirc(int x, int y, int z, int size, int fade, int rot, Color c);
@@ -147,7 +152,6 @@ class Start: FormulaUser, EnvironmentManager {
         void changeLoc(Unit* unit, Zone* zone, Coord loc);
         void changeLocZ(Unit* unit, Zone* prevZone, Zone* newZone, Coord loc);
 
-        void applyPoison(int poison, int duration, Unit* unit, Unit* poisoner);
         int actionTimePassed(int time, int speed);
         double chanceHit(double m);
         double defDam(double preDam, int defense);
@@ -155,10 +159,11 @@ class Start: FormulaUser, EnvironmentManager {
         Color colorHit(bool crit, bool dodge);
         void hitSapping(Unit* attacker, Unit* defender, int criticality);
 
-        void hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, battleSummary& sum);
+        void hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, BattleSummary& sum);
+        BattleSummary attackUnit(int power, float accuracy, const WeapType* weapType, Unit* defender, Zone* zone, int dir, Flavor flavor = Flavor());
+        void pfaf(int stat, int potency, Unit* u);
         void strikeUnit(Unit* unit, Zone* zone, int dir, bool safe);
-        void shootUnit(Unit* attacker, Unit* defender, Zone* zone);
-        battleSummary attackUnit(int power, float accuracy, int weaponType, Unit* defender, Zone* zone, int dir);
+        void shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone);
         void projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from);
         void reactToAttack(Unit* unit, int dir, Zone* zone);
         void killUnit(Unit* unit, Zone* zone);

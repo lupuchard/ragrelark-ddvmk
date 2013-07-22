@@ -29,7 +29,7 @@
 #define SWIN_WIDTH 260
 #define SWIN_HEIGHT 700
 
-enum peType{P_NONE, P_DARKDUST, P_ARROW};
-enum align{LEFT, CENTER, RIGHT};
+enum PeType{P_NONE, P_DARKDUST, P_ARROW};
+enum Align{LEFT, CENTER, RIGHT};
 
 #endif // GRAPHICS_H_INCLUDED

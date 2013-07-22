@@ -19,76 +19,9 @@ blood_color: 0
 splatter: 1
 hunger: 5000
 stamina: 10000
-unarmed_type: 3
+unarmed_type: fists
 light_load: 0
 ai: 2
-...
----
-Name: tiny goo slime
-level: 0
-experience: 5
-base_str: 5
-base_con: 5
-base_aff: 2
-base_per: 2
-base_dex: 4
-base_cha: 2
-base_def: 0
-base_attspe: 6
-base_movespe: 5
-
-graphic_loc: [0, 0]
-graphic_tex: monsters.png
-blood_color: 1
-splatter: 6
-ai: 1
-unarmed_type: 2
-...
----
-Name: small goo slime
-level: 2
-experience: 14
-base_str: 5
-base_con: 5
-base_aff: 2
-base_int: 0
-base_per: 2
-base_dex: 4
-base_cha: 2
-base_def: 0
-base_attspe: 6
-base_movespe: 6
-graphic_loc: [0, 1]
-graphic_tex: monsters.png
-blood_color: 1
-splatter: 8
-ai: 1
-unarmed_type: 2
-split: 2
-spawn: tiny goo slime
-...
----
-Name: goo slime
-level: 4
-experience: 40
-base_str: 7
-base_con: 7
-base_aff: 2
-base_int: 0
-base_per: 4
-base_dex: 4
-base_cha: 2
-base_def: 0
-base_attspe: 6
-base_movespe: 5
-graphic_loc: [0, 2]
-graphic_tex: monsters.png
-blood_color: 1
-splatter: 10
-ai: 1
-unarmed_type: 2
-split: 2
-spawn: small goo slime
 ...
 ---
 Name: pig
@@ -109,7 +42,7 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 3
 ai: 3
-unarmed_type: 4
+unarmed_type: head
 ...
 ---
 Name: plantling
@@ -127,9 +60,9 @@ base_attspe: 10
 base_movespe: 8
 graphic_loc: [3, 3]
 graphic_tex: monsters.png
-unarmed_type: 5
-#att_condition: 34
-#att_condition_chance: 30
+unarmed_type: norm
+affliction: 5
+affliction_potency: 2
 ai: 1
 ...
 ---
@@ -147,11 +80,11 @@ base_attspe: 10
 base_movespe: 10
 graphic_loc: [1, 3]
 graphic_tex: monsters.png
-unarmed_type: 1
+unarmed_type: claws
 blood_color: 2
 splatter: 4
-#att_condition: 12
-#att_condition_chance: 100
+affliction: 1
+affliction_potency: 3
 ai: 1
 ...
 ---
@@ -169,11 +102,31 @@ base_attspe: 10
 base_movespe: 7
 graphic_loc: [4, 3]
 graphic_tex: monsters.png
-unarmed_type: 6
+unarmed_type: mouth
 blood_color: 2
 splatter: 4
-#att_condition: 20
-#att_condition_chance: 60
+affliction: 2
+affliction_potency: 3
+ai: 1
+...
+---
+Name: boa
+level: 2
+experience: 35
+base_str: 5
+base_con: 5
+base_aff: 0
+base_per: 4
+base_dex: 6
+base_cha: 2
+base_def: 2
+base_attspe: 10
+base_movespe: 10
+graphic_loc: [2, 3]
+graphic_tex: monsters.png
+unarmed_type: norm
+blood_color: 0
+splatter: 3
 ai: 1
 ...
 ---
@@ -191,7 +144,7 @@ base_attspe: 8
 base_movespe: 15
 graphic_loc: [5, 3]
 graphic_tex: monsters.png
-unarmed_type: 1
+unarmed_type: claws
 blood_color: 0
 splatter: 3
 ai: 1

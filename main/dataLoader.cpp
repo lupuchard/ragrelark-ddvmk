@@ -34,6 +34,7 @@ void Start::loadData() {
     yamlSingle("data/prototype_stats.yaml"  , boost::bind(&MobSpawner::parseDefaultStats, mobSpawner, _1));
     yamlSingle("data/spell_elem.yaml"       , Ability::parseElem);
     yamlMulti("data/spells"                 , Ability::parse);
+    yamlSingle("data/weap_types.yaml"       , ItemType::parseWeapTypes);
     yamlSingle("data/item_slots.yaml"       , ItemType::parseSlots);
     yamlSingle("data/item_type_types.yaml"  , ItemType::parseTypes);
 

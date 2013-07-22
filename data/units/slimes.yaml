@@ -1,0 +1,135 @@
+# GOO SLIMES
+---
+Name: tiny goo slime
+level: 0
+experience: 5
+base_str: 5
+base_con: 5
+base_aff: 2
+base_per: 2
+base_dex: 4
+base_cha: 2
+base_def: 0
+base_attspe: 6
+base_movespe: 5
+graphic_loc: [0, 0]
+graphic_tex: monsters.png
+blood_color: 1
+splatter: 6
+ai: 1
+unarmed_type: norm
+...
+---
+Name: small goo slime
+level: 2
+experience: 14
+base_str: 5
+base_con: 5
+base_aff: 2
+base_int: 0
+base_per: 2
+base_dex: 4
+base_cha: 2
+base_def: 0
+base_attspe: 6
+base_movespe: 6
+graphic_loc: [0, 1]
+graphic_tex: monsters.png
+blood_color: 1
+splatter: 8
+ai: 1
+unarmed_type: tentacle
+split: 2
+spawn: tiny goo slime
+...
+---
+Name: goo slime
+level: 4
+experience: 40
+base_str: 7
+base_con: 7
+base_aff: 2
+base_int: 0
+base_per: 4
+base_dex: 4
+base_cha: 2
+base_def: 0
+base_attspe: 6
+base_movespe: 5
+graphic_loc: [0, 2]
+graphic_tex: monsters.png
+blood_color: 1
+splatter: 10
+ai: 1
+unarmed_type: tentacle
+split: 2
+spawn: small goo slime
+...
+
+# WATER SLIMES
+---
+Name: tiny water slime
+level: 0
+experience: 5
+base_str: 4
+base_con: 4
+base_aff: 2
+base_per: 2
+base_dex: 5
+base_cha: 2
+base_def: 0
+base_attspe: 6
+base_movespe: 8
+graphic_loc: [1, 0]
+graphic_tex: monsters.png
+blood_color: 1
+splatter: 6
+ai: 1
+unarmed_type: norm
+...
+---
+Name: small water slime
+level: 2
+experience: 14
+base_str: 4
+base_con: 4
+base_aff: 2
+base_int: 0
+base_per: 2
+base_dex: 5
+base_cha: 2
+base_def: 0
+base_attspe: 6
+base_movespe: 8
+graphic_loc: [1, 1]
+graphic_tex: monsters.png
+blood_color: 1
+splatter: 8
+ai: 1
+unarmed_type: body
+split: 2
+spawn: tiny water slime
+...
+---
+Name: water slime
+level: 4
+experience: 40
+base_str: 6
+base_con: 6
+base_aff: 2
+base_int: 0
+base_per: 4
+base_dex: 5
+base_cha: 2
+base_def: 0
+base_attspe: 6
+base_movespe: 8
+graphic_loc: [1, 2]
+graphic_tex: monsters.png
+blood_color: 1
+splatter: 10
+ai: 1
+unarmed_type: body
+split: 2
+spawn: small water slime
+...

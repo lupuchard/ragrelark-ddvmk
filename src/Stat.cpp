@@ -58,8 +58,10 @@ int Stat::EXP, Stat::LEVEL, Stat::EXPREQ, Stat::STR, Stat::CON, Stat::AFF, Stat:
     Stat::MAXHP, Stat::HP, Stat::MAXMANA, Stat::MANA, Stat::ACC, Stat::EVA, Stat::UNARMDAMAGE, Stat::MELDAMAGE, Stat::RANDAMAGE, Stat::RESPOIS,
     Stat::HUNGER, Stat::STAMINA, Stat::AI, Stat::BLOOD, Stat::SPLATTER, Stat::SPLIT, Stat::SWARM, Stat::UNARMED, Stat::SPAWN, Stat::LOAD,
     Stat::ATTACKSPEED, Stat::MOVESPEED, Stat::HPREGEN, Stat::MANAREGEN, Stat::METABOLISM, Stat::FLY, Stat::PET,
+    Stat::POIS_PHYS, Stat::POIS_MENT, Stat::POIS_REGEN, Stat::POIS_EXTRA, Stat::CONFUSION,
+    Stat::AFFLICTION, Stat::AFFLICTION_POTENCY,
     Stat::GLOC, Stat::GTEX, Stat::GTYPE;
-int Stat::WEIGHT, Stat::VALUE, Stat::FEED, Stat::TASTE, Stat::DTYPE, Stat::RANGE, Stat::LIGHT, Stat::GSTACK, Stat::THRO;
+int Stat::WEIGHT, Stat::VALUE, Stat::FEED, Stat::TASTE, Stat::RANGE, Stat::LIGHT, Stat::GSTACK, Stat::THRO;
 std::map<String, int*> Stat::bindMap;
 
 void Stat::parseAll(YAML::Node fileNode) {
@@ -75,9 +77,12 @@ void Stat::parseAll(YAML::Node fileNode) {
         bindMap["BLOOD"] = &BLOOD; bindMap["SPLATTER"] = &SPLATTER; bindMap["FLY"] = &FLY; bindMap["LOAD"] = &LOAD;
         bindMap["SPLIT"] = &SPLIT; bindMap["SWARM"] = &SWARM; bindMap["SPAWN"] = &SPAWN;
         bindMap["ATTACKSPEED"] = &ATTACKSPEED; bindMap["MOVESPEED"] = &MOVESPEED; bindMap["HPREGEN"] = &HPREGEN; bindMap["MANAREGEN"] = &MANAREGEN;
+        bindMap["POIS_PHYS"] = &POIS_PHYS; bindMap["POIS_MENT"] = &POIS_MENT; bindMap["POIS_REGEN"] = &POIS_REGEN;
+        bindMap["POIS_EXTRA"] = &POIS_EXTRA; bindMap["CONFUSION"] = &CONFUSION;
+        bindMap["AFFLICTION"] = &AFFLICTION; bindMap["AFFLICTION_POTENCY"] = &AFFLICTION_POTENCY;
         bindMap["GLOC"] = &GLOC; bindMap["GTEX"] = &GTEX; bindMap["GTYPE"] = &GTYPE;
         bindMap["WEIGHT"] = &WEIGHT; bindMap["VALUE"] = &VALUE; bindMap["FEED"] = &FEED; bindMap["TASTE"] = &TASTE;
-        bindMap["DTYPE"] = &DTYPE; bindMap["RANGE"] = &RANGE; bindMap["LIGHT"] = &LIGHT; bindMap["GSTACK"] = &GSTACK; bindMap["THRO"] = &THRO;
+        bindMap["RANGE"] = &RANGE; bindMap["LIGHT"] = &LIGHT; bindMap["GSTACK"] = &GSTACK; bindMap["THRO"] = &THRO;
         for (std::map<String, int*>::iterator iter = bindMap.begin(); iter != bindMap.end(); ++iter) {
             *iter->second = -1;
         }

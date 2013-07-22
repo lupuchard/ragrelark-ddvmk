@@ -29,6 +29,7 @@ struct Item {
         unsigned short itemType;
         unsigned char quantityCharge;
         unsigned char form;
+        String getName();
 
         ItemType* getType();
 };

@@ -56,7 +56,7 @@ struct ParticleEffectPerm {
 
 //TODO cleanup
 
-std::multimap<peType, void*> particleEffects;
+std::multimap<PeType, void*> particleEffects;
 
 void Start::addProj(int x0, int y0, int x1, int y1, int length, int ind) {
     ParticleEffectPerm* arrow = static_cast<ParticleEffectPerm*>(particleEffects.find(P_ARROW)->second);
@@ -86,7 +86,7 @@ void Start::addProj(int x0, int y0, int x1, int y1, int length, int ind) {
     foon.proj.timStart = frameTime;
     arrow->particles.push_back(foon);
 }
-void Start::createEffect(peType type, int x, int y) {
+void Start::createEffect(PeType type, int x, int y) {
     switch (type) {
         case P_NONE: break;
         case P_DARKDUST: {
@@ -101,10 +101,10 @@ void Start::createEffect(peType type, int x, int y) {
                 part.b.b2 = rand() % 100;
                 p->particles[i] = part;
             }
-            particleEffects.insert(std::pair<peType, void*>(type, p));
+            particleEffects.insert(std::pair<PeType, void*>(type, p));
         } break;
         case P_ARROW: {
-            particleEffects.insert(std::pair<peType, void*>(type, new ParticleEffectPerm));
+            particleEffects.insert(std::pair<PeType, void*>(type, new ParticleEffectPerm));
         } break;
         default: break;
     }
@@ -112,7 +112,7 @@ void Start::createEffect(peType type, int x, int y) {
 
 
 void Start::updateEffects(int xCam, int yCam) {
-    for (std::multimap<peType, void*>::iterator it = particleEffects.begin(); it != particleEffects.end(); ++it) {
+    for (std::multimap<PeType, void*>::iterator it = particleEffects.begin(); it != particleEffects.end(); ++it) {
         switch(it->first) {
             case P_NONE: break;
             case P_DARKDUST: {

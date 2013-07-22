@@ -230,7 +230,7 @@ void RagDrawer::drawUnit(int x, int y, Unit* unit) {
             int y1 = g.loc / (TEX_TILE_WIDTH * 2) * (TILE_SIZE / 2);
             drawTileSuperSpe(x0, y0, Z_UNIT + y + i + 1, wid, hei, g.tex, x1, y1, wid, hei);
         }
-    } // TODO equip graphics
+    }
     int wid = std::max((int)((float)unit->getStatValue(Stat::HP) / unit->getStatValue(Stat::MAXHP) * tileSize), 3);
     if (wid < tileSize) {
         drawTileSuperSpe(x, y + tileSize - 4, Z_UNIT + y + i + 1, wid - 1, 4, utilTex, 96, 0, wid - 1, 4);

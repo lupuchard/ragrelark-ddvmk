@@ -36,7 +36,7 @@ item:
 unit:
   - {Name: experience, Bind: EXP}
   - {Name: level     , Bind: LEVEL}
-  - 
+  -
     Name: experience_required
     Form: 2 u-level ^ 25 *
     Bind: EXPREQ
@@ -49,79 +49,79 @@ unit:
   - {Name: base_cha}
   - {Name: base_def}
   - {Name: base_luck}
-  - 
+  -
     Name: strength
     Form: u-base_str i-str +
     Bind: STR
-  - 
+  -
     Name: constitution
     Form: u-base_con i-con +
     Bind: CON
-  - 
+  -
     Name: affinity
     Form: u-base_aff i-aff + i-penalty -
     Bind: AFF
-  - 
+  -
     Name: intelligence
     Form: u-base_int i-int +
     Bind: INT
-  - 
+  -
     Name: perception
     Form: u-base_per i-per +
     Bind: PER
-  - 
+  -
     Name: dexterity
     Form: u-base_dex i-dex +
     Bind: DEX
-  - 
+  -
     Name: charisma
     Form: u-base_cha i-cha +
     Bind: CHA
-  - 
+  -
     Name: defense
     Form: u-base_def i-ac +
     Bind: DEFENSE
-  - 
+  -
     Name: luck
     Form: u-base_luck i-luck_bonus +
     Bind: LUCK
-  - 
+  -
     Name: max_hit_points
     Form: u-constitution 1 + u-level 2 + * 2 / i-hp_bonus +
     Bind: MAXHP
-  - 
+  -
     Name: hit_points
     Form: SLF 0 MAX u-max_hit_points MIN
     Bind: HP
-  - 
+  -
     Name: max_mana
     Form: u-affinity 1 + u-level 1 + * 4 / i-mana_bonus +
     Bind: MAXMANA
-  - 
+  -
     Name: mana
     Form: SLF 0 MAX u-max_mana MIN
     Bind: MANA
-  - 
+  -
     Name: accuracy
     Form: u-dexterity i-acc + 2 -
     Bind: ACC
-  - 
+  -
     Name: evasion
     Form: u-dexterity i-eva + i-penalty - $dodge 5 / +
     Bind: EVA
-  - 
+  -
     Name: unarmed_damage
     Form: u-strength $unarmed + 2 /
     Bind: UNARMDAMAGE
-  - 
+  -
     Name: melee_damage
     Form: u-strength i-damage +
     Bind: MELDAMAGE
-  - 
+  -
     Name: ranged_damage
     Form: 4 i-damage 4
     Bind: RANDAMAGE
-  - 
+  -
     Name: res_pois
     Form: i-resist_poison $resist +
     Bind: RESPOIS
@@ -137,7 +137,7 @@ unit:
   - {Name: light_load, Form: 150 u-strength *, Bind: LOAD}
   - {Name: base_attspe}
   - {Name: base_movespe}
-  - 
+  -
     Name: attack_speed
     Form: u-base_attspe i-attack_rate +
     Bind: ATTACKSPEED
@@ -145,11 +145,11 @@ unit:
     Name: move_speed
     Form: u-base_movespe i-movement_speed +
     Bind: MOVESPEED
-  - 
+  -
     Name: hp_reg
     Form: F 0.2 i-hp_regen +
     Bind: HPREGEN
-  - 
+  -
     Name: mana_reg
     Form: F 0.8 i-mana_regen +
     Bind: MANAREGEN
@@ -164,3 +164,10 @@ unit:
   - {Name: graphic_loc, Bind: GLOC}
   - {Name: graphic_tex, Bind: GTEX}
   - {Name: graphic_type, Bind: GTYPE}
+  - {Name: affliction, Bind: AFFLICTION}
+  - {Name: affliction_potency, Bind: AFFLICTION_POTENCY}
+  - {Name: phys_pois , Bind: POIS_PHYS}
+  - {Name: ment_pois , Bind: POIS_MENT}
+  - {Name: regen_pois, Bind: POIS_REGEN}
+  - {Name: extra_pois, Bind: POIS_EXTRA}
+  - {Name: confuse   , Bind: CONFUSION}

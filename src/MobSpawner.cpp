@@ -185,7 +185,9 @@ void MobSpawner::parseMob(YAML::Node fileNode) {
                         statVal = val.as<int>();
                     } else {
                         if (mobExists(s)) {
-                            statVal =  mobNameMap[val.as<String>()];
+                            statVal =  mobNameMap[s];
+                        } else if (ItemType::hasWeapType(s)) {
+                            statVal = ItemType::getWeapType(s)->index;
                         } else {
                             statVal = Texture::get(s)->getIndex();
                         }

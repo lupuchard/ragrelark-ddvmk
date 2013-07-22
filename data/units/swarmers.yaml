@@ -16,7 +16,7 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 1
 ai: 1
-unarmed_type: 6
+unarmed_type: mouth
 swarm: 3
 ...
 ---
@@ -37,7 +37,7 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 1
 ai: 1
-unarmed_type: 6
+unarmed_type: norm
 swarm: 3
 fly: 1
 ...

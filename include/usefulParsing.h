@@ -73,6 +73,8 @@ String capitalize(String s);
 /// Pluralizes a strings
 String pluralize(String s);
 
+String article(String s);
+
 /// Converts a number to roman numerals.
 String toRomanNumerals(int num);
 

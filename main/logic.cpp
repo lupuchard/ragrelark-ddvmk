@@ -31,6 +31,14 @@ base: 100/hour
 -45% <5% satiated (also major loss of stats)  "starving"
 */
 
+bool depoison(Unit* unit, int stat) {
+    if (unit->getStatValue(stat) > 0) {
+        unit->modifyStat(stat, -1);
+        return true;
+    }
+    return false;
+}
+
 void Start::logic() {
     Unit* pUnit = player->getUnit();
     if (pUnit->theTime > world->theTime) {
@@ -42,28 +50,12 @@ void Start::logic() {
         int i3times = intervals[3] / INTERVAL_3_TIM;
 
         if (i0times > 0) {
-            /*int poisonLeft = pUnit->getStatValue(S_POISON);
-            if (poisonLeft > 0) {
-                int poisoning = 0;
-                if (pUnit->getCondition(8)) {
-                    poisoning++;
-                } if (pUnit->getCondition(9)) {
-                    poisoning += 2;
-                } if (pUnit->getCondition(10)) {
-                    poisoning += 4;
-                }
-                if (poisoning > 0) {
-                    pUnit->modifyStat(S_HP, -poisoning);
-                }
-                pUnit->modifyStat(S_POISON, -1);
-                if (poisonLeft == 1) {
-                    //cycle through and disable all the poisons
-                    for (int i = 0; i < 16; i++) {
-                        pUnit->setCondition(8 + i, false);
-                    }
-                    removeStatus(ST_POIS);
-                }
-            }*/
+            bool poisoned = false;
+            poisoned |= depoison(pUnit, Stat::POIS_PHYS);
+            poisoned |= depoison(pUnit, Stat::POIS_MENT);
+            poisoned |= depoison(pUnit, Stat::POIS_REGEN);
+            poisoned |= depoison(pUnit, Stat::POIS_EXTRA);
+            if (!poisoned) removeStatus(ST_POIS);
         }
         if (i1times > 0) {
             intervals[1] %= INTERVAL_1_TIM;

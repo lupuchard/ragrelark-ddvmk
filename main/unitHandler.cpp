@@ -53,9 +53,9 @@ void Start::ai(Unit* unit, Zone* zone) {
         case AI_HOSTILE: {
             if (inZone && unit->pointOnPath == -1) { //this means that a path does not exist so one needs to be created first
                 if (visibilities[unit->pos.index(zone->getWidth())]) {
-                    makePath(unit, target->pos, zone, P_NORMAL);
+                    makePath(unit, target->pos, zone, PATH_NORMAL);
                     if (unit->pointOnPath == -1) {
-                        makePath(unit, target->pos, zone, P_PASSUNITS);
+                        makePath(unit, target->pos, zone, PATH_PASSUNITS);
                     }
                 }
             }
@@ -91,7 +91,7 @@ void Start::ai(Unit* unit, Zone* zone) {
 void Start::followPath(Unit* unit, Zone* zone) {
     Path* thePath = unit->currentPath;
     unit->pointOnPath++;
-    if (thePath->pathLocs[unit->pointOnPath].x == -P_STAIRS) {
+    if (thePath->pathLocs[unit->pointOnPath].x == -PATH_STAIRS) {
         goTheStairs(unit, zone);
     } else {
         int dir = 1;
@@ -145,17 +145,16 @@ void Start::playerWalkStaminaDrain(int* movSpeed, int tim, Unit* unit) {
 
 /* Moves a unit in a zone in a direction!!???!? */
 void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
-    /*bool cond = unit->hasAnyConditions();
-    if (cond && unit->getCondition(C_CONFUSION)) {
+    if (unit->getStatValue(Stat::CONFUSION)) {
         int newDir = rand() % 11;
         if (newDir == 10) {
-            unit->setCondition(C_CONFUSION, false);
+            unit->setStat(Stat::CONFUSION, 0);
             if (unit == player->getUnit()) {
                 addMessage("You snap out of confusion.", BLACK);
                 removeStatus(ST_CONF);
-            }
+            } else addMessage("The " + unit->name + " is no longer confused.", BLACK);
         } else if (newDir) dir = newDir;
-    }*/
+    }
     if (!(unit == player->getUnit() && loadStatus == 4)) {
         Coord prevPos = unit->pos;
         Coord newPos = prevPos + DIRS[dir];
@@ -176,13 +175,13 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                         return;
                     } else {
                         unit->theTime += 2;
-                        makePath(unit, player->getUnit()->pos, zone, P_NORMAL);
+                        makePath(unit, player->getUnit()->pos, zone, PATH_NORMAL);
                     }
                 } else if (unit == player->getUnit() || nextLoc->unit == player->getUnit()) {
                     strikeUnit(unit, zone, dir, true);
                 } else {
                     unit->theTime += 2;
-                    makePath(unit, player->getUnit()->pos, zone, P_NORMAL);
+                    makePath(unit, player->getUnit()->pos, zone, PATH_NORMAL);
                 }
                 if (unit->pointOnPath > 0) {
                     unit->pointOnPath--;
@@ -214,9 +213,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                         if (unit == player->getUnit()) {
                             playerWalkStaminaDrain(&movSpeed, tim, unit);
                         }
-                        //cout << unit->getStatValue(S_BMOVESPEED) << " what " << movSpeed << " " << tim << endl;
                         tim = actionTimePassed(tim, movSpeed);
-                        //cout << "whaat " << tim << endl;
                         unit->theTime += tim;
                     }
                 } else {
@@ -234,8 +231,7 @@ void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
                             int ai = u->getStatValue(Stat::AI);
                             switch(ai) {
                             case 1: if (visibilities[u->pos.index(zone->getWidth())]) {
-                                //cout << "happen " << newX << " " << newY << endl;
-                                makePath(u, newPos, zone, P_NORMAL);
+                                makePath(u, newPos, zone, PATH_NORMAL);
                                 } break;
                             default: break;
                             }
@@ -295,12 +291,13 @@ void Start::goTheStairs(Unit* unit, Zone* zone) {
                     int ai = u->getStatValue(Stat::AI);
                     switch(ai) {
                     case 1: if (visibilities[u->pos.index(zone->getWidth())]) {
-                        makePath(u, unit->pos, zone, P_STAIRS);
+                        makePath(u, unit->pos, zone, PATH_STAIRS);
                         } break;
                     default: break;
                     }
                 }
             }
+            addMessage("You go the stairs.", BLACK);
         } else {
             addMessage("A " + unit->name + " comes from the stairs!", OLIVE);
         }
@@ -308,7 +305,7 @@ void Start::goTheStairs(Unit* unit, Zone* zone) {
     }
 }
 
-void Start::hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, battleSummary& sum) {
+void Start::hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, BattleSummary& sum) {
     float howLuckyAreYou = (float)rand() / RAND_MAX;
     int fiz = defender->getStatValue(Stat::EVA) - accuracy;
     if (howLuckyAreYou > chanceHit(fiz + 24)) {
@@ -356,143 +353,22 @@ void Start::hitSapping(Unit* attacker, Unit* defender, int criticality) {
     }
 }
 
-Color critColors[] = {Color{95, 31, 31, 0}, Color{63, 0, 0, 0}, MAROON, BRICK, RED};
-String hitWord(int criticality, int attackType) {
-    switch(criticality) {
-        case 4:
-        switch(attackType) {
-            case WEAP_CLAWS: return "rend"; break;
-            case WEAP_SPEAR: return "impale"; break;
-            default: return "megacrit"; break;
-        } break;
-        case 3:
-        switch(attackType) {
-            case WEAP_FISTS: return "kick"; break;
-            case WEAP_TENTACLE: return "tentacle slap"; break;
-            case WEAP_SLAM: return "slam"; break;
-            case WEAP_BITE: return "chomp"; break;
-            case WEAP_CLUB: return "clobber"; break;
-            case WEAP_DAGGER: return "stab"; break;
-            case WEAP_AXE: return "chop"; break;
-            default: return "crit"; break;
-        } break;
-        case 2:
-        switch(attackType) {
-            case WEAP_CLAWS: return "claw"; break;
-            case WEAP_FISTS: return "punch"; break;
-            case WEAP_HEAD: return "headbutt"; break;
-            case WEAP_BITE: return "bite"; break;
-            case WEAP_CLUB: return "smack"; break;
-            case WEAP_AXE: return "axe"; break;
-            case WEAP_SPEAR: return "jab"; break;
-            case WEAP_SCYTHE: return "slash"; break;
-            default: return "hit"; break;
-        } break;
-        case 1:
-        switch(attackType) {
-            case WEAP_CLAWS: return "scratch"; break;
-            case WEAP_TENTACLE: return "rub"; break;
-            case WEAP_FISTS: return "pap"; break;
-            case WEAP_CLUB: return "tap"; break;
-            case WEAP_SPEAR: return "poke"; break;
-            default: return "scrape"; break;
-        } break;
+Color critColors[] = {Color(95, 31, 31), Color(63, 0, 0), MAROON, BRICK, RED};
+
+void Start::pfaf(int stat, int potency, Unit* u) {
+    float chance = 1.f / (1 + (u->getStatValue(Stat::RESPOIS) - potency / 5.f) / 10.f);
+    if (((float)rand() / RAND_MAX) < chance && u->getStatValue(stat) < potency) {
+        u->setStat(stat, potency);
     }
-    return "miss";
-}
-void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
-    if (unit == player->getUnit() && unit->getStatValue(Stat::STAMINA) < 2000) {
-        addMessage("You are too exausted to attack!", GRAY);
-    } else {
-        Coord newPos = unit->pos + DIRS[dir];
-        if (safe || (newPos.inBounds(zone->getWidth(), zone->getHeight()))) {
-            Location* loc = zone->getLocationAt(newPos);
-            if (loc->hasUnit()) {
-                unit->setEnemy(loc->unit);
-                Unit* defender = loc->unit;
-
-                int weapType = 0;
-                bool unarmed = false;
-                /*bool unarmed = true;
-                if (unit == player->getUnit()) {
-                    Item* item = primeFolder->getEquips()->getItem(E_RHAND);
-                    ItemType* itemType = getItemType(item->itemType);
-                    if (itemType->getType() != I_SLOT && item) {
-                        if (!TYPE_RANGES[item->itemType]) {
-                            weapType = itemType->getStatValue(S_DTYPE);
-                            unarmed = false;
-                        }
-                    }
-                } else if (unit->equipment) {
-                    for (int i = 0; i < unit->equipment->len; i++) {
-                        Item item = unit->equipment->equips[i];
-                        ItemType* itemType = getItemType(item.itemType);
-                        int slot = TYPE_SLOTS[itemType->getType()];
-                        if (slot == E_RHAND || slot == E_BHANDS || slot == E_BBHANDS) {
-                            weapType = itemType->getStatValue(S_DTYPE);
-                            unarmed = false;
-                            break;
-                        }
-                    }
-                }*/ // TODO unarmed again
-                unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(Stat::ATTACKSPEED));
-                battleSummary bs;
-                if (unit == player->getUnit()) {
-                    unit->modifyStat(Stat::STAMINA, -T_ATTACK);
-                }
-
-                int attackType;
-                if (unarmed) attackType = unit->getStatValue(Stat::UNARMED);
-                else attackType = weapType;
-                String u1name;
-                String u2name = defenderNoun(unit, defender);
-
-                bs = attackUnit(unit->getStatValue(Stat::UNARMDAMAGE), unit->getStatValue(Stat::ACC), attackType, defender, zone, dir);
-
-                Color c = critColors[bs.criticality];
-                String verb = hitWord(bs.criticality, attackType);
-                String extra;
-                if (unit == player->getUnit()) {
-                    u1name = "you";
-                } else {
-                    u1name = "the " + unit->name;
-                    c.green += c.red / 2;
-                    verb = pluralize(verb);
-                }
-
-                if (!bs.killed && bs.hit) {
-                    if (unarmed) sapExp(unit, defender, skll(SKL_UNARMED), 1);
-                    //else sapExp(unit, defender, SKL_MELEE, 1);
-                    //sapExp(defender, unit, SKL_FORT, 1);
-                    /*int conditionAffectC = unit->getStatValue(S_ATTCONDCHANCE);
-                    if (conditionAffectC > 0 && rand() % 100 <= conditionAffectC) {
-                        int conditionAffect = unit->getStatValue(S_ATTCOND);
-                        if (defender == player->getUnit()) {
-                            switch(conditionAffect) {
-                                case C_CONFUSION: extra = " and confuses";
-                                addStatus("Confused", MAROON, ST_CONF);
-                                break;
-                                case C_POISON: extra = " and stings"; break;
-                                default: break;
-                            }
-                        }
-                        if (conditionAffect >= C_POISON && conditionAffect < C_POISON + 16) {
-                            applyPoison(conditionAffect, 10, defender, unit);
-                        } else {
-                            defender->setCondition(conditionAffect, true);
-                        }
-                    }*/
-                }
-                addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
-            }
-        }
+    if (u == player->getUnit()) {
+        addStatus("poisoned", PURPLE, ST_POIS);
     }
 }
 
 const int damStats[] = {Stat::MELDAMAGE, Stat::RANDAMAGE};
 //const Skill* damSkills[] = {SKL_MELEE, SKL_RANGE};
-battleSummary Start::attackUnit(int power, float accuracy, int weapType, Unit* defender, Zone* zone, int dir) {
-    battleSummary sum = {false, false, false, false};
+BattleSummary Start::attackUnit(int power, float accuracy, const WeapType* weapType, Unit* defender, Zone* zone, int dir, Flavor flavor) {
+    BattleSummary sum = {false, false, false, false};
 
     float damage = defDam(power, defender->getStatValue(Stat::DEFENSE));
     damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
@@ -500,10 +376,28 @@ battleSummary Start::attackUnit(int power, float accuracy, int weapType, Unit* d
 
     hitCMod(defender, damage, accuracy, hitType, sum);
 
-    raga.rAttack(defender->pos, dir, WEAP_DAM_TYPES[weapType], hitType);
+    raga.rAttack(defender->pos, dir, weapType->damageType, hitType);
 
     if (damage) {
         sum.hit = true;
+
+        for (std::map<FlavorClass, int>::iterator iter = flavor.flavors.begin(); iter != flavor.flavors.end(); ++iter) {
+            switch(iter->first) {
+            case F_POISON_PHYS: pfaf(Stat::POIS_PHYS, iter->second, defender); break;
+            case F_POISON_MENT: pfaf(Stat::POIS_MENT, iter->second, defender); break;
+            case F_POISON_REGEN: pfaf(Stat::POIS_REGEN, iter->second, defender); break;
+            case F_POISON_EXTRA: pfaf(Stat::POIS_EXTRA, iter->second, defender); break;
+            case F_CONFUSION: {
+                float chance = 1.f / (1 + (/* TODO concentration defender->getStatValue(Stat::RESPOIS)*/5 - iter->second) / 10.f);
+                if (((float)rand() / RAND_MAX) < chance) {
+                    defender->setStat(Stat::CONFUSION, 1);
+                }
+                if (defender == player->getUnit()) addStatus("confused", BROWN, ST_CONF);
+            } break;
+            default: break;
+            }
+        }
+
         int hp = defender->modifyStat(Stat::HP, -(int)damage);
         int splatterChance;
         if (hp <= 0) {
@@ -527,7 +421,81 @@ battleSummary Start::attackUnit(int power, float accuracy, int weapType, Unit* d
     return sum;
 }
 
-void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
+void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
+    if (unit == player->getUnit() && unit->getStatValue(Stat::STAMINA) < 2000) {
+        addMessage("You are too exausted to attack!", GRAY);
+    } else {
+        Coord newPos = unit->pos + DIRS[dir];
+        if (safe || (newPos.inBounds(zone->getWidth(), zone->getHeight()))) {
+            Location* loc = zone->getLocationAt(newPos);
+            if (loc->hasUnit()) {
+                unit->setEnemy(loc->unit);
+                Unit* defender = loc->unit;
+
+                WeapType* weapType;
+                bool unarmed = true;
+                if (unit == player->getUnit()) {
+                    for (int i = 0; i < primeFolder->getEquips()->getNumItems(); i++) {
+                        ItemTypeType* itemTypeType = primeFolder->getEquips()->getItem(i)->getType()->getType();
+                        if (itemTypeType->weapType && !itemTypeType->ranged) {
+                            weapType = itemTypeType->weapType;
+                            unarmed = false;
+                            break;
+                        }
+                    }
+                } else if (unit->equipment) {
+                    for (int i = 0; i < unit->equipment->len; i++) {
+                        ItemTypeType* itemTypeType = unit->equipment->equips[i].getType()->getType();
+                        if (itemTypeType->weapType && !itemTypeType->ranged) {
+                            weapType = itemTypeType->weapType;
+                            unarmed = false;
+                            break;
+                        }
+                    }
+                }
+                if (unarmed) weapType = ItemType::getWeapType(unit->getStatValue(Stat::UNARMED));
+
+                unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(Stat::ATTACKSPEED));
+                BattleSummary bs;
+                if (unit == player->getUnit()) {
+                    unit->modifyStat(Stat::STAMINA, -T_ATTACK);
+                }
+
+                String u1name;
+                String u2name = defenderNoun(unit, defender);
+
+                Flavor f;
+                FlavorClass fc = (FlavorClass)unit->getStatValue(Stat::AFFLICTION);
+                if (fc) f.add(fc, unit->getStatValue(Stat::AFFLICTION_POTENCY));
+
+                bs = attackUnit(unit->getStatValue(Stat::UNARMDAMAGE), unit->getStatValue(Stat::ACC), weapType, defender, zone, dir, f);
+
+                Color c = critColors[bs.criticality];
+                String verb;
+                String extra;
+                if (unit == player->getUnit()) {
+                    u1name = "you";
+                    verb = weapType->getVerb(bs.criticality, false);
+                } else {
+                    u1name = "the " + unit->name;
+                    c.green += c.red / 2;
+                    verb = weapType->getVerb(bs.criticality, true);
+                }
+
+                if (!bs.killed && bs.hit) {
+                    if (unarmed) sapExp(unit, defender, skll(SKL_UNARMED), 1);
+                    //else sapExp(unit, defender, SKL_MELEE, 1);
+                    //sapExp(defender, unit, SKL_FORT, 1);
+                } else if (bs.killed) {
+                    extra += " to death";
+                }
+                addMessage(capitalize(u1name + " " + verb + " " + u2name + extra + "."), c);
+            }
+        }
+    }
+}
+
+void Start::shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone) {
     if (attacker == player->getUnit() && attacker->getStatValue(Stat::STAMINA) < 1500) {
         addMessage("You are too exausted to shoot!", GRAY);
     } else {
@@ -536,22 +504,24 @@ void Start::shootUnit(Unit* attacker, Unit* defender, Zone* zone) {
         if (attacker == player->getUnit()) {
             attacker->modifyStat(Stat::STAMINA, -(T_ATTACK / 2));
         }
-        battleSummary bs;
-        bs = attackUnit(attacker->getStatValue(Stat::RANDAMAGE), attacker->getStatValue(Stat::ACC), WEAP_ARROW, defender, zone, 0);
+        BattleSummary bs;
+        WeapType* weapType = shooter.getType()->getType()->weapType;
+        bs = attackUnit(attacker->getStatValue(Stat::RANDAMAGE), attacker->getStatValue(Stat::ACC), weapType, defender, zone, 0);
         if (bs.hit) {
             //sapExp(attacker, defender, SKL_RANGE, 1);
             //sapExp(defender, attacker, SKL_FORT, 1);
         }
         Color c = critColors[bs.criticality];
-        String verb = hitWord(bs.criticality, WEAP_ARROW);
+        String verb;
         String u1name;
         String u2name = defenderNoun(attacker, defender);
         if (attacker == player->getUnit()) {
-            u1name = "you fire and";
+            u1name = "you";
+            verb = weapType->getVerb(bs.criticality, false);
         } else {
-            u1name = "the " + attacker->name + " shoots and";
+            u1name = "the " + attacker->name + " ";
             c.green += c.red / 2;
-            verb = pluralize(verb);
+            verb = weapType->getVerb(bs.criticality, true);
         }
         addMessage(capitalize(u1name + " " + verb + " " + u2name + "."), c);
     }
@@ -564,12 +534,12 @@ void Start::projectItem(Item item, int power, int accuracy, Zone* zone, Coord to
 
     //int dam = itemType->getStatValue(Stat::IDAMAGE);
     int thro = itemType->getStatValue(Stat::THRO);
-    int damty = itemType->getStatValue(Stat::DTYPE);
+    //int damty = itemType->getStatValue(Stat::DTYPE);
     int weight = itemType->getStatValue(Stat::WEIGHT);
 
     //int damage = dam + (weight * power) / 100 + thro;
 
-    if (damty) damty = WEAP_OBJ;
+    //if (damty) damty = WEAP_OBJ;
     Location* loc = zone->getLocationAt(to);
     if (loc->unit) {
         //attackUnit(damage, accuracy, damty, loc->unit, zone, 0);
@@ -580,107 +550,11 @@ void Start::reactToAttack(Unit* unit, int dir, Zone* zone) {
     int ai = unit->getStatValue(Stat::AI);
     switch(ai) {
         case AI_PASSIVE: {
-            makePath(unit, unit->pos - DIRS[dir], zone, P_FLEE);
+            makePath(unit, unit->pos - DIRS[dir], zone, PATH_FLEE);
             unit->theTime = world->theTime - T_WALK_ST;
             } break;
         default: break;
     }
-}
-
-int poisonWeights[] = {1, 2, 4, 1, 1, 1, 1, 1, 1, 3, 3, 1, 2, 2, 3, 3};
-void Start::applyPoison(int condition, int duration, Unit* unit, Unit* poisoner) {
-    /*int r = rand() % 100;
-    int res = unit->getStatValue(S_RESPOIS);
-    if (r < res / 5) {
-        if (unit == player->getUnit()) addMessage("You resist the poison!", BLACK);
-        return;
-    } else if (r < res) {
-        if (unit == player->getUnit()) addMessage("You slightly resist the poison.", BLACK);
-        duration /= 2;
-    }
-
-    if (poisoner) {
-        sapExp(unit, poisoner, SKL_RPOIS, 1);
-    } else {
-        debankExp(unit, SKL_RPOIS, poisonWeights[condition - 8]);
-    }
-
-    bool exists = false;
-
-    bool slow = false;
-    bool cripple = false;
-    bool paralysis = false;
-    bool deathly = false;
-    bool befuddle = false;
-
-    int weightBefore = 0;
-    for (int i = 8; i < 24; i++) {
-        if (unit->getCondition(i)) {
-            if (i == condition) {
-                exists = true;
-            }
-
-            weightBefore += poisonWeights[i - 8];
-        }
-        if (i == condition) {
-            if (i >= 22) paralysis = true;
-            else if (i >= 20) slow = true;
-            else if (i == 10) deathly = true;
-            else if (i >= 11 && i <= 14) cripple = true;
-            else if (i >= 15 && i <= 18) befuddle = true;
-        }
-    }
-    int currentDuration = unit->getStatValue(S_POISON);
-    int prevPower = currentDuration * weightBefore;
-    int addedWeight = poisonWeights[condition - 8];
-    int addedPower = addedWeight * duration;
-
-    if (exists) {
-        if (addedPower > prevPower) {
-            unit->setStat(S_POISON, addedPower / weightBefore);
-        }
-    } else {
-        unit->setCondition(condition, true);
-        weightBefore += addedWeight;
-        unit->setStat(S_POISON, (prevPower + addedPower) / weightBefore);
-    }
-    if (unit == player->getUnit()) {
-        //cout << "happens? " << endl;
-        String statusString = "Poison";
-        if (weightBefore >= 2) {
-            statusString += " " + toRomanNumerals(weightBefore);
-        }
-        if (slow || cripple || paralysis || deathly || befuddle) {
-            statusString += " (";
-            bool start = false;
-            if (slow) {
-                statusString += "slow";
-                start = true;
-            }
-            if (cripple) {
-                if (start) statusString += ", ";
-                statusString += "cripple";
-                start = true;
-            }
-            if (befuddle) {
-                if (start) statusString += ", ";
-                statusString += "befuddle";
-                start = true;
-            }
-            if (paralysis) {
-                if (start) statusString += ", ";
-                statusString += "paralyze";
-                start = true;
-            }
-            if (deathly) {
-                if (start) statusString += ", ";
-                statusString += "toxic";
-                start = true;
-            }
-            statusString += ")";
-        }
-        addStatus(statusString, PURPLE.darken(), ST_POIS);
-    }*/
 }
 
 void Start::makeSplatter(Unit* unit, Zone* zone, Coord pos) {
@@ -825,9 +699,9 @@ void Start::changeLoc(Unit* unit, Zone* zone, Coord loc) {
                     }
                 }
                 if (newPath) {
-                    makePath(u, unit->pos, iter->second, P_NORMAL);
+                    makePath(u, unit->pos, iter->second, PATH_NORMAL);
                     if (u->pointOnPath == -1) {
-                        makePath(u, unit->pos, iter->second, P_PASSUNITS);
+                        makePath(u, unit->pos, iter->second, PATH_PASSUNITS);
                     }
                 }
             }

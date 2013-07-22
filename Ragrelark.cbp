@@ -275,7 +275,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="include/TiledLoader.h">
-			<Option virtualFolder="code/utility/" />
+			<Option virtualFolder="code/classes/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -293,6 +293,9 @@
 			<Option virtualFolder="code/classes/Places/" />
 			<Option target="Debug" />
 			<Option target="Release" />
+		</Unit>
+		<Unit filename="include/usefulParsing.h">
+			<Option virtualFolder="code/utility/" />
 		</Unit>
 		<Unit filename="main/Start.cpp">
 			<Option virtualFolder="code/main/" />
@@ -530,15 +533,8 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="util/usefulParsing.cpp">
+		<Unit filename="src/usefulParsing.cpp">
 			<Option virtualFolder="code/utility/" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="util/usefulParsing.h">
-			<Option virtualFolder="code/utility/" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Extensions>
 			<code_completion />

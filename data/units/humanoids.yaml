@@ -17,7 +17,7 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 3
 ai: 1
-unarmed_type: 2
+unarmed_type: mouth
 ...
 ---
 Name: goblin
@@ -38,8 +38,8 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 3
 ai: 1
-unarmed_type: 3
-#pet: orange rat
+unarmed_type: fists
+pet: orange rat
 ...
 ---
 Name: hobgoblin
@@ -60,8 +60,8 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 3
 ai: 1
-#pet: orange rat
-unarmed_type: 3
+pet: orange rat
+unarmed_type: fists
 ...
 ---
 Name: goblin assassin
@@ -82,7 +82,7 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 3
 ai: 1
-unarmed_type: 3
+unarmed_type: fists
 ...
 ---
 Name: rhino
@@ -103,6 +103,7 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 5
 ai: 1
+unarmed_type: head
 ...
 ---
 Name: ogre
@@ -123,8 +124,8 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 5
 ai: 1
-#pet: rhino
-unarmed_type: 3
+pet: rhino
+unarmed_type: fists
 ...
 ---
 Name: two headed ogre
@@ -145,6 +146,6 @@ graphic_tex: monsters.png
 blood_color: 0
 splatter: 5
 ai: 1
-#pet: rhino
-unarmed_type: 3
+pet: rhino
+unarmed_type: fists
 ...

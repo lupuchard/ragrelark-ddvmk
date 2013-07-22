@@ -376,10 +376,14 @@ void Start::renderMenu() {
             Graphic g = itemType->getGraphic(items[k].quantityCharge);
             int d = offset + 64 + 28 * i;
             ragd.drawTile(28 + 8 * (k % 2), d, Z_MENU + i + 1, g.tex, g.loc);
-            renderText(capitalize(itemType->getName()), 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, BLACK);
+            String name;
             if (items[k].quantityCharge > 1 && itemType->getStack()) {
+                name = pluralize(capitalize(itemType->getName()));
                 renderText(its(items[k].quantityCharge), 1, 50 + 8 * (k % 2), d + 16, Z_MENU + i + 2, LEFT, BLACK);
+            } else {
+                name = capitalize(itemType->getName());
             }
+            renderText(name, 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, BLACK);
         }
 
         ragd.drawTileSpe(8, curArrowY, Z_MENU + 20, menuTex, ARROW_X[(interval % 40) / 4], ARROW_Y[(interval % 40) / 4], 16);
@@ -517,7 +521,7 @@ typedef struct {
     int loc;
     int tex;
     float darkness;
-} rendaten;
+} Rendaten;
 
 bool is_to_be_deleted(Unit* u) {
     return !(u->graphic.border);
@@ -545,7 +549,7 @@ void Start::renderGround() {
     raga.updateAnims();
     unitDeleteList.erase(remove_if(unitDeleteList.begin(), unitDeleteList.end(), is_to_be_deleted), unitDeleteList.end());
 
-    rendaten renderAtEnd[(iMax - iMin) * (jMax - jMin)];
+    Rendaten renderAtEnd[(iMax - iMin) * (jMax - jMin)];
     int tot = 0;
     for (int i = iMin; i < iMax; i++) {
         for (int j = jMin; j < jMax; j++) {
@@ -599,7 +603,6 @@ void Start::renderGround() {
                 Location* locs[8] = {z->safeGetLocationAt(pos + DIRS[7]), z->safeGetLocationAt(pos + DIRS[8]), z->safeGetLocationAt(pos + DIRS[9]),
                                      z->safeGetLocationAt(pos + DIRS[4]), z->safeGetLocationAt(pos + DIRS[6]),
                                      z->safeGetLocationAt(pos + DIRS[1]), z->safeGetLocationAt(pos + DIRS[2]), z->safeGetLocationAt(pos + DIRS[3])};
-                // TODO fix all this
                 Tile* tiles[8];
                 for (int k = 0; k < 8; k++) tiles[k] = Tile::get(locs[k]->tile);
 

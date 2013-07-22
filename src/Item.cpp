@@ -38,3 +38,9 @@ Item::Item(ItemType* itemType) {
 ItemType* Item::getType() {
     return ItemType::get(itemType);
 }
+
+String Item::getName() {
+    if (quantityCharge > 1 && getType()->getStack() > 1) {
+        return its(quantityCharge) + " " + pluralize(getType()->getName());
+    } else return article(getType()->getName()) + " " + getType()->getName();
+}

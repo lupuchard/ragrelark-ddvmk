@@ -21,7 +21,7 @@
 
 #include "RagDrawer.h"
 
-enum animType{ANIM_NONE, ANIM_UNIT, ANIM_MOVEDIR, ANIM_MOVELOC, ANIM_ATTACK};
+enum AnimType{ANIM_NONE, ANIM_UNIT, ANIM_MOVEDIR, ANIM_MOVELOC, ANIM_ATTACK};
 
 struct Animation {
     short type;

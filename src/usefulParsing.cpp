@@ -250,6 +250,11 @@ string pluralize(string s) {
     }
 }
 
+String article(String s) {
+    if (s[0] == 'a' || s[0] == 'e' || s[0] == 'i' || s[0] == 'o' || s[0] == 'u') return "an";
+    return "a";
+}
+
 string romanNumerals[4][10] = {{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"},
                          {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"},
                          {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"},

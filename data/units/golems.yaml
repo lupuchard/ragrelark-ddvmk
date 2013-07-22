@@ -1,0 +1,90 @@
+---
+Name: Tiny Paper Golem
+level: 0
+experience: 5
+base_str: 4
+base_con: 5
+base_aff: 1
+base_per: 2
+base_dex: 6
+base_cha: 3
+base_def: 0
+base_attspe: 6
+base_movespe: 8
+graphic_loc: [5, 0]
+graphic_tex: monsters.png
+ai: 1
+unarmed_type: paper
+...
+---
+Name: Wood Golem
+level: 3
+experience: 34
+base_str: 5
+base_con: 7
+base_aff: 1
+base_per: 2
+base_dex: 3
+base_cha: 2
+base_def: 4
+base_attspe: 5
+base_movespe: 5
+graphic_loc: [6, 0]
+graphic_tex: monsters.png
+ai: 1
+unarmed_type: fists
+...
+---
+Name: Greater Wood Golem
+level: 5
+experience: 90
+base_str: 6
+base_con: 8
+base_aff: 1
+base_per: 2
+base_dex: 2
+base_cha: 2
+base_def: 4
+base_attspe: 5
+base_movespe: 5
+graphic_loc: [6, 1]
+graphic_tex: monsters.png
+ai: 1
+unarmed_type: fists
+...
+---
+Name: Giant Dust Golem
+level: 4
+experience: 60
+base_str: 5
+base_con: 7
+base_aff: 1
+base_per: 2
+base_dex: 3
+base_cha: 2
+base_def: 4
+base_attspe: 7
+base_movespe: 7
+graphic_loc: [5, 4]
+graphic_tex: monsters.png
+ai: 1
+unarmed_type: body
+...
+---
+Name: Sand Golem
+level: 6
+experience: 165
+base_str: 8
+base_con: 7
+base_aff: 1
+base_per: 2
+base_dex: 5
+base_cha: 2
+base_def: 4
+base_attspe: 6
+base_movespe: 6
+graphic_loc: [4, 4]
+graphic_tex: monsters.png
+ai: 1
+unarmed_type: body
+...

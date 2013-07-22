@@ -25,19 +25,19 @@
 #include "Tile.h"
 #include "Item.h"
 
-enum PathType{P_NORMAL, P_PASSUNITS, P_STAIRS, P_FLEE};
+enum PathType{PATH_NORMAL, PATH_PASSUNITS, PATH_STAIRS, PATH_FLEE};
 
-typedef struct {
+struct Path {
     int len;
     Coord* pathLocs; //x = -2 = stairs
     bool cUnits;
-} Path;
+};
 
-typedef struct {
+struct MobEquips {
     short len;
     short type;
     Item* equips;
-} MobEquips;
+};
 
 enum MobActionState{MAS_NONE, MAS_ATTACK, MAS_FLEE};
 

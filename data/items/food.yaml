@@ -39,7 +39,7 @@ weight: 4
 taste: 1
 ...
 ---
-Name: grapes
+Name: grape
 Desc: Tasty.
 Texture: items.png
 Tile: [7, 1]

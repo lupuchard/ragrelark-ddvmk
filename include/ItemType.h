@@ -22,6 +22,27 @@
 #ifndef ITEMTYPE_H
 #define ITEMTYPE_H
 
+enum DamType{D_NONE, D_BLUDGEON, D_SLASH, D_PIERCE, D_SPELL};
+struct WeapType {
+    DamType damageType;
+    unsigned int index;
+    String scrape, scrapes, hit, hits, crit, crits, megacrit, megacrits;
+    WeapType(DamType damType, String scrape, String scrapes, String hit, String hits, String crit, String crits, String megacrit, String megacrits):
+        scrape(scrape), scrapes(scrapes), hit(hit), hits(hits), crit(crit), crits(crits), megacrit(megacrit), megacrits(megacrits) {}
+    String getVerb(int criticality, bool plural) {
+        String verb;
+        switch(criticality) {
+            case 0: verb = plural ? "misses" : "miss";   break;
+            case 1: verb = plural ? scrapes  : scrape;   break;
+            case 2: verb = plural ? hits     : hit;      break;
+            case 3: verb = plural ? crits    : crit;     break;
+            case 4: verb = plural ? megacrits: megacrit; break;
+            default: verb = plural ? "BUGS"  : "BUG";    break;
+        }
+        return verb;
+    }
+};
+
 struct ItemSlot {
     String name;
     int index;
@@ -35,6 +56,7 @@ struct ItemSlot {
 struct ItemTypeType {
     String name;
     ItemSlot* slot;
+    WeapType* weapType;
     int stack;
     bool folder;
     bool ranged;
@@ -44,10 +66,6 @@ struct ItemTypeType {
 };
 
 enum EquipGType{EQG_NONE, EQG_LARGE, EQG_SMALL, EQG_TALL, EQG_LONG};
-
-enum DamType{DAMT_NONE, DAMT_BASH, DAMT_SLASH, DAMT_PIERCE, DAMT_SPELL};
-enum           WeapAttType{WEAP_NONE, WEAP_CLAWS, WEAP_TENTACLE, WEAP_FISTS, WEAP_HEAD, WEAP_SLAM, WEAP_BITE, WEAP_CLUB, WEAP_DAGGER, WEAP_AXE, WEAP_SPEAR, WEAP_SCYTHE, WEAP_ARROW, WEAP_STONE, WEAP_OBJ};
-static const int WEAP_DAM_TYPES[] = {DAMT_NONE, DAMT_SLASH, DAMT_BASH, DAMT_BASH, DAMT_BASH, DAMT_BASH, DAMT_PIERCE, DAMT_BASH, DAMT_SLASH, DAMT_SLASH, DAMT_PIERCE, DAMT_SLASH, DAMT_PIERCE, DAMT_BASH, DAMT_BASH};
 
 class ItemType: public StatHolder {
     public:
@@ -80,16 +98,24 @@ class ItemType: public StatHolder {
 
         //statics
         static void parse(YAML::Node fileNode);
-        static void parseTypes(YAML::Node fileNode);
-        static void parseSlots(YAML::Node fileNode);
+        static bool has(String s);
         static ItemType* get(int index);
         static ItemType* get(String s);
-        static bool has(String s);
+
+        static void parseTypes(YAML::Node fileNode);
         static int getTypeI(String s);
         static ItemTypeType* getType(int index);
         static ItemTypeType* getType(String s);
+
+        static void parseSlots(YAML::Node fileNode);
         static int getNumSlots();
         static ItemType* getEmptySlot(int index);
+
+        static void parseWeapTypes(YAML::Node node);
+        static bool hasWeapType(String type);
+        static WeapType* getWeapType(int type);
+        static WeapType* getWeapType(String type);
+
         static void clean();
     private:
         String name;
@@ -112,6 +138,8 @@ class ItemType: public StatHolder {
         static std::vector<ItemType*> emptySlots;
         static std::vector<ItemSlot*> itemSlots;
         static std::map<String, ItemSlot*> itemSlotNameMap;
+        static std::vector<WeapType*> weapTypes;
+        static std::map<String, WeapType*> weapTypeNameMap;
 };
 
 #endif // ITEMTYPE_H

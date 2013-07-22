@@ -44,7 +44,7 @@ void Location::init() {
     light = 0;
     unit = none;
     items = NULL;
-    fog1 = fog2 = FOG_NONE;
+    fog1 = fog2 = 0;
     debris1 = debris2 = 0;
 }
 

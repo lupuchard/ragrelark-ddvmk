@@ -238,6 +238,8 @@ void Start::groundGrab() {
         if (!item.getType()->isSlot()) {
             if (!primeFolder->getBag()->addItem(&item)) {
                 primeFolder->getGround()->addItem(&item);
+            } else {
+                addMessage("You pick up " + item.getName() + ".", BLACK);
             }
         }
         player->getUnit()->theTime += 5;
@@ -447,6 +449,12 @@ void Start::enterCommand() {
                     if (!item.getType()->isSlot()) {
                         if (!primeFolder->getBag()->addItem(&item)) {
                             primeFolder->getGround()->addItem(&item);
+                        } else {
+                            if (folderStack.top() == primeFolder->getGround()) {
+                                addMessage("You pick up " + item.getName() + ".", BLACK);
+                            } else if (folderStack.top() == primeFolder->getEquips()) {
+                                addMessage("You unequip " + item.getName() + ".", BLACK);
+                            }
                         }
                     }
                     player->getUnit()->theTime += 4;
@@ -456,6 +464,7 @@ void Start::enterCommand() {
                     Item item = folderStack.top()->removeItem(selected);
                     if (!item.getType()->isSlot()) {
                         addItemToPlace(player->getUnit()->pos, player->getZone(), item);
+                        addMessage("You drop " + item.getName() + ".", BLACK);
                     }
                     player->getUnit()->theTime += 2;
                     itemRemovalCheck();
@@ -466,6 +475,7 @@ void Start::enterCommand() {
                         if (equipItem(item)) {
                             folderStack.top()->removeItem(selected);
                             itemRemovalCheck();
+                            addMessage("You equip " + item.getName() + ".", BLACK);
                         }
                     }
                 } break;
@@ -523,7 +533,7 @@ void Start::enterCommand() {
                         Unit* enemy = unitsInRange[stIndex];
                         addItemToPlace(enemy->pos, player->getZone(), item);
                         addProj(player->getUnit()->pos.x * TILE_SIZE, player->getUnit()->pos.y * TILE_SIZE, enemy->pos.x * TILE_SIZE, enemy->pos.y * TILE_SIZE, 10, 0);
-                        shootUnit(player->getUnit(), unitsInRange[stIndex], player->getZone());
+                        shootUnit(player->getUnit(), items[i], unitsInRange[stIndex], player->getZone());
                         primeFolder->getEquips()->removeExtra();
                         break;
                     }

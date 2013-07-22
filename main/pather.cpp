@@ -71,7 +71,7 @@ int getHFlee(Coord l) {
 }
 
 int getH(Coord l) {
-    if (pType == P_FLEE) return getHFlee(l);
+    if (pType == PATH_FLEE) return getHFlee(l);
     Coord c = (l - goal).abs();
     if (c.x > c.y) {
         return c.y * 14 + (c.x - c.y) * 10;
@@ -110,7 +110,7 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
     int fly = unit->getStatValue(Stat::FLY);
 
     pType = pathingType;
-    bool considerOtherUnits = pathingType != P_PASSUNITS;
+    bool considerOtherUnits = pathingType != PATH_PASSUNITS;
     start = unit->pos;
     goal = dest;
 
@@ -170,7 +170,7 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
                     }
                 }
                 if ((locAt->isClosedDoor() && !canDoor) || heightDiff > 2 || heightDiff < -2 || hei == MAX_HEIGHT || Tile::get(locAt->tile)->blocksMove() ||
-                        (considerOtherUnits && unitInWay && !(((pathingType != P_FLEE) && (l == dest))))) {
+                        (considerOtherUnits && unitInWay && !(((pathingType != PATH_FLEE) && (l == dest))))) {
                     val = 2;
                 }
             }
@@ -189,7 +189,7 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
             }
         }
         iterations++;
-        if (pathingType == P_FLEE) {
+        if (pathingType == PATH_FLEE) {
             if (iterations >= 50 || open.empty()) {
                 done = true;
                 success = true;
@@ -207,15 +207,15 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
     if (success) {
         int len1 = current->n;
         int len2 = len1;
-        if (pathingType == P_STAIRS) len2++;
+        if (pathingType == PATH_STAIRS) len2++;
         if (add > 2) len2++;
         Coord* pathLocs = new Coord[len2];
         for (int i = len1 - 1; i >= 0; i--) {
             pathLocs[i] = current->l;
             current = current->parent;
         }
-        if (pathingType == P_STAIRS) {
-            pathLocs[len1] = Coord(-P_STAIRS, -P_STAIRS);
+        if (pathingType == PATH_STAIRS) {
+            pathLocs[len1] = Coord(-PATH_STAIRS, -PATH_STAIRS);
         }
         switch(add) {
             case 0: break;
