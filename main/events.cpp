@@ -321,12 +321,10 @@ void Start::action(Skill* skill, int exp) {
     int lev = player->gainSkillExp(skill, exp);
     if (lev) {
         int level = player->getSkillLevel(skill);
-        int leve = level / 10;
-        int evel = level % 10;
         if (lev > 0) {
-            addMessage("Your " + skill->name + " has leveled up to " + its(leve) + "." + its(evel) + "!", FOREST);
+            addMessage("Your " + skill->name + " has leveled up to " + its(level) + "!", FOREST);
         } else {
-            addMessage("Your " + skill->name + " has gone down to " + its(leve) + "." + its(evel) + "!", MAROON);
+            addMessage("Your " + skill->name + " has gone down to " + its(level) + "!", MAROON);
         }
         std::set<Stat*> skillAfflictions = Stat::getSkillAfflictions(skill);
         for (std::set<Stat*>::iterator i = skillAfflictions.begin(); i != skillAfflictions.end(); ++i) {
