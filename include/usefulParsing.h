@@ -78,10 +78,11 @@ String article(String s);
 /// Converts a number to roman numerals.
 String toRomanNumerals(int num);
 
-String readYAMLStr(YAML::Node& node, String key, String def, String errorMess = "");
-int    readYAMLInt(YAML::Node& node, String key, int def, String errorMess = "");
-float  readYAMLNum(YAML::Node& node, String key, float def, String errorMess = "");
-String indexYAMLStr(YAML::Node& node, int key, String def, String errorMess = "");
-int    indexYAMLInt(YAML::Node& node, int key, int def, String errorMess = "");
+String readYAMLStr(  YAML::Node& node, String key, String def, String errorMess = "");
+int    readYAMLInt(  YAML::Node& node, String key,    int def, String errorMess = "");
+float  readYAMLNum(  YAML::Node& node, String key,  float def, String errorMess = "");
+Coord  readYAMLCoord(YAML::Node& node, String key,  Coord def, String errorMess = "");
+String indexYAMLStr( YAML::Node& node,    int key, String def, String errorMess = "");
+int    indexYAMLInt( YAML::Node& node,    int key,    int def, String errorMess = "");
 
 #endif // USEFULPARSING_H

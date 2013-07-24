@@ -61,9 +61,7 @@ void Start::statChanged(int stat, StatHolderIntef* statHolder) {
         for (unsigned int i = 0; i < affStats->size(); i++) {
             std::pair<int, Stat*> cStat = (*affStats)[i];
             StatHolder* foundStatHolder = findStatHolder(cStat.first, static_cast<StatHolder*>(statHolder));
-            //foundStatHolder->needToUpdate(stat, theStat->isItFloat());
             foundStatHolder->needToUpdate(cStat.second->getIndex(), cStat.second->isItFloat());
-            //statChanged(cStat.second->getIndex(), statHolder); //not really but sorta
         }
     }
 }

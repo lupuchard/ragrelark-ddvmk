@@ -271,16 +271,20 @@ string toRomanNumerals(int num) {
 }
 
 String readYAMLStr(YAML::Node& node, String key, String def, String errorMess) {
-    if (node[key]) {
-        return node[key].as<String>();
+    YAML::Node n = node[key];
+    if (n) {
+        return n.as<String>();
     } else {
         if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
         return def;
     }
 }
 int readYAMLInt(YAML::Node& node, String key, int def, String errorMess) {
-    if (node[key]) {
-        if (node[key].as<String>() == "yes") return 1;
+    YAML::Node n = node[key];
+    if (n) {
+        String s = n.as<String>();
+        if (s == "yes") return 1;
+        else if (s == "no") return 0;
         return node[key].as<int>();
     } else {
         if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
@@ -288,8 +292,18 @@ int readYAMLInt(YAML::Node& node, String key, int def, String errorMess) {
     }
 }
 float readYAMLNum(YAML::Node& node, String key, float def, String errorMess) {
-    if (node[key]) {
-        return node[key].as<float>();
+    YAML::Node n = node[key];
+    if (n) {
+        return n.as<float>();
+    } else {
+        if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
+        return def;
+    }
+}
+Coord readYAMLCoord(YAML::Node& node, String key, Coord def, String errorMess) {
+    YAML::Node n = node[key];
+    if (n.IsSequence() && n.size() == 2) {
+        return Coord(n[0].as<int>(), n[1].as<int>());
     } else {
         if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
         return def;
@@ -297,8 +311,9 @@ float readYAMLNum(YAML::Node& node, String key, float def, String errorMess) {
 }
 
 String indexYAMLStr(YAML::Node& node, int key, String def, String errorMess)  {
-    if (node[key]) {
-        return node[key].as<String>();
+    YAML::Node n = node[key];
+    if (n) {
+        return n.as<String>();
     } else {
         if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
         return def;
@@ -306,8 +321,9 @@ String indexYAMLStr(YAML::Node& node, int key, String def, String errorMess)  {
 }
 
 int indexYAMLInt(YAML::Node& node, int key, int def, String errorMess) {
-    if (node[key]) {
-        return node[key].as<int>();
+    YAML::Node n = node[key];
+    if (n) {
+        return n.as<int>();
     } else {
         if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
         return def;

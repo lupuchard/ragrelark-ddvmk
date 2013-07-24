@@ -100,7 +100,7 @@ MobEquipSet* MobEquipSet::get(String name) {
 bool MobEquipSet::has(String name) {
     return mobEquipSetNameMap.find(name) != mobEquipSetNameMap.end();
 }
-void MobEquipSet::clean() {
+void MobEquipSet::clear() {
     for (std::map<String, MobEquipSet*>::iterator iter = mobEquipSetNameMap.begin(); iter != mobEquipSetNameMap.end(); ++iter) {
         delete iter->second;
     }

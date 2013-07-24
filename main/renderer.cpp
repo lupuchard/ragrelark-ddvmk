@@ -36,12 +36,12 @@ int interval = 0;
 int curArrowY = WIN1_HEIGHT / 2;
 int selectedShift = 0;
 
-std::map<int, std::pair<String, Color> > statusies;
+std::map<Status, std::pair<String, Color> > statusies;
 
-void Start::addStatus(String name, Color c, int type) {
+void Start::addStatus(String name, Color c, Status type) {
     statusies[type] = std::pair<String, Color>(name, c);
 }
-void Start::removeStatus(int type) {
+void Start::removeStatus(Status type) {
     statusies.erase(type);
 }
 
@@ -191,11 +191,8 @@ void Start::renderSidePanels() {
         renderText("  HP: " + its(p->getStatValue(Stat::HP)) + "/" + its(p->getStatValue(Stat::MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, FOREST);
         renderText("  MANA: " + its(p->getStatValue(Stat::MANA)) + "/" + its(p->getStatValue(Stat::MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, NAVY);
         for (int i = Stat::STR; i <= Stat::CHA; i++) {
-            int base = p->getStatValue(i - 9);
             int main = p->getStatValue(i);
-            String s;
-            if (main != base) s = statNames[i - Stat::STR] + "\\p" + its(main) + "\\z(" + its(base) + ")";
-            else s = statNames[i - Stat::STR] + "\\z" + its(main);
+            String s = statNames[i - Stat::STR] + "\\z" + its(main);
             renderText(s, 2, loff + WIN1_WIDTH, toff + (i - Stat::STR + 2) * 20, Z_MENU + 1, LEFT, BLACK);
         }
         renderText("Defense: \\q" + its(p->getStatValue(Stat::DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, BLACK);
@@ -204,6 +201,28 @@ void Start::renderSidePanels() {
         renderText("Level " + its(player->getUnit()->getStatValue(Stat::LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, BLACK);
         renderText("\\q" + its(player->getUnit()->theTime) + "\\z ticks", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 80, Z_MENU + 1, RIGHT, RED.darken());
     } else if (topPanel == PANEL_SKILLS) {
+        for (int i = 0; i < Stat::getNumSkills(); i++) {
+            Skill* skill = Stat::getSkill(i);
+            int x = skill->displayLoc.x + WIN1_WIDTH;
+            int y = skill->displayLoc.y + 30;
+            ragd.drawTileSuperSpe(x - 3, y - 3, Z_MENU + 1, TILE_SIZE + 6, TILE_SIZE + 6, menuTex, 213, 161, 38, 38);
+            if (!skill->active) GRAY.gl();
+            ragd.drawTileSpe(x, y, Z_MENU + 2, menuTex, 216, 164, TILE_SIZE);
+            WHITE.gl();
+            ragd.drawTile(x, y, Z_MENU + 3, skill->graphic.tex, skill->graphic.loc);
+            int lev = player->getSkillLevel(skill);
+            int prog = player->getSkillExpPercent(skill);
+            if (lev || prog) {
+                renderText(its(lev), 1, x + 1, y, Z_MENU + 4, LEFT, WHITE);
+                if (prog) {
+                    String progs;
+                    if (numDigits0(prog) == 1) progs = "0" + its(prog);
+                    else progs = its(prog);
+                    renderText(progs, 1, x + 8, y, Z_MENU + 5, LEFT, SILVER);
+                    renderText(".", 1, x + 4, y, Z_MENU + 5, LEFT, SILVER);
+                }
+            }
+        }
         /*static const int numFunctionalSkills = 12;
         static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CHANN, SKL_QCAST, SKL_LEARN, SKL_SEARC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
         int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
@@ -329,8 +348,7 @@ void Start::drawMenuBox(int x1, int y1, int x2, int y2) {
     ragd.drawTileSuperSpe(x2 - 16, y2 - 16, Z_MENU, 16  , 16  , menuTex, 32, 64, 16, 16);
 }
 
-Color selectStatColor(int value, int i) {
-    //if (i == Stat::PENALTY) value = -value;
+Color selectStatColor(int value) {
     if (value == 0) {
         return BLACK;
     } else if (value > 0) {
@@ -342,7 +360,6 @@ Color selectStatColor(int value, int i) {
 void Start::renderMenu() {
     static const Color weightColors[] = {TAR, BLACK, BLACK, PURPLE.darken().darken(), PURPLE.darken(), PURPLE};
     static const Color valueColors[] = {TAR, BLACK, BROWN.darken(), AMBER.darken(), OLIVE, YELLOW};
-    static const String dTypeNames[] = {"none", "bludgeon", "slashing", "piercing", "maaaaagic"};
     if (state == STATE_MENU) {
         if (selected >= MAX_MENU_ITEMS + selectedShift) {
             selectedShift = selected - MAX_MENU_ITEMS + 1;
@@ -416,7 +433,7 @@ void Start::renderMenu() {
                 for(unsigned int i = 0; i < desc.size(); i++) {
                     if (desc[i] == ' ') {
                         if (nextLine.size() + (i - lastWord) > 29) {
-                            lines.push_back(std::pair<String, Color>(nextLine, GLAUCOUS.darken()));
+                            lines.push_back(std::make_pair(nextLine, GLAUCOUS.darken()));
                             nextLine = desc.substr(lastWord, i - lastWord);
                         } else {
                             nextLine += " " + desc.substr(lastWord, i - lastWord);
@@ -424,47 +441,54 @@ void Start::renderMenu() {
                         lastWord = i + 1;
                     }
                 }
-                lines.push_back(std::pair<String, Color>(nextLine, GLAUCOUS.darken()));
+                lines.push_back(std::make_pair(nextLine, GLAUCOUS.darken()));
                 descLen = lines.size();
-                lines.push_back(std::pair<String, Color>("", BLACK));
+                lines.push_back(std::make_pair("", BLACK));
 
-                //first it displays weight and value
                 int weightValue = selectedItemType->getStatValue(Stat::WEIGHT);
-                lines.push_back(std::pair<String, Color>(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
+                lines.push_back(std::make_pair(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
                 int valueValue = selectedItemType->getStatValue(Stat::VALUE);
-                lines.push_back(std::pair<String, Color>(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
+                lines.push_back(std::make_pair(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
 
-                //then it displays damage and AC
-                /*Color c;
-                if (selectedItemType->hasStat(S_IDAMAGE, false)) {
-                    int damVal = selectedItemType->getStatValue(S_IDAMAGE);
-                    c = Color(2 * std::min(damVal, 32));
-                    lines.push_back(std::pair<String, Color>(" " + its(damVal) + " Damage (" + capitalize(dTypeNames[WEAP_DAM_TYPES[selectedItemType->getStatValue(S_DTYPE)]]) + ")", c));
-                }
-                if (selectedItemType->hasStat(S_AC, false)) {
-                    int acVal = selectedItemType->getStatValue(S_AC);
-                    c = Color(2 * std::min(acVal, 32));
-                    lines.push_back(std::pair<String, Color>(" " + its(acVal) + " AC", c));
-                }*/
-
-                //then it displays all other visible stats
-                for (int i = SHOWN_ITEM_STATS_MIN; i <= SHOWN_ITEM_STATS_MAX; i++) {
-                    Stat* theStat = Stat::get(V_ITEM, i);
-                    if (selectedItemType->hasStat(i, theStat->isItFloat())) {
-                        if (theStat->isItFloat()) {
-                            float value = selectedItemType->getStatValueF(i);
-                            lines.push_back(std::pair<String, Color>(" " + its0((int)value) + " " + capitalize(theStat->getName()), selectStatColor((int)value, i)));
-                        } else {
-                            int value = selectedItemType->getStatValue(i);
-                            lines.push_back(std::pair<String, Color>(" " + its0(value) + " " + capitalize(theStat->getName()), selectStatColor(value, i)));
+                for (int i = 0; i < Stat::getNum(V_ITEM); i++) {
+                    Stat* stat = Stat::get(V_ITEM, i);
+                    if (stat->getDisplay()) {
+                        int val = selectedItemType->getStatValue(i);
+                        if (val) {
+                            switch(stat->getDisplay()) {
+                                case DISP_NORM:
+                                    lines.push_back(std::make_pair(" " + stat->getDisplayName() + ": " + its(val), BLACK));
+                                    break;
+                                case DISP_PRE:
+                                    lines.push_back(std::make_pair(" " + its(val) + " " + stat->getDisplayName(), BLACK));
+                                    break;
+                                case DISP_PLUS: {
+                                    String s = its(val);
+                                    if (val > 0) s = "+" + s;
+                                    lines.push_back(std::make_pair(" " + stat->getDisplayName() + ": " + s, selectStatColor(val)));
+                                    } break;
+                                case DISP_GOOD:
+                                    lines.push_back(std::make_pair(" " + stat->getDisplayName() + ": " + its(val), selectStatColor(val)));
+                                    break;
+                                case DISP_BAD:
+                                    lines.push_back(std::make_pair(" " + stat->getDisplayName() + ": " + its(val), selectStatColor(-val)));
+                                    break;
+                                default: break;
+                            }
                         }
                     }
                 }
 
-                lines.push_back(std::pair<String, Color>("", BLACK));
+                static const String DTYPE_NAMES[] = {"", "Bludgeoning", "Slashing", "Piercing", "Sinister"};
+                WeapType* weapType = selectedItemType->getType()->weapType;
+                if (weapType) lines.push_back(std::make_pair("  " + DTYPE_NAMES[weapType->damageType], BLACK));
+
+                if (selectedItemType->getType()->edible) lines.push_back(std::make_pair("  Edible", BLACK));
+
+                lines.push_back(std::make_pair("", BLACK));
                 //then it displays any abilities it may have
                 for (std::set<unsigned short>::iterator i = selectedItemType->getAbilitiesBegin(); i != selectedItemType->getAbilitiesEnd(); ++i) {
-                    lines.push_back(std::pair<String, Color>("  " + capitalize(Ability::get(*i)->getName()), TEAL.darken()));
+                    lines.push_back(std::make_pair("  " + capitalize(Ability::get(*i)->getName()), TEAL.darken()));
                 }
             }
             height = 32 + 30 + 12 * lines.size();
@@ -501,7 +525,7 @@ void Start::renderMessages() {
     int len = 1;
     int fl = 0;
     static unsigned int limit = WIN1_WIDTH / 8 - 2;
-    for (map<int, pair<string, Color> >::iterator i = statusies.begin(); i != statusies.end();) {
+    for (map<Status, pair<string, Color> >::iterator i = statusies.begin(); i != statusies.end();) {
         string s = i->second.first;
         if (s.size() + len > limit) {
             fl++;

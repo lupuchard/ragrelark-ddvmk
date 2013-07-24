@@ -17,6 +17,7 @@
  */
 
 #include "Formula.h"
+#include "Tile.h"
 #include <string>
 
 #ifndef STAT_H
@@ -26,13 +27,19 @@ struct Skill {
     int category;
     int index;
     String name;
+    Graphic graphic;
+    std::vector<Skill*> linked;
+    Coord displayLoc;
+    bool active;
 };
+
+enum StatDisplay{DISP_NONE, DISP_NORM, DISP_PRE, DISP_GOOD, DISP_BAD, DISP_PLUS};
 
 ///This defines a type of statistic.
 class Stat {
     public:
         /// No two stats of the same isFloat status can have the same index.
-        Stat(String name, Formula* formula, unsigned char index, bool isFloat);
+        Stat(String name, Formula* formula, bool isFloat);
 
         /// This is mostly used for parsing, but may later be used in-game.
         String getName();
@@ -42,6 +49,8 @@ class Stat {
 
         bool isItFloat();
         unsigned char getIndex();
+        StatDisplay getDisplay();
+        String getDisplayName();
 
         //statics
         static void parseAll(YAML::Node fileNode);
@@ -69,6 +78,8 @@ class Stat {
         static bool hasSkill(String name);
         static int getNumSkills();
 
+        static void clear();
+
         static int EXP, LEVEL, EXPREQ, STR, CON, AFF, INT, PER, DEX, CHA, LUCK, DEFENSE,
            LEARN, MAXHP, HP, MAXMANA, MANA, ACC, EVA, UNARMDAMAGE, MELDAMAGE, RANDAMAGE, RESPOIS,
            HUNGER, STAMINA, AI, BLOOD, SPLATTER, SPLIT, SWARM, UNARMED, SPAWN, LOAD,
@@ -82,10 +93,12 @@ class Stat {
         String name;
         bool isFloat;
         unsigned char index;
+        StatDisplay display;
+        String displayName;
 
         //statics
         static void parseSection(YAML::Node node, VOwner owner);
-        static int add(VOwner type, Stat* theStat);
+        static void add(VOwner type, Stat* theStat);
         static std::vector<Stat*> unitStats;
         static std::vector<Stat*> worldStats;
         static std::vector<Stat*> itemStats;
@@ -98,7 +111,7 @@ class Stat {
         static std::set<Stat*> enemyAfflictions;
         static std::map<Skill*, std::set<Stat*> > skillAfflictions;
 
-        static std::vector<Skill> skills;
+        static std::vector<Skill*> skills;
         static std::vector<String> skillCategories;
         static std::map<String, Skill*> skillNameMap;
 

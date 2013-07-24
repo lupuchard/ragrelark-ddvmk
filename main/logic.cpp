@@ -18,23 +18,9 @@
 
 #include "Start.h"
 
-/*
-metabolism!
-base: 100/hour
--50% while sleeping
-+25% regen health
-+25% regen stamina
-+50% regen mana
-+50% >100% satiated "bloated"
--15% <40% satiated (also minor loss of stats) "very hungry"
--30% <15% satiated (also loss of stats)       "near starving"
--45% <5% satiated (also major loss of stats)  "starving"
-*/
-
 bool depoison(Unit* unit, int stat) {
     if (unit->getStatValue(stat) > 0) {
-        unit->modifyStat(stat, -1);
-        return true;
+        return unit->modifyStat(stat, -1);
     }
     return false;
 }
@@ -55,7 +41,9 @@ void Start::logic() {
             poisoned |= depoison(pUnit, Stat::POIS_MENT);
             poisoned |= depoison(pUnit, Stat::POIS_REGEN);
             poisoned |= depoison(pUnit, Stat::POIS_EXTRA);
-            if (!poisoned) removeStatus(ST_POIS);
+            if (!poisoned) {
+                removeStatus(ST_POIS);
+            }
         }
         if (i1times > 0) {
             intervals[1] %= INTERVAL_1_TIM;
@@ -83,8 +71,6 @@ void Start::logic() {
         for (; iter != areaUnits.end(); ++iter) {
             Unit* unit = iter->first;
             if (unit != player->getUnit()) {
-                //if (unit->getStatValue(S_SWARM) && ((Swarmer*)unit)->howMany() >= 2) cout << "hmm " << unit->getStatValue(S_AI) << endl;
-                //if (unit->getStatValue(S_SWARM)) cout << "hmm " << unit->getStatValue(S_AI) << endl;
                 while (unit->theTime < world->theTime) {
                     int before = unit->theTime;
                     ai(unit, iter->second);

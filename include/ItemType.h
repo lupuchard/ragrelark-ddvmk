@@ -17,6 +17,7 @@
  */
 
 #include "Tile.h"
+#include "StatHolder.h"
 #include "Ability.h"
 
 #ifndef ITEMTYPE_H
@@ -28,7 +29,7 @@ struct WeapType {
     unsigned int index;
     String scrape, scrapes, hit, hits, crit, crits, megacrit, megacrits;
     WeapType(DamType damType, String scrape, String scrapes, String hit, String hits, String crit, String crits, String megacrit, String megacrits):
-        scrape(scrape), scrapes(scrapes), hit(hit), hits(hits), crit(crit), crits(crits), megacrit(megacrit), megacrits(megacrits) {}
+        damageType(damType), index(-1), scrape(scrape), scrapes(scrapes), hit(hit), hits(hits), crit(crit), crits(crits), megacrit(megacrit), megacrits(megacrits) {}
     String getVerb(int criticality, bool plural) {
         String verb;
         switch(criticality) {
@@ -116,7 +117,7 @@ class ItemType: public StatHolder {
         static WeapType* getWeapType(int type);
         static WeapType* getWeapType(String type);
 
-        static void clean();
+        static void clear();
     private:
         String name;
         String description;

@@ -277,7 +277,7 @@ void Start::myFovCirclePerm(Zone* zone, Coord pos, int radius, int mod) {
                             zone->getLocationAt(pos + Coord(-2, 2)), zone->getLocationAt(pos + Coord(-2, -2))};
         int temp[4];
         for (int i = 0; i < 4; i++) {
-            temp[i] = locs[i]->light; //TODO ??????
+            temp[i] = locs[i]->light;
         }
         fov_circle(&fovSettings, zone, &mod, pos.x, pos.y, 3);
         for (int i = 0; i < 4; i++) {

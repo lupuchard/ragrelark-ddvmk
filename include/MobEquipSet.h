@@ -41,7 +41,7 @@ class MobEquipSet {
         static void parseAll(YAML::Node);
         static MobEquipSet* get(String name);
         static bool has(String name);
-        static void clean();
+        static void clear();
     private:
         std::vector<std::pair<int, std::vector<ItemType*> > > allEquips;
 

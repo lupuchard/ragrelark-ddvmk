@@ -52,11 +52,17 @@ DungeonStack::DungeonStack(String n, int depthS, GenType genTypeS): name(n) {
 }
 
 DungeonStack::~DungeonStack() {
-    if (depthReached != depth) {
-        delete[] skeleton;
-    }
-    for (int i = 0; i < depth; i++) {
-        delete zones[i];
+    if (skeleton) {
+        if (depthReached != depth) {
+            delete[] skeleton;
+        }
+        for (int i = 0; i < depth; i++) {
+            delete zones[i];
+        }
+        for (int i = 0; i < std::min(depthReached, depth - 1); i++) {
+            delete[] stairLocs[i];
+        }
+        delete[] stairLocs;
     }
     delete[] zones;
 }

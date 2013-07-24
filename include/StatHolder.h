@@ -63,8 +63,6 @@ class StatHolder: public StatHolderIntef {
         int getNumFloatStats();
 
         void print();
-    protected:
-        StatHolder* aThis;
     private:
         unsigned int numIntStats;
         unsigned int numFloatStats;

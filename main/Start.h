@@ -32,10 +32,7 @@
 
 #define BOOST_IOSTREAMS_NO_LIB
 
-#define ST_CONF 20
-#define ST_POIS 21
-#define ST_ENCUM 22
-#define ST_HUNG 23
+enum Status{ST_NONE, ST_CONF, ST_POIS, ST_ENCUM, ST_HUNG, ST_DEAD};
 
 #define MAX_MESSAGES 100
 #define NUM_NOTELINES 26
@@ -46,7 +43,7 @@
 #define INTERVAL_3_TIM 5000
 
 enum MenuAction{MA_EXAMINE, MA_GRAB, MA_DROP, MA_EQUIP, MA_EAT, MA_READ, NUM_MENU_ACTIONS};
-enum{STATE_PLAY, STATE_MENU, STATE_DIR, STATE_TARGET, STATE_SPELL};
+enum{STATE_PLAY, STATE_DEAD, STATE_MENU, STATE_DIR, STATE_TARGET, STATE_SPELL};
 enum Panels{PANEL_EMPTY, PANEL_TOPSTART, PANEL_STATS, PANEL_SKILLS, PANEL_INVENTORY, PANEL_TOPEND, PANEL_BOTTOMSTART, PANEL_MINIMAP, PANEL_NOTES, PANEL_BOTTOMEND};
 enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, AI_NEUTRAL = 4};
 
@@ -60,12 +57,12 @@ struct Flavor {
     }
 };
 
-typedef struct {
+struct BattleSummary {
     int criticality;
     bool killed;
     bool hit;
     bool dodge;
-} BattleSummary;
+};
 
 class Start: FormulaUser, EnvironmentManager {
     public:
@@ -130,8 +127,8 @@ class Start: FormulaUser, EnvironmentManager {
         void renderText(String text, int size, int x, int y, int z, int align, Color c);
         void startRenderer();
         void makeSplatter(Unit* unit, Zone* zone, Coord loc);
-        void addStatus(String name, Color c, int type);
-        void removeStatus(int type);
+        void addStatus(String name, Color c, Status type);
+        void removeStatus(Status type);
         /* --- */
 
         /* --particles.cpp-- */
@@ -157,7 +154,6 @@ class Start: FormulaUser, EnvironmentManager {
         double defDam(double preDam, int defense);
         String defenderNoun(Unit* attacker, Unit* defender);
         Color colorHit(bool crit, bool dodge);
-        void hitSapping(Unit* attacker, Unit* defender, int criticality);
 
         void hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, BattleSummary& sum);
         BattleSummary attackUnit(int power, float accuracy, const WeapType* weapType, Unit* defender, Zone* zone, int dir, Flavor flavor = Flavor());

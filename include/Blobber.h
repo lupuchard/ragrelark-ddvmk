@@ -19,7 +19,9 @@
 #ifndef BLOBBER_H
 #define BLOBBER_H
 
-class Blobber {
+#include <boost/utility.hpp>
+
+class Blobber: boost::noncopyable {
     public:
         Blobber();
         virtual ~Blobber();

@@ -19,7 +19,7 @@
 #include <iostream>
 #include "Tile.h"
 
-Tile::Tile(String name, Graphic g, bool blockM, bool blockL, Tile* over): StatHolder(V_TILE) {
+Tile::Tile(String name, Graphic g, bool blockM, bool blockL, Tile* over) {
     graphic = g;
 
     blockMove = blockM;
@@ -92,7 +92,7 @@ TileSet* Tile::getSet(String name) {
 bool Tile::hasSet(String name) {
     return tileSets.find(name) != tileSets.end();
 }
-void Tile::clean() {
+void Tile::clear() {
     for (unsigned int i = 0; i < tiles.size(); i++) {
         delete tiles[i];
     }

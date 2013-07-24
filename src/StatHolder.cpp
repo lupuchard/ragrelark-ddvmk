@@ -27,7 +27,6 @@ StatHolder::StatHolder(VOwner o) {
     owner = o;
     numIntStats = 0;
     numFloatStats = 0;
-    aThis = this;
 }
 
 StatHolder::~StatHolder() { }
@@ -51,12 +50,14 @@ void StatHolder::addStatVF(int stat, float value) {
 }
 
 void StatHolder::needToUpdate(int stat, bool isFloat) {
-    if (isFloat) {
-        floatStats[stat].second = true;
-    } else {
-        intStats[stat].second = true;
+    if (Stat::get(owner, stat)->getFormula()) {
+        if (isFloat) {
+            floatStats[stat].second = true;
+        } else {
+            intStats[stat].second = true;
+        }
+        statChanged(stat);
     }
-    statChanged(stat);
 }
 
 short StatHolder::getStatValue(int stat) {
@@ -66,9 +67,9 @@ short StatHolder::getStatValue(int stat) {
     if (val.second) {
         Stat* s = Stat::get((VOwner)owner, stat);
         int temp = val.first;
-        val.first = s->getFormula()->run(Stat::getFormUser(), aThis, val.first); //TODO need aThis?
+        if (s->getFormula()) val.first = s->getFormula()->run(Stat::getFormUser(), this, val.first);
         if (temp != val.first) {
-            Stat::getFormUser()->statChanged(stat, aThis);
+            Stat::getFormUser()->statChanged(stat, this);
         }
         val.second = false;
         intStats[stat] = val;
@@ -83,9 +84,9 @@ float StatHolder::getStatValueF(int stat) {
     if (val.second) {
         Stat* s = Stat::get((VOwner)owner, stat);
         float temp = val.first;
-        val.first = s->getFormula()->runFloat(Stat::getFormUser(), aThis, val.first);
+        if (s->getFormula()) val.first = s->getFormula()->runFloat(Stat::getFormUser(), this, val.first);
         if (temp != val.first) {
-            Stat::getFormUser()->statChanged(stat, aThis);
+            Stat::getFormUser()->statChanged(stat, this);
         }
         val.second = false;
         floatStats[stat] = val;
@@ -99,16 +100,16 @@ VOwner StatHolder::getOwner() {
 
 void StatHolder::setStat(int stat, int value) {
     intStats[stat] = std::pair<short, bool>(value, true);
-    Stat::getFormUser()->statChanged(stat, aThis);
+    Stat::getFormUser()->statChanged(stat, this);
 }
 
 void StatHolder::setStatF(int stat, float value) {
     floatStats[stat] = std::pair<float, bool>(value, true);
-    Stat::getFormUser()->statChanged(stat, aThis);
+    Stat::getFormUser()->statChanged(stat, this);
 }
 
 void StatHolder::statChanged(int stat) {
-    Stat::getFormUser()->statChanged(stat, aThis);
+    Stat::getFormUser()->statChanged(stat, this);
 }
 
 short StatHolder::modifyStat(int stat, int amount) {
@@ -116,6 +117,7 @@ short StatHolder::modifyStat(int stat, int amount) {
     v.first += amount;
     v.second = true;
     intStats[stat] = v;
+    Stat::getFormUser()->statChanged(stat, this);
     return v.first;
 }
 
@@ -124,6 +126,7 @@ float StatHolder::modifyStatF(int stat, float amount) {
     v.first += amount;
     v.second = true;
     floatStats[stat] = v;
+    Stat::getFormUser()->statChanged(stat, this);
     return v.first;
 }
 

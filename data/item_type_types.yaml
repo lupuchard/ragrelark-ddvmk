@@ -1,246 +1,272 @@
-0:
+-
   Name: none
-1:
+-
   Name: anon
-2:
+-
   Name: rem
-3:
+-
   Name: slot
   IsSlot: yes
 
 ###
 
-9:
+-
   Name: folder
   Folder: yes
-10:
+-
   Name: ground folder
   Folder: yes
-11:
+-
   Name: equipment folder
   Folder: yes
-12:
+-
   Name: bag folder
   Folder: yes
-13:
+-
   Name: prime folder
   Folder: yes
 
 ###
 
-20:
+-
   Name: headgear
   Slot: head
-21:
+-
   Name: face
   Slot: face
-22:
+-
   Name: back
   Slot: back
-
-24:
+-
   Name: neck
   Slot: neck
-25:
+-
   Name: body
   Slot: body
-26:
+-
   Name: main hand
   Slot: main hand
-27:
+-
   Name: offhand
   Slot: offhand
-28:
+-
   Name: hands
   Slot: hands
-29:
+-
   Name: waist
   Slot: waist
-30:
+-
   Name: wrist
   Slot: wrist
-31:
+-
   Name: feet
   Slot: feet
-32:
+-
   Name: ring
   Slot: ring
 
 ###
 
-41:
+-
   Name: food
   Stack: 250
   Edible: yes
-42:
+-
   Name: potion
-43:
+-
   Name: coin
   Stack: 250
-44:
+-
   Name: tool
-45:
+-
   Name: book
-46:
+-
   Name: monster part
   Stack: 250
-47:
+-
   Name: resource
   Stack: 250
 
 ###
 
-76:
+-
   Name: arrow
   Stack: 250
-77:
+-
   Name: bolt
   Stack: 250
-78:
+-
   Name: sling ammo
   Stack: 250
-80:
+-
+  Name: dart
+-
   Name: axe
   Slot: main hand
   Skill: blades
   Weap_Type: axe
-81:
+-
+  Name: greataxe
+  Slot: both hands
+  Skill: blades
+  Weap_Type: axe
+-
   Name: mace
   Slot: main hand
   Skill: bludgeoning
   Weap_Type: mace
-82:
+-
   Name: bow
   Slot: both hands
   Skill: shooting
   Ranged: yes
   Ammo: arrow
   Weap_Type: shoot
-83:
+-
   Name: dagger
   Slot: main hand
   Skill: blades
   Weap_Type: dagger
-84:
-  Name: dart
-85:
+-
   Name: sling
   Slot: main hand
   Skill: shooting
   Ranged: yes
   Ammo: sling ammo
   Weap_Type: shoot
-86:
+-
   Name: crossbow
   Slot: both hands
   Skill: shooting
+  Ranged: yes
   Ammo: bolt
   Weap_Type: shoot
-87:
+-
   Name: spear
   Slot: both hands
   Skill: polearms
   Weap_Type: spear
-88:
+-
   Name: staff
   Slot: both hands
   Skill: bludgeoning
   Weap_Type: club
-89:
+-
   Name: club
   Slot: main hand
   Skill: bludgeoning
   Weap_Type: club
-91:
+-
   Name: hammer
   Slot: both hands
   Skill: bludgeoning
   Weap_Type: hammer
-92:
+-
   Name: knife
   Slot: main hand
   Skill: blades
   Weap_Type: dagger
-94:
+-
+  Name: scythe
+  Slot: both hands
+  Skill: polearms
+  Weap_Type: scythe
+-
   Name: trident
   Slot: both hands
   Skill: polearms
   Weap_Type: spear
-97:
+-
+  Name: halberd
+  Slot: both hands
+  Skill: polearms
+  Weap_Type: axe
+-
+  Name: glaive
+  Slot: both hands
+  Skill: polearms
+  Weap_Type: dagger
+-
   Name: flail
   Slot: main hand
   Skill: bludgeoning
   Weap_Type: mace
-98:
+-
   Name: sword
   Slot: main hand
   Skill: blades
   Weap_Type: sword
-99:
+-
   Name: greatsword
   Slot: both hands
   Skill: blades
   Weap_Type: sword
-109:
+-
   Name: shuriken
   Stack: 250
-110:
+
+###
+
+-
   Name: hat
   Slot: head
-111:
+-
   Name: helmet
   Slot: head
   Skill: armor
-115:
+-
   Name: shield
   Slot: offhand
   Skill: shields
-116:
+-
   Name: spellbook
   Slot: offhand
-118:
+-
   Name: light source
   Slot: offhand
-120:
+-
   Name: cape
   Slot: back
-
-130:
+-
   Name: necklace
   Slot: neck
-131:
+-
   Name: amulet
   Slot: neck
-135:
+-
   Name: gloves
   Slot: hands
-136:
+-
   Name: gauntlets
   Slot: hands
   Skill: armor
-137:
+-
   Name: mittens
   Slot: hands
-140:
+-
   Name: belt
   Slot: waist
-145:
+-
   Name: bracelet
   Slot: wrist
-150:
+-
   Name: shoes
   Slot: feet
-151:
+-
   Name: boots
   Slot: feet
-155:
+-
   Name: clothes
   Slot: body
-157:
+-
   Name: light armor
   Slot: body
   Skill: armor
-158:
+-
+  Name: medium armor
+  Slot: body
+  Skill: armor
+-
   Name: heavy armor
   Slot: body
   Skill: armor

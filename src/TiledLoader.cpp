@@ -64,7 +64,6 @@ Zone* TiledLoader::loadTileFile(String fileName, String zoneName) {
 		XMLNode* propertiesBase = mapBase->FirstChild();
 
         int lightness = 0;
-        bool isZone = false;
 
         XMLElement* currentProperty = propertiesBase->FirstChildElement();
 		bool done = false;
@@ -72,8 +71,6 @@ Zone* TiledLoader::loadTileFile(String fileName, String zoneName) {
 		    string propertyName = currentProperty->Attribute("name");
 		    if (propertyName == "lightness") {
                 lightness = currentProperty->IntAttribute("value");
-		    } else if (propertyName == "type") {
-                isZone = (strcmp(currentProperty->Attribute("value"), "zone") == 0);
 		    }
 		    if (currentProperty == propertiesBase->LastChildElement()) {
                 done = true;
@@ -186,10 +183,7 @@ void TiledLoader::parseTiles(YAML::Node node) {
                         over = Tile::get(overN);
                     } else std::cout << "'" << overN << "' is not a existing tile.\n";
                 }
-                if (exData["Tiled"]) {
-                    YAML::Node n = exData["Tiled"];
-                    tloc = n[0].as<int>() + n[1].as<int>() * 32;
-                }
+                tloc = readYAMLCoord(exData, "Tiled", Coord(1, -1)).index(32);
             }
             Tile* tile = new Tile(tileName, g, blockM, blockL, over);
             Tile::add(tile);

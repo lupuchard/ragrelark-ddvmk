@@ -42,7 +42,7 @@ class Texture {
         static Texture* get(int index);
         static Texture* get(String filename);
 
-        static void clean();
+        static void clear();
     private:
         int width;
         int height;

@@ -18,11 +18,6 @@
 
 #include "Start.h"
 
-int getStructIntFromChar(int c) {
-    if (c < 50) return (c - 38) / 2 + 26;
-    else        return c - 97;
-}
-
 /* Loads ALL the data. */
 void Start::loadData() {
     using namespace std;
@@ -91,9 +86,10 @@ void Start::yamlMulti(String directory, boost::function<void(YAML::Node)> parseF
 }
 
 void Start::deleteData() {
-    Texture::clean();
-    ItemType::clean();
-    MobEquipSet::clean();
-    Tile::clean();
+    Texture::clear();
+    ItemType::clear();
+    MobEquipSet::clear();
+    Tile::clear();
+    Stat::clear();
     glDeleteLists(base, 96);
 }

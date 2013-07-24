@@ -457,11 +457,11 @@ void MobSpawner::parseSpawn(YAML::Node fileNode) {
             YAML::Node levNode = iter->second;
             for (int i = from; i <= to; i++) {
                 EncounterLevel* encounters = new EncounterLevel;
-                for (YAML::const_iterator jter = levNode.begin(); jter != levNode.end(); jter++) {
+                for (YAML::const_iterator jter = levNode.begin(); jter != levNode.end(); ++jter) {
                     String mobName = jter->first.as<String>();
                     if (mobExists(mobName)) {
                         if (jter->second.IsSequence()) {
-                            for (YAML::const_iterator kter = jter->second.begin(); kter != jter->second.end(); kter++) {
+                            for (YAML::const_iterator kter = jter->second.begin(); kter != jter->second.end(); ++kter) {
                                 YAML::Node n = *kter;
                                 encounters->push_back(parseSpawnMob(n, getMob(mobName)));
                             }

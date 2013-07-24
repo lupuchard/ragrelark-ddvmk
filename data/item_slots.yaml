@@ -1,75 +1,75 @@
 -
   Name: head
   Time_Equip: 20
-  Texture: items3.png
-  Tile: [0, 2]
+  Texture: menu.png
+  Tile: [5, 0]
   On_Body: [16, 8]
 -
   Name: face
   Time_Equip: 22
-  Texture: items3.png
-  Tile: [1, 2]
+  Texture: menu.png
+  Tile: [6, 0]
   On_Body: [16, 8]
 -
   Name: back
   Time_Equip: 30
-  Texture: items3.png
-  Tile: [2, 2]
+  Texture: menu.png
+  Tile: [7, 0]
   On_Body: [16, 16]
 -
   Name: neck
   Time_Equip: 18
-  Texture: items3.png
-  Tile: [3, 2]
+  Texture: menu.png
+  Tile: [8, 0]
   On_Body: [16, 8]
 -
   Name: body
   Time_Equip: 60
-  Texture: items3.png
-  Tile: [4, 2]
+  Texture: menu.png
+  Tile: [5, 1]
   On_Body: [16, 16]
 -
   Name: hands
   Time_Equip: 24
-  Texture: items3.png
-  Tile: [7, 2]
+  Texture: menu.png
+  Tile: [8, 1]
   On_Body: [16, 16]
 -
   Name: main hand
   Time_Equip: 15
-  Texture: items3.png
-  Tile: [5, 2]
+  Texture: menu.png
+  Tile: [7, 1]
   On_Body: [8, 16]
 -
   Name: offhand
   Time_Equip: 16
-  Texture: items3.png
-  Tile: [6, 2]
+  Texture: menu.png
+  Tile: [6, 1]
   On_Body: [24, 16]
 -
   Name: waist
   Time_Equip: 30
-  Texture: items3.png
-  Tile: [8, 2]
+  Texture: menu.png
+  Tile: [5, 2]
   On_Body: [16, 16]
 -
   Name: wrist
   Time_Equip: 21
-  Texture: items3.png
-  Tile: [9, 2]
+  Texture: menu.png
+  Tile: [6, 2]
   On_Body: [16, 16]
 -
   Name: feet
   Time_Equip: 30
-  Texture: items3.png
-  Tile: [10, 2]
+  Texture: menu.png
+  Tile: [7, 2]
   On_Body: [16, 24]
 -
   Name: ring
   Quantity: 2
   Time_Equip: 18
-  Texture: items3.png
-  Tile: [11, 2]
+  Texture: menu.png
+  Tile: [8, 2]
 -
   Name: both hands
   Over: [main hand, offhand]

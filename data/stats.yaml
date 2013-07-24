@@ -3,33 +3,31 @@ item:
   - {Name: value , Bind: VALUE}
   - {Name: feed  , Bind: FEED}
   - {Name: taste , Bind: TASTE}
-  - {Name: damage}
-  - {Name: damage_type, Bind: DTYPE}
-  - {Name: ac}
-  - {Name: range, Bind: RANGE}
-  - {Name: str}
-  - {Name: con}
-  - {Name: aff}
-  - {Name: int}
-  - {Name: per}
-  - {Name: dex}
-  - {Name: cha}
-  - {Name: hp_bonus}
-  - {Name: mana_bonus}
-  - {Name: acc}
-  - {Name: eva}
+  - {Name: damage          , Display: pre}
+  - {Name: ac               , Display: pre, Display_Name: AC}
+  - {Name: range, Bind: RANGE, Display: norm}
+  - {Name: str              , Display: plus}
+  - {Name: con             , Display: plus}
+  - {Name: aff            , Display: plus}
+  - {Name: int           , Display: plus}
+  - {Name: per          , Display: plus}
+  - {Name: dex          , Display: plus}
+  - {Name: cha           , Display: plus}
+  - {Name: hp_bonus       , Display: plus, Display_Name: HP}
+  - {Name: mana_bonus      , Display: plus, Display_Name: MP}
+  - {Name: acc              , Display: plus, Display_Name: Accuracy}
+  - {Name: eva               , Display: plus, Display_Name: Evasion}
   - {Name: luck_bonus}
-  - {Name: penalty}
-  - {Name: hp_regen,   Form: F SLF}
-  - {Name: mana_regen, Form: F SLF}
-  - {Name: attack_rate}
-  - {Name: movement_speed}
-  - {Name: resist_poison}
-  - {Name: resist_cold}
-  - {Name: resist_burn}
-  - {Name: light, Bind: LIGHT}
+  - {Name: penalty             , Display: bad}
+  - {Name: hp_regen , Float: yes, Display: plus}
+  - {Name: mana_regen, Float: yes, Display: plus}
+  - {Name: attack_rate          , Display: plus}
+  - {Name: movement_speed      , Display: plus}
+  - {Name: resist_poison      , Display: good}
+  - {Name: resist_cold       , Display: good}
+  - {Name: resist_burn      , Display: good}
+  - {Name: light, Bind: LIGHT, Display: norm, Display_Name: Illumination}
   - {Name: g_stack, Bind: GSTACK}
-  - {Name: learn}
   - {Name: throw, Bind: THRO}
   - {Name: consume}
 
@@ -49,29 +47,45 @@ unit:
   - {Name: base_cha}
   - {Name: base_def}
   - {Name: base_luck}
+  - {Name: phys_pois , Bind: POIS_PHYS}
+  - {Name: ment_pois , Bind: POIS_MENT}
+  - {Name: regen_pois, Bind: POIS_REGEN}
+  - {Name: extra_pois, Bind: POIS_EXTRA}
   -
     Name: strength
-    Form: u-base_str i-str +
+    Form: >
+      u-base_str i-str +
+      u-phys_pois 0 > -
     Bind: STR
   -
     Name: constitution
-    Form: u-base_con i-con +
+    Form: >
+      u-base_con i-con +
+      u-phys_pois 0 > -
     Bind: CON
   -
     Name: affinity
-    Form: u-base_aff i-aff + i-penalty -
+    Form: >
+      u-base_aff i-aff + i-penalty -
+      u-ment_pois 0 > -
     Bind: AFF
   -
     Name: intelligence
-    Form: u-base_int i-int +
+    Form: >
+      u-base_int i-int +
+      u-ment_pois 0 > -
     Bind: INT
   -
     Name: perception
-    Form: u-base_per i-per +
+    Form: 
+      u-base_per i-per +
+      u-ment_pois 0 > -
     Bind: PER
   -
     Name: dexterity
-    Form: u-base_dex i-dex +
+    Form: >
+      u-base_dex i-dex +
+      u-phys_pois 0 > -
     Bind: DEX
   -
     Name: charisma
@@ -119,11 +133,11 @@ unit:
     Bind: MELDAMAGE
   -
     Name: ranged_damage
-    Form: 4 i-damage 4
+    Form: 4 i-damage + $shooting + 2 /
     Bind: RANDAMAGE
   -
     Name: res_pois
-    Form: i-resist_poison $resist +
+    Form: i-resist_poison $resistance + u-extra_pois -
     Bind: RESPOIS
   - {Name: hunger, Bind: HUNGER}
   - {Name: stamina, Form: SLF 0 MAX 10000 MIN, Bind: STAMINA}
@@ -147,11 +161,17 @@ unit:
     Bind: MOVESPEED
   -
     Name: hp_reg
-    Form: F 0.2 i-hp_regen +
+    Form: >
+      0.2 i-hp_regen +
+      u-regen_pois 0 > ! *
+    Float: yes
     Bind: HPREGEN
   -
     Name: mana_reg
-    Form: F 0.8 i-mana_regen +
+    Form: >
+      0.8 i-mana_regen +
+      u-regen_pois 0 > ! *
+    Float: yes
     Bind: MANAREGEN
   -
     Name: metabolism
@@ -166,8 +186,4 @@ unit:
   - {Name: graphic_type, Bind: GTYPE}
   - {Name: affliction, Bind: AFFLICTION}
   - {Name: affliction_potency, Bind: AFFLICTION_POTENCY}
-  - {Name: phys_pois , Bind: POIS_PHYS}
-  - {Name: ment_pois , Bind: POIS_MENT}
-  - {Name: regen_pois, Bind: POIS_REGEN}
-  - {Name: extra_pois, Bind: POIS_EXTRA}
   - {Name: confuse   , Bind: CONFUSION}

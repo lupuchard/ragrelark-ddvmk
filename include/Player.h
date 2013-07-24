@@ -35,7 +35,7 @@ struct PlayerSpell {
     unsigned short level;
 };
 
-class Player {
+class Player: boost::noncopyable {
     public:
         Player(PrimeFolder* primeFolder);
         virtual ~Player();

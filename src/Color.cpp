@@ -67,11 +67,11 @@ Color Color::invert() const {
 }
 
 Color Color::darken(float factor) const {
-    return Color(red / factor, green / factor, blue / factor, alpha);
+    return Color((int)(red / factor), (int)(green / factor), (int)(blue / factor), alpha);
 }
 
 Color Color::lighten(float factor) const {
-    return Color(255 - (255 - red) / factor, 255 - (255 - green) / factor, 255 - (255 - blue) / factor, alpha);
+    return Color(255 - (int)((255 - red) / factor), 255 - (int)((255 - green) / factor), 255 - (int)((255 - blue) / factor), alpha);
 }
 
 Color Color::trans(float factor) const {

@@ -116,7 +116,7 @@ Texture* Texture::get(String filename) {
 Texture* Texture::get(int index) {
     return textures[index];
 }
-void Texture::clean() {
+void Texture::clear() {
     for (unsigned int i = 0; i < textures.size(); i++) {
         delete textures[i];
     }

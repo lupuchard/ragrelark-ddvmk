@@ -17,7 +17,6 @@
  */
 
 #include <string>
-#include "StatHolder.h"
 #include "Texture.h"
 
 #ifndef TILE_H
@@ -40,7 +39,7 @@ struct TileSet {
     std::vector<Tile*> tiles;
 };
 
-class Tile : public StatHolder {
+class Tile {
     public:
         Tile(String name, Graphic g, bool blockM = false, bool blockL = false, Tile* over = NULL);
 
@@ -63,7 +62,7 @@ class Tile : public StatHolder {
         static void addSet(TileSet* tileSet);
         static TileSet* getSet(String name);
         static bool hasSet(String name);
-        static void clean();
+        static void clear();
     private:
         Graphic graphic;
         Tile* over;

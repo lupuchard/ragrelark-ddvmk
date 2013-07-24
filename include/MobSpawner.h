@@ -30,26 +30,26 @@
 #include "Texture.h"
 
 typedef std::pair<String, StatHolder*> Mob;
-typedef struct {
+struct MobMod {
     unsigned char min;
     unsigned char max;
     char equipsInEquipsType; //-1 = random, -2 = weighted, -3 = nope
     char dispersion;
     MobEquipSet* mobEquipSet;
-} MobMod;
-typedef struct {
+};
+struct EncLevelEnc {
     Mob mob;
     unsigned int weight;
     MobMod mobMod;
-} EncLevelEnc;
+};
 typedef std::vector<EncLevelEnc> EncounterLevel;
 bool operator<(const RandItemType& left, const RandItemType& right);
 typedef std::set<RandItemType> ItemSpawnSet;
-typedef struct {
+struct Environment {
     String name;
     std::vector<EncounterLevel*> encounterLevels;
     std::vector<std::set<ItemSpawnSet*> > itemSets;
-} Environment;
+};
 
 class MobSpawner {
     public:

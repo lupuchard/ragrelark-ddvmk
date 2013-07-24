@@ -37,10 +37,9 @@ void PrimeFolder::parseInv(YAML::Node node) {
 }
 
 ItemType* PrimeFolder::parseOne(YAML::Node node) {
-    YAML::Node n = node["Tile"];
     Graphic g;
-    g.loc = n[0].as<int>() + n[1].as<int>() * TEX_TILE_WIDTH;
     g.tex = Texture::get(node["Texture"].as<String>());
+    g.loc = readYAMLCoord(node, "Tile", ORIGIN, "Tile loc expected in inventory folder.").index(TEX_TILE_WIDTH);
     ItemType* newItemType = new ItemType(node["Name"].as<String>(), "", g, ItemType::getTypeI(node["Type"].as<String>()));
     return newItemType;
 }

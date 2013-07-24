@@ -36,7 +36,7 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT), name(n) {
         for (int i = 0; i < Stat::getNum(V_UNIT); i++) {
             Stat* stat = Stat::get(V_UNIT, i);
             int si = stat->getIndex();
-            if (stat->getFormula()->getLength() > 1) {
+            if (stat->getFormula()) {
                 if (stat->isItFloat()) {
                     StatHolder::addStatVF(si, prototype->getStatValueF(si));
                 } else {
@@ -49,7 +49,6 @@ Unit::Unit(string n, StatHolder* prototype): StatHolder(V_UNIT), name(n) {
         StatHolder::setStat(Stat::HP, prototype->getStatValue(Stat::MAXHP));
         StatHolder::setStat(Stat::MANA, prototype->getStatValue(Stat::MAXMANA));
     }
-    StatHolder::aThis = this;
     pointOnPath = -1;
     currentPath = NULL;
     theTime = 0;
@@ -149,6 +148,6 @@ bool Unit::hasStat(int stat, bool isFloat) {
     return StatHolder::hasStat(stat, isFloat) || unitPrototype->hasStat(stat, isFloat);
 }
 
-StatHolder* Unit::getProto() {
+const StatHolder* Unit::getProto() {
     return unitPrototype;
 }

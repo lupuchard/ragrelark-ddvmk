@@ -26,9 +26,10 @@
 
 void setMobSpawner(MobSpawner* mobSpawner);
 
-class DungeonStack {
+class DungeonStack: boost::noncopyable {
     public:
         DungeonStack(String name, int depth, GenType genType);
+        DungeonStack(const DungeonStack& other);
         virtual ~DungeonStack();
 
         void setLight(int light, float change = 0.f);

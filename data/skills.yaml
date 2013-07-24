@@ -1,28 +1,145 @@
-combat:
-  - blades
-  - bludgeoning
-  - unarmed
-  - throwing
-  - shooting
-  - polearms
-defense:
-  - stealth
-  - dodge
-  - shields
-  - armor
-  - resist
-  - concentration
-utility:
-  - traps
-  - survival
-  - athletics
-  - intimidation
-  - diplomacy
-  - identification
-spells:
-  - holy
-  - wind
-  - fire
-  - unholy
-  - earth
-  - water
+- combat:
+  - bludgeoning:
+      Texture: menu.png
+      Tile: [10, 0]
+      Linked: [blades, polearms]
+      Display_Loc: [32, 48]
+      Active: no
+  - blades:
+      Texture: menu.png
+      Tile: [11, 0]
+      Linked: [bludgeoning, polearms]
+      Display_Loc: [48, 16]
+      Active: no
+  - polearms:
+      Texture: menu.png
+      Tile: [12, 0]
+      Linked: [bludgeoning, blades]
+      Display_Loc: [64, 48]
+      Active: no
+  - shooting:
+      Texture: menu.png
+      Tile: [13, 0]
+      Linked: [throwing]
+      Display_Loc: [16, 88]
+  - throwing:
+      Texture: menu.png
+      Tile: [14, 0]
+      Linked: [shooting, unarmed]
+      Display_Loc: [48, 88]
+      Active: no
+  - unarmed:
+      Texture: menu.png
+      Tile: [15, 0]
+      Linked: [throwing]
+      Display_Loc: [80, 88]
+- defense:
+  - stealth:
+      Texture: menu.png
+      Tile: [10, 1]
+      Linked: [dodge]
+      Display_Loc: [32, 128]
+      Active: no
+  - dodge:
+      Texture: menu.png
+      Tile: [11, 1]
+      Linked: [stealth, shields]
+      Display_Loc: [64, 128]
+  - shields:
+      Texture: menu.png
+      Tile: [12, 1]
+      Linked: [dodge, armor]
+      Display_Loc: [96, 128]
+      Active: no
+  - armor:
+      Texture: menu.png
+      Tile: [13, 1]
+      Linked: [shields, resistance]
+      Display_Loc: [128, 128]
+      Active: no
+  - resistance:
+      Texture: menu.png
+      Tile: [14, 1]
+      Linked: [armor, concentration]
+      Display_Loc: [160, 128]
+      Active: no
+  - concentration:
+      Texture: menu.png
+      Tile: [15, 1]
+      Linked: [resistance]
+      Display_Loc: [192, 128]
+      Active: no
+- utility:
+  - athletics:
+      Texture: menu.png
+      Tile: [10, 2]
+      Linked: [traps]
+      Display_Loc: [112, 24]
+      Active: no
+  - survival:
+      Texture: menu.png
+      Tile: [11, 2]
+      Linked: [athletics, traps]
+      Display_Loc: [144, 24]
+      Active: no
+  - traps:
+      Texture: menu.png
+      Tile: [12, 2]
+      Linked: [survival, identification]
+      Display_Loc: [176, 24]
+      Active: no
+  - identification:
+      Texture: menu.png
+      Tile: [13, 2]
+      Linked: [traps]
+      Display_Loc: [208, 24]
+      Active: no
+  - diplomacy:
+      Texture: menu.png
+      Tile: [14, 2]
+      Linked: []
+      Display_Loc: [136, 64]
+      Active: no
+  - faith:
+      Texture: menu.png
+      Tile: [15, 2]
+      Linked: []
+      Display_Loc: [184, 64]
+      Active: no
+- spells:
+  - holy:
+      Texture: menu.png
+      Tile: [10, 3]
+      Linked: [water, wind]
+      Display_Loc: [64, 192]
+      Active: no
+  - unholy:
+      Texture: menu.png
+      Tile: [13, 3]
+      Linked: [fire, earth]
+      Display_Loc: [160, 192]
+      Active: no
+  - wind:
+      Texture: menu.png
+      Tile: [11, 3]
+      Linked: [holy, fire, water, earth]
+      Display_Loc: [96, 208]
+      Active: no
+  - water:
+      Texture: menu.png
+      Tile: [15, 3]
+      Linked: [holy, fire, wind, earth]
+      Display_Loc: [96, 176]
+      Active: no
+  - fire:
+      Texture: menu.png
+      Tile: [12, 3]
+      Linked: [unholy, wind, water, earth]
+      Display_Loc: [128, 176]
+      Active: no
+  - earth:
+      Texture: menu.png
+      Tile: [14, 3]
+      Linked: [unholy, wind, water, fire]
+      Display_Loc: [128, 208]
+      Active: no

@@ -251,10 +251,12 @@ void Start::groundGrab() {
 }
 
 void Start::openInventory() {
-    while(folderStack.top() != primeFolder) {
-        folderStack.pop();
+    if (state != STATE_DEAD) {
+        while(folderStack.top() != primeFolder) {
+            folderStack.pop();
+        }
+        state = STATE_MENU;
     }
-    state = STATE_MENU;
 }
 
 void Start::openBag() {
@@ -339,20 +341,21 @@ void Start::action(Skill* skill, int exp) {
         static const String LEVEL_UP_WORDS[] = {"congrats", "wonderful", "sweet", "congradulations", "fantastic", "cool", "fabulous", "incredible", "awesome",
                         "amazing", "brilliant", "super", "great", "admirable", "exceptional", "marvelous", "terrific", "outstanding", "superb",
                         "epic", "woah", "right on", "crazy", "stupendous", "congratz", "astonishing", "beautiful", "breathtaking", "exalting",
-                        "grand", "nice", "impressive", "wondrous", "phenomenal", "nifty", "wow", "fancy", "groovy", "spectacular",
+                        "grand", "nice", "impressive", "neat", "phenomenal", "nifty", "wow", "fancy", "groovy", "spectacular",
                         "commendable", "favorable", "legendary", "swell", "sensational", "splended", "majestic", "wondrous", "acceptable", "fine, be that way"};
         addMessage("You leveled up! " + capitalize(LEVEL_UP_WORDS[std::min(lev - 2, 48)]) + "!", BLACK);
     }
 }
 
 bool Start::init() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        return false;
-    }
+    // init sdl
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) return false;
+
+    // create window
+    SDL_WM_SetIcon(SDL_LoadBMP("icon.bmp"), NULL);
+    SDL_WM_SetCaption("Ragrelark", "Ragrelark");
     display = SDL_SetVideoMode(WIN1_WIDTH + SWIN_WIDTH, WIN1_HEIGHT + CWIN_HEIGHT, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL);
-    if(display == NULL) {
-        return false;
-    }
+    if(display == NULL) return false;
     IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 
     srand(time(NULL));
@@ -426,9 +429,9 @@ void Start::itemRemovalCheck() {
     if (loadStatus > 4) loadStatus = 4;
     if (prevLoad != loadStatus) {
         if (loadStatus > 0) {
-            addStatus(LOAD_NAMES[loadStatus], ENCUMBER_COLOR, 22);
+            addStatus(LOAD_NAMES[loadStatus], ENCUMBER_COLOR, ST_ENCUM);
         } else {
-            removeStatus(22);
+            removeStatus(ST_ENCUM);
         }
     }
 }
@@ -533,7 +536,7 @@ void Start::enterCommand() {
                         Unit* enemy = unitsInRange[stIndex];
                         addItemToPlace(enemy->pos, player->getZone(), item);
                         addProj(player->getUnit()->pos.x * TILE_SIZE, player->getUnit()->pos.y * TILE_SIZE, enemy->pos.x * TILE_SIZE, enemy->pos.y * TILE_SIZE, 10, 0);
-                        shootUnit(player->getUnit(), items[i], unitsInRange[stIndex], player->getZone());
+                        shootUnit(player->getUnit(), *rangedItem, unitsInRange[stIndex], player->getZone());
                         primeFolder->getEquips()->removeExtra();
                         break;
                     }

@@ -18,10 +18,11 @@
 
 #include "Stat.h"
 
-Stat::Stat(String n, Formula* f, unsigned char ind, bool fl): name(n) {
+Stat::Stat(String n, Formula* f, bool fl): name(n) {
     formula = f;
     isFloat = fl;
-    index = ind;
+    index = -1;
+    display = DISP_NONE;
 }
 
 String Stat::getName() {
@@ -40,6 +41,14 @@ unsigned char Stat::getIndex() {
     return index;
 }
 
+StatDisplay Stat::getDisplay() {
+    return display;
+}
+
+String Stat::getDisplayName() {
+    return displayName;
+}
+
 std::vector<Stat*> Stat::unitStats;
 std::vector<Stat*> Stat::worldStats;
 std::vector<Stat*> Stat::itemStats;
@@ -50,7 +59,7 @@ std::map<int, std::vector<Stat::CompleteStat>*> Stat::conAfflictions;
 std::set<Stat*> Stat::itemAfflictions;
 std::set<Stat*> Stat::enemyAfflictions;
 std::map<Skill*, std::set<Stat*> > Stat::skillAfflictions;
-std::vector<Skill> Stat::skills;
+std::vector<Skill*> Stat::skills;
 std::vector<String> Stat::skillCategories;
 std::map<String, Skill*> Stat::skillNameMap;
 bool Stat::donnit = false;
@@ -99,15 +108,17 @@ void Stat::parseSection(YAML::Node node, VOwner owner) {
     for (YAML::const_iterator jter = node.begin(); jter != node.end(); ++jter, j++) {
         YAML::Node n = *jter;
         String statName = readYAMLStr(n, "Name", "nil", "Stat lacks a name!");
+
         String formula = readYAMLStr(n, "Form", "SLF");
-        std::set<std::pair<VOwner, Stat*> > stats;
-        std::set<Skill*> skills;
-        Stat* newStat;
-        if (formula[0] == 'F') {
-            newStat = new Stat(statName, parseFormula(formula.substr(2), stats, skills), stats.size(), true);
+        Formula* newFormula;
+        std::set<std::pair<VOwner, Stat*> > formStats;
+        std::set<Skill*> formSkills;
+        if (formula == "SLF") {
+            newFormula = NULL;
         } else {
-            newStat = new Stat(statName, parseFormula(formula, stats, skills), stats.size(), false);
+            newFormula = parseFormula(formula, formStats, formSkills);
         }
+        Stat* newStat = new Stat(statName, newFormula, readYAMLInt(n, "Float", 0));
         newStat->index = j;
         String bindName = readYAMLStr(n, "Bind", "x");
         if (bindName != "x") {
@@ -115,11 +126,31 @@ void Stat::parseSection(YAML::Node node, VOwner owner) {
                 *bindMap[bindName] = newStat->getIndex();
             } else std::cout << "'" << bindName << "' is not bindable.\n";
         }
-        for (std::set<std::pair<VOwner, Stat*> >::iterator i = stats.begin(); i != stats.end(); ++i) {
-            addAffliction(*i, newStat, owner);
+        if (n["Display"]) {
+            String s = n["Display"].as<String>();
+            if (s == "norm")      newStat->display = DISP_NORM;
+            else if (s == "pre")  newStat->display = DISP_PRE;
+            else if (s == "good") newStat->display = DISP_GOOD;
+            else if (s == "bad")  newStat->display = DISP_BAD;
+            else if (s == "plus") newStat->display = DISP_PLUS;
+            if (n["Display_Name"]) {
+                newStat->displayName = n["Display_Name"].as<String>();
+            } else {
+                newStat->displayName = capitalize(statName);
+                for (unsigned int i = 0; i < newStat->displayName.size(); i++) {
+                    if (newStat->displayName[i] == '_') newStat->displayName[i] = ' ';
+                }
+            }
+
+            newStat->displayName = readYAMLStr(n, "Display_Name", capitalize(newStat->name));
         }
-        for (std::set<Skill*>::iterator i = skills.begin(); i != skills.end(); ++i) {
-            addSkillAffliction(*i, newStat);
+        if (newFormula) {
+            for (std::set<std::pair<VOwner, Stat*> >::iterator i = formStats.begin(); i != formStats.end(); ++i) {
+                addAffliction(*i, newStat, owner);
+            }
+            for (std::set<Skill*>::iterator i = formSkills.begin(); i != formSkills.end(); ++i) {
+                addSkillAffliction(*i, newStat);
+            }
         }
         add(owner, newStat);
     }
@@ -138,14 +169,23 @@ Stat* Stat::get(VOwner type, int statI) {
 bool Stat::has(String name) {
     return (statNameMap.find(name) != statNameMap.end());
 }
-int Stat::add(VOwner type, Stat* stat) {
-    statNameMap[stat->name] = stat;
+void Stat::add(VOwner type, Stat* stat) {
     switch(type) {
-        case V_UNIT: unitStats.push_back(stat); return unitStats.size() - 1; break;
-        case V_WORLD: worldStats.push_back(stat); return worldStats.size() - 1; break;
-        case V_ITEM: itemStats.push_back(stat); return itemStats.size() - 1; break;
-        default: unitStats.push_back(stat); return unitStats.size() - 1; break;
+        case V_UNIT:
+            stat->index = unitStats.size();
+            unitStats.push_back(stat);
+            break;
+        case V_WORLD:
+            stat->index = worldStats.size();
+            worldStats.push_back(stat);
+            break;
+        case V_ITEM:
+            stat->index = itemStats.size();
+            itemStats.push_back(stat);
+            break;
+        default: delete stat; return;
     }
+    statNameMap[stat->name] = stat;
 }
 int Stat::getNum(VOwner type) {
     switch(type) {
@@ -159,13 +199,14 @@ int Stat::getNum(VOwner type) {
 Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& stats, std::set<Skill*>& skills) {
     Formula* newFormula = new Formula(1);
     int start = 0;
-    line = line + " ";
+    char flc = line[line.size() - 1];
+    if (flc != ' ' && flc != '\n') line = line + " ";
     unsigned int i = 0;
     bool tempIsFloat = false;
     for (; i < line.size(); i++) {
         if (line[i] == '.') {
             tempIsFloat = true;
-        } else if (line[i] == ' ') {
+        } else if (line[i] == ' ' || line[i] == '\n') {
             String s = line.substr(start, i - start);
             if ((s[0] >= 48 && s[0] < 58) || (s[0] == '-' && s.size() > 1) || (s[0] == '.' && s.size() > 1)) {
                 if (tempIsFloat) {
@@ -208,14 +249,17 @@ Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& st
                         type = V_SKILL;
                         String skillName = s.substr(1, 100);
                         if (!hasSkill(skillName)) {
-                            std::cout << "There is an ISSUE with a skill in this formula!\n";
+                            std::cout << "a skill in a formula does not exist: " << skillName << "\n";
+                            std::cout << " This formula: " << line << "\n";
                             return NULL;
                         }
                         Skill* skill = getSkill(skillName);
                         aStatConSkill = skill->index;
                         skills.insert(skill);
                     } break;
-                    default: std::cout << "There is something WRONG with this formula!\n"; break;
+                    default:
+                        std::cout << "There is something wrong with this formula! " << s << "\n";
+                        std::cout << " The formula: " << line << "\n"; break;
                 }
                 if (type != V_SKILL) {
                     switch(s[1]) {
@@ -223,14 +267,17 @@ Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& st
                             type = V_STAT;
                             String statName = s.substr(2, 100);
                             if (!has(statName)) {
-                                std::cout << "There is an ISSUE with a stat in this formula!\n";
+                                std::cout << "A stat in a formula does not exist: " << statName << "\n";
+                                std::cout << " This formula: " << line << "\n";
                                 return NULL;
                             }
                             Stat* stat = get(statName);
                             aStatConSkill = stat->getIndex();
                             stats.insert(std::pair<VOwner, Stat*>(target, stat));
                         } break;
-                        default: std::cout << "There is something INCORRECT about this formula!\n"; break;
+                        default:
+                            std::cout << "There is something incorrect about this formula!\n";
+                            std::cout << " The formula: " << line << "\n"; break;
                     }
                 }
                 newFormula->pushVar(target, type, aStatConSkill);
@@ -318,18 +365,43 @@ void Stat::addSkillAffliction(Skill* afflictingSkill, Stat* afflictedStat) {
     }
 }
 
+typedef std::vector<std::pair<Skill*, std::vector<YAML::Node> > > TempLinks;
 void Stat::parseSkills(YAML::Node fileNode) {
     int i = 0;
-    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter, i++) {
-        String categoryName = iter->first.as<String>();
+    for (YAML::const_iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter, i++) {
+        YAML::Node categoryNode = iter->begin()->second;
+        String categoryName = iter->begin()->first.as<String>();
         skillCategories.push_back(categoryName);
-        for (YAML::Node::iterator jter = iter->second.begin(); jter != iter->second.end(); ++jter) {
-            Skill newSkill;
-            newSkill.name = jter->as<String>();
-            newSkill.category = i;
-            newSkill.index = skills.size();
+        TempLinks tempLinks;
+        for (YAML::const_iterator jter = categoryNode.begin(); jter != categoryNode.end(); ++jter) {
+            Skill* newSkill = new Skill;
+            newSkill->name = jter->begin()->first.as<String>();
+            newSkill->category = i;
+            newSkill->index = skills.size();
+
+            YAML::Node skillNode = jter->begin()->second;
+            newSkill->graphic.tex = Texture::get(readYAMLStr(skillNode, "Texture", "xx", "Texture expected for skill."));
+            newSkill->graphic.loc = readYAMLCoord(skillNode, "Tile", ORIGIN, "Tile expected for skill.").index(TEX_TILE_WIDTH);
+            newSkill->displayLoc = readYAMLCoord(skillNode, "Display_Loc", ORIGIN, "Display loc expected for this skill.");
+            newSkill->active = readYAMLInt(skillNode, "Active", true);
+
             skills.push_back(newSkill);
-            skillNameMap[newSkill.name] = &skills[skills.size() - 1];
+            skillNameMap[newSkill->name] = newSkill;
+
+            YAML::Node linkedNode = skillNode["Linked"];
+            tempLinks.push_back(std::make_pair(newSkill, std::vector<YAML::Node>()));
+            for (YAML::const_iterator kter = linkedNode.begin(); kter != linkedNode.end(); ++kter) {
+                YAML::Node n = *kter;
+                tempLinks[tempLinks.size() - 1].second.push_back(n);
+            }
+        }
+        for (TempLinks::iterator jter = tempLinks.begin(); jter != tempLinks.end(); ++jter) {
+            for (unsigned int j = 0; j < jter->second.size(); j++) {
+                String sn = jter->second[j].as<String>();
+                if (skillNameMap.find(sn) != skillNameMap.end()) {
+                    jter->first->linked.push_back(skillNameMap[sn]);
+                }
+            }
         }
     }
 }
@@ -337,11 +409,38 @@ int Stat::getNumSkills() {
     return skills.size();
 }
 Skill* Stat::getSkill(int index) {
-    return &skills[index];
+    return skills[index];
 }
 Skill* Stat::getSkill(String name) {
     return skillNameMap[name];
 }
 bool Stat::hasSkill(String name) {
     return (skillNameMap.find(name) != skillNameMap.end());
+}
+void Stat::clear() {
+    for (unsigned int i = 0; i < unitStats.size(); i++) {
+        delete unitStats[i];
+    }
+    unitStats.clear();
+    for (unsigned int i = 0; i < worldStats.size(); i++) {
+        delete worldStats[i];
+    }
+    worldStats.clear();
+    for (unsigned int i = 0; i < itemStats.size(); i++) {
+        delete itemStats[i];
+    }
+    itemStats.clear();
+    statNameMap.clear();
+    afflictions.clear();
+    conAfflictions.clear();
+    itemAfflictions.clear();
+    enemyAfflictions.clear();
+    skillAfflictions.clear();
+    for (unsigned int i = 0; i < skills.size(); i++) {
+        delete skills[i];
+    }
+    skills.clear();
+    skillCategories.clear();
+    skillNameMap.clear();
+    bindMap.clear();
 }

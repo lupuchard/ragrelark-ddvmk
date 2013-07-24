@@ -49,7 +49,7 @@ void Start::ai(Unit* unit, Zone* zone) {
     bool inZone = zone == player->getZone(); //whether the player is in this zone or not. monsters outside the zone will always just sit still
     Unit* target = player->getUnit();
     switch(ai) {
-        case AI_STILL: unit->theTime += 10; break;//just stands still
+        case AI_STILL: unit->theTime += 10; break; //just stands still
         case AI_HOSTILE: {
             if (inZone && unit->pointOnPath == -1) { //this means that a path does not exist so one needs to be created first
                 if (visibilities[unit->pos.index(zone->getWidth())]) {
@@ -104,7 +104,7 @@ void Start::followPath(Unit* unit, Zone* zone) {
         } else {
             unit->pointOnPath = -1;
             unit->theTime += 20;
-            //cout << "mob move mistake " << dir << " " << cx << " " << cy << " " << unit->x << " " << unit->y << endl;
+            //std::cout << "mob move mistake " << dir << " " << cx << " " << cy << " " << unit->x << " " << unit->y << std::endl;
         }
     }
 }
@@ -116,22 +116,18 @@ void Start::playerWalkStaminaDrain(int* movSpeed, int tim, Unit* unit) {
             case 1:
                 *movSpeed -= 1;
                 unit->modifyStat(Stat::STAMINA, -tim);
-                //debankExp(unit, SKL_LIFT, 1);
                 break;
             case 2:
                 *movSpeed -= 2;
                 unit->modifyStat(Stat::STAMINA, -tim * 3 / 2);
-                //debankExp(unit, SKL_LIFT, 2);
                 break;
             case 3:
                 *movSpeed -= 3;
                 unit->modifyStat(Stat::STAMINA, -tim * 2);
-                //debankExp(unit, SKL_LIFT, 3);
                 break;
             default:
                 *movSpeed -= 4;
                 unit->modifyStat(Stat::STAMINA, -tim * 5 / 2);
-                //debankExp(unit, SKL_LIFT, 4);
                 break;
         }
         int stam = unit->getStatValue(Stat::STAMINA);
@@ -143,7 +139,7 @@ void Start::playerWalkStaminaDrain(int* movSpeed, int tim, Unit* unit) {
     }
 }
 
-/* Moves a unit in a zone in a direction!!???!? */
+/* Moves a unit in a zone in a direction */
 void Start::moveUnit(Unit* unit, Zone* zone, int dir) {
     if (unit->getStatValue(Stat::CONFUSION)) {
         int newDir = rand() % 11;
@@ -342,17 +338,6 @@ String Start::defenderNoun(Unit* attacker, Unit* defender) {
     }
 }
 
-void Start::hitSapping(Unit* attacker, Unit* defender, int criticality) {
-    switch(criticality) {
-        //case 4: sapExp(attacker, defender, SKL_CRIT, 3); break;
-        //case 3: sapExp(attacker, defender, SKL_CRIT, 1); break;
-        case 1: //sapExp(attacker, defender, SKL_CRIT, 1);
-                sapExp(defender, attacker, Stat::getSkill(SKL_DODGE), 1); break;
-        case 0: sapExp(defender, attacker, Stat::getSkill(SKL_DODGE), 1); break;
-        default: break;
-    }
-}
-
 Color critColors[] = {Color(95, 31, 31), Color(63, 0, 0), MAROON, BRICK, RED};
 
 void Start::pfaf(int stat, int potency, Unit* u) {
@@ -373,9 +358,7 @@ BattleSummary Start::attackUnit(int power, float accuracy, const WeapType* weapT
     float damage = defDam(power, defender->getStatValue(Stat::DEFENSE));
     damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
     int hitType;
-
     hitCMod(defender, damage, accuracy, hitType, sum);
-
     raga.rAttack(defender->pos, dir, weapType->damageType, hitType);
 
     if (damage) {
@@ -432,7 +415,7 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 unit->setEnemy(loc->unit);
                 Unit* defender = loc->unit;
 
-                WeapType* weapType;
+                WeapType* weapType = NULL;
                 bool unarmed = true;
                 if (unit == player->getUnit()) {
                     for (int i = 0; i < primeFolder->getEquips()->getNumItems(); i++) {
@@ -453,7 +436,7 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                         }
                     }
                 }
-                if (unarmed) weapType = ItemType::getWeapType(unit->getStatValue(Stat::UNARMED));
+
 
                 unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(Stat::ATTACKSPEED));
                 BattleSummary bs;
@@ -468,7 +451,12 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 FlavorClass fc = (FlavorClass)unit->getStatValue(Stat::AFFLICTION);
                 if (fc) f.add(fc, unit->getStatValue(Stat::AFFLICTION_POTENCY));
 
-                bs = attackUnit(unit->getStatValue(Stat::UNARMDAMAGE), unit->getStatValue(Stat::ACC), weapType, defender, zone, dir, f);
+                if (unarmed) {
+                    weapType = ItemType::getWeapType(unit->getStatValue(Stat::UNARMED));
+                    bs = attackUnit(unit->getStatValue(Stat::UNARMDAMAGE), unit->getStatValue(Stat::ACC), weapType, defender, zone, dir, f);
+                } else {
+                    bs = attackUnit(unit->getStatValue(Stat::MELDAMAGE), unit->getStatValue(Stat::ACC), weapType, defender, zone, dir, f);
+                }
 
                 Color c = critColors[bs.criticality];
                 String verb;
@@ -483,9 +471,8 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 }
 
                 if (!bs.killed && bs.hit) {
+                    if (bs.dodge) sapExp(defender, unit, Stat::getSkill(SKL_DODGE), 1);
                     if (unarmed) sapExp(unit, defender, skll(SKL_UNARMED), 1);
-                    //else sapExp(unit, defender, SKL_MELEE, 1);
-                    //sapExp(defender, unit, SKL_FORT, 1);
                 } else if (bs.killed) {
                     extra += " to death";
                 }
@@ -507,10 +494,11 @@ void Start::shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone) 
         BattleSummary bs;
         WeapType* weapType = shooter.getType()->getType()->weapType;
         bs = attackUnit(attacker->getStatValue(Stat::RANDAMAGE), attacker->getStatValue(Stat::ACC), weapType, defender, zone, 0);
-        if (bs.hit) {
-            //sapExp(attacker, defender, SKL_RANGE, 1);
-            //sapExp(defender, attacker, SKL_FORT, 1);
+        if (!bs.killed) {
+            if (bs.dodge) sapExp(defender, attacker, Stat::getSkill(SKL_DODGE), 1);
+            if (bs.hit) sapExp(attacker, defender, Stat::getSkill(SKL_SHOOT), 1);
         }
+
         Color c = critColors[bs.criticality];
         String verb;
         String u1name;
@@ -527,6 +515,7 @@ void Start::shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone) 
     }
 }
 
+//TODO finish method
 void Start::projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from) {
     String verb, u1name, u2name;
 
@@ -571,6 +560,12 @@ void Start::makeSplatter(Unit* unit, Zone* zone, Coord pos) {
 }
 
 void Start::killUnit(Unit* unit, Zone* zone) {
+    if (unit == player->getUnit()) {
+        addMessage("GAME OVER", BLACK);
+        addStatus("dead", WHITE, ST_DEAD);
+        state = STATE_DEAD;
+        return;
+    }
     Location* locOfDeath = zone->getLocationAt(unit->pos);
     locOfDeath->removeUnit();
     areaUnits.erase(std::pair<Unit*, Zone*>(unit, zone));
@@ -591,9 +586,6 @@ void Start::killUnit(Unit* unit, Zone* zone) {
         }
     }
     unit->pos = Coord(-2, -2);
-    if (unit == player->getUnit()) {
-        addMessage("GAME OVER HAHA", BLACK);
-    }
     if (unit->graphic.border) unitDeleteList.push_back(unit);
     else delete unit;
 }

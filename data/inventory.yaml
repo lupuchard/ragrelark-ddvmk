@@ -1,15 +1,15 @@
 Ground:
   Name: ground
-  Texture: items3.png
-  Tile: [14, 1]
+  Texture: menu.png
+  Tile: [10, 4]
   Type: ground folder
 Equipment:
   Name: equipment
-  Texture: items3.png
-  Tile: [14, 0]
+  Texture: menu.png
+  Tile: [9, 4]
   Type: equipment folder
 Bag:
   Name: bag
-  Texture: items3.png
-  Tile: [15, 0]
+  Texture: menu.png
+  Tile: [8, 4]
   Type: bag folder

@@ -26,7 +26,6 @@
 #include "Item.h"
 
 enum PathType{PATH_NORMAL, PATH_PASSUNITS, PATH_STAIRS, PATH_FLEE};
-
 struct Path {
     int len;
     Coord* pathLocs; //x = -2 = stairs
@@ -45,15 +44,24 @@ class Unit: public StatHolder {
     public:
         Unit(String n, StatHolder* prototype);
         virtual ~Unit();
-        void move(int dir);
+
+        /// The position of the unit in it's current zone.
         Coord pos;
+
+        /// The time the world was at when this unit finished it's last action.
         int theTime;
+
+        /// The name of the unit.
         String name;
+
+        /// The graphic of the unit. Exists in the Prototype but is also stored here for efficiency.
         Graphic graphic;
 
+        /// The current path that the unit is taking, created by the pather.
         Path* currentPath;
         short pointOnPath;
-        unsigned short actionState;
+
+        /// The equipment the unit is holding, if any.
         MobEquips* equipment;
 
         void setStat(int stat, int value);
@@ -62,13 +70,15 @@ class Unit: public StatHolder {
         void setStatF(int stat, float value);
         virtual float getStatValueF(int stat);
         virtual float modifyStatF(int stat, float amount);
-
         void needToUpdate(int stat, bool isFloat);
         bool hasStat(int stat, bool isFloat);
+
+        /// Sets the unit's current enemy. Set right before attacking to calculate damage stats.
         void setEnemy(Unit* enemy);
         Unit* getEnemy();
 
-        StatHolder* getProto();
+        /// The Units prototype, another StatHolder that holds stats shared among units of the same type.
+        const StatHolder* getProto();
     private:
         StatHolder* unitPrototype;
         Unit* currentEnemy;

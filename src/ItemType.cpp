@@ -19,8 +19,7 @@
 #include "ItemType.h"
 #include "Texture.h"
 
-ItemType::ItemType(String n, String desc, Graphic g, int t): StatHolder(V_ITEM), name(n), description(desc) {
-    graphic = g;
+ItemType::ItemType(String n, String desc, Graphic g, int t): StatHolder(V_ITEM), name(n), description(desc), graphic(g) {
     type = t;
     add(this);
 }
@@ -135,17 +134,8 @@ void ItemType::parse(YAML::Node fileNode) {
     String description = readYAMLStr(fileNode, "Desc", "");
     Graphic g;
 
-    String texStr = readYAMLStr(fileNode, "Texture", "", "Item lacks a Texture!");
-    if (!texStr.empty()) g.tex = Texture::get(texStr);
-    else g.tex = NULL;
-
-    YAML::Node n = fileNode["Tile"];
-    if (n.IsSequence()) {
-        g.loc = n[0].as<int>() + n[1].as<int>() * TEX_TILE_WIDTH;
-    } else {
-        std::cout << "Item lacks a tile loc (Tile: [x, y])!\n";
-        g.loc = 0;
-    }
+    g.tex = Texture::get(readYAMLStr(fileNode, "Texture", "xx", "Item lacks a Texture!"));
+    g.loc = readYAMLCoord(fileNode, "Tile", ORIGIN, "Item lacks a Tile loc!").index(TEX_TILE_WIDTH);
 
     int type;
     String typeStr = readYAMLStr(fileNode, "Type", "", "Item lacks a type!");
@@ -173,15 +163,8 @@ void ItemType::parse(YAML::Node fileNode) {
         } else if (t == "small") {
             equipped.type = EQG_SMALL;
         } else equipped.type = EQG_NONE;
-        String texName = readYAMLStr(eNode, "Texture", texStr, "Item equipped graphic lacks a texture!");
-        equipped.tex = Texture::get(texName);
-        YAML::Node en = eNode["Tile"];
-        if (en.IsSequence()) {
-            equipped.loc = en[0].as<int>() + en[1].as<int>() * TEX_TILE_WIDTH * 2;
-        } else {
-            std::cout << "Item equipped graphic lacks a tile loc (Tile: [x, y])!\n";
-            equipped.loc = 0;
-        }
+        equipped.tex = Texture::get(readYAMLStr(eNode, "Texture", "xx", "Item equipped graphic lacks a texture!"));
+        equipped.loc = readYAMLCoord(eNode, "Tile", ORIGIN, "Item equipped graphic lacks a tile loc!").index(TEX_TILE_WIDTH * 2);
         newItemType->setEquippedGraphic(equipped);
     }
 
@@ -214,10 +197,7 @@ void ItemType::parseSlots(YAML::Node fileNode) {
         s->name = readYAMLStr(curNode, "Name", "");
         s->quantity = readYAMLInt(curNode, "Quantity", 1);
         s->timeEquip = readYAMLInt(curNode, "Time_Equip", 20);
-        YAML::Node obn = curNode["On_Body"];
-        if (obn.IsSequence()) {
-            s->onBody = Coord(obn[0].as<int>(), obn[1].as<int>());
-        }
+        s->onBody = readYAMLCoord(curNode, "On_Body", ORIGIN);
         if (curNode["Over"]) {
             YAML::Node n = curNode["Over"];
             for (YAML::const_iterator jter = n.begin(); jter != n.end(); ++jter) {
@@ -230,15 +210,8 @@ void ItemType::parseSlots(YAML::Node fileNode) {
         } else {
             YAML::Node n = curNode["Tile"];
             Graphic g;
-            if (n.IsSequence()) {
-                g.loc = n[0].as<int>() + n[1].as<int>() * TEX_TILE_WIDTH;
-            } else {
-                std::cout << "Slot lacks a tile index!\n";
-                g.loc = 0;
-            }
-            String texStr = readYAMLStr(curNode, "Texture", "", "Item lacks a Texture!");
-            if (!texStr.empty()) g.tex = Texture::get(texStr);
-            else g.tex = 0;
+            g.tex = Texture::get(readYAMLStr(curNode, "Texture", "xx", "Item lacks a Texture!"));
+            g.loc = readYAMLCoord(curNode, "Tile", ORIGIN, "Slot lacks a tile index!").index(TEX_TILE_WIDTH);
             ItemType* emptySlot = new ItemType(s->name, "", g, 3);
             for (int i = 0; i < s->quantity; i++) emptySlots.push_back(emptySlot);
 
@@ -251,9 +224,10 @@ void ItemType::parseSlots(YAML::Node fileNode) {
     numSlots = index;
 }
 void ItemType::parseTypes(YAML::Node fileNode) {
-    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
+    int i = 0;
+    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter, i++) {
         ItemTypeType type;
-        YAML::Node curNode = iter->second;
+        YAML::Node curNode = *iter;
         type.name = readYAMLStr(curNode, "Name", "", "Item type type doesn't have name.");
         String slot = readYAMLStr(curNode, "Slot", "xx");
         if (slot == "xx") type.slot = NULL;
@@ -293,9 +267,8 @@ void ItemType::parseTypes(YAML::Node fileNode) {
             }
         }
 
-        int index = iter->first.as<int>();
-        itemTypeTypes[index] = type;
-        itemTypeTypeNameMap[type.name] = index;
+        itemTypeTypes[i] = type;
+        itemTypeTypeNameMap[type.name] = i;
     }
 }
 int ItemType::getNumSlots() {
@@ -382,7 +355,7 @@ WeapType* ItemType::getWeapType(int type) {
 WeapType* ItemType::getWeapType(String type) {
     return weapTypeNameMap[type];
 }
-void ItemType::clean() {
+void ItemType::clear() {
     itemTypeTypeNameMap.clear();
     for (unsigned int i = 0; i < itemTypes.size(); i++) {
         delete itemTypes[i];

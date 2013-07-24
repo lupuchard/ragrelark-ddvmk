@@ -11,8 +11,8 @@ taste: 2
 ---
 Name: cheese
 Desc: Ordinary cheddar cheese.
-Texture: items3.png
-Tile: [9, 1]
+Texture: items.png
+Tile: [7, 0]
 Type: food
 feed: 121
 weight: 5
