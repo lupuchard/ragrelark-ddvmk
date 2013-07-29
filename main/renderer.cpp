@@ -26,7 +26,7 @@
 #define SHOWN_ITEM_STATS_MIN 7
 #define SHOWN_ITEM_STATS_MAX 24
 
-static const String MENU_ACTION_NAMES[] = {"(R)ead", "E(x)amine", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(R)ead", "E(x)amine"};
+static const String MENU_ACTION_NAMES[] = {"(t)hrow", "To ba(G)", "(d)rop", "E(Q)uip", "(e)at", "(t)hrow", "To ba(G)"};
 
 static const char ARROW_X[] = {0, 16, 32, 48, 64,  0, 16, 32, 48, 64};
 static const char ARROW_Y[] = {0,  0,  0,  0,  0, 16, 16, 16, 16, 16};
@@ -223,41 +223,6 @@ void Start::renderSidePanels() {
                 }
             }
         }
-        /*static const int numFunctionalSkills = 12;
-        static const SkillType functionalSkills[] = {SKL_MELEE, SKL_UNARM, SKL_LIFT, SKL_FORT, SKL_RPOIS, SKL_CHANN, SKL_QCAST, SKL_LEARN, SKL_SEARC, SKL_DODGE, SKL_RANGE, SKL_CRIT};
-        int soff = WIN1_WIDTH + SWIN_WIDTH - 4;
-        int k = 0;
-        for (int i = 0; i < numFunctionalSkills; i++) {
-            int level = player->getSkillLevel(functionalSkills[i]);
-            if (true) {
-                renderText(capitalize(SKILL_NAMES[functionalSkills[i]]), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, OLIVE.darken());
-                int eve = player->getSkillExpPercent(functionalSkills[i]);
-                String s = " (";
-                if (eve < 10) s = "  (";
-                int leve = level / 10;
-                int evel = level % 10;
-                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, OLIVE.darken());
-                k++;
-            }
-        }
-        for (std::map<int, PlayerSpell>::iterator i = player->getSpellsBegin(); i != player->getSpellsEnd(); ++i) {
-            int level = i->second.level;
-            if (true) {
-                int spellIndex = i->first << 2;
-                renderText(capitalize(getAbility(spellIndex)->getName()), 2, WIN1_WIDTH + loff, toff + k * 20, Z_MENU + 2, LEFT, TEAL.darken());
-                int eve = i->second.exp * 100 / (int)(pow(level + 1, 1.1) * 2.f);
-                String s = " (";
-                if (eve < 10) s = "  (";
-                int leve = level / 10;
-                int evel = level % 10;
-                renderText(its(leve) + "." + its(evel) + s + its(eve) + "%)", 2, soff, toff + k * 20, Z_MENU + 2, RIGHT, TEAL.darken());
-                k++;
-            }
-        }
-        if (!k) {
-            renderText("I'm sorry, but you currently", 2, WIN1_WIDTH + loff, toff, Z_MENU + 2, LEFT, BLACK);
-            renderText("lack any skill levels.", 2, WIN1_WIDTH + loff, toff + 20, Z_MENU + 2, LEFT, BLACK);
-        }*/ // TODO menu skill rendering
     }
 
     if (botPanel == PANEL_MINIMAP) {
@@ -446,7 +411,7 @@ void Start::renderMenu() {
                 lines.push_back(std::make_pair("", BLACK));
 
                 int weightValue = selectedItemType->getStatValue(Stat::WEIGHT);
-                lines.push_back(std::make_pair(" Weight: " + its(weightValue) + " peb.", weightColors[numDigits0(weightValue)]));
+                lines.push_back(std::make_pair(" Weight: " + its(weightValue) + " pebbles", weightColors[numDigits0(weightValue)]));
                 int valueValue = selectedItemType->getStatValue(Stat::VALUE);
                 lines.push_back(std::make_pair(" Value: " + its(valueValue) + " cp", valueColors[numDigits0(valueValue)]));
 

@@ -35,8 +35,8 @@ class Ability {
         int getI();
 
         //statics
-        static void parse(YAML::Node fileNode);
-        static void parseElem(YAML::Node fileNode);
+        static void parse(YAML::Node fileNode, std::ostream& lerr);
+        static void parseElem(YAML::Node fileNode, std::ostream& lerr);
         static Ability* get(int index);
         static Ability* get(bool wind, bool earth, bool water, bool fire, bool phys, bool ment, bool light, bool dark, int power);
         static Ability* get(String name);

@@ -92,14 +92,19 @@
 -
   Name: arrow
   Stack: 250
+  Weap_Type: arrow
 -
   Name: bolt
   Stack: 250
+  Weap_Type: arrow
 -
   Name: sling ammo
   Stack: 250
+  Weap_Type: sling
 -
   Name: dart
+  Stack: 250
+  Weap_Type: norm
 -
   Name: axe
   Slot: main hand
@@ -121,7 +126,7 @@
   Skill: shooting
   Ranged: yes
   Ammo: arrow
-  Weap_Type: shoot
+  Weap_Type: club
 -
   Name: dagger
   Slot: main hand
@@ -133,14 +138,14 @@
   Skill: shooting
   Ranged: yes
   Ammo: sling ammo
-  Weap_Type: shoot
+  Weap_Type: whip
 -
   Name: crossbow
   Slot: both hands
   Skill: shooting
   Ranged: yes
   Ammo: bolt
-  Weap_Type: shoot
+  Weap_Type: club
 -
   Name: spear
   Slot: both hands
@@ -161,6 +166,11 @@
   Slot: both hands
   Skill: bludgeoning
   Weap_Type: hammer
+-
+  Name: whip
+  Slot: main hand
+  Skill: bludgeoning
+  Weap_Type: whip
 -
   Name: knife
   Slot: main hand
@@ -217,7 +227,6 @@
 -
   Name: shield
   Slot: offhand
-  Skill: shields
 -
   Name: spellbook
   Slot: offhand
@@ -226,6 +235,9 @@
   Slot: offhand
 -
   Name: cape
+  Slot: back
+-
+  Name: cloak
   Slot: back
 -
   Name: necklace

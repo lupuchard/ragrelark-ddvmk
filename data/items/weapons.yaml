@@ -2,17 +2,22 @@
 Name: spear
 Desc: A pole weapon consisting of a wooden shaft with a pointed head. While typically used for hunting and fishing, it suits combat just as well.
 Texture: equipment.png
-Equipped: {Texture: player.png, Tile: [0, 16], Size: tall}
 Tile: [6, 7]
+Equipped: {Texture: player.png, Tile: [0, 16], Size: tall}
 Type: spear
+weight: 195
 damage: 3
+throw: 3
+alt: splendid spear
 ...
 ---
 Name: halberd
 Desc: A halberd consists of an axe blade topped with a spike mounted on a long shaft. Halberds are very versatile in battle.
 Texture: equipment.png
 Tile: [6, 8]
+Equipped: {Texture: player.png, Tile: [7, 16], Size: tall}
 Type: halberd
+weight: 390
 damage: 3
 ...
 ---
@@ -20,70 +25,126 @@ Name: trident
 Desc: A three pronged spear. More hostile than a pitchfork.
 Texture: equipment.png
 Tile: [6, 9]
+Equipped: {Texture: player.png, Tile: [5, 16], Size: tall}
 Type: trident
+weight: 130
 damage: 3
+throw: 2
 ...
 ---
 Name: glaive
 Desc: A weapon consisting of a single-edged blade at the end of a pole.
 Texture: equipment.png
 Tile: [6, 10]
+Equipped: {Texture: player.png, Tile: [3, 16], Size: tall}
 Type: glaive
+weight: 325
 damage: 4
 attack_rate: -1
+alt: stern glaive
 ...
 ---
 Name: scythe
 Desc: A sharp scary farming tool that has been adapted for combat.
 Texture: equipment.png
 Tile: [6, 11]
+Equipped: {Texture: player.png, Tile: [8, 16], Size: tall}
 Type: scythe
+weight: 320
 damage: 4
 accuracy: -1
+...
+---
+Name: crystal spear
+Texture: equipment.png
+Tile: [6, 12]
+Equipped: {Texture: player.png, Tile: [1, 16], Size: tall}
+Type: spear
+weight: 225
+damage: 4
+alt: silvery spear
+throw: 3
+...
+---
+Name: javelin
+Texture: equipment.png
+Tile: [6, 13]
+Equipped: {Texture: player.png, Tile: [0, 16], Size: tall}
+Type: spear
+weight: 145
+damage: 2
+throw: 4
 ...
 ---
 Name: dagger
 Desc: A short blade with a sharply-tapered point. Can be used for slashing or stabbing.
 Texture: equipment.png
 Tile: [7, 7]
+Equipped: {Texture: player.png, Tile: [0, 14], Size: tall}
 Type: dagger
+weight: 35
 damage: 1
 attack_rate: 1
 accuracy: 1
+throw: 3
+alt: sharp dagger
+...
+---
+Name: knife
+Texture: equipment.png
+Tile: [7, 12]
+Equipped: {Texture: player.png, Tile: [8, 15], Size: small}
+Type: knife
+weight: 15
+damage: 1
+throw: 2
+alt: serrated knife
 ...
 ---
 Name: axe
 Desc: An implement designed to shape, split and cut wood. Can also shape, split and cut flesh.
 Texture: equipment.png
 Tile: [7, 8]
+Equipped: {Texture: player.png, Tile: [2, 14], Size: small}
 Type: axe
+weight: 70
 damage: 2
+throw: 2
+alt: shitty axe
 ...
 ---
 Name: battle axe
 Desc: An axe designed specifically for combat, instead of wood.
 Texture: equipment.png
 Tile: [7, 9]
+Equipped: {Texture: player.png, Tile: [5, 14], Size: tall}
 Type: axe
+weight: 190
 damage: 2
 accuracy: 1
+alt: sturdy axe
 ...
 ---
 Name: greataxe
 Desc: A two-handed, double headed battle axe.
 Texture: equipment.png
 Tile: [7, 10]
+Equipped: {Texture: player.png, Tile: [4, 14], Size: tall}
 Type: greataxe
+weight: 400
 damage: 4
 accuracy: 1
 attack_rate: -2
+alt: strong battleaxe
 ...
 ---
 Name: sword
-Desc: The most effective standard weapon. It's a shame they were all destroyed.
+Desc: The most effective standard weapon.
 Texture: equipment.png
 Tile: [7, 11]
+Equipped: {Texture: player.png, Tile: [9, 14], Size: tall}
 Type: sword
+weight: 135
 damage: 3
 attack_rate: 1
 ...
@@ -92,62 +153,189 @@ Name: club
 Desc: A short fat wooden stick.
 Texture: equipment.png
 Tile: [8, 7]
+Equipped: {Texture: player.png, Tile: [0, 12], Size: tall}
 Type: club
+weight: 110
 damage: 2
+throw: 1
+alt: simple club
 ...
 ---
 Name: mace
 Desc: A blunt weapon that consists of a metal staff with a heavy iron head.
 Texture: equipment.png
 Tile: [8, 8]
+Equipped: {Texture: player.png, Tile: [11, 12], Size: tall}
 Type: mace
+weight: 220
 damage: 3
 attack_rate: -1
+alt: sadistic mace
 ...
 ---
 Name: flail
 Desc: A stick with a chain with a spiked head attacked to the chain that you hit things with.
 Texture: equipment.png
 Tile: [8, 9]
+Equipped: {Texture: player.png, Tile: [12, 12], Size: tall}
 Type: flail
+weight: 160
 damage: 4
 attack_rate: -1
 accuracy: -2
+alt: severe flail
 ...
 ---
 Name: large hammer
 Desc: The enemies are the nails.
 Texture: equipment.png
 Tile: [8, 10]
+Equipped: {Texture: player.png, Tile: [13, 12], Size: tall}
 Type: hammer
+weight: 240
 damage: 4
 attack_rate: -1
 accuracy: -1
+alt: sledge hammer
 ...
 ---
 Name: quarterstaff
 Desc: A long wooden pole used to partake in stick fighting.
 Texture: equipment.png
 Tile: [8, 11]
+Equipped: {Texture: player.png, Tile: [14, 12], Size: tall}
 Type: staff
+weight: 130
 damage: 2
 attack_rate: 1
+alt: sanguine staff
+...
+---
+Name: huge club
+Desc: A very big club for large creatures.
+Texture: equipment.png
+Tile: [8, 12]
+Equipped: {Texture: player.png, Tile: [3, 12], Size: tall}
+Type: club
+weight: 440
+damage: 6
+penalty: 5
+alt: sizeable club
+...
+---
+Name: whip
+Texture: equipment.png
+Tile: [8, 13]
+Type: whip
+weight: 100
+damage: 3
+accuracy: -2
+attack_rate: 1
+throw: -2
 ...
 ---
 Name: bow
 Desc: The standard archery tool.
 Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [0, 18], Size: tall}
 Tile: [9, 7]
 Type: bow
+weight: 145
 damage: 1
+alt: sleek bow
+...
+---
+Name: longbow
+Desc: Does more damage than standard bows.
+Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [5, 18], Size: tall}
+Tile: [9, 8]
+Type: bow
+weight: 160
+damage: 2
+accuracy: -1
+alt: swift longbow
+...
+---
+Name: arrow
+Desc: Bow ammunition.
+Texture: equipment.png
+Tile: [9, 9]
+Type: arrow
+weight: 5
+damage: 1
+break: 30%
+alt: simplistic arrow
+...
+---
+Name: iron arrow
+Desc: Breaks less often than normal arrows.
+Texture: equipment.png
+Tile: [9, 10]
+Type: arrow
+weight: 8
+damage: 1
+break: 10%
+alt: short dark arrow
 ...
 ---
 Name: crossbow
 Desc: A bow mounted on a stock. This particular crossbow is less accurate than most.
 Texture: equipment.png
-Tile: [9, 8]
+Tile: [10, 7]
+Equipped: {Texture: player.png, Tile: [7, 18], Size: tall}
 Type: crossbow
+weight: 210
 damage: 1
 attack_rate: 1
 accuracy: -1
+...
+---
+Name: dwarven crossbow
+Texture: equipment.png
+Tile: [10, 8]
+Equipped: {Texture: player.png, Tile: [8, 18], Size: tall}
+Type: crossbow
+weight: 215
+damage: 1
+attack_rate: 1
+...
+---
+Name: bolt
+Desc: crossbow ammunition
+Texture: equipment.png
+Tile: [10, 9]
+Type: bolt
+weight: 6
+damage: 1
+break: 20%
+...
+---
+Name: sling
+Texture: equipment.png
+Tile: [11, 7]
+Equipped: {Texture: player.png, Tile: [9, 18], Size: tall}
+Type: sling
+weight: 11
+damage: 1
+accuracy: -1
+...
+---
+Name: sling ammo
+Texture: equipment.png
+Tile: [11, 8]
+Type: sling ammo
+weight: 16
+damage: 1
+throw: 1
+break: 10%
+...
+---
+Name: dart
+Texture: equipment.png
+Tile: [11, 9]
+Type: dart
+damage: 1
+throw: 5
+break: 40%
 ...

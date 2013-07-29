@@ -1,9 +1,18 @@
 item:
+    # Type: int (in pebbles; one pebble is 14 grams)
   - {Name: weight, Bind: WEIGHT}
+
+    # Type: int
   - {Name: value , Bind: VALUE}
+
+    # Type: int
   - {Name: feed  , Bind: FEED}
+
+    # Type: undefined enum
   - {Name: taste , Bind: TASTE}
-  - {Name: damage          , Display: pre}
+
+    # These all add to the corresponding unit stat.
+  - {Name: damage, Bind: DAM, Display: pre}
   - {Name: ac               , Display: pre, Display_Name: AC}
   - {Name: range, Bind: RANGE, Display: norm}
   - {Name: str              , Display: plus}
@@ -18,19 +27,26 @@ item:
   - {Name: acc              , Display: plus, Display_Name: Accuracy}
   - {Name: eva               , Display: plus, Display_Name: Evasion}
   - {Name: luck_bonus}
-  - {Name: penalty             , Display: bad}
   - {Name: hp_regen , Float: yes, Display: plus}
   - {Name: mana_regen, Float: yes, Display: plus}
   - {Name: attack_rate          , Display: plus}
   - {Name: movement_speed      , Display: plus}
   - {Name: resist_poison      , Display: good}
-  - {Name: resist_cold       , Display: good}
-  - {Name: resist_burn      , Display: good}
-  - {Name: light, Bind: LIGHT, Display: norm, Display_Name: Illumination}
-  - {Name: g_stack, Bind: GSTACK}
-  - {Name: throw, Bind: THRO}
-  - {Name: consume}
 
+    # Type: int (for heavy armors, lowers affinity and evasion)
+  - {Name: penalty             , Display: bad}
+
+    # Type: int (makes an item put off light of a certain intensity when equipped or on the ground)
+  - {Name: light, Bind: LIGHT, Display: norm, Display_Name: Illumination}
+
+    # Type: undefined enum (affects how the graphic changes when the item is in a stack)
+  - {Name: g_stack, Bind: GSTACK}
+
+    # Type: int (how well this item can be thrown)
+  - {Name: throw, Bind: THRO}
+
+  - {Name: break, Bind: BREAK}
+  - {Name: alt, Bind: ALT}
 unit:
   - {Name: experience, Bind: EXP}
   - {Name: level     , Bind: LEVEL}

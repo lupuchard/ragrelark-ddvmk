@@ -19,63 +19,68 @@
 #include "Start.h"
 
 /* Loads ALL the data. */
-void Start::loadData() {
-    using namespace std;
+bool Start::loadData() {
+    std::cout << "Parsing yaml files..." << std::endl;
 
-    cout << "Parsing yaml files..." << endl;
-
-    yamlSingle("data/skills.yaml"           , Stat::parseSkills);
-    yamlSingle("data/stats.yaml"            , Stat::parseAll);
-    yamlSingle("data/prototype_stats.yaml"  , boost::bind(&MobSpawner::parseDefaultStats, mobSpawner, _1));
-    yamlSingle("data/spell_elem.yaml"       , Ability::parseElem);
-    yamlMulti("data/spells"                 , Ability::parse);
-    yamlSingle("data/weap_types.yaml"       , ItemType::parseWeapTypes);
-    yamlSingle("data/item_slots.yaml"       , ItemType::parseSlots);
-    yamlSingle("data/item_type_types.yaml"  , ItemType::parseTypes);
+    if (yamlSingle("data/skills.yaml"           , Stat::parseSkills)) return true;
+    if (yamlSingle("data/stats.yaml"            , Stat::parseAll)) return true;
+    if (yamlSingle("data/prototype_stats.yaml"  , boost::bind(&MobSpawner::parseDefaultStats, mobSpawner, _1, _2))) return true;
+    if (yamlSingle("data/spell_elem.yaml"       , Ability::parseElem)) return true;
+    if (yamlMulti("data/spells"                 , Ability::parse)) return true;
+    if (yamlSingle("data/weap_types.yaml"       , ItemType::parseWeapTypes)) return true;
+    if (yamlSingle("data/item_slots.yaml"       , ItemType::parseSlots)) return true;
+    if (yamlSingle("data/item_type_types.yaml"  , ItemType::parseTypes)) return true;
 
     primeFolder = new PrimeFolder();
     player = new Player(primeFolder);
     initFieldOfView();
 
-    yamlSingle("data/inventory.yaml"        , boost::bind(&PrimeFolder::parseInv, primeFolder, _1));
-    yamlMulti("data/items"                  , ItemType::parse);
-    yamlSingle("data/items_tiled.yaml"      , boost::bind(&TiledLoader::parseItems, tiledLoader, _1));
-    yamlMulti("data/units"                  , boost::bind(&MobSpawner::parseMob, mobSpawner, _1));
-    yamlSingle("data/units_tiled.yaml"      , boost::bind(&TiledLoader::parseUnits, tiledLoader, _1));
-    yamlSingle("data/spawn/rarities.yaml"   , boost::bind(&MobSpawner::parseRarities, mobSpawner, _1));
-    yamlSingle("data/spawn/mob_equipment.yaml", MobEquipSet::parseAll);
-    yamlMulti("data/spawn/items"            , boost::bind(&MobSpawner::parseItems, mobSpawner, _1));
-    yamlMulti("data/spawn/mobs"             , boost::bind(&MobSpawner::parseSpawn, mobSpawner, _1));
-    yamlMulti("data/tiles"                  , boost::bind(&TiledLoader::parseTiles, tiledLoader, _1));
-    yamlSingle("data/tile_groups.yaml"      , Tile::parseSets);
-    yamlSingle("data/areas.yaml"            , boost::bind(&World::parseArea, world, _1));
-    yamlSingle("data/maps.yaml"             , boost::bind(&World::parseZone, world, _1, tiledLoader, mobSpawner));
-    yamlSingle("data/player.yaml"           , boost::bind(&Start::parsePlayer, this, _1));
+    if (yamlSingle("data/inventory.yaml"        , boost::bind(&PrimeFolder::parseInv, primeFolder, _1, _2))) return true;
+    if (yamlMulti("data/items"                  , ItemType::parse)) return true;
+    ItemType::postParse(loadErrStream);
+    if (yamlSingle("data/items_tiled.yaml"      , boost::bind(&TiledLoader::parseItems, tiledLoader, _1, _2))) return true;
+    if (yamlMulti("data/units"                  , boost::bind(&MobSpawner::parseMob, mobSpawner, _1, _2))) return true;
+    if (yamlSingle("data/units_tiled.yaml"      , boost::bind(&TiledLoader::parseUnits, tiledLoader, _1, _2))) return true;
+    if (yamlSingle("data/spawn/rarities.yaml"   , boost::bind(&MobSpawner::parseRarities, mobSpawner, _1, _2))) return true;
+    if (yamlSingle("data/spawn/mob_equipment.yaml", MobEquipSet::parseAll)) return true;
+    if (yamlMulti("data/spawn/items"            , boost::bind(&MobSpawner::parseItems, mobSpawner, _1, _2))) return true;
+    if (yamlMulti("data/spawn/mobs"             , boost::bind(&MobSpawner::parseSpawn, mobSpawner, _1, _2))) return true;
+    if (yamlMulti("data/tiles"                  , boost::bind(&TiledLoader::parseTiles, tiledLoader, _1, _2))) return true;
+    if (yamlSingle("data/tile_groups.yaml"      , Tile::parseSets)) return true;
+    if (yamlSingle("data/areas.yaml"            , boost::bind(&World::parseArea, world, _1, _2))) return true;
+    if (yamlSingle("data/maps.yaml"             , boost::bind(&World::parseZone, world, _1, _2, tiledLoader, mobSpawner))) return true;
+    if (yamlSingle("data/player.yaml"           , boost::bind(&Start::parsePlayer, this, _1, _2))) return true;
 
-    cout << "All done with data loading." << endl;
+    std::cout << "All done with data loading." << std::endl;
+    return false;
 }
 
-void Start::yamlSingle(String file, boost::function<void(YAML::Node)> parseFunc) {
-    if (file.substr(file.size() - 4) != "yaml" && file.substr(file.size() - 3) != "yml") return;
+bool Start::yamlSingle(String file, boost::function<void(YAML::Node, std::ostream&)> parseFunc) {
+    if (file.substr(file.size() - 4) != "yaml" && file.substr(file.size() - 3) != "yml") return false;
     std::cout << "Parsing " << file << ".\n";
     try {
         YAML::Node node = YAML::Load(file);
         std::vector<YAML::Node> itemNodes = YAML::LoadAllFromFile(file);
         for (std::vector<YAML::Node>::iterator iter = itemNodes.begin(); iter != itemNodes.end(); ++iter) {
-            parseFunc(*iter);
+            parseFunc(*iter, loadErrStream);
+            if (!loadErrStream.str().empty()) {
+                std::cerr << loadErrStream.str() << "  Aborting!" << std::endl;
+                return true;
+            }
         }
     } catch(YAML::ParserException& ex) {
         std::cout << ex.what() << "\n";
     }
+    return false;
 }
 
-void Start::yamlMulti(String directory, boost::function<void(YAML::Node)> parseFunc) {
+bool Start::yamlMulti(String directory, boost::function<void(YAML::Node, std::ostream&)> parseFunc) {
     using namespace boost::filesystem;
     path p = directory;
     try {
         if (exists(p) && is_directory(p)) {
             for (directory_iterator iter = directory_iterator(p); iter != directory_iterator(); ++iter) {
-                yamlSingle(iter->path().native(), parseFunc);
+                if (yamlSingle(iter->path().native(), parseFunc)) return true;
             }
         } else {
             std::cout << "Error: path not a directory" << std::endl;
@@ -83,6 +88,7 @@ void Start::yamlMulti(String directory, boost::function<void(YAML::Node)> parseF
     } catch(const filesystem_error& ex) {
         std::cout << ex.what() << "\n";
     }
+    return false;
 }
 
 void Start::deleteData() {

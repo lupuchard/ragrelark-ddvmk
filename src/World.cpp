@@ -44,18 +44,18 @@ Zone* World::getZone(String name) {
     return zoneNameMap[name];
 }
 
-void World::parseArea(YAML::Node fileNode) {
-    String name = readYAMLStr(fileNode, "Name", "nil", "Name expected.");
+void World::parseArea(YAML::Node fileNode, std::ostream& lerr) {
+    String name = readYAMLStr(fileNode, "Name", "nil", "Name expected.", lerr);
     int width = fileNode["Dim"][0].as<int>();
     Area* newArea = new Area(width);
     addArea(newArea);
     areaNameMap[name] = newArea;
 }
 
-void World::parseZone(YAML::Node fileNode, TiledLoader* tiledLoader, MobSpawner* mobSpawner) {
-    String areaName = readYAMLStr(fileNode, "Area", "nil", "Area expected.");
+void World::parseZone(YAML::Node fileNode, std::ostream& lerr, TiledLoader* tiledLoader, MobSpawner* mobSpawner) {
+    String areaName = readYAMLStr(fileNode, "Area", "nil", "Area expected.", lerr);
     if (areaNameMap.find(areaName) != areaNameMap.end()) {
-        String name = readYAMLStr(fileNode, "Name", "nil", "Name expected.");
+        String name = readYAMLStr(fileNode, "Name", "nil", "Name expected.", lerr);
         Area* area = areaNameMap[areaName];
         Zone* newZone = NULL;
         if (fileNode["Stack"]) {
@@ -67,10 +67,10 @@ void World::parseZone(YAML::Node fileNode, TiledLoader* tiledLoader, MobSpawner*
             int depth = readYAMLInt(stackNode, "Num_Floors", 10);
             DungeonStack* dungeonStack = new DungeonStack(name, depth, gen);
 
-            String tilesetName = readYAMLStr(stackNode, "Tileset", "nil", "Tileset expected.");
+            String tilesetName = readYAMLStr(stackNode, "Tileset", "nil", "Tileset expected.", lerr);
             if (Tile::hasSet(tilesetName)) {
                 dungeonStack->setTileset(Tile::getSet(tilesetName));
-            } else std::cout << "'" << tilesetName << "' is not an existing tileset.\n";
+            } else lerr << "'" << tilesetName << "' is not an existing tileset.\n";
 
             dungeonStack->setLight(readYAMLInt(stackNode, "Light", 8), readYAMLNum(stackNode, "LightMod", 0));
             dungeonStack->setNumStairs(readYAMLInt(stackNode, "Stairs", 1), readYAMLNum(stackNode, "StairsMod", 0));
@@ -87,7 +87,7 @@ void World::parseZone(YAML::Node fileNode, TiledLoader* tiledLoader, MobSpawner*
             area->addDungeonStack(dungeonStack);
             dunNameMap[name] = dungeonStack;
         } else if (fileNode["File"]) {
-            newZone = tiledLoader->loadTileFile(fileNode["File"].as<String>(), name);
+            newZone = tiledLoader->loadTileFile(fileNode["File"].as<String>(), name, lerr);
             area->addZone(newZone);
             zoneNameMap[name] = newZone;
         }
@@ -105,11 +105,11 @@ void World::parseZone(YAML::Node fileNode, TiledLoader* tiledLoader, MobSpawner*
                     } else if (dunNameMap.find(zoneName) != dunNameMap.end()) {
                         DungeonStack* ds = dunNameMap[zoneName];
                         area->addConnection(Connection{pos, ds->addEntryStairs(), newZone, ds->getZone(0)});
-                    } else std::cout << "'" << name << "' is not the name of an existing zone or dungeon stack.\n";
+                    } else lerr << "'" << name << "' is not the name of an existing zone or dungeon stack.\n";
                 } else {
-                    std::cout << "expected From and To in the connection" << std::endl;
+                    lerr << "expected From and To in the connection" << std::endl;
                 }
             }
         }
-    } else std::cout << "Area does not exist: " << areaName << "\n";
+    } else lerr << "Area does not exist: " << areaName << "\n";
 }

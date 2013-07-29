@@ -75,7 +75,7 @@ int MobEquipSet::getRandIndex() {
 
 std::map<String, MobEquipSet*> MobEquipSet::mobEquipSetNameMap;
 
-void MobEquipSet::parseAll(YAML::Node fileNode) {
+void MobEquipSet::parseAll(YAML::Node fileNode, std::ostream& lerr) {
     for (YAML::const_iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
         String name = iter->first.as<String>();
         YAML::Node setNode = iter->second;
@@ -87,7 +87,7 @@ void MobEquipSet::parseAll(YAML::Node fileNode) {
                 if (ItemType::has(name)) {
                     newMobEquipsSet->addEquipToEquips(ei, ItemType::get(name));
                 } else {
-                    std::cout << "'" << name << "' is not an existing item.\n";
+                    lerr << "'" << name << "' is not an existing item.\n";
                 }
             }
         }

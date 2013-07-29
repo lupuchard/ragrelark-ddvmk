@@ -85,7 +85,16 @@
   Type: slash
   Verb_Hit: slash
 -
-  Name: shoot
+  Name: arrow
   Type: pierce
   Verb_Scrape: poorly shoot
   Verb_Hit: shoot
+-
+  Name: whip
+  Type: bludgeon
+  Verb_Crit: whip
+-
+  Name: sling
+  Type: bludgeon
+  Verb_Scrape: [poorly sling at, poorly slings at]
+  Verb_Crit: fwack

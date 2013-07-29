@@ -38,7 +38,7 @@ class MobEquipSet {
         int getNumEquipTypes();
 
         //statics
-        static void parseAll(YAML::Node);
+        static void parseAll(YAML::Node, std::ostream& lerr);
         static MobEquipSet* get(String name);
         static bool has(String name);
         static void clear();

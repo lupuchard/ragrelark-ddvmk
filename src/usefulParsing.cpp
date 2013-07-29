@@ -88,6 +88,9 @@ bool isSPair(string s) {
     return true;
 }
 
+bool isPercent(string s) {
+    return isNum(s.substr(0, s.size() - 1)) && s[s.size() - 1] == '%';
+}
 bool isNum(string s) {
     if ((s[0] < 48 || s[0] >= 58) && s[0] != '.' && s[0] != '-') {
         return false;
@@ -270,16 +273,16 @@ string toRomanNumerals(int num) {
     return s;
 }
 
-String readYAMLStr(YAML::Node& node, String key, String def, String errorMess) {
+String readYAMLStr(YAML::Node& node, String key, String def, String errorMess, std::ostream& lerr) {
     YAML::Node n = node[key];
     if (n) {
         return n.as<String>();
     } else {
-        if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
+        if (!errorMess.empty()) lerr << " err: " << errorMess << "\n";
         return def;
     }
 }
-int readYAMLInt(YAML::Node& node, String key, int def, String errorMess) {
+int readYAMLInt(YAML::Node& node, String key, int def, String errorMess, std::ostream& lerr) {
     YAML::Node n = node[key];
     if (n) {
         String s = n.as<String>();
@@ -287,45 +290,34 @@ int readYAMLInt(YAML::Node& node, String key, int def, String errorMess) {
         else if (s == "no") return 0;
         return node[key].as<int>();
     } else {
-        if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
+        if (!errorMess.empty()) lerr << " err: " << errorMess << "\n";
         return def;
     }
 }
-float readYAMLNum(YAML::Node& node, String key, float def, String errorMess) {
+float readYAMLNum(YAML::Node& node, String key, float def, String errorMess, std::ostream& lerr) {
     YAML::Node n = node[key];
     if (n) {
         return n.as<float>();
     } else {
-        if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
+        if (!errorMess.empty()) lerr << " err: " << errorMess << "\n";
         return def;
     }
 }
-Coord readYAMLCoord(YAML::Node& node, String key, Coord def, String errorMess) {
+Coord readYAMLCoord(YAML::Node& node, String key, Coord def, String errorMess, std::ostream& lerr) {
     YAML::Node n = node[key];
     if (n.IsSequence() && n.size() == 2) {
         return Coord(n[0].as<int>(), n[1].as<int>());
     } else {
-        if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
+        if (!errorMess.empty()) lerr << " err: " << errorMess << "\n";
         return def;
     }
 }
-
-String indexYAMLStr(YAML::Node& node, int key, String def, String errorMess)  {
-    YAML::Node n = node[key];
-    if (n) {
-        return n.as<String>();
-    } else {
-        if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
-        return def;
-    }
-}
-
-int indexYAMLInt(YAML::Node& node, int key, int def, String errorMess) {
+int indexYAMLInt(YAML::Node& node, int key, int def, String errorMess, std::ostream& lerr) {
     YAML::Node n = node[key];
     if (n) {
         return n.as<int>();
     } else {
-        if (!errorMess.empty()) std::cout << " err: " << errorMess << "\n";
+        if (!errorMess.empty()) lerr << " err: " << errorMess << "\n";
         return def;
     }
 }

@@ -3,15 +3,20 @@ Name: robe
 Desc: A very comfy loose fitting garment.
 Texture: equipment.png
 Tile: [1, 7]
+Equipped: {Texture: player.png, Tile: [8, 2], Size: tall}
 Type: clothes
+weight: 200
 ac: 1
+alt: shabby shirt
 ...
 ---
 Name: hide armor
 Desc: Armor fashioned from the skin of a dead animal.
 Texture: equipment.png
 Tile: [1, 8]
+Equipped: {Texture: player.png, Tile: [9, 2], Size: tall}
 Type: light armor
+weight: 1100
 ac: 1
 ...
 ---
@@ -19,16 +24,21 @@ Name: leather armor
 Desc: Armor fashioned from the tanned skin of a dead animal.
 Texture: equipment.png
 Tile: [1, 9]
+Equipped: {Texture: player.png, Tile: [2, 2], Size: tall}
 Type: light armor
+weight: 700
 ac: 2
 penalty: 1
+alt: sensible leather armor
 ...
 ---
 Name: ring mail
 Desc: An armor constructed as a series of metallic rings sewn onto a fabric. 
 Texture: equipment.png
 Tile: [1, 10]
+Equipped: {Texture: player.png, Tile: [10, 2], Size: tall}
 Type: medium armor
+weight: 1120
 ac: 4
 penalty: 2
 ...
@@ -37,7 +47,9 @@ Name: scale mail
 Desc: Scale armor is not actually made from dead animal scales, but instead small metal plates fashioned into the shape of scales.
 Texture: equipment.png
 Tile: [1, 11]
+Equipped: {Texture: player.png, Tile: [11, 2], Size: tall}
 Type: medium armor
+weight: 1400
 ac: 5
 penalty: 3
 ...
@@ -46,7 +58,9 @@ Name: chainmail
 Desc: A type of armor consisting of small metal rings linked together. It is difficult to penetrate using conventional weapons.
 Texture: equipment.png
 Tile: [1, 12]
+Equipped: {Texture: player.png, Tile: [10, 4], Size: large}
 Type: medium armor
+weight: 1800
 ac: 6
 penalty: 4
 ...
@@ -55,7 +69,9 @@ Name: banded mail
 Desc: Chainmail reinforced with bands of leather. Strictly inferior to splint mail.
 Texture: equipment.png
 Tile: [1, 13]
+Equipped: {Texture: player.png, Tile: [12, 4], Size: large}
 Type: heavy armor
+weight: 1600
 ac: 7
 penalty: 5
 ...
@@ -64,16 +80,260 @@ Name: splint mail
 Desc: Chainmail with strips of metal glued on.
 Texture: equipment.png
 Tile: [1, 14]
+Equipped: {Texture: player.png, Tile: [12, 2], Size: large}
 Type: heavy armor
+weight: 1900
 ac: 8
 penalty: 5
+alt: stylish iron armor
 ...
 ---
 Name: plate armor
 Desc: A heavy armor constructed out of steel plates.
 Texture: equipment.png
 Tile: [1, 15]
+Equipped: {Texture: player.png, Tile: [7, 2], Size: tall}
 Type: heavy armor
+weight: 2200
 ac: 10
 penalty: 6
+alt: spoff plate armor
+...
+---
+Name: cloak
+Desc: A heavy leather cloak. Dungeons can be very cold; keep yourself warm.
+Texture: equipment.png
+Tile: [0, 7]
+Equipped: {Texture: player.png, Tile: [8, 6], Size: large}
+Type: cloak
+weight: 220
+ac: 1
+eva: -1
+...
+---
+Name: silk cloak
+Desc: A soft cloak of silk.
+Texture: equipment.png
+Tile: [0, 8]
+Equipped: {Texture: player.png, Tile: [10, 6], Size: large}
+Type: cloak
+weight: 120
+ac: 1
+...
+---
+Name: thaumaturgic cloak
+Desc: A popular sort of cloak among spellcasters. A silk cloak enchanted to improve channeling abilities.
+Texture: equipment.png
+Tile: [0, 9]
+Equipped: {Texture: player.png, Tile: [12, 6], Size: large}
+Type: cloak
+weight: 125
+ac: 1
+mana_regen: 2
+...
+---
+Name: royal cloak
+Texture: equipment.png
+Tile: [0, 10]
+Equipped: {Texture: player.png, Tile: [14, 6], Size: tall}
+Type: cloak
+weight: 130
+ac: 1
+cha: 1
+eva: -1
+...
+---
+Name: pointed hat
+Desc: The traditional wizard's hat.
+Texture: equipment.png
+Tile: [2, 7]
+Equipped: {Texture: player.png, Tile: [0, 5], Size: small}
+Type: hat
+weight: 25
+mana_regen: 1
+alt: smart pointy hat
+...
+---
+Name: cap
+Desc: A feathered leather hat.
+Texture: equipment.png
+Tile: [2, 8]
+Equipped: {Texture: player.png, Tile: [2, 4], Size: small}
+Type: hat
+weight: 35
+ac: 1
+alt: splendid leather cap
+...
+---
+Name: etched helmet
+Desc: A helmet with an opening etched in so that you can see (and breathe).
+Texture: equipment.png
+Tile: [2, 9]
+Equipped: {Texture: player.png, Tile: [3, 4], Size: small}
+Type: helmet
+weight: 215
+ac: 2
+penalty: 1
+...
+---
+Name: visored helmet
+Desc: Offers more protection than the etched helmet but less visibility.
+Texture: equipment.png
+Tile: [2, 10]
+Equipped: {Texture: player.png, Tile: [3, 5], Size: small}
+Type: helmet
+weight: 220
+ac: 3
+penalty: 1
+per: -2
+...
+---
+Name: buckler
+Desc: A small shield, gripped in the fist. Offers some protection without getting in the way.
+Texture: equipment.png
+Tile: [3, 7]
+Equipped: {Texture: player.png, Tile: [0, 10], Size: tall}
+Type: shield
+weight: 60
+eva: 1
+alt: sensible wooden board
+...
+---
+Name: round shield
+Desc: A circular shield that offers decent protection.
+Texture: equipment.png
+Tile: [3, 8]
+Equipped: {Texture: player.png, Tile: [5, 10], Size: tall}
+Type: shield
+weight: 260
+ac: 1
+eva: 1
+penalty: 1
+alt: smooth round wooden shield
+...
+---
+Name: kite shield
+Desc: A shield shaped like a kite.
+Texture: equipment.png
+Tile: [3, 9]
+Equipped: {Texture: player.png, Tile: [4, 10], Size: tall}
+Type: shield
+weight: 220
+eva: 2
+penalty: 1
+...
+---
+Name: tower shield
+Desc: A very large shield, nearly as tall as a person. 
+Texture: equipment.png
+Tile: [3, 10]
+Equipped: {Texture: player.png, Tile: [6, 10], Size: tall}
+Type: shield
+weight: 1400
+ac: 3
+eva: 1
+penalty: 2
+...
+---
+Name: orb
+Texture: equipment.png
+Tile: [3, 11]
+Equipped: {Texture: player.png, Tile: [7, 10], Size: tall}
+Type: offhand
+weight: 300
+aff: 1
+per: 1
+...
+---
+Name: boots
+Texture: equipment.png
+Tile: [4, 7]
+Equipped: {Texture: player.png, Tile: [0, 6], Size: long}
+Type: boots
+weight: 140
+ac: 1
+alt: sculptural clogs
+...
+---
+Name: large boots
+Texture: equipment.png
+Tile: [4, 8]
+Equipped: {Texture: player.png, Tile: [2, 6], Size: long}
+Type: boots
+weight: 260
+ac: 2
+penalty: 1
+...
+---
+Name: sandals
+Texture: equipment.png
+Tile: [4, 9]
+Equipped: {Texture: player.png, Tile: [2, 7], Size: long}
+Type: shoes
+weight: 25
+movement_speed: 1
+alt: speedy boots
+...
+---
+Name: green boots
+Texture: equipment.png
+Tile: [4, 10]
+Equipped: {Texture: player.png, Tile: [0, 7], Size: long}
+Type: boots
+weight: 240
+ac: 2
+...
+---
+Name: spectacles
+Texture: equipment.png
+Tile: [4, 10]
+Equipped: {Texture: player.png, Tile: [2, 5], Size: small}
+Type: face
+weight: 2
+per: 1
+...
+---
+Name: gloves
+Texture: equipment.png
+Tile: [4, 7]
+Equipped: {Texture: player.png, Tile: [2, 8], Size: long}
+Type: gloves
+weight: 12
+ac: 1
+alt: sane leather gloves
+...
+---
+Name: mittens
+Desc: Compfy, but makes it hard to use your hands.
+Texture: equipment.png
+Tile: [4, 8]
+Equipped: {Texture: player.png, Tile: [4, 8], Size: long}
+Type: mittens
+weight: 10
+ac: 1
+attack_speed: -1
+...
+---
+Name: runed gloves
+Desc: Enchanted silk gloves.
+Texture: equipment.png
+Tile: [4, 9]
+Equipped: {Texture: player.png, Tile: [6, 8], Size: long}
+Type: gloves
+weight: 14
+ac: 1
+dex: 1
+aff: 1
+alt: silky blue gloves
+...
+---
+Name: gauntlets
+Desc: Metal gloves.
+Texture: equipment.png
+Tile: [5, 10]
+Equipped: {Texture: player.png, Tile: [4, 9], Size: long}
+Type: gauntlets
+weight: 90
+ac: 2
+penalty: 1
 ...

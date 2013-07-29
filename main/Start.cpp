@@ -19,8 +19,6 @@
 #include "Start.h"
 
 Start::Start() {
-    done = false;
-
     selected = 0;
     state = STATE_PLAY;
     stateAction = SA_NONE;
@@ -31,19 +29,20 @@ Start::Start() {
     topPanel = PANEL_TOPSTART + 1;
     botPanel = PANEL_BOTTOMSTART + 1;
     notesSelected = 0;
-
     loadStatus = 0;
-
     shiftIsDown = false;
 
     messages.reserve(MAX_MESSAGES);
 
-    prepare();
+    primeFolder = NULL;
+    player = NULL;
+
+    done = prepare();
 }
 
 Start::~Start() { }
 
-void Start::prepare() {
+bool Start::prepare() {
     Stat::setFormUser(this);
     setEnvironmentManager(this);
     mobSpawner = new MobSpawner(this);
@@ -52,9 +51,8 @@ void Start::prepare() {
 
     world = new World();
 
-    done = !init();
-
-    loadData();
+    if (!init()) return true;
+    if (loadData()) return true;
     startRenderer();
 
     Item* primeFolders = primeFolder->getItems();
@@ -70,13 +68,15 @@ void Start::prepare() {
     }
     findAreaUnits();
 
+    playerFieldOfView(true);
+
     addMessage("Welcome to game great fun play.", BLACK);
+    return false;
 }
 
 void Start::execute() {
     int numFrames = 0;
     //Uint32 startTime = SDL_GetTicks();
-    playerFieldOfView(true);
     while(!done) {
         events();
         logic();
@@ -192,19 +192,13 @@ Item Start::removeItemFromPlace(Coord c, Zone* z, int index) {
 Skill* Start::skll(SkillE skillIndex) {
     return Stat::getSkill(skillIndex);
 }
-/*Stat*  Start::stUn(UnitStatE statIndex) {
-    return Stat::get(V_UNIT, statIndex);
-}
-Stat*  Start::stIt(ItemStatE statIndex) {
-    return Stat::get(V_ITEM, statIndex);
-}*/
 
-void Start::parsePlayer(YAML::Node n) {
+void Start::parsePlayer(YAML::Node n, std::ostream& lerr) {
     player->setName(readYAMLStr(n, "Name", "anonymous"));
     player->setUnitProto(mobSpawner->getMob(readYAMLStr(n, "Unit", "player")).second);
     player->setArea(world->getArea(readYAMLStr(n, "Area", "no area specified")));
     Zone* zone = world->getZone(readYAMLStr(n, "Zone", "no zone specified"));
     player->setZone(zone);
-    player->getUnit()->pos = Coord(n["Loc"][0].as<int>(), n["Loc"][1].as<int>());
+    player->getUnit()->pos = readYAMLCoord(n, "Loc", ORIGIN);
     zone->getLocationAt(player->getUnit()->pos)->unit = player->getUnit();
 }

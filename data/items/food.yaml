@@ -1,15 +1,5 @@
 ---
-Name: apple
-Desc: A generic tasty fruit. Tastes like fruit.
-Texture: items.png
-Tile: [9, 1]
-Type: food
-feed: 91
-weight: 4
-taste: 2
-...
----
-Name: cheese
+Name: cheese ration
 Desc: Ordinary cheddar cheese.
 Texture: items.png
 Tile: [7, 0]
@@ -19,14 +9,60 @@ weight: 5
 taste: 1
 ...
 ---
-Name: carrot
-Desc: The best vegetable.
+Name: eggs ration
 Texture: items.png
-Tile: [12, 1]
+Tile: [7, 0]
 Type: food
-feed: 30
-weight: 4
+feed: 120
+weight: 5
+taste: 1
+...
+---
+Name: bread ration
+Texture: items.png
+Tile: [7, 0]
+Type: food
+feed: 121
+weight: 5
 taste: 2
+alt: pie ration
+...
+---
+Name: pie ration
+Texture: items.png
+Tile: [7, 0]
+Type: food
+feed: 124
+weight: 5
+taste: 1
+...
+---
+Name: fish ration
+Texture: items.png
+Tile: [7, 0]
+Type: food
+feed: 121
+weight: 5
+taste: 2
+...
+---
+Name: meat ration
+Texture: items.png
+Tile: [7, 0]
+Type: food
+feed: 123
+weight: 5
+taste: 1
+alt: fish ration
+...
+---
+Name: green bean
+Texture: items.png
+Tile: [7, 1]
+Type: food
+feed: 6
+weight: 1
+taste: 10
 ...
 ---
 Name: banana
@@ -39,24 +75,43 @@ weight: 4
 taste: 1
 ...
 ---
-Name: grape
-Desc: Tasty.
+Name: pumpkin
+Desc: An entire pumpkin. You have to eat it all at once.
 Texture: items.png
-Tile: [7, 1]
+Tile: [9, 1]
 Type: food
-feed: 4
-weight: 0
-taste: 1
+feed: 1000
+weight: 330
+taste: 9
 ...
 ---
-Name: lemon
-Desc: Sour.
+Name: plum
 Texture: items.png
 Tile: [10, 1]
 Type: food
-feed: 20
+feed: 12
+weight: 2
+taste: 2
+alt: apricot
+...
+---
+Name: apricot
+Texture: items.png
+Tile: [11, 1]
+Type: food
+feed: 17
 weight: 3
-taste: 6
+taste: 2
+...
+---
+Name: olive
+Texture: items.png
+Tile: [12, 1]
+Type: food
+feed: 4
+weight: 0
+taste: 2
+g_stack: 2
 ...
 ---
 Name: citris fruit
@@ -64,37 +119,126 @@ Desc: It's like a clementine or an orange or something. They all look the same t
 Texture: items.png
 Tile: [7, 2]
 Type: food
-feed: 6
+feed: 69
+weight: 10
+taste: 2
+...
+---
+Name: eggplant
+Texture: items.png
+Tile: [8, 2]
+Type: food
+feed: 126
+weight: 40
+taste: 10
+...
+---
+Name: cave mushroom
+Desc: A common mushroom that can grow in very dim enviroments. It's edible and probably won't kill you.
+Texture: items.png
+Tile: [9, 2]
+Type: food
+feed: 30
+weight: 5
+taste: 0
+...
+---
+Name: lemon
+Desc: Sour.
+Texture: items.png
+Tile: [10, 2]
+Type: food
+feed: 20
+weight: 3
+taste: 6
+alt: lime
+...
+---
+Name: lime
+Texture: items.png
+Tile: [11, 2]
+Type: food
+feed: 20
+weight: 4
+taste: 6
+...
+---
+Name: strawberry
+Texture: items.png
+Tile: [12, 2]
+Type: food
+feed: 4
+weight: 1
+taste: 1
+g_stack: 2
+...
+---
+Name: carrot
+Desc: The best vegetable.
+Texture: items.png
+Tile: [7, 3]
+Type: food
+feed: 30
 weight: 4
 taste: 2
 ...
 ---
-Name: broccoli
+Name: garlic
+Desc: A full crown of garlic.
 Texture: items.png
-Tile: [14, 1]
+Tile: [8, 3]
 Type: food
-feed: 30
+feed: 48
 weight: 3
-taste: 5
+taste: 8
 ...
 ---
-Name: ice cream
+Name: pineapple
+Desc: A whole pineapple. They just appear.
 Texture: items.png
-Tile: [14, 4]
+Tile: [9, 3]
 Type: food
-feed: 200
-weight: 5
-taste: 7
-...
----
-Name: pear
-Desc: Apple's less popular sibling.
-Texture: items.png
-Tile: [7, 5]
-Type: food
-feed: 96
-weight: 4
+feed: 452
+weight: 15
 taste: 1
+...
+---
+Name: raspberry
+Texture: items.png
+Tile: [10, 3]
+Type: food
+feed: 1
+weight: 0
+taste: 1
+alt: blueberry
+...
+---
+Name: blueberry
+Texture: items.png
+Tile: [11, 3]
+Type: food
+feed: 1
+weight: 0
+taste: 1
+...
+---
+Name: brussels sprout
+Texture: items.png
+Tile: [12, 3]
+Type: food
+feed: 8
+weight: 1
+taste: 5
+g_stack: 2
+...
+---
+Name: tomato
+Texture: items.png
+Tile: [7, 4]
+Type: food
+feed: 11
+weight: 5
+taste: 5
 ...
 ---
 Name: mango
@@ -105,4 +249,152 @@ Type: food
 feed: 140
 weight: 4
 taste: 7
+...
+---
+Name: celery
+Desc: Diet plans claim this is a negative calorie food.
+Texture: items.png
+Tile: [9, 4] 
+Type: food
+feed: -2
+weight: 
+taste: 2
+...
+---
+Name: apple
+Desc: A generic tasty fruit. Tastes like fruit.
+Texture: items.png
+Tile: [10, 4]
+Type: food
+feed: 95
+weight: 12
+taste: 2
+alt: pear
+...
+---
+Name: pear
+Desc: Apple's less popular sibling.
+Texture: items.png
+Tile: [11, 4]
+Type: food
+feed: 96
+weight: 12
+taste: 1
+...
+---
+Name: watermelon
+Desc: A single slice of watermelon. You don't know where it's been.
+Texture: items.png
+Tile: [12, 4]
+Type: food
+feed: 46
+weight: 3
+taste: 0
+g_stack: 2
+...
+---
+Name: broccoli
+Texture: items.png
+Tile: [7, 5]
+Type: food
+feed: 30
+weight: 3
+taste: 5
+...
+---
+Name: ice cream
+Texture: items.png
+Tile: [8, 5]
+Type: food
+feed: 200
+weight: 5
+taste: 7
+...
+---
+Name: corn
+Texture: items.png
+Tile: [9, 5]
+Type: food
+feed: 77
+weight: 8
+taste: 11
+...
+---
+Name: lettuce
+Texture: items.png
+Tile: [10, 5]
+Type: food
+feed: 33
+weight: 7
+taste: 10
+alt: radicchio
+...
+---
+Name: radicchio
+Desc: Purple lettuce.
+Texture: items.png
+Tile: [11, 5]
+Type: food
+feed: 34
+weight: 7
+taste: 5
+alt: radicchio
+...
+---
+Name: cherry
+Texture: items.png
+Tile: [12, 5]
+Type: food
+feed: 5
+weight: 1
+taste: 1
+g_stack: 1
+...
+---
+Name: radish
+Texture: items.png
+Tile: [7, 6]
+Type: food
+feed: 2
+weight: 1
+taste: 10
+...
+---
+Name: wine
+Desc: A glass of red wine.
+Texture: items.png
+Tile: [8, 6]
+Type: food
+feed: 125
+weight: 10
+taste: 12
+...
+---
+Name: green pepper
+Texture: items.png
+Tile: [10, 6]
+Type: food
+feed: 24
+weight: 8
+taste: 2
+alt: chili pepper
+...
+---
+Name: chili pepper
+Texture: items.png
+Tile: [11, 6]
+Type: food
+feed: 18
+weight: 4
+taste: 4
+...
+---
+Name: grape
+Desc: Tasty.
+Texture: items.png
+Tile: [7, 1]
+Type: food
+feed: 4
+weight: 0
+taste: 1
 ...

@@ -19,7 +19,9 @@
 #include "Start.h"
 
 
-static const String FOOD_TASTES[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.", "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear."};
+static const String FOOD_TASTES[] = {"It tastes rather bland.", "It was delicious!", "Hmm, pretty good.", "Salty.", "Yikes! It's very spicy.",
+              "It tastes terrible.", "Wow that's really sour why did you just eat that.", "The taste is divine. You shed a tear.", "Your breath smells terrible now.", "That was a lot of food.",
+              "It tastes okay.", "You throw away the cob.", "Actually, you drink. You drink the wine."};
 
 void Start::directionPress(int direction) {
     switch(state) {
@@ -134,15 +136,14 @@ void Start::events() {
                     case SDLK_COMMA:  goTheStairs(player->getUnit(), player->getZone()); break;
                     case SDLK_PERIOD: goTheStairs(player->getUnit(), player->getZone()); break;
 
-                    case SDLK_i: openInventory(); menuAction = MA_EXAMINE; break;
-                    case SDLK_g: groundGrab(); break;
-                    case SDLK_e: openEquipment(); menuAction = MA_EXAMINE;   break;
+                    case SDLK_g: groundGrab();    break;
+                    case SDLK_e: openEquipment(); break;
                     case SDLK_q: openBag();       menuAction = MA_EQUIP;   break;
                     case SDLK_u: openEquipment(); menuAction = MA_GRAB;    break;
                     case SDLK_c: closeDoors(); break;
                     case SDLK_s: search(player->getUnit(), player->getZone()); break;
 
-                    case SDLK_d: player->getUnit()->print(); break;
+                    //case SDLK_d: player->getUnit()->print(); break;
                     default: break;
                 }
             } else {
@@ -160,23 +161,15 @@ void Start::events() {
                     case SDLK_DOWN:  directionPress(2); break;
                     case SDLK_LEFT:  directionPress(4); break;
                     case SDLK_RIGHT: directionPress(6); break;
-                    case SDLK_j:   directionPress(1); break;
-                    case SDLK_k:   directionPress(2); break;
-                    case SDLK_l:   directionPress(3); break;
-                    case SDLK_u:   directionPress(4); break;
-                    case SDLK_i:   directionPress(5); break;
-                    case SDLK_o:   directionPress(6); break;
-                    case SDLK_7:   directionPress(7); break;
-                    case SDLK_8:   directionPress(8); break;
-                    case SDLK_9:   directionPress(9); break;
 
-                    case SDLK_s:      openInventory(); menuAction = MA_EXAMINE; break;
-                    case SDLK_PERIOD: openInventory(); menuAction = MA_EXAMINE; break;
-                    case SDLK_x:      openBag();       menuAction = MA_EXAMINE; break;
+                    case SDLK_s:      openInventory(); break;
+                    case SDLK_PERIOD: openInventory(); break;
+                    case SDLK_i:      openInventory(); break;
                     case SDLK_w:      openGround();    menuAction = MA_GRAB;    break;
                     case SDLK_COMMA:  groundGrab();    menuAction = MA_GRAB;    break;
                     case SDLK_d:      openBag();       menuAction = MA_DROP;    break;
-                    case SDLK_e:      openBag();       menuAction = MA_EAT;     break;
+                    case SDLK_e:      openBag();       menuAction = MA_CONSUME; break;
+                    case SDLK_t:      openBag();       menuAction = MA_THROW;   break;
 
                     case SDLK_f:
                         if (state == STATE_TARGET) state = STATE_PLAY;
@@ -353,7 +346,7 @@ bool Start::init() {
     SDL_WM_SetIcon(SDL_LoadBMP("icon.bmp"), NULL);
     SDL_WM_SetCaption("Ragrelark", "Ragrelark");
     display = SDL_SetVideoMode(WIN1_WIDTH + SWIN_WIDTH, WIN1_HEIGHT + CWIN_HEIGHT, 32, SDL_HWSURFACE | SDL_GL_DOUBLEBUFFER | SDL_OPENGL);
-    if(display == NULL) return false;
+    if (display == NULL) return false;
     IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 
     srand(time(NULL));
@@ -480,7 +473,7 @@ void Start::enterCommand() {
                         }
                     }
                 } break;
-                case MA_EAT: {
+                case MA_CONSUME: {
                     Item* item = folderStack.top()->getItem(selected);
                     ItemType* itemType = item->getType();
                     if (itemType->isEdible()) {
@@ -499,6 +492,10 @@ void Start::enterCommand() {
                     } else {
                         addMessage("That is not a food.", GRAY);
                     }
+                } break;
+                case MA_THROW: {
+                    stateAction = SA_THROW;
+                    enterTargetMode();
                 } break;
                 default: break;
             }
@@ -522,7 +519,6 @@ void Start::enterCommand() {
                     ItemType* itemType = items[i].getType();
                     if (itemType->getType() == rangedItem->getType()->getAmmo()) {
                         // ...and fire
-                        primeFolder->getEquips()->setExtra(items[i]);
                         Item item = items[i];
                         if (items[i].quantityCharge > 1) { //m17
                             items[i].quantityCharge--;
@@ -531,14 +527,20 @@ void Start::enterCommand() {
                             itemRemovalCheck();
                         }
                         item.quantityCharge = 1;
-                        Unit* enemy = unitsInRange[stIndex];
-                        addItemToPlace(enemy->pos, player->getZone(), item);
-                        addProj(player->getUnit()->pos.x * TILE_SIZE, player->getUnit()->pos.y * TILE_SIZE, enemy->pos.x * TILE_SIZE, enemy->pos.y * TILE_SIZE, 10, 0);
-                        shootUnit(player->getUnit(), *rangedItem, unitsInRange[stIndex], player->getZone());
-                        primeFolder->getEquips()->removeExtra();
+                        shootUnit(player->getUnit(), *rangedItem, item, unitsInRange[stIndex], player->getZone());
                         break;
                     }
                 }
+            } break;
+            case SA_THROW: {
+                Item* item = folderStack.top()->getItem(selected);
+                if (item->quantityCharge > 1) {
+                    item->quantityCharge--;
+                } else {
+                    folderStack.top()->removeItem(selected);
+                    itemRemovalCheck();
+                }
+                throwItem(*item, player->getUnit(), unitsInRange[stIndex]->pos, player->getZone());
             } break;
             default: break;
         }

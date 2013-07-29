@@ -78,20 +78,20 @@ Location* MobSpawner::getNear(Zone* z, Coord* pos, bool avoidMobs, int baseHeigh
     return NULL;
 }
 
-void MobSpawner::parseRarities(YAML::Node fileNode) {
+void MobSpawner::parseRarities(YAML::Node fileNode, std::ostream& lerr) {
     for (YAML::const_iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
         rarityMap[iter->first.as<String>()] = iter->second.as<int>();
     }
 }
 
-void MobSpawner::parseItems(YAML::Node fileNode) {
+void MobSpawner::parseItems(YAML::Node fileNode, std::ostream& lerr) {
     for (YAML::const_iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
         String setName = iter->first.as<String>();
         int itemSpawnSetI = addItemSpawnSet(setName);
         YAML::Node issNode = iter->second;
         for (YAML::const_iterator jter = issNode.begin(); jter != issNode.end(); ++jter) {
             YAML::Node itNode = *jter;
-            String itemName = readYAMLStr(itNode, "Item", "", "Item expected (" + setName + ").");
+            String itemName = readYAMLStr(itNode, "Item", "", "Item expected (" + setName + ").", lerr);
             if (ItemType::has(itemName)) {
                 unsigned short item = ItemType::get(itemName)->getIndex();
                 String rarityName = readYAMLStr(itNode, "Rarity", "common");
@@ -112,7 +112,7 @@ void MobSpawner::parseItems(YAML::Node fileNode) {
                     addItemToSpawnSet(item, weight, itemSpawnSetI);
                 }
             } else {
-                std::cout << "'" << itemName << "' is not an existing item.\n";
+                lerr << "'" << itemName << "' is not an existing item.\n";
             }
         }
     }
@@ -168,8 +168,8 @@ void MobSpawner::addItemsToEncounterLevel(int type, int level, String itemSetNam
     e->itemSets[level].insert(itemSpawnSetNameMap[itemSetName]);
 }
 
-void MobSpawner::parseMob(YAML::Node fileNode) {
-    String name = readYAMLStr(fileNode, "Name", "nil", "Unit lacks a name!");
+void MobSpawner::parseMob(YAML::Node fileNode, std::ostream& lerr) {
+    String name = readYAMLStr(fileNode, "Name", "nil", "Unit lacks a name!", lerr);
     StatHolder* newUnit = new StatHolder(V_UNIT);
     for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
         String name = iter->first.as<String>();
@@ -200,7 +200,7 @@ void MobSpawner::parseMob(YAML::Node fileNode) {
                     newUnit->addStatV(stat->getIndex(), statVal);
                 }
             } else {
-                std::cout << "'" + name + "' is not an existing stat name.\n";
+                lerr << "'" + name + "' is not an existing stat name.\n";
             }
         }
     }
@@ -215,12 +215,12 @@ void MobSpawner::parseMob(YAML::Node fileNode) {
     addMob(name, newUnit);
 }
 
-void MobSpawner::parseDefaultStats(YAML::Node fileNode) {
+void MobSpawner::parseDefaultStats(YAML::Node fileNode, std::ostream& lerr) {
     for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
         String statName = iter->as<String>();
         if (Stat::has(statName)) {
             defaultStats.push_back(Stat::get(iter->as<String>()));
-        } else std::cout << "'" << statName << "' is not an existing stat.\n";
+        } else lerr << "'" << statName << "' is not an existing stat.\n";
     }
 }
 
@@ -261,19 +261,23 @@ bool MobSpawner::placeMob(Unit* mob, Zone* z, Coord pos, bool allowAlt) {
 }
 
 Unit* MobSpawner::spawnMob(Mob m, Zone* z, Coord pos, int time, bool allowAlt) {
-    //int pet = m.second->getStatValue(S_PET);
-    //if (pet && !(rand() % 30)) m = taggedMobs[pet];
     Unit* newUnit;
+    // create the unit, depending on whether its a swarmer or not
     if (m.second->getStatValue(Stat::SWARM)) {
         newUnit = new Swarmer(m.first, m.second);
     } else {
         newUnit = new Unit(m.first, m.second);
     }
+    //place the unit
     newUnit->pos = pos;
     newUnit->theTime = time;
     if (placeMob(newUnit, z, pos, allowAlt)) {
+        //if the unit has a pet, spawn the pet too
+        int pet = m.second->getStatValue(Stat::PET);
+        if (allowAlt && pet && !(rand() % 30)) spawnMob(getMob(pet), z, pos, time, true);
         return newUnit;
     }
+    // if placing failed, delete mob
     delete newUnit;
     return NULL;
 }
@@ -405,10 +409,10 @@ void MobSpawner::overgrowth(Zone* zone, GenType genType, Coord start, Coord end)
     }*/ // TODO overgrowth
 }
 
-EncLevelEnc MobSpawner::parseSpawnMob(YAML::Node fileNode, Mob mob) {
+EncLevelEnc MobSpawner::parseSpawnMob(YAML::Node fileNode, std::ostream& lerr, Mob mob) {
     EncLevelEnc ele;
     ele.mob = mob;
-    ele.weight = readYAMLInt(fileNode, "Freq", 1, "Frequency expected '" + mob.first + "'");
+    ele.weight = readYAMLInt(fileNode, "Freq", 1, "Frequency expected '" + mob.first + "'", lerr);
     YAML::Node oof = fileNode["Group"];
     if (oof.IsSequence()) {
         ele.mobMod.min = oof[0].as<int>();
@@ -440,8 +444,8 @@ EncLevelEnc MobSpawner::parseSpawnMob(YAML::Node fileNode, Mob mob) {
     return ele;
 }
 
-void MobSpawner::parseSpawn(YAML::Node fileNode) {
-    int spawnI = addEnvironment(readYAMLStr(fileNode, "Name", "nil", "Spawn enviro name expected."));
+void MobSpawner::parseSpawn(YAML::Node fileNode, std::ostream& lerr) {
+    int spawnI = addEnvironment(readYAMLStr(fileNode, "Name", "nil", "Spawn enviro name expected.", lerr));
     if (fileNode["Mobs"]) {
         YAML::Node mobsNode = fileNode["Mobs"];
         for (YAML::const_iterator iter = mobsNode.begin(); iter != mobsNode.end(); ++iter) {
@@ -463,13 +467,13 @@ void MobSpawner::parseSpawn(YAML::Node fileNode) {
                         if (jter->second.IsSequence()) {
                             for (YAML::const_iterator kter = jter->second.begin(); kter != jter->second.end(); ++kter) {
                                 YAML::Node n = *kter;
-                                encounters->push_back(parseSpawnMob(n, getMob(mobName)));
+                                encounters->push_back(parseSpawnMob(n, lerr, getMob(mobName)));
                             }
                         } else {
-                            encounters->push_back(parseSpawnMob(jter->second, getMob(mobName)));
+                            encounters->push_back(parseSpawnMob(jter->second, lerr, getMob(mobName)));
                         }
                     } else {
-                        std::cout << "'" << mobName << "' is not an existing unit.\n";
+                        lerr << "'" << mobName << "' is not an existing unit.\n";
                     }
                 }
                 addEncounters(spawnI, i, encounters);
@@ -487,7 +491,7 @@ void MobSpawner::parseSpawn(YAML::Node fileNode) {
                     addItemsToEncounterLevel(spawnI, i, name);
                 }
             } else {
-                std::cout << "'" << name << "' is not an existing item spawn set.\n";
+                lerr << "'" << name << "' is not an existing item spawn set.\n";
             }
         }
     }

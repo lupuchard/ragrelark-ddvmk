@@ -53,8 +53,7 @@ class Stat {
         String getDisplayName();
 
         //statics
-        static void parseAll(YAML::Node fileNode);
-        static Formula* parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& stats, std::set<Skill*>& skills);
+        static void parseAll(YAML::Node fileNode, std::ostream& lerr);
         static Stat* get(VOwner type, int statI);
         static Stat* get(String name);
         static bool has(String name);
@@ -72,7 +71,7 @@ class Stat {
         static void addConAffliction(int afflictingCon, VOwner afflictingConOwner, Stat* afflictedStat, VOwner edOwner);
         static void addSkillAffliction(Skill* skill, Stat* afflictedStat);
 
-        static void parseSkills(YAML::Node fileNode);
+        static void parseSkills(YAML::Node fileNode, std::ostream& lerr);
         static Skill* getSkill(int index);
         static Skill* getSkill(String name);
         static bool hasSkill(String name);
@@ -87,7 +86,7 @@ class Stat {
            POIS_PHYS, POIS_MENT, POIS_REGEN, POIS_EXTRA, CONFUSION,
            AFFLICTION, AFFLICTION_POTENCY,
            GLOC, GTEX, GTYPE;
-        static int WEIGHT, VALUE, FEED, TASTE, RANGE, LIGHT, GSTACK, THRO;
+        static int WEIGHT, VALUE, FEED, TASTE, DAM, RANGE, LIGHT, GSTACK, THRO, BREAK, ALT;
     private:
         Formula* formula;
         String name;
@@ -97,7 +96,8 @@ class Stat {
         String displayName;
 
         //statics
-        static void parseSection(YAML::Node node, VOwner owner);
+        static void parseSection(YAML::Node node, VOwner owner, std::ostream& lerr);
+        static Formula* parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& stats, std::set<Skill*>& skills, std::ostream& lerr);
         static void add(VOwner type, Stat* theStat);
         static std::vector<Stat*> unitStats;
         static std::vector<Stat*> worldStats;

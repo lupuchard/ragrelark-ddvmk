@@ -48,9 +48,8 @@ unsigned* spoon(XMLElement* currentLayer) {
     return out;
 }
 
-Zone* TiledLoader::loadTileFile(String fileName, String zoneName) {
-    using namespace std;
-    cout << " -Loading " << fileName << endl;
+Zone* TiledLoader::loadTileFile(String fileName, String zoneName, std::ostream& lerr) {
+    std::cout << " -Loading " << fileName << std::endl;
     XMLDocument doc;
     int success = doc.LoadFile(fileName.c_str());
     if (success != XML_SUCCESS) success = doc.LoadFile(("resources/" + fileName).c_str());
@@ -68,7 +67,7 @@ Zone* TiledLoader::loadTileFile(String fileName, String zoneName) {
         XMLElement* currentProperty = propertiesBase->FirstChildElement();
 		bool done = false;
 		while (!done) {
-		    string propertyName = currentProperty->Attribute("name");
+		    String propertyName = currentProperty->Attribute("name");
 		    if (propertyName == "lightness") {
                 lightness = currentProperty->IntAttribute("value");
 		    }
@@ -140,11 +139,11 @@ Zone* TiledLoader::loadTileFile(String fileName, String zoneName) {
 		}
 		return theZone;
 	}
-    cout << "File could not be found/loaded." << std::endl;
+    lerr << "File could not be found/loaded." << std::endl;
     return NULL;
 }
 
-void TiledLoader::parseTiles(YAML::Node node) {
+void TiledLoader::parseTiles(YAML::Node node, std::ostream& lerr) {
     String texName = readYAMLStr(node, "Texture", "", "No texture defined!");
     Texture* texture = Texture::get(texName);
     for (YAML::Node::iterator iter = node["Tiles"].begin(); iter != node["Tiles"].end(); ++iter) {
@@ -181,17 +180,17 @@ void TiledLoader::parseTiles(YAML::Node node) {
                     String overN = exData["Over"].as<String>();
                     if (Tile::has(overN)) {
                         over = Tile::get(overN);
-                    } else std::cout << "'" << overN << "' is not a existing tile.\n";
+                    } else lerr << "'" << overN << "' is not a existing tile.\n";
                 }
                 tloc = readYAMLCoord(exData, "Tiled", Coord(1, -1)).index(32);
             }
             Tile* tile = new Tile(tileName, g, blockM, blockL, over);
             Tile::add(tile);
             if (tloc > -1) tiledTiles[tloc] = tile;
-        } else std::cout << " err: Tiles are mapped to sequences.\n";
+        } else lerr << " err: Tiles are mapped to sequences.\n";
     }
 }
-void TiledLoader::parseUnits(YAML::Node node) {
+void TiledLoader::parseUnits(YAML::Node node, std::ostream& lerr) {
     for (YAML::Node::iterator iter = node.begin(); iter != node.end(); ++iter) {
         YAML::Node locNode = iter->first;
         YAML::Node mobNode = iter->second;
@@ -202,11 +201,11 @@ void TiledLoader::parseUnits(YAML::Node node) {
         if (mobSpawner->mobExists(name)) {
             tiledUnits[index] = mobSpawner->getMob(name);
         } else {
-            std::cout << "'" + name + "' is not an existing unit.\n";
+            lerr << "'" + name + "' is not an existing unit.\n";
         }
     }
 }
-void TiledLoader::parseItems(YAML::Node node) {
+void TiledLoader::parseItems(YAML::Node node, std::ostream& lerr) {
     for (YAML::Node::iterator iter = node.begin(); iter != node.end(); ++iter) {
         YAML::Node locNode = iter->first;
         YAML::Node itemNode = iter->second;
@@ -227,7 +226,7 @@ void TiledLoader::parseItems(YAML::Node node) {
             RandItemType* randItemType = new RandItemType(ItemType::get(name)->getIndex(), min, max, 0);
             tiledItems[index] = randItemType;
         } else {
-            std::cout << "'" + name + "' is not an existing item.\n";
+            lerr << "'" + name + "' is not an existing item.\n";
         }
     }
 }

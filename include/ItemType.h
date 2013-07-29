@@ -58,6 +58,7 @@ struct ItemTypeType {
     String name;
     ItemSlot* slot;
     WeapType* weapType;
+    Skill* skill;
     int stack;
     bool folder;
     bool ranged;
@@ -98,21 +99,22 @@ class ItemType: public StatHolder {
         ItemTypeType* getAmmo();
 
         //statics
-        static void parse(YAML::Node fileNode);
+        static void parse(YAML::Node fileNode, std::ostream& lerr);
+        static void postParse(std::ostream& lerr);
         static bool has(String s);
         static ItemType* get(int index);
         static ItemType* get(String s);
 
-        static void parseTypes(YAML::Node fileNode);
+        static void parseTypes(YAML::Node fileNode, std::ostream& lerr);
         static int getTypeI(String s);
         static ItemTypeType* getType(int index);
         static ItemTypeType* getType(String s);
 
-        static void parseSlots(YAML::Node fileNode);
+        static void parseSlots(YAML::Node fileNode, std::ostream& lerr);
         static int getNumSlots();
         static ItemType* getEmptySlot(int index);
 
-        static void parseWeapTypes(YAML::Node node);
+        static void parseWeapTypes(YAML::Node node, std::ostream& lerr);
         static bool hasWeapType(String type);
         static WeapType* getWeapType(int type);
         static WeapType* getWeapType(String type);

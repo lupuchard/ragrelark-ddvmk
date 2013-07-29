@@ -1,0 +1,70 @@
+luck:
+  - {Item: sacred obsidian dagger, Rarity: ultra rare}
+  - {Item: sweet punching dagger , Rarity: extra rare}
+  - {Item: skillful bow          , Rarity: extra rare}
+  - {Item: sophisticated bow     , Rarity: ultra rare}
+  - {Item: scorching staff       , Rarity: extra rare}
+  - {Item: super mace            , Rarity: ultra rare}
+  - {Item: scented shuriken      , Rarity: extra rare}
+lv_0:
+  - {Item: robe      , Rarity: common}
+  - {Item: hide armor, Rarity: rare}
+  - {Item: cloak     , Rarity: uncommon}
+  - {Item: cap       , Rarity: rare}
+  - {Item: boots     , Rarity: common}
+  - {Item: knife     , Rarity: common}
+  - {Item: spear     , Rarity: uncommon}
+  - {Item: club      , Rarity: uncommon}
+  - {Item: sling     , Rarity: rare}
+lv_1:
+  - {Item: leather armor, Rarity: uncommon}
+  - {Item: ring mail    , Rarity: uncommon}
+  - {Item: scale mail   , Rarity: uncommon}
+  - {Item: buckler      , Rarity: common}
+  - {Item: large boots  , Rarity: uncommon}
+  - {Item: gloves       , Rarity: uncommon}
+  - {Item: halberd      , Rarity: rare}
+  - {Item: dagger       , Rarity: uncommon}
+  - {Item: quarterstaff , Rarity: uncommon}
+  - {Item: bow          , Rarity: uncommon}
+lv_2:
+  - {Item: scale mail   , Rarity: uncommon}
+  - {Item: banded mail  , Rarity: uncommon}
+  - {Item: etched helmet, Rarity: uncommon}
+  - {Item: round shield , Rarity: uncommon}
+  - {Item: sandals      , Rarity: uncommon}
+  - {Item: mittens      , Rarity: rare}
+  - {Item: trident      , Rarity: rare}
+  - {Item: axe          , Rarity: uncommon}
+  - {Item: mace         , Rarity: uncommon}
+  - {Item: crossbow     , Rarity: rare}
+lv_3:
+  - {Item: chainmail    , Rarity: uncommon}
+  - {Item: silk cloak   , Rarity: rare}
+  - {Item: pointed hat  , Rarity: rare}
+  - {Item: kite shield  , Rarity: uncommon}
+  - {Item: gauntlets    , Rarity: uncommon}
+  - {Item: glaive       , Rarity: rare}
+  - {Item: battle axe   , Rarity: uncommon}
+  - {Item: huge club    , Rarity: extra rare}
+  - {Item: whip         , Rarity: rare}
+lv_4:
+  - {Item: splint mail  , Rarity: rare}
+  - {Item: visored helmet, Rarity: uncommon}
+  - {Item: orb          , Rarity: very rare}
+  - {Item: spectacles   , Rarity: very rare}
+  - {Item: scythe       , Rarity: rare}
+  - {Item: greataxe     , Rarity: uncommon}
+  - {Item: large hammer , Rarity: uncommon}
+  - {Item: longbow      , Rarity: uncommon}
+  - {Item: royal cloak  , Rarity: very rare}
+lv_5:
+  - {Item: plate armor       , Rarity: rare}
+  - {Item: thaumaturgic cloak, Rarity: very rare}
+  - {Item: tower shield      , Rarity: rare}
+  - {Item: green boots       , Rarity: rare}
+  - {Item: runed gloves      , Rarity: very rare}
+  - {Item: crystal spear     , Rarity: very rare}
+  - {Item: sword             , Rarity: extra rare}
+  - {Item: flail             , Rarity: uncommon}
+  - {Item: dwarven crossbow  , Rarity: very rare}

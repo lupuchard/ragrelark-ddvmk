@@ -38,8 +38,8 @@ class World: public StatHolder {
         Area* getArea(String name);
         Zone* getZone(String name);
 
-        void parseArea(YAML::Node fileNode);
-        void parseZone(YAML::Node fileNode, TiledLoader* tiledLoader, MobSpawner* mobSpawner);
+        void parseArea(YAML::Node fileNode, std::ostream& lerr);
+        void parseZone(YAML::Node fileNode, std::ostream& lerr, TiledLoader* tiledLoader, MobSpawner* mobSpawner);
     private:
         std::vector<Area*> areas;
         std::map<String, Area*> areaNameMap;

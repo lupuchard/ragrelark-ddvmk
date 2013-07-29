@@ -5,9 +5,11 @@ Texture: equipment.png
 Equipped: {Texture: player.png, Tile: [0, 16], Size: tall}
 Tile: [5, 0]
 Type: spear
+weight: 195
 damage: 3
 weight: 99
 luck_bonus: 1
+alt: special spear
 ...
 ---
 Name: special spear
@@ -16,19 +18,10 @@ Texture: equipment.png
 Equipped: {Texture: player.png, Tile: [1, 16], Size: tall}
 Tile: [5, 1]
 Type: spear
+weight: 195
 damage: 4
 weight: 99
 penalty: 1
-luck_bonus: 1
-...
----
-Name: silvery spear
-Texture: equipment.png
-Equipped: {Texture: player.png, Tile: [2, 16], Size: tall}
-Tile: [5, 2]
-Type: spear
-damage: 4
-weight: 99
 luck_bonus: 1
 ...
 ---
@@ -38,19 +31,8 @@ Texture: equipment.png
 Tile: [5, 3]
 Equipped: {Texture: player.png, Tile: [3, 16], Size: tall}
 Type: spear
+weight: 330
 damage: 5
-weight: 99
-penalty: 1
-luck_bonus: 1
-...
----
-Name: scarlet ribbon spear
-Texture: equipment.png
-Tile: [5, 4]
-Equipped: {Texture: player.png, Tile: [4, 16], Size: tall}
-Type: spear
-damage: 5
-hp_regen: 1
 weight: 99
 penalty: 1
 luck_bonus: 1
@@ -61,10 +43,37 @@ Texture: equipment.png
 Tile: [5, 5]
 Equipped: {Texture: player.png, Tile: [5, 16], Size: tall}
 Type: trident
+weight: 125
 damage: 5
 weight: 99
 penalty: 1
 luck_bonus: 1
+...
+---
+Name: silvery spear
+Texture: equipment.png
+Equipped: {Texture: player.png, Tile: [2, 16], Size: tall}
+Tile: [5, 2]
+Type: spear
+weight: 200
+damage: 4
+weight: 99
+luck_bonus: 1
+alt: scarlet ribbon spear
+...
+---
+Name: scarlet ribbon spear
+Texture: equipment.png
+Tile: [5, 4]
+Equipped: {Texture: player.png, Tile: [4, 16], Size: tall}
+Type: spear
+weight: 195
+damage: 5
+hp_regen: 1
+weight: 99
+penalty: 1
+luck_bonus: 1
+alt: shand spear
 ...
 ---
 Name: shand spear
@@ -72,10 +81,10 @@ Texture: equipment.png
 Tile: [5, 6]
 Equipped: {Texture: player.png, Tile: [6, 16], Size: tall}
 Type: spear
+weight: 210
 damage: 6
 int: 2
 weight: 99
-penalty: 1
 luck_bonus: 1
 ...
 ---
@@ -85,10 +94,12 @@ Texture: equipment.png
 Tile: [6, 0]
 Equipped: {Texture: player.png, Tile: [3, 14], Size: small}
 Type: axe
+weight: 60
 damage: 2
 weight: 9
 throw: 3
 luck_bonus: 1
+alt: scintillating ono
 ...
 ---
 Name: shitty axe
@@ -96,10 +107,12 @@ Texture: equipment.png
 Tile: [6, 1]
 Equipped: {Texture: player.png, Tile: [2, 14], Size: small}
 Type: axe
+weight: 80
 damage: 2
 weight: 9
 penalty: 1
 luck_bonus: 1
+alt: small throwing axe
 ...
 ---
 Name: sturdy axe
@@ -108,8 +121,23 @@ Texture: equipment.png
 Tile: [6, 2]
 Equipped: {Texture: player.png, Tile: [2, 15], Size: small}
 Type: axe
+weight: 90
 damage: 3
 weight: 9
+luck_bonus: 1
+throw: 1
+alt: sad axe
+...
+---
+Name: scintillating ono
+Texture: equipment.png
+Tile: [6, 5]
+Equipped: {Texture: player.png, Tile: [5, 14], Size: tall}
+Type: axe
+weight: 200
+damage: 4
+weight: 9
+acc: 1
 luck_bonus: 1
 throw: 1
 ...
@@ -119,9 +147,24 @@ Texture: equipment.png
 Tile: [6, 3]
 Equipped: {Texture: player.png, Tile: [4, 14], Size: tall}
 Type: axe
+weight: 400
 damage: 5
 weight: 99
 penalty: 1
+luck_bonus: 1
+alt: soxtric battleaxe
+...
+---
+Name: soxtric battleaxe
+Desc: It's really heavy.
+Texture: equipment.png
+Tile: [7, 6]
+Equipped: {Texture: player.png, Tile: [7, 14], Size: tall}
+Type: axe
+weight: 840
+damage: 8
+penalty: 4
+con: 2
 luck_bonus: 1
 ...
 ---
@@ -131,22 +174,12 @@ Texture: equipment.png
 Tile: [6, 4]
 Equipped: {Texture: player.png, Tile: [3, 15], Size: small}
 Type: axe
+weight: 120
 damage: 4
 weight: 9
 penalty: 1
 luck_bonus: 1
-...
----
-Name: scintillating ono
-Texture: equipment.png
-Tile: [6, 5]
-Equipped: {Texture: player.png, Tile: [5, 14], Size: tall}
-Type: axe
-damage: 4
-weight: 9
-acc: 1
-luck_bonus: 1
-throw: 1
+alt: sondric megaxe
 ...
 ---
 Name: sondric megaxe
@@ -155,21 +188,9 @@ Texture: equipment.png
 Tile: [6, 6]
 Equipped: {Texture: player.png, Tile: [6, 14], Size: tall}
 Type: axe
+weight: 510
 damage: 7
 weight: 99
-luck_bonus: 1
-...
----
-Name: soxtric battleaxe
-Desc: It's really heavy.
-Texture: equipment.png
-Tile: [7, 6]
-Equipped: {Texture: player.png, Tile: [7, 14], Size: tall}
-Type: axe
-weight: 999
-damage: 8
-penalty: 4
-con: 2
 luck_bonus: 1
 ...
 ---
@@ -178,6 +199,7 @@ Texture: equipment.png
 Tile: [8, 1]
 Equipped: {Texture: player.png, Tile: [4, 12], Size: tall}
 Type: club
+weight: 150
 damage: 2
 weight: 9
 luck_bonus: 1
@@ -189,9 +211,11 @@ Texture: equipment.png
 Tile: [8, 0]
 Equipped: {Texture: player.png, Tile: [0, 12], Size: tall}
 Type: club
+weight: 110
 damage: 1
 weight: 9
 luck_bonus: 1
+alt: spiked club
 ...
 ---
 Name: sizeable club
@@ -199,20 +223,10 @@ Texture: equipment.png
 Tile: [8, 4]
 Equipped: {Texture: player.png, Tile: [2, 12], Size: tall}
 Type: club
+weight: 460
 damage: 6
 weight: 99
 penalty: 5
-luck_bonus: 1
-...
----
-Name: sadistic mace
-Texture: equipment.png
-Tile: [8, 2]
-Equipped: {Texture: player.png, Tile: [1, 12], Size: tall}
-Type: mace
-damage: 4
-weight: 99
-attack_speed: -1
 luck_bonus: 1
 ...
 ---
@@ -221,6 +235,7 @@ Texture: equipment.png
 Tile: [8, 3]
 Equipped: {Texture: player.png, Tile: [2, 12], Size: tall}
 Type: mace
+weight: 240
 damage: 6
 weight: 105
 attack_speed: -1
@@ -229,16 +244,31 @@ con: 1
 luck_bonus: 1
 ...
 ---
+Name: sadistic mace
+Texture: equipment.png
+Tile: [8, 2]
+Equipped: {Texture: player.png, Tile: [1, 12], Size: tall}
+Type: mace
+weight: 340
+damage: 4
+weight: 99
+attack_speed: -1
+luck_bonus: 1
+alt: superior mace
+...
+---
 Name: severe flail
 Desc: Severely dangerous, that is.
 Texture: equipment.png
 Tile: [8, 5]
 Equipped: {Texture: player.png, Tile: [5, 12], Size: tall}
 Type: flail
+weight: 200
 damage: 4
 penalty: 1
 weight: 99
 luck_bonus: 1
+alt: stoonish chain on stick
 ...
 ---
 Name: stoonish chain on stick
@@ -247,6 +277,7 @@ Texture: equipment.png
 Tile: [8, 6]
 Equipped: {Texture: player.png, Tile: [6, 12], Size: tall}
 Type: flail
+weight: 95
 damage: 2
 penalty: 1
 weight: 99
@@ -258,10 +289,12 @@ Texture: equipment.png
 Tile: [7, 0]
 Equipped: {Texture: player.png, Tile: [0, 14], Size: tall}
 Type: dagger
+weight: 35
 damage: 2
 weight: 35
 throw: 2
 luck_bonus: 1
+alt: steely dagger
 ...
 ---
 Name: steely dagger
@@ -269,10 +302,24 @@ Texture: equipment.png
 Tile: [7, 1]
 Equipped: {Texture: player.png, Tile: [0, 14], Size: tall}
 Type: dagger
+weight: 35
 damage: 2
 acc: 1
 weight: 32
 throw: 2
+luck_bonus: 1
+alt: shiny dagger
+...
+---
+Name: shiny dagger
+Texture: equipment.png
+Tile: [7, 5]
+Equipped: {Texture: player.png, Tile: [8, 14], Size: small}
+Type: dagger
+weight: 35
+damage: 3
+per: 1
+weight: 9
 luck_bonus: 1
 ...
 ---
@@ -282,6 +329,7 @@ Texture: equipment.png
 Tile: [7, 2]
 Equipped: {Texture: player.png, Tile: [1, 14], Size: small}
 Type: dagger
+weight: 30
 damage: 3
 accuracy: 1
 weight: 9
@@ -294,6 +342,7 @@ Texture: equipment.png
 Tile: [7, 3]
 Equipped: {Texture: player.png, Tile: [1, 15], Size: small}
 Type: dagger
+weight: 40
 damage: 2
 acc: 1
 throw: -2
@@ -306,29 +355,33 @@ Texture: equipment.png
 Tile: [7, 4]
 Equipped: {Texture: player.png, Tile: [0, 14], Size: tall}
 Type: knife
-damage: 2
+weight: 17
+damage: 1
 weight: 9
 luck_bonus: 1
 ...
 ---
-Name: shiny dagger
-Texture: equipment.png
-Tile: [7, 5]
-Equipped: {Texture: player.png, Tile: [8, 14], Size: small}
-Type: dagger
-damage: 3
-per: 1
-weight: 9
-luck_bonus: 1
-...
----
-Name: sleek longbow
+Name: sleek bow
 Texture: equipment.png
 Tile: [9, 0]
 Equipped: {Texture: player.png, Tile: [0, 18], Size: tall}
 Type: bow
+weight: 145
 damage: 1
 weight: 9
+luck_bonus: 1
+alt: shady bow
+...
+---
+Name: shady bow
+Texture: equipment.png
+Tile: [9, 2]
+Equipped: {Texture: player.png, Tile: [2, 18], Size: tall}
+Type: bow
+weight: 150
+damage: 2
+weight: 9
+per: 3
 luck_bonus: 1
 ...
 ---
@@ -338,42 +391,10 @@ Texture: equipment.png
 Tile: [9, 1]
 Equipped: {Texture: player.png, Tile: [1, 18], Size: tall}
 Type: bow
+weight: 160
 damage: 1
 weight: 9
 acc: 3
-luck_bonus: 1
-...
----
-Name: shady bow
-Texture: equipment.png
-Tile: [9, 2]
-Equipped: {Texture: player.png, Tile: [2, 18], Size: tall}
-Type: bow
-damage: 2
-weight: 9
-per: 3
-luck_bonus: 1
-...
----
-Name: skillful bow
-Texture: equipment.png
-Tile: [9, 3]
-Equipped: {Texture: player.png, Tile: [3, 18], Size: tall}
-Type: bow
-damage: 1
-weight: 99
-str: 1
-luck_bonus: 1
-...
----
-Name: sophisticated bow
-Texture: equipment.png
-Tile: [9, 4]
-Equipped: {Texture: player.png, Tile: [4, 18], Size: tall}
-Type: bow
-damage: 2
-weight: 9
-int: 2
 luck_bonus: 1
 ...
 ---
@@ -382,10 +403,37 @@ Texture: equipment.png
 Tile: [9, 5]
 Equipped: {Texture: player.png, Tile: [5, 18], Size: tall}
 Type: bow
+weight: 165
 damage: 2
 weight: 9
 acc: 1
 luck_bonus: 1
+...
+---
+Name: sophisticated bow
+Texture: equipment.png
+Tile: [9, 4]
+Equipped: {Texture: player.png, Tile: [4, 18], Size: tall}
+Type: bow
+weight: 145
+damage: 2
+weight: 9
+int: 2
+luck_bonus: 1
+alt: syf bow
+...
+---
+Name: skillful bow
+Texture: equipment.png
+Tile: [9, 3]
+Equipped: {Texture: player.png, Tile: [3, 18], Size: tall}
+Type: bow
+weight: 180
+damage: 1
+weight: 99
+str: 1
+luck_bonus: 1
+alt: serious longbow
 ...
 ---
 Name: syf bow
@@ -393,6 +441,7 @@ Texture: equipment.png
 Tile: [9, 6]
 Equipped: {Texture: player.png, Tile: [6, 18], Size: tall}
 Type: bow
+weight: 130
 damage: 2
 weight: 9
 acc: 4
@@ -403,29 +452,12 @@ Desc: Intended to be fired with a bow.
 Texture: equipment.png
 Tile: [11, 0]
 Type: arrow
+weight: 5
 damage: 1
 weight: 9
 luck_bonus: 1
-...
----
-Name: short dark arrow
-Texture: equipment.png
-Tile: [11, 1]
-Type: arrow
-damage: 2
-weight: 9
-luck_bonus: 1
-...
----
-Name: snowy arrow
-Desc: This arrow is in a permanent state of frost.
-Texture: equipment.png
-Tile: [11, 2]
-Type: arrow
-damage: 2
-weight: 9
-acc: -1
-luck_bonus: 1
+alt: sparking arrow
+break: 20%
 ...
 ---
 Name: sparking arrow
@@ -433,10 +465,37 @@ Desc: This arrow appears to be permanently lit.
 Texture: equipment.png
 Tile: [11, 3]
 Type: arrow
+weight: 6
 damage: 1
 weight: 9
 light: 2
 luck_bonus: 1
+break: 30%
+...
+---
+Name: snowy arrow
+Desc: This arrow is in a permanent state of frost.
+Texture: equipment.png
+Tile: [11, 2]
+Type: arrow
+weight: 7
+damage: 2
+weight: 9
+acc: -1
+luck_bonus: 1
+break: 20%
+...
+---
+Name: short dark arrow
+Texture: equipment.png
+Tile: [11, 1]
+Type: arrow
+weight: 6
+damage: 2
+weight: 9
+luck_bonus: 1
+alt: snowy arrow
+break: 20%
 ...
 ---
 Name: scented shuriken
@@ -475,6 +534,7 @@ Texture: equipment.png
 Tile: [10, 0]
 Equipped: {Texture: player.png, Tile: [7, 12], Size: tall}
 Type: staff
+weight: 160
 damage: 1
 weight: 99
 int: 2
@@ -488,6 +548,7 @@ Texture: equipment.png
 Tile: [10, 1]
 Equipped: {Texture: player.png, Tile: [8, 12], Size: tall}
 Type: staff
+weight: 155
 damage: 1
 weight: 99
 aff: 3
@@ -499,6 +560,7 @@ Texture: equipment.png
 Tile: [10, 2]
 Equipped: {Texture: player.png, Tile: [9, 12], Size: tall}
 Type: mace
+weight: 215
 damage: 4
 weight: 99
 attack_rate: -2
@@ -513,33 +575,39 @@ Texture: equipment.png
 Tile: [10, 3]
 Equipped: {Texture: player.png, Tile: [10, 12], Size: tall}
 Type: staff
+weight: 160
 damage: 2
 weight: 99
 aff: 2
 luck_bonus: 1
-...
----
-Name: sledge hammer
-Desc: One of the most dangerous improvised weapons.
-Texture: equipment.png
-Tile: [10, 4]
-Type: hammer
-damage: 6
-weight: 99
-attack_rate: -3
-penalty: 2
-luck_bonus: 1
+alt: spooky staff
 ...
 ---
 Name: seismic hammer
 Desc: The ground shakes with each strike.
 Texture: equipment.png
 Tile: [10, 5]
+Equipped: {Texture: player.png, Tile: [13, 12], Size: tall}
 Type: hammer
-weight: 999
+weight: 650
 damage: 10
 penalty: 3
 attack_rate: -3
 luck_bonus: 1
 con: 2
+...
+---
+Name: sledge hammer
+Desc: One of the most dangerous improvised weapons.
+Texture: equipment.png
+Tile: [10, 4]
+Equipped: {Texture: player.png, Tile: [13, 12], Size: tall}
+Type: hammer
+weight: 210
+damage: 6
+weight: 99
+attack_rate: -3
+penalty: 2
+luck_bonus: 1
+alt: seismic hammer
 ...

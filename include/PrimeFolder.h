@@ -28,7 +28,7 @@ class PrimeFolder: public ItemFolder {
     public:
         PrimeFolder();
         virtual ~PrimeFolder();
-        void parseInv(YAML::Node node);
+        void parseInv(YAML::Node node, std::ostream& lerr);
         int getNumItems();
         Item* getItem(int index);
         Item* getItems();
@@ -39,7 +39,7 @@ class PrimeFolder: public ItemFolder {
         GroundFolder* getGround();
     protected:
     private:
-        ItemType* parseOne(YAML::Node node);
+        ItemType* parseOne(YAML::Node node, std::ostream& lerr);
 
         BagFolder* bag;
         EquipmentFolder* equips;

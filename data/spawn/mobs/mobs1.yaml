@@ -41,15 +41,25 @@ Mobs:
     kilopede        : {Freq: 2}
     deep wolf       : {Freq: 2, Group: 2}
 Items:
-  main: [0, 7]
-  food: [0, 7]
-  lv1: [0, 1]
-  lv2: [1, 2]
-  lv3: [2, 3]
-  lv4: [3, 4]
-  lv5: [4, 5]
-  lv6: [5, 6]
-  lv7: [6, 7]
+  main: [0, 14]
+  food: [0, 15]
+  luck: [3, 15]
+  ammo_early: [0 ,  4]
+  ammo_mid:   [5 , 10]
+  ammo_late:  [11, 15]
+  treasure_alpha:   [1, 6]
+  treasure_omega:   [7, 12]
+  treasure_epsilon: [13, 15]
+  lv_0: [0,  10]
+  lv_1: [2,  11]
+  lv_2: [4,  12]
+  lv_3: [6,  13]
+  lv_4: [8,  14]
+  lv_5: [10, 15]
+  rings_alt: [1, 12]
+  rings_stuff: [2, 10]
+  amulets_alt: [3, 15]
+  amulets_stuff: [4, 12]
 ...
 ---
 Name: goblins

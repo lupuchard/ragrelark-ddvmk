@@ -69,19 +69,19 @@ Tile* Tile::get(String n) {
 bool Tile::has(String name) {
     return tileNameMap.find(name) != tileNameMap.end();
 }
-void Tile::parseSets(YAML::Node node) {
+void Tile::parseSets(YAML::Node node, std::ostream& lerr) {
     TileSet* tileSet = new TileSet;
-    tileSet->name = readYAMLStr(node, "Name", "nil", "Name expected.");
+    tileSet->name = readYAMLStr(node, "Name", "nil", "Name expected.", lerr);
     YAML::Node tilesNode = node["Tiles"];
     if (tilesNode.IsSequence()) {
         for (YAML::const_iterator iter = tilesNode.begin(); iter != tilesNode.end(); ++iter) {
             String s = iter->as<String>();
             if (has(s)) {
                 tileSet->tiles.push_back(get(s));
-            } else std::cout << "'" << s << "' is not an existing tile.\n";
+            } else lerr << "'" << s << "' is not an existing tile.\n";
         }
         addSet(tileSet);
-    } else std::cout << " err: Tiles expected.\n";
+    } else lerr << " err: Tiles expected.\n";
 }
 void Tile::addSet(TileSet* tileSet) {
     tileSets[tileSet->name] = tileSet;

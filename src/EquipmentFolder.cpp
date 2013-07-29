@@ -66,21 +66,19 @@ bool EquipmentFolder::equipItem(Item item, std::list<Item>& remove) {
         }
     } else if (!slot->covers.empty()) {
         for (std::set<ItemSlot*>::iterator iter = slot->covers.begin(); iter != slot->covers.end(); ++iter) {
-            ItemSlot* slot = *iter;
-            if (equipment[slot->index].getType() != ItemType::getEmptySlot(slot->index)) {
-                std::set<ItemSlot*> over = equipment[slot->index].getType()->getSlot()->over;
-                if (over.find(slot) != over.end()) {
-                    remove.push_back(equipment[slot->index]);
-                    equipment[slot->index] = Item(ItemType::getEmptySlot(slot->index));
-                }
+            ItemSlot* curSlot = *iter;
+            if (equipment[curSlot->index].getType() != ItemType::getEmptySlot(curSlot->index) && equipment[curSlot->index].getType()->getSlot() == curSlot) {
+                remove.push_back(equipment[curSlot->index]);
+                equipment[curSlot->index] = Item(ItemType::getEmptySlot(curSlot->index));
             }
         }
         equipment[slot->index] = item;
     } else if (!slot->over.empty()) {
         for (std::set<ItemSlot*>::iterator iter = slot->over.begin(); iter != slot->over.end(); ++iter) {
-            ItemSlot* slot = *iter;
-            if (equipment[slot->index].getType() != ItemType::getEmptySlot(slot->index)) {
-                remove.push_back(equipment[slot->index]);
+            ItemSlot* curSlot = *iter;
+            if (equipment[curSlot->index].getType() != ItemType::getEmptySlot(curSlot->index)) {
+                remove.push_back(equipment[curSlot->index]);
+                equipment[curSlot->index] = Item(ItemType::getEmptySlot(curSlot->index));
             }
         }
         equipment[slot->index] = item;

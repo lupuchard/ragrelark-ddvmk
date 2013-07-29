@@ -25,13 +25,13 @@ cleans
  */
 
 void Start::cleanup() {
-    SDL_FreeSurface(display);
+    if (display) SDL_FreeSurface(display);
     IMG_Quit();
     SDL_Quit();
-    delete player;
+    if (player) delete player;
     delete world;
     delete mobSpawner;
-    delete primeFolder;
+    if (primeFolder) delete primeFolder;
     delete tiledLoader;
     Ability::clean();
     folders.clear();

@@ -27,11 +27,11 @@ class TiledLoader {
         TiledLoader(EnvironmentManager* environmentManager, MobSpawner* mobSpawner);
         ~TiledLoader();
 
-        Zone* loadTileFile(String fileName, String zoneName);
+        Zone* loadTileFile(String fileName, String zoneName, std::ostream& lerr);
 
-        void parseTiles(YAML::Node node);
-        void parseUnits(YAML::Node node);
-        void parseItems(YAML::Node node);
+        void parseTiles(YAML::Node node, std::ostream& lerr);
+        void parseUnits(YAML::Node node, std::ostream& lerr);
+        void parseItems(YAML::Node node, std::ostream& lerr);
     private:
         MobSpawner* mobSpawner;
         EnvironmentManager* enviroManager;

@@ -1,112 +1,121 @@
 ---
-Name: sensible ring of regeneration
-Desc: Increases your hit point and mana regeneration.
+Name: opal ring
+Desc: A nice looking opal ring, but otherwise useless.
 Texture: equipment.png
-Tile: [12, 0]
+Tile: [14, 0]
 Type: ring
-weight: 9
-hp_regen: 2
-mana_regen: 1
-luck_bonus: 1
+weight: 1
+alt: sensible ring of regeneration
 ...
 ---
-Name: sly ring of accuracy
+Name: glass ring
+Desc: A ring of pure glass.
 Texture: equipment.png
-Tile: [12, 1]
+Tile: [14, 1]
 Type: ring
-weight: 9
-acc: 1
-luck_bonus: 1
+weight: 1
+alt: sly ring of accuracy
 ...
 ---
-Name: smooth ring
+Name: silver ring
+Desc: A silver coated ring.
 Texture: equipment.png
-Tile: [12, 2]
+Tile: [14, 2]
 Type: ring
-weight: 9
-defense: 1
-luck_bonus: 1
+weight: 1
+alt: smooth ring
 ...
 ---
-Name: scribed ring
+Name: gold ring
+Desc: A gold coated ring.
 Texture: equipment.png
-Tile: [12, 3]
+Tile: [14, 3]
 Type: ring
-weight: 9
-aff: 2
-luck_bonus: 1
+weight: 1
+alt: scribed ring
 ...
 ---
-Name: serene amulet of intelligence
+Name: steel ring
+Desc: This metal ring protects an entire inch of your ring finger.
 Texture: equipment.png
-Tile: [13, 0]
-Type: amulet
-weight: 9
-int: 4
-luck_bonus: 1
+Tile: [14, 4]
+Type: ring
+weight: 2
+ac: 1
 ...
 ---
-Name: sexy amulet
+Name: diamond ring
+Desc: A very nice looking ring. Your friends are going to be very impressed.
 Texture: equipment.png
-Tile: [13, 1]
-Type: amulet
-weight: 9
-cha: 10
-luck_bonus: 1
-...
----
-Name: starry amulet
-Desc: Star powers.
-Texture: equipment.png
-Tile: [13, 2]
-Type: amulet
-weight: 9
-aff: 2
-dex: 2
-luck_bonus: 1
-...
----
-Name: salient amulet
-Desc: An shiny white amulet.
-Texture: equipment.png
-Tile: [13, 3]
-Type: amulet
-weight: 9
-cha: 2
-int: 2
-luck_bonus: 1
-...
----
-Name: sandy amulet
-Texture: equipment.png
-Tile: [13, 4]
-Type: amulet
-weight: 9
-str: 2
-con: 2
-luck_bonus: 1
-...
----
-Name: sapphire amulet
-Texture: equipment.png
-Tile: [13, 5]
-Type: amulet
-weight: 9
+Tile: [14, 5]
+Type: ring
+weight: 1
 cha: 1
-luck_bonus: 1
 ...
 ---
-Name: smurny amulet
+Name: green heuedonite ring
+Desc: Heuedonite is often used in medicine to make antitoxins. It is believed that being in constant exposure to even a small amount helps protect oneself from poison.
 Texture: equipment.png
-Tile: [13, 6]
+Tile: [14, 6]
+Type: ring
+weight: 1
+resist_poison: 1
+...
+---
+Name: crystal amulet
+Texture: equipment.png
+Tile: [15, 0]
 Type: amulet
-weight: 9
-str: 1
-con: 1
-int: 1
+weight: 4
+alt: serene amulet of intelligence
+...
+---
+Name: ruby amulet
+Texture: equipment.png
+Tile: [15, 1]
+Type: amulet
+weight: 4
+alt: sapphire amulet
+...
+---
+Name: celtic amulet
+Texture: equipment.png
+Tile: [15, 2]
+Type: amulet
+weight: 4
+alt: starry amulet
+...
+---
+Name: bone amulet
+Texture: equipment.png
+Tile: [15, 3]
+Type: amulet
+weight: 3
+alt: salient amulet
+...
+---
+Name: stone amulet
+Desc: The stone on this amulet protects an entire tiny fraction of your body.
+Texture: equipment.png
+Tile: [15, 4]
+Type: amulet
+weight: 5
+ac: 1
+...
+---
+Name: abyssal amulet
+Texture: equipment.png
+Tile: [15, 5]
+Type: amulet
+weight: 4
 aff: 1
-per: 1
-dex: 1
-cha: 1
-luck_bonus: 1
+...
+---
+Name: face amulet
+Desc: This amulet has a creepy face on it.
+Texture: equipment.png
+Tile: [15, 6]
+Type: amulet
+weight: 4
+eva: -1
 ...

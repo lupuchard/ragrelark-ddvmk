@@ -30,16 +30,16 @@ PrimeFolder::~PrimeFolder() {
     delete ground;
 }
 
-void PrimeFolder::parseInv(YAML::Node node) {
-    allThem[0] = Item(parseOne(node["Bag"]));
-    allThem[1] = Item(parseOne(node["Equipment"]));
-    allThem[2] = Item(parseOne(node["Ground"]));
+void PrimeFolder::parseInv(YAML::Node node, std::ostream& lerr) {
+    allThem[0] = Item(parseOne(node["Bag"], lerr));
+    allThem[1] = Item(parseOne(node["Equipment"], lerr));
+    allThem[2] = Item(parseOne(node["Ground"], lerr));
 }
 
-ItemType* PrimeFolder::parseOne(YAML::Node node) {
+ItemType* PrimeFolder::parseOne(YAML::Node node, std::ostream& lerr) {
     Graphic g;
     g.tex = Texture::get(node["Texture"].as<String>());
-    g.loc = readYAMLCoord(node, "Tile", ORIGIN, "Tile loc expected in inventory folder.").index(TEX_TILE_WIDTH);
+    g.loc = readYAMLCoord(node, "Tile", ORIGIN, "Tile loc expected in inventory folder.", lerr).index(TEX_TILE_WIDTH);
     ItemType* newItemType = new ItemType(node["Name"].as<String>(), "", g, ItemType::getTypeI(node["Type"].as<String>()));
     return newItemType;
 }

@@ -50,17 +50,17 @@ std::map<int, Ability*> Ability::abilities;
 std::map<String, Ability*> Ability::abilityNameMap;
 std::map<String, int> Ability::elemNameMap;
 
-void Ability::parseElem(YAML::Node fileNode) {
+void Ability::parseElem(YAML::Node fileNode, std::ostream& lerr) {
     int i = 0;
     for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter, i++) {
         elemNameMap[iter->as<String>()] = i;
     }
 }
-void Ability::parse(YAML::Node fileNode) {
-    String name = readYAMLStr(fileNode, "Name", "nil", "Ability lacks a name!");
-    int manaCost = readYAMLInt(fileNode, "Cost", 1, "Ability last a mana cost!");
-    int difficulty = readYAMLInt(fileNode, "Diff", 10, "Ability lacks a difficulty!");
-    int timeTake = readYAMLInt(fileNode, "Delay", 20, "Ability lacks a delay!");
+void Ability::parse(YAML::Node fileNode, std::ostream& lerr) {
+    String name = readYAMLStr(fileNode, "Name", "nil", "Ability lacks a name!", lerr);
+    int manaCost = readYAMLInt(fileNode, "Cost", 1, "Ability last a mana cost!", lerr);
+    int difficulty = readYAMLInt(fileNode, "Diff", 10, "Ability lacks a difficulty!", lerr);
+    int timeTake = readYAMLInt(fileNode, "Delay", 20, "Ability lacks a delay!", lerr);
 
     int index = 0;
     YAML::Node trigger = fileNode["Trigger"];

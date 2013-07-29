@@ -129,21 +129,24 @@ std::map<String, ItemSlot*> ItemType::itemSlotNameMap;
 std::vector<WeapType*> ItemType::weapTypes;
 std::map<String, WeapType*> ItemType::weapTypeNameMap;
 
-void ItemType::parse(YAML::Node fileNode) {
-    String name = readYAMLStr(fileNode, "Name", "nil", "Item lacks a name!");
+struct Prepost{ItemType* itemType; Stat* stat; String name;};
+std::list<Prepost> preposts;
+
+void ItemType::parse(YAML::Node fileNode, std::ostream& lerr) {
+    String name = readYAMLStr(fileNode, "Name", "nil", "Item lacks a name!", lerr);
     String description = readYAMLStr(fileNode, "Desc", "");
     Graphic g;
 
-    g.tex = Texture::get(readYAMLStr(fileNode, "Texture", "xx", "Item lacks a Texture!"));
-    g.loc = readYAMLCoord(fileNode, "Tile", ORIGIN, "Item lacks a Tile loc!").index(TEX_TILE_WIDTH);
+    g.tex = Texture::get(readYAMLStr(fileNode, "Texture", "xx", "Item lacks a Texture! (" + name + ")", lerr));
+    g.loc = readYAMLCoord(fileNode, "Tile", ORIGIN, "Item lacks a Tile loc! (" + name + ")", lerr).index(TEX_TILE_WIDTH);
 
     int type;
-    String typeStr = readYAMLStr(fileNode, "Type", "", "Item lacks a type!");
+    String typeStr = readYAMLStr(fileNode, "Type", "", "Item lacks a type! (" + name + ")", lerr);
     if (!typeStr.empty()) {
         if (itemTypeTypeNameMap.find(typeStr) != itemTypeTypeNameMap.end()) {
             type = itemTypeTypeNameMap[typeStr];
         } else {
-            std::cout << "'" << typeStr << "' is not an existing item type type." << std::endl;
+            lerr << "'" << typeStr << "' is not an existing item type type. (" << name << ")\n";
             type = 0;
         }
     } else type = 0;
@@ -153,18 +156,14 @@ void ItemType::parse(YAML::Node fileNode) {
     YAML::Node eNode = fileNode["Equipped"];
     if (eNode.IsMap()) {
         Graphic equipped;
-        String t = readYAMLStr(eNode, "Size", "large", "Item equipped graphic size not specified!");
-        if (t == "large") {
-            equipped.type = EQG_LARGE;
-        } else if (t == "long") {
-            equipped.type = EQG_LONG;
-        } else if (t == "tall") {
-            equipped.type = EQG_TALL;
-        } else if (t == "small") {
-            equipped.type = EQG_SMALL;
-        } else equipped.type = EQG_NONE;
-        equipped.tex = Texture::get(readYAMLStr(eNode, "Texture", "xx", "Item equipped graphic lacks a texture!"));
-        equipped.loc = readYAMLCoord(eNode, "Tile", ORIGIN, "Item equipped graphic lacks a tile loc!").index(TEX_TILE_WIDTH * 2);
+        String t = readYAMLStr(eNode, "Size", "large", "Item equipped graphic size not specified! (" + name + ")", lerr);
+        if (t == "large")      equipped.type = EQG_LARGE;
+        else if (t == "long")  equipped.type = EQG_LONG;
+        else if (t == "tall")  equipped.type = EQG_TALL;
+        else if (t == "small") equipped.type = EQG_SMALL;
+        else equipped.type = EQG_NONE;
+        equipped.tex = Texture::get(readYAMLStr(eNode, "Texture", "xx", "Item equipped graphic lacks a texture! (" + name + ")", lerr));
+        equipped.loc = readYAMLCoord(eNode, "Tile", ORIGIN, "Item equipped graphic lacks a tile loc! (" + name + ")", lerr).index(TEX_TILE_WIDTH * 2);
         newItemType->setEquippedGraphic(equipped);
     }
 
@@ -174,22 +173,36 @@ void ItemType::parse(YAML::Node fileNode) {
             String spellName = iter->as<String>();
             if (Ability::has(spellName)) {
                 newItemType->addAbility(Ability::get(spellName)->getI());
-            } else std::cout << "'" << spellName << "' is not an existing spell." << std::endl;
+            } else lerr << "'" << spellName << "' is not an existing spell. (" << name << ")\n";
         }
     }
 
     for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
-        String s = iter->first.as<String>();
-        if (std::islower(s[0])) {
-            if (Stat::has(s)) {
-                newItemType->addStatV(Stat::get(s)->getIndex(), iter->second.as<int>());
+        String statStr = iter->first.as<String>();
+        if (std::islower(statStr[0]) && !iter->second.IsNull()) {
+            if (Stat::has(statStr)) {
+                String s = iter->second.as<String>();
+                if (isNum(s)) {
+                    newItemType->addStatV(Stat::get(statStr)->getIndex(), iter->second.as<int>());
+                } else if (isPercent(s)) {
+                    newItemType->addStatV(Stat::get(statStr)->getIndex(), stf(s.substr(s.size() - 1)) * 10);
+                } else {
+                    preposts.push_back(Prepost{newItemType, Stat::get(statStr), s});
+                }
             } else {
-                std::cout << "The stat '" + s + "' does not exist!\n";
+                lerr << "The stat '" + statStr + "' does not exist! (" << name << ")\n";
             }
         }
     }
 }
-void ItemType::parseSlots(YAML::Node fileNode) {
+void ItemType::postParse(std::ostream& lerr) {
+    for (std::list<Prepost>::iterator iter = preposts.begin(); iter != preposts.end(); ++iter) {
+        if (has(iter->name)) {
+            iter->itemType->addStatV(iter->stat->getIndex(), get(iter->name)->getIndex());
+        } else lerr << "'" << iter->name << "' is not an existing item or accepted symbol (" << iter->itemType->getName() << ")\n";
+    }
+}
+void ItemType::parseSlots(YAML::Node fileNode, std::ostream& lerr) {
     int index = 0;
     for (YAML::const_iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
         ItemSlot* s = new ItemSlot;
@@ -205,13 +218,13 @@ void ItemType::parseSlots(YAML::Node fileNode) {
                 ItemSlot* overSlot = itemSlotNameMap[nam];
                 if (jter == n.begin()) s->index = overSlot->index;
                 s->over.insert(overSlot);
-                //overSlot->covers.insert(s);
+                overSlot->covers.insert(s);
             }
         } else {
             YAML::Node n = curNode["Tile"];
             Graphic g;
-            g.tex = Texture::get(readYAMLStr(curNode, "Texture", "xx", "Item lacks a Texture!"));
-            g.loc = readYAMLCoord(curNode, "Tile", ORIGIN, "Slot lacks a tile index!").index(TEX_TILE_WIDTH);
+            g.tex = Texture::get(readYAMLStr(curNode, "Texture", "xx", "Item lacks a Texture!", lerr));
+            g.loc = readYAMLCoord(curNode, "Tile", ORIGIN, "Slot lacks a tile index!", lerr).index(TEX_TILE_WIDTH);
             ItemType* emptySlot = new ItemType(s->name, "", g, 3);
             for (int i = 0; i < s->quantity; i++) emptySlots.push_back(emptySlot);
 
@@ -223,22 +236,28 @@ void ItemType::parseSlots(YAML::Node fileNode) {
     }
     numSlots = index;
 }
-void ItemType::parseTypes(YAML::Node fileNode) {
+void ItemType::parseTypes(YAML::Node fileNode, std::ostream& lerr) {
     int i = 0;
     for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter, i++) {
         ItemTypeType type;
         YAML::Node curNode = *iter;
-        type.name = readYAMLStr(curNode, "Name", "", "Item type type doesn't have name.");
+        type.name = readYAMLStr(curNode, "Name", "", "Item type type doesn't have name.", lerr);
         String slot = readYAMLStr(curNode, "Slot", "xx");
         if (slot == "xx") type.slot = NULL;
         else {
             if (itemSlotNameMap.find(slot) == itemSlotNameMap.end()) {
-                std::cout << "'" << slot << "' is not an existing slot.\n";
+                lerr << "'" << slot << "' is not an existing slot.\n";
                 type.slot = NULL;
             } else {
                 type.slot = itemSlotNameMap[slot];
             }
         }
+        String skillName = readYAMLStr(curNode, "Skill", "xx");
+        if (skillName != "xx") {
+            if (Stat::hasSkill(skillName)) {
+                type.skill = Stat::getSkill(skillName);
+            } else lerr << "'" << skillName << "' is not the name of an existing skill.\n";
+        } else type.skill = NULL;
         type.stack = readYAMLInt(curNode, "Stack", 1);
         type.ranged = readYAMLInt(curNode, "Ranged", 0);
         type.folder = readYAMLInt(curNode, "Folder", 0);
@@ -251,7 +270,7 @@ void ItemType::parseTypes(YAML::Node fileNode) {
             std::map<String, int>::iterator iter = itemTypeTypeNameMap.find(ammo);
             if (iter != itemTypeTypeNameMap.end()) type.ammo = &itemTypeTypes[iter->second];
             else {
-                std::cout << "'" << ammo << "' is not an existing ammo.\n";
+                lerr << "'" << ammo << "' is not an existing ammo.\n";
                 type.ammo = NULL;
             }
         }
@@ -262,7 +281,7 @@ void ItemType::parseTypes(YAML::Node fileNode) {
             std::map<String, WeapType*>::iterator iter = weapTypeNameMap.find(weapType);
             if (iter != weapTypeNameMap.end()) type.weapType = iter->second;
             else {
-                std::cout << "'" << weapType << "' is not an existing weap type.\n";
+                lerr << "'" << weapType << "' is not an existing weap type.\n";
                 type.weapType = NULL;
             }
         }
@@ -313,19 +332,19 @@ void verbify(YAML::Node node, String& verb, String& verbs, String& default1, Str
         verbs = defaults;
     }
 }
-void ItemType::parseWeapTypes(YAML::Node node) {
+void ItemType::parseWeapTypes(YAML::Node node, std::ostream& lerr) {
     bool defaulted = false;
     String scrapeDef, scrapesDef, hitDef, hitsDef, critDef, critsDef, megacritDef, megacritsDef;
     for (YAML::const_iterator iter = node.begin(); iter != node.end(); ++iter) {
         YAML::Node dtypeNode = *iter;
-        String name = readYAMLStr(dtypeNode, "Name", "-", "Weap type expects name.");
-        String damName = readYAMLStr(dtypeNode, "Type", "none", "Weap type expects damage type.");
+        String name = readYAMLStr(dtypeNode, "Name", "-", "Weap type expects name.", lerr);
+        String damName = readYAMLStr(dtypeNode, "Type", "none", "Weap type expects damage type.", lerr);
         DamType type = D_NONE;
         if (damName == "bludgeon") type = D_BLUDGEON;
         else if (damName == "slash") type = D_SLASH;
         else if (damName == "pierce") type = D_PIERCE;
         else if (damName == "spell") type = D_SPELL;
-        else if (damName != "none") std::cout << "'" << damName << "' is not a damage type." << std::endl;
+        else if (damName != "none") lerr << "'" << damName << "' is not a damage type." << std::endl;
 
         String scrape, scrapes, hit, hits, crit, crits, megacrit, megacrits;
         verbify(dtypeNode["Verb_Scrape"]  , scrape  , scrapes  , scrapeDef  , scrapesDef);

@@ -58,7 +58,7 @@ class Tile {
         static Tile* get(int index);
         static Tile* get(String name);
         static bool has(String name);
-        static void parseSets(YAML::Node node);
+        static void parseSets(YAML::Node node, std::ostream& lerr);
         static void addSet(TileSet* tileSet);
         static TileSet* getSet(String name);
         static bool hasSet(String name);

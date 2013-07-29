@@ -4,19 +4,16 @@
       Tile: [10, 0]
       Linked: [blades, polearms]
       Display_Loc: [32, 48]
-      Active: no
   - blades:
       Texture: menu.png
       Tile: [11, 0]
       Linked: [bludgeoning, polearms]
       Display_Loc: [48, 16]
-      Active: no
   - polearms:
       Texture: menu.png
       Tile: [12, 0]
       Linked: [bludgeoning, blades]
       Display_Loc: [64, 48]
-      Active: no
   - shooting:
       Texture: menu.png
       Tile: [13, 0]
@@ -27,7 +24,6 @@
       Tile: [14, 0]
       Linked: [shooting, unarmed]
       Display_Loc: [48, 88]
-      Active: no
   - unarmed:
       Texture: menu.png
       Tile: [15, 0]
@@ -45,7 +41,7 @@
       Tile: [11, 1]
       Linked: [stealth, shields]
       Display_Loc: [64, 128]
-  - shields:
+  - blocking:
       Texture: menu.png
       Tile: [12, 1]
       Linked: [dodge, armor]

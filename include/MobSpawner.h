@@ -58,8 +58,8 @@ class MobSpawner {
 
         Location* getNear(Zone* z, Coord* pos, bool avoidMobs, int baseHeight); //returns a location near those coords, and stores the new coords in the given coords
 
-        void parseMob(YAML::Node fileNode);
-        void parseDefaultStats(YAML::Node fileNode);
+        void parseMob(YAML::Node fileNode, std::ostream& lerr);
+        void parseDefaultStats(YAML::Node fileNode, std::ostream& lerr);
 
         void addMob(String s, StatHolder* u);
         bool placeMob(Unit* unit, Zone* z, Coord pos, bool allowAlt = true);
@@ -73,8 +73,8 @@ class MobSpawner {
         void addItemsToEncounterLevel(int type, int level, String itemSetName);
         int getEnvironment(String name);
 
-        void parseRarities(YAML::Node fileNode);
-        void parseItems(YAML::Node fileNode);
+        void parseRarities(YAML::Node fileNode, std::ostream& lerr);
+        void parseItems(YAML::Node fileNode, std::ostream& lerr);
         int addItemSpawnSet(String name);
         void addItemToSpawnSet(unsigned short item, unsigned int weight, int itemSpawnSet);
         void addItemToSpawnSet(unsigned short item, unsigned int weight, unsigned char stackMin, unsigned char stackMax, int itemSpawnSet);
@@ -83,9 +83,9 @@ class MobSpawner {
         void createItems(Zone* z, int numEnvironments, short* environments, int level, int howMany, std::vector<Coord> possibleLocs);
         void overgrowth(Zone* zone, GenType genType, Coord start, Coord end);
 
-        void parseSpawn(YAML::Node fileNode);
+        void parseSpawn(YAML::Node fileNode, std::ostream& lerr);
     private:
-        EncLevelEnc parseSpawnMob(YAML::Node fileNode, Mob mob);
+        EncLevelEnc parseSpawnMob(YAML::Node fileNode, std::ostream& lerr, Mob mob);
 
         EnvironmentManager* enviroManager;
 

@@ -26,7 +26,15 @@ RandItemType::RandItemType(unsigned short iBase, unsigned char minStack, unsigne
 }
 
 Item RandItemType::genItem() const {
-    Item newItem = Item(itemBase);
+    unsigned short itemType = itemBase;
+    short alt = ItemType::get(itemType)->getStatValue(Stat::ALT);
+    while (alt) {
+        if (rand() % 10 == 0) {
+            itemType = alt;
+            alt = ItemType::get(itemType)->getStatValue(Stat::ALT);
+        } else alt = 0;
+    }
+    Item newItem = Item(itemType);
     if (max > 1) {
         if (max > min) {
             int num = rand() % (max - min + 1) + min;

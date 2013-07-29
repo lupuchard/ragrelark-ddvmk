@@ -4,57 +4,93 @@
 [3,0]: [gold pen, 16, 39]
 [4,0]: [gold pen, 40, 99]
 [5,0]: [gold pen, 100, 249]
-[6,0]: [gold pen, 250]
-[0,1]: [silver pen, 1, 2]
-[1,1]: [silver pen, 3, 6]
-[2,1]: [silver pen, 7, 15]
-[3,1]: [silver pen, 16, 39]
-[4,1]: [silver pen, 40, 99]
-[5,1]: [silver pen, 100, 249]
-[6,1]: [silver pen, 250]
-[0,2]: [copper pen, 1, 2]
-[1,2]: [copper pen, 3, 6]
-[2,2]: [copper pen, 7, 15]
-[3,2]: [copper pen, 16, 39]
-[4,2]: [copper pen, 40, 99]
-[5,2]: [copper pen, 100, 249]
-[6,2]: [copper pen, 250]
-[7,0]: [grape, 10, 15]
-[8,0]: banana
-[9,0]: apple
-[10,0]: lemon
-[12,0]: carrot
-[14,0]: broccoli
-[7,1]: citris fruit
-[14,3]: ice cream
-[7,4]: pear
-[8,3]: mango
+[6, 0]: [gold pen, 250]
+[0, 1]: [silver pen, 1, 2]
+[1, 1]: [silver pen, 3, 6]
+[2, 1]: [silver pen, 7, 15]
+[3, 1]: [silver pen, 16, 39]
+[4, 1]: [silver pen, 40, 99]
+[5, 1]: [silver pen, 100, 249]
+[6, 1]: [silver pen, 250]
+[0, 2]: [copper pen, 1, 2]
+[1, 2]: [copper pen, 3, 6]
+[2, 2]: [copper pen, 7, 15]
+[3, 2]: [copper pen, 16, 39]
+[4, 2]: [copper pen, 40, 99]
+[5, 2]: [copper pen, 100, 249]
+[6, 2]: [copper pen, 250]
+[7, 0]: cheese ration
+[8, 0]: eggs ration
+[9, 0]: bread ration
+[10, 0]: meat ration
+[7, 1]: green bean
+[8, 1]: [banana, 1, 3]
+[9, 1]: pumpkin
+[10, 1]: plum
+[11, 1]: [olive, 4, 10]
+[7, 2]: citris fruit
+[8, 2]: eggplant
+[9, 2]: cave mushroom
+[10, 2]: lemon
+[11, 2]: [strawberry, 1, 4]
+[7, 3]: carrot
+[8, 3]: garlic
+[9, 3]: pineapple
+[10, 3]: [raspberry, 5, 20]
+[11, 3]: [brussels sprout, 2, 5]
+[7, 4]: tomato
+[8, 4]: mango
+[9, 4]: celery
+[10, 4]: apple
+[11, 4]: [watermelon, 1, 4]
+[7, 5]: broccoli
+[8, 5]: ice cream
+[9, 5]: corn
+[10, 5]: [lettuce, 3, 5]
+[11, 5]: [cherry, 1, 7]
+[7, 6]: radish
+[8, 6]: wine
+[10, 6]: green pepper
+[11, 6]: [grape, 10, 15]
 
 [0,5]: blue feather
 [1,5]: big heavy rock
 [0,6]: candle
 
-[16,0]: sane leather gloves
-[16,1]: sharpshooter gloves
-[16,2]: sculptural clogs
-[16,3]: speedy boots
-[17,0]: shabby shirt
-[17,1]: sensible leather armor
-[17,2]: silk adventure clothes
-[17,3]: sizzling magma armor
-[18,0]: smart pointy hat
-[18,1]: splendid leather cap
-[19,0]: smooth round wooden shield
-[19,1]: semi reinforced shield
-[20,1]: steely dagger
-[20,2]: sacred obsidian dagger
-[21,0]: simple club
-[21,1]: sadistic mace
-[21,2]: superior mace
-[22,0]: sleek longbow
-[23,0]: simplistic arrow
-[24,0]: sensible ring of regeneration
-[24,1]: sly ring of accuracy
-[25,0]: serene amulet of intelligence
-[25,1]: sexy amulet
-[26,0]: adventure spellbook
+[12, 0]: cloak
+[12, 1]: silk cloak
+[12, 2]: thaumaturgic cloak
+[13, 0]: robe
+[13, 1]: leather armor
+[13, 2]: chainmail
+[14, 0]: pointed hat
+[14, 1]: cap
+[14, 2]: etched helmet
+[15, 0]: buckler
+[15, 1]: round shield
+[15, 2]: kite shield
+[16, 0]: boots
+[16, 1]: large boots
+[16, 2]: sandals
+[17, 0]: gloves
+[17, 1]: mittens
+[17, 2]: gauntlets
+[18, 0]: spear
+[18, 1]: halberd
+[18, 2]: trident
+[19, 0]: dagger
+[19, 1]: axe
+[19, 2]: battle axe
+[20, 0]: club
+[20, 1]: mace
+[20, 2]: flail
+[21, 0]: bow
+[21, 1]: longbow
+[21, 2]: [arrow, 4, 8]
+[22, 0]: crossbow
+[22, 1]: dwarven crossbow
+[22, 2]: [bolt, 4, 8]
+[23, 0]: sling
+[23, 1]: [sling ammo, 4, 8]
+[23, 2]: [dart, 4, 8]
+[28,0]: adventure spellbook

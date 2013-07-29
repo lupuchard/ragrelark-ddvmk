@@ -23,6 +23,7 @@
 #include <math.h>
 #include <cctype>
 #include <iostream>
+#include <sstream>
 
 #include <yaml-cpp/yaml.h>
 
@@ -60,6 +61,7 @@ bool isPair(String s);
 
 bool isSPair(String s);
 
+bool isPercent(String s);
 /// Returns true if the string only digits and dots.
 bool isNum(String s);
 
@@ -78,11 +80,10 @@ String article(String s);
 /// Converts a number to roman numerals.
 String toRomanNumerals(int num);
 
-String readYAMLStr(  YAML::Node& node, String key, String def, String errorMess = "");
-int    readYAMLInt(  YAML::Node& node, String key,    int def, String errorMess = "");
-float  readYAMLNum(  YAML::Node& node, String key,  float def, String errorMess = "");
-Coord  readYAMLCoord(YAML::Node& node, String key,  Coord def, String errorMess = "");
-String indexYAMLStr( YAML::Node& node,    int key, String def, String errorMess = "");
-int    indexYAMLInt( YAML::Node& node,    int key,    int def, String errorMess = "");
+String readYAMLStr(  YAML::Node& node, String key, String def, String errorMess = "", std::ostream& lerr = std::cerr);
+int    readYAMLInt(  YAML::Node& node, String key,    int def, String errorMess = "", std::ostream& lerr = std::cerr);
+float  readYAMLNum(  YAML::Node& node, String key,  float def, String errorMess = "", std::ostream& lerr = std::cerr);
+Coord  readYAMLCoord(YAML::Node& node, String key,  Coord def, String errorMess = "", std::ostream& lerr = std::cerr);
+int    indexYAMLInt( YAML::Node& node,    int key,    int def, String errorMess = "", std::ostream& lerr = std::cerr);
 
 #endif // USEFULPARSING_H

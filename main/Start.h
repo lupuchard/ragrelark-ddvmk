@@ -42,12 +42,12 @@ enum Status{ST_NONE, ST_CONF, ST_POIS, ST_ENCUM, ST_HUNG, ST_DEAD};
 #define INTERVAL_2_TIM 500
 #define INTERVAL_3_TIM 5000
 
-enum MenuAction{MA_EXAMINE, MA_GRAB, MA_DROP, MA_EQUIP, MA_EAT, MA_READ, NUM_MENU_ACTIONS};
+enum MenuAction{MA_GRAB, MA_DROP, MA_EQUIP, MA_CONSUME, MA_THROW, NUM_MENU_ACTIONS};
 enum{STATE_PLAY, STATE_DEAD, STATE_MENU, STATE_DIR, STATE_TARGET, STATE_SPELL};
 enum Panels{PANEL_EMPTY, PANEL_TOPSTART, PANEL_STATS, PANEL_SKILLS, PANEL_INVENTORY, PANEL_TOPEND, PANEL_BOTTOMSTART, PANEL_MINIMAP, PANEL_NOTES, PANEL_BOTTOMEND};
 enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, AI_NEUTRAL = 4};
 
-enum{SA_NONE, SA_ATTACK, SA_FIRE, SA_OPENDOOR, SA_CLOSEDOOR};
+enum StateAction{SA_NONE, SA_ATTACK, SA_FIRE, SA_THROW, SA_OPENDOOR, SA_CLOSEDOOR};
 
 enum FlavorClass{F_NONE, F_POISON_PHYS, F_POISON_MENT, F_POISON_REGEN, F_POISON_EXTRA, F_CONFUSION};
 struct Flavor {
@@ -69,14 +69,14 @@ class Start: FormulaUser, EnvironmentManager {
         Start();
         virtual ~Start();
 
-        void prepare();
+        bool prepare();
         void execute();
 
         void addMessage(String message, Color c);
 
         Skill* skll(SkillE skillIndex);
 
-        void parsePlayer(YAML::Node n);
+        void parsePlayer(YAML::Node n, std::ostream& lerr);
 
         /* --initiator.cpp-- */
         bool init();
@@ -156,11 +156,12 @@ class Start: FormulaUser, EnvironmentManager {
         Color colorHit(bool crit, bool dodge);
 
         void hitCMod(Unit* defender, float& damage, float accuracy, int& hitType, BattleSummary& sum);
-        BattleSummary attackUnit(int power, float accuracy, const WeapType* weapType, Unit* defender, Zone* zone, int dir, Flavor flavor = Flavor());
+        BattleSummary attackUnit(float power, float accuracy, const WeapType* weapType, Unit* defender, Zone* zone, int dir, Flavor flavor = Flavor());
         void pfaf(int stat, int potency, Unit* u);
         void strikeUnit(Unit* unit, Zone* zone, int dir, bool safe);
-        void shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone);
-        void projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from);
+        void throwItem(Item item, Unit* unit, Coord target, Zone* zone);
+        void shootUnit(Unit* attacker, Item shooter, Item beingShot, Unit* defender, Zone* zone);
+        BattleSummary projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from);
         void reactToAttack(Unit* unit, int dir, Zone* zone);
         void killUnit(Unit* unit, Zone* zone);
 
@@ -182,9 +183,9 @@ class Start: FormulaUser, EnvironmentManager {
         Item removeItemFromPlace(Coord pos, Zone* z, int index);
 
         /* --dataLoader.cpp-- */
-        void loadData();
-        void yamlSingle(String file, boost::function<void(YAML::Node)> parseFunc);
-        void yamlMulti(String directory, boost::function<void(YAML::Node)> parseFunc);
+        bool loadData();
+        bool yamlSingle(String file, boost::function<void(YAML::Node, std::ostream&)> parseFunc);
+        bool yamlMulti(String directory, boost::function<void(YAML::Node, std::ostream&)> parseFunc);
         void deleteData();
         bool errorChecker(String filename);
         void printFileErr(String said, int line);
@@ -222,11 +223,12 @@ class Start: FormulaUser, EnvironmentManager {
         PrimeFolder* primeFolder;
         std::map<unsigned short, std::vector<ItemFolder*> > folders;
         unsigned char visibilities[MAX_ZONE_SIZE]; //0 = nope, 1 = LOS, 2 = lit
+        unsigned char loadStatus;
 
         /*target & dir*/
         std::vector<Unit*> unitsInRange;
         short stIndex;
-        unsigned short stateAction;
+        StateAction stateAction;
         /*endt*/
         bool circleSelect[10];
         int topPanel;
@@ -236,11 +238,10 @@ class Start: FormulaUser, EnvironmentManager {
 
         Texture *structureTex, *menuTex, *fontTex, *splatterTex, *attackAnimsTex, *playerTex;
         TiledLoader* tiledLoader;
+        std::ostringstream loadErrStream;
 
         RagDrawer ragd;
         RagAnim raga;
-
-        unsigned char loadStatus;
 
         bool shiftIsDown;
         std::vector<std::pair<String, Color> > messages;

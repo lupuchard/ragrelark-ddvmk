@@ -350,15 +350,14 @@ void Start::pfaf(int stat, int potency, Unit* u) {
     }
 }
 
-const int damStats[] = {Stat::MELDAMAGE, Stat::RANDAMAGE};
-//const Skill* damSkills[] = {SKL_MELEE, SKL_RANGE};
-BattleSummary Start::attackUnit(int power, float accuracy, const WeapType* weapType, Unit* defender, Zone* zone, int dir, Flavor flavor) {
+BattleSummary Start::attackUnit(float power, float accuracy, const WeapType* weapType, Unit* defender, Zone* zone, int dir, Flavor flavor) {
     BattleSummary sum = {false, false, false, false};
 
     float damage = defDam(power, defender->getStatValue(Stat::DEFENSE));
     damage *= ((float)rand() / RAND_MAX) / 8 + .9375;
     int hitType;
     hitCMod(defender, damage, accuracy, hitType, sum);
+    if (!weapType) weapType = ItemType::getWeapType(0);
     raga.rAttack(defender->pos, dir, weapType->damageType, hitType);
 
     if (damage) {
@@ -416,12 +415,14 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 Unit* defender = loc->unit;
 
                 WeapType* weapType = NULL;
+                Skill* skill = NULL;
                 bool unarmed = true;
                 if (unit == player->getUnit()) {
                     for (int i = 0; i < primeFolder->getEquips()->getNumItems(); i++) {
                         ItemTypeType* itemTypeType = primeFolder->getEquips()->getItem(i)->getType()->getType();
                         if (itemTypeType->weapType && !itemTypeType->ranged) {
                             weapType = itemTypeType->weapType;
+                            skill = itemTypeType->skill;
                             unarmed = false;
                             break;
                         }
@@ -455,7 +456,14 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                     weapType = ItemType::getWeapType(unit->getStatValue(Stat::UNARMED));
                     bs = attackUnit(unit->getStatValue(Stat::UNARMDAMAGE), unit->getStatValue(Stat::ACC), weapType, defender, zone, dir, f);
                 } else {
-                    bs = attackUnit(unit->getStatValue(Stat::MELDAMAGE), unit->getStatValue(Stat::ACC), weapType, defender, zone, dir, f);
+                    float dam = unit->getStatValue(Stat::MELDAMAGE);
+                    float acc = unit->getStatValue(Stat::ACC);
+                    if (skill) {
+                        dam += player->getSkillLevel(skill) * .1;
+                        acc += player->getSkillLevel(skill) * .1;
+                        sapExp(unit, defender, skill, 2);
+                    }
+                    bs = attackUnit(dam, acc, weapType, defender, zone, dir, f);
                 }
 
                 Color c = critColors[bs.criticality];
@@ -471,8 +479,8 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
                 }
 
                 if (!bs.killed && bs.hit) {
-                    if (bs.dodge) sapExp(defender, unit, Stat::getSkill(SKL_DODGE), 1);
-                    if (unarmed) sapExp(unit, defender, skll(SKL_UNARMED), 1);
+                    if (bs.dodge) sapExp(defender, unit, Stat::getSkill(SKL_DODGE), 2);
+                    if (unarmed) sapExp(unit, defender, skll(SKL_UNARMED), 3);
                 } else if (bs.killed) {
                     extra += " to death";
                 }
@@ -482,7 +490,7 @@ void Start::strikeUnit(Unit* unit, Zone* zone, int dir, bool safe) {
     }
 }
 
-void Start::shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone) {
+void Start::shootUnit(Unit* attacker, Item shooter, Item beingShot, Unit* defender, Zone* zone) {
     if (attacker == player->getUnit() && attacker->getStatValue(Stat::STAMINA) < 1500) {
         addMessage("You are too exausted to shoot!", GRAY);
     } else {
@@ -491,18 +499,19 @@ void Start::shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone) 
         if (attacker == player->getUnit()) {
             attacker->modifyStat(Stat::STAMINA, -(T_ATTACK / 2));
         }
-        BattleSummary bs;
-        WeapType* weapType = shooter.getType()->getType()->weapType;
-        bs = attackUnit(attacker->getStatValue(Stat::RANDAMAGE), attacker->getStatValue(Stat::ACC), weapType, defender, zone, 0);
+        String verb, u1name;
+        String u2name = defenderNoun(attacker, defender);
+        //WeapType* weapType = shooter.getType()->getType()->weapType;
+        BattleSummary bs = projectItem(beingShot, attacker->getStatValue(Stat::RANDAMAGE), attacker->getStatValue(Stat::ACC), zone, defender->pos, attacker->pos);
+        //BattleSummary bs = attackUnit(attacker->getStatValue(Stat::RANDAMAGE), attacker->getStatValue(Stat::ACC), weapType, defender, zone, 0);
         if (!bs.killed) {
-            if (bs.dodge) sapExp(defender, attacker, Stat::getSkill(SKL_DODGE), 1);
-            if (bs.hit) sapExp(attacker, defender, Stat::getSkill(SKL_SHOOT), 1);
+            if (bs.dodge) sapExp(defender, attacker, Stat::getSkill(SKL_DODGE), 2);
+            if (bs.hit) sapExp(attacker, defender, Stat::getSkill(SKL_SHOOT), 2);
         }
 
+        WeapType* weapType = beingShot.getType()->getType()->weapType;
         Color c = critColors[bs.criticality];
-        String verb;
-        String u1name;
-        String u2name = defenderNoun(attacker, defender);
+
         if (attacker == player->getUnit()) {
             u1name = "you";
             verb = weapType->getVerb(bs.criticality, false);
@@ -515,23 +524,47 @@ void Start::shootUnit(Unit* attacker, Item shooter, Unit* defender, Zone* zone) 
     }
 }
 
-//TODO finish method
-void Start::projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from) {
-    String verb, u1name, u2name;
+void Start::throwItem(Item item, Unit* unit, Coord target, Zone* zone) {
+    String u2name;
+    Location* loc = zone->getLocationAt(target);
+    if (loc->hasUnit()) u2name = defenderNoun(unit, loc->unit);
 
+    unit->theTime += actionTimePassed(T_ATTACK, unit->getStatValue(Stat::ATTACKSPEED));
+    BattleSummary bs = projectItem(item, 0, unit->getStatValue(Stat::ACC) + item.getType()->getStatValue(Stat::THRO) - 2, zone, target, unit->pos);
+    if (!bs.killed) {
+        if (bs.dodge) sapExp(zone->getLocationAt(target)->unit, unit, Stat::getSkill(SKL_DODGE), 2);
+        if (bs.hit) sapExp(unit, zone->getLocationAt(target)->unit, Stat::getSkill(SKL_THROW), 2);
+    }
+    if (bs.hit || bs.dodge) {
+        String verb, u1name;
+        Color c = critColors[bs.criticality];
+
+        if (unit == player->getUnit()) {
+            u1name = "you throw the ";
+            verb = ItemType::getWeapType(0)->getVerb(bs.criticality, false);
+        } else {
+            u1name = "the " + unit->name + " throws tho ";
+            c.green += c.red / 2;
+            verb = ItemType::getWeapType(0)->getVerb(bs.criticality, true);
+        }
+        addMessage(capitalize(u1name + item.getType()->getName() + " at " + u2name + " and " + verb + "."), c);
+    }
+}
+
+BattleSummary Start::projectItem(Item item, int power, int accuracy, Zone* zone, Coord to, Coord from) {
     ItemType* itemType = item.getType();
-
-    //int dam = itemType->getStatValue(Stat::IDAMAGE);
-    int thro = itemType->getStatValue(Stat::THRO);
-    //int damty = itemType->getStatValue(Stat::DTYPE);
-    int weight = itemType->getStatValue(Stat::WEIGHT);
-
-    //int damage = dam + (weight * power) / 100 + thro;
-
-    //if (damty) damty = WEAP_OBJ;
     Location* loc = zone->getLocationAt(to);
     if (loc->unit) {
-        //attackUnit(damage, accuracy, damty, loc->unit, zone, 0);
+        BattleSummary bs = attackUnit(power + itemType->getStatValue(Stat::DAM), accuracy, itemType->getType()->weapType, loc->unit, zone, 0); //TODO dir
+        if (bs.hit) {
+            if ((float)rand() / RAND_MAX > itemType->getStatValue(Stat::BREAK) / 1000.f) {
+                addItemToPlace(to, zone, item);
+            }
+        } else addItemToPlace(to, zone, item);
+        return bs;
+    } else {
+        addItemToPlace(to, zone, item);
+        return BattleSummary{0, 0, 0, 0};
     }
 }
 

@@ -70,10 +70,10 @@ int Stat::EXP, Stat::LEVEL, Stat::EXPREQ, Stat::STR, Stat::CON, Stat::AFF, Stat:
     Stat::POIS_PHYS, Stat::POIS_MENT, Stat::POIS_REGEN, Stat::POIS_EXTRA, Stat::CONFUSION,
     Stat::AFFLICTION, Stat::AFFLICTION_POTENCY,
     Stat::GLOC, Stat::GTEX, Stat::GTYPE;
-int Stat::WEIGHT, Stat::VALUE, Stat::FEED, Stat::TASTE, Stat::RANGE, Stat::LIGHT, Stat::GSTACK, Stat::THRO;
+int Stat::WEIGHT, Stat::VALUE, Stat::FEED, Stat::TASTE, Stat::DAM, Stat::RANGE, Stat::LIGHT, Stat::GSTACK, Stat::THRO, Stat::BREAK, Stat::ALT;
 std::map<String, int*> Stat::bindMap;
 
-void Stat::parseAll(YAML::Node fileNode) {
+void Stat::parseAll(YAML::Node fileNode, std::ostream& lerr) {
     if (!donnit) {
         donnit = true;
         bindMap["EXP"] = &EXP; bindMap["LEVEL"] = &LEVEL; bindMap["EXPREQ"] = &EXPREQ;
@@ -92,22 +92,23 @@ void Stat::parseAll(YAML::Node fileNode) {
         bindMap["GLOC"] = &GLOC; bindMap["GTEX"] = &GTEX; bindMap["GTYPE"] = &GTYPE;
         bindMap["WEIGHT"] = &WEIGHT; bindMap["VALUE"] = &VALUE; bindMap["FEED"] = &FEED; bindMap["TASTE"] = &TASTE;
         bindMap["RANGE"] = &RANGE; bindMap["LIGHT"] = &LIGHT; bindMap["GSTACK"] = &GSTACK; bindMap["THRO"] = &THRO;
+        bindMap["DAM"] = &DAM; bindMap["BREAK"] = &BREAK; bindMap["ALT"] = &ALT;
         for (std::map<String, int*>::iterator iter = bindMap.begin(); iter != bindMap.end(); ++iter) {
             *iter->second = -1;
         }
     }
-    if (fileNode["world"]) parseSection(fileNode["world"], V_WORLD);
-    if (fileNode["item"])  parseSection(fileNode["item"], V_ITEM);
-    if (fileNode["unit"])  parseSection(fileNode["unit"], V_UNIT);
+    if (fileNode["world"]) parseSection(fileNode["world"], V_WORLD, lerr);
+    if (fileNode["item"])  parseSection(fileNode["item"], V_ITEM, lerr);
+    if (fileNode["unit"])  parseSection(fileNode["unit"], V_UNIT, lerr);
     for (std::map<String, int*>::iterator iter = bindMap.begin(); iter != bindMap.end(); ++iter) {
-        if (*iter->second == -1) std::cout << "Fatal Warning: Stat variable '" << iter->first << "' has not been binded.\n";
+        if (*iter->second == -1) lerr << "Fatal Warning: Stat variable '" << iter->first << "' has not been binded.\n";
     }
 }
-void Stat::parseSection(YAML::Node node, VOwner owner) {
+void Stat::parseSection(YAML::Node node, VOwner owner, std::ostream& lerr) {
     int j = 0;
     for (YAML::const_iterator jter = node.begin(); jter != node.end(); ++jter, j++) {
         YAML::Node n = *jter;
-        String statName = readYAMLStr(n, "Name", "nil", "Stat lacks a name!");
+        String statName = readYAMLStr(n, "Name", "nil", "Stat lacks a name!", lerr);
 
         String formula = readYAMLStr(n, "Form", "SLF");
         Formula* newFormula;
@@ -116,7 +117,7 @@ void Stat::parseSection(YAML::Node node, VOwner owner) {
         if (formula == "SLF") {
             newFormula = NULL;
         } else {
-            newFormula = parseFormula(formula, formStats, formSkills);
+            newFormula = parseFormula(formula, formStats, formSkills, lerr);
         }
         Stat* newStat = new Stat(statName, newFormula, readYAMLInt(n, "Float", 0));
         newStat->index = j;
@@ -124,7 +125,7 @@ void Stat::parseSection(YAML::Node node, VOwner owner) {
         if (bindName != "x") {
             if (bindMap.find(bindName) != bindMap.end()) {
                 *bindMap[bindName] = newStat->getIndex();
-            } else std::cout << "'" << bindName << "' is not bindable.\n";
+            } else lerr << "'" << bindName << "' is not bindable.\n";
         }
         if (n["Display"]) {
             String s = n["Display"].as<String>();
@@ -196,7 +197,7 @@ int Stat::getNum(VOwner type) {
     }
 }
 
-Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& stats, std::set<Skill*>& skills) {
+Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& stats, std::set<Skill*>& skills, std::ostream& lerr) {
     Formula* newFormula = new Formula(1);
     int start = 0;
     char flc = line[line.size() - 1];
@@ -249,8 +250,8 @@ Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& st
                         type = V_SKILL;
                         String skillName = s.substr(1, 100);
                         if (!hasSkill(skillName)) {
-                            std::cout << "a skill in a formula does not exist: " << skillName << "\n";
-                            std::cout << " This formula: " << line << "\n";
+                            lerr << "a skill in a formula does not exist: " << skillName << "\n";
+                            lerr << " This formula: " << line << "\n";
                             return NULL;
                         }
                         Skill* skill = getSkill(skillName);
@@ -258,8 +259,8 @@ Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& st
                         skills.insert(skill);
                     } break;
                     default:
-                        std::cout << "There is something wrong with this formula! " << s << "\n";
-                        std::cout << " The formula: " << line << "\n"; break;
+                        lerr << "There is something wrong with this formula! " << s << "\n";
+                        lerr << " The formula: " << line << "\n"; break;
                 }
                 if (type != V_SKILL) {
                     switch(s[1]) {
@@ -267,8 +268,8 @@ Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& st
                             type = V_STAT;
                             String statName = s.substr(2, 100);
                             if (!has(statName)) {
-                                std::cout << "A stat in a formula does not exist: " << statName << "\n";
-                                std::cout << " This formula: " << line << "\n";
+                                lerr << "A stat in a formula does not exist: " << statName << "\n";
+                                lerr << " This formula: " << line << "\n";
                                 return NULL;
                             }
                             Stat* stat = get(statName);
@@ -276,8 +277,8 @@ Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& st
                             stats.insert(std::pair<VOwner, Stat*>(target, stat));
                         } break;
                         default:
-                            std::cout << "There is something incorrect about this formula!\n";
-                            std::cout << " The formula: " << line << "\n"; break;
+                            lerr << "There is something incorrect about this formula!\n";
+                            lerr << " The formula: " << line << "\n"; break;
                     }
                 }
                 newFormula->pushVar(target, type, aStatConSkill);
@@ -366,7 +367,7 @@ void Stat::addSkillAffliction(Skill* afflictingSkill, Stat* afflictedStat) {
 }
 
 typedef std::vector<std::pair<Skill*, std::vector<YAML::Node> > > TempLinks;
-void Stat::parseSkills(YAML::Node fileNode) {
+void Stat::parseSkills(YAML::Node fileNode, std::ostream& lerr) {
     int i = 0;
     for (YAML::const_iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter, i++) {
         YAML::Node categoryNode = iter->begin()->second;
@@ -380,9 +381,9 @@ void Stat::parseSkills(YAML::Node fileNode) {
             newSkill->index = skills.size();
 
             YAML::Node skillNode = jter->begin()->second;
-            newSkill->graphic.tex = Texture::get(readYAMLStr(skillNode, "Texture", "xx", "Texture expected for skill."));
-            newSkill->graphic.loc = readYAMLCoord(skillNode, "Tile", ORIGIN, "Tile expected for skill.").index(TEX_TILE_WIDTH);
-            newSkill->displayLoc = readYAMLCoord(skillNode, "Display_Loc", ORIGIN, "Display loc expected for this skill.");
+            newSkill->graphic.tex = Texture::get(readYAMLStr(skillNode, "Texture", "xx", "Texture expected for skill.", lerr));
+            newSkill->graphic.loc = readYAMLCoord(skillNode, "Tile", ORIGIN, "Tile expected for skill.", lerr).index(TEX_TILE_WIDTH);
+            newSkill->displayLoc = readYAMLCoord(skillNode, "Display_Loc", ORIGIN, "Display loc expected for this skill.", lerr);
             newSkill->active = readYAMLInt(skillNode, "Active", true);
 
             skills.push_back(newSkill);
