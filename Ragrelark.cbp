@@ -5,7 +5,7 @@
 		<Option title="Ragrelark" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/utility/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;" />
+		<Option virtualFolders="code/;code/classes/;code/classes/Attributes &amp; Formulas/;code/main/;code/classes/Places/;code/utility/;code/main/graphics/;code/main/main main/;code/classes/Mobs/;code/classes/Generation/;code/classes/Graphics/;code/main/activity/;code/classes/Items/;code/classes/Items/Folders/;code/classes/Graphics/Gooey/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -24,6 +24,7 @@
 					<Add directory="util" />
 					<Add directory="main" />
 					<Add directory="depenencies" />
+					<Add directory="dependencies/fov" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
@@ -31,11 +32,11 @@
 					<Add library="SDLmain" />
 					<Add library="SDL" />
 					<Add library="SDL_image" />
-					<Add library="fov" />
 					<Add library="X11" />
 					<Add library="yaml-cpp" />
 					<Add library="boost_filesystem" />
 					<Add library="boost_system" />
+					<Add library="boost_iostreams" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -54,6 +55,7 @@
 					<Add directory="util" />
 					<Add directory="main" />
 					<Add directory="depenencies" />
+					<Add directory="dependencies/fov" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -62,12 +64,14 @@
 					<Add library="SDLmain" />
 					<Add library="SDL" />
 					<Add library="SDL_image" />
-					<Add library="fov" />
 					<Add library="X11" />
 					<Add library="yaml-cpp" />
 					<Add library="boost_filesystem" />
 					<Add library="boost_system" />
 				</Linker>
+				<ExtraCommands>
+					<Add after="bash standalone.sh" />
+				</ExtraCommands>
 			</Target>
 			<Target title="Test">
 				<Option output="bin/Test/Ragrelark" prefix_auto="1" extension_auto="1" />
@@ -100,9 +104,6 @@
 		<Unit filename="data/items/weapons.yaml" />
 		<Unit filename="data/items_tiled.yaml" />
 		<Unit filename="data/maps.yaml" />
-		<Unit filename="data/monsters/humanoids.yaml" />
-		<Unit filename="data/monsters/swarmers.yaml" />
-		<Unit filename="data/monsters/units.yaml" />
 		<Unit filename="data/player.yaml" />
 		<Unit filename="data/prototype_stats.yaml" />
 		<Unit filename="data/skills.yaml" />
@@ -118,6 +119,17 @@
 		</Unit>
 		<Unit filename="depenencies/base64/base64.h">
 			<Option virtualFolder="code/utility/" />
+		</Unit>
+		<Unit filename="depenencies/fov/fov.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="code/utility/" />
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="depenencies/fov/fov.h">
+			<Option virtualFolder="code/utility/" />
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
 		<Unit filename="depenencies/tinyxml2/tinyxml2.cpp">
 			<Option virtualFolder="code/utility/" />
@@ -142,6 +154,9 @@
 		</Unit>
 		<Unit filename="include/Blobber.h">
 			<Option virtualFolder="code/classes/Generation/" />
+		</Unit>
+		<Unit filename="include/Button.h">
+			<Option virtualFolder="code/classes/Graphics/Gooey/" />
 		</Unit>
 		<Unit filename="include/Color.h">
 			<Option virtualFolder="code/classes/Graphics/" />
@@ -298,12 +313,12 @@
 			<Option virtualFolder="code/utility/" />
 		</Unit>
 		<Unit filename="main/Start.cpp">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/Start.h">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/main main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -313,7 +328,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/cleaner.cpp">
-			<Option virtualFolder="code/main/main main/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -323,7 +338,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/events.cpp">
-			<Option virtualFolder="code/main/main main/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -338,12 +353,12 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/logic.cpp">
-			<Option virtualFolder="code/main/main main/" />
+			<Option virtualFolder="code/main/" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="main/main.h">
-			<Option virtualFolder="code/main/" />
+			<Option virtualFolder="code/main/main main/" />
 		</Unit>
 		<Unit filename="main/particles.cpp">
 			<Option virtualFolder="code/main/graphics/" />
@@ -370,7 +385,6 @@
 		<Unit filename="resources/font.png" />
 		<Unit filename="resources/items.png" />
 		<Unit filename="resources/items2.png" />
-		<Unit filename="resources/items3.png" />
 		<Unit filename="resources/menu.png" />
 		<Unit filename="resources/monsters.png" />
 		<Unit filename="resources/moretiles.png" />
@@ -401,6 +415,9 @@
 		</Unit>
 		<Unit filename="src/Blobber.cpp">
 			<Option virtualFolder="code/classes/Generation/" />
+		</Unit>
+		<Unit filename="src/Button.cpp">
+			<Option virtualFolder="code/classes/Graphics/Gooey/" />
 		</Unit>
 		<Unit filename="src/Color.cpp">
 			<Option virtualFolder="code/classes/Graphics/" />

@@ -38,7 +38,7 @@ class TiledLoader {
 
         std::map<unsigned int, Tile*> tiledTiles;
         std::map<unsigned int, RandItemType*> tiledItems;
-        std::map<unsigned int, Mob> tiledUnits;
+        std::map<unsigned int, Mob*> tiledUnits;
 
         std::map<String, unsigned int> borderMap;
 };

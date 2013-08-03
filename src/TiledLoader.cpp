@@ -146,9 +146,9 @@ Zone* TiledLoader::loadTileFile(String fileName, String zoneName, std::ostream& 
 void TiledLoader::parseTiles(YAML::Node node, std::ostream& lerr) {
     String texName = readYAMLStr(node, "Texture", "", "No texture defined!");
     Texture* texture = Texture::get(texName);
-    for (YAML::Node::iterator iter = node["Tiles"].begin(); iter != node["Tiles"].end(); ++iter) {
-        String tileName = iter->first.as<String>();
-        YAML::Node data = iter->second;
+    for (YAML::const_iterator iter = node["Tiles"].begin(); iter != node["Tiles"].end(); ++iter) {
+        String tileName = iter->begin()->first.as<String>();
+        YAML::Node data = iter->begin()->second;
         if (data.IsSequence()) {
             Graphic g;
             g.tex = texture;
@@ -198,8 +198,8 @@ void TiledLoader::parseUnits(YAML::Node node, std::ostream& lerr) {
         int y = locNode[1].as<int>();
         int index = x + y * 32;
         String name = mobNode.as<String>();
-        if (mobSpawner->mobExists(name)) {
-            tiledUnits[index] = mobSpawner->getMob(name);
+        if (Unit::mobExists(name)) {
+            tiledUnits[index] = Unit::getMob(name);
         } else {
             lerr << "'" + name + "' is not an existing unit.\n";
         }

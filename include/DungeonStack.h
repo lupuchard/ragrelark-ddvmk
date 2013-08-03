@@ -50,6 +50,9 @@ class DungeonStack: boost::noncopyable {
         Coord addEntryStairs(); //creates stairs on the top floor and gives you their location
         int getNumStairs(int floor); //floor refers to the floor the stairs go down from (0 is the top floor)
         Coord getStairLoc(int floor, int index);
+
+        void save(std::ostream& saveData);
+        DungeonStack(std::istream& saveData);
     private:
         Zone** zones;
         unsigned char* skeleton;

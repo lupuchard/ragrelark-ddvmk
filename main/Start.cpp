@@ -18,9 +18,9 @@
 
 #include "Start.h"
 
-Start::Start() {
+Start::Start(): startGameButton() {
     selected = 0;
-    state = STATE_PLAY;
+    state = STATE_MAIN_MENU;
     stateAction = SA_NONE;
 
     for(unsigned int i = 0; i < 4; i++) intervals[i] = 0;
@@ -38,6 +38,8 @@ Start::Start() {
     player = NULL;
 
     done = prepare();
+
+    mouse.leftDown = mouse.rightDown = mouse.leftPress = mouse.rightPress = false;
 }
 
 Start::~Start() { }
@@ -52,25 +54,8 @@ bool Start::prepare() {
     world = new World();
 
     if (!init()) return true;
-    if (loadData()) return true;
     startRenderer();
 
-    Item* primeFolders = primeFolder->getItems();
-    putItemFolder(primeFolders + 2, primeFolder->getGround());
-    putItemFolder(primeFolders + 1, primeFolder->getEquips());
-    putItemFolder(primeFolders, primeFolder->getBag());
-    folderStack.push(primeFolder);
-
-    primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->pos);
-
-    for (int i = 0; i < MAX_ZONE_SIZE; i++) {
-        visibilities[i] = 0;
-    }
-    findAreaUnits();
-
-    playerFieldOfView(true);
-
-    addMessage("Welcome to game great fun play.", BLACK);
     return false;
 }
 
@@ -195,7 +180,7 @@ Skill* Start::skll(SkillE skillIndex) {
 
 void Start::parsePlayer(YAML::Node n, std::ostream& lerr) {
     player->setName(readYAMLStr(n, "Name", "anonymous"));
-    player->setUnitProto(mobSpawner->getMob(readYAMLStr(n, "Unit", "player")).second);
+    player->setUnitProto(Unit::getMob(readYAMLStr(n, "Unit", "player"))->proto);
     player->setArea(world->getArea(readYAMLStr(n, "Area", "no area specified")));
     Zone* zone = world->getZone(readYAMLStr(n, "Zone", "no zone specified"));
     player->setZone(zone);

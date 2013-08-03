@@ -99,3 +99,18 @@ Unit* Swarmer::take(int unit) {
     Unit::graphic.loc = Unit::getStatValue(Stat::GLOC) + others.size();
     return temp;
 }
+
+void Swarmer::save(std::ostream& saveData) {
+    Unit::save(saveData);
+    outSht(others.size(), saveData);
+    for (unsigned int i = 0; i < others.size(); i++) {
+        others[i]->save(saveData);
+    }
+}
+
+Swarmer::Swarmer(std::istream& saveData): Unit(saveData) {
+    unsigned int numOthers = inSht(saveData);
+    for (unsigned int i = 0; i < numOthers; i++) {
+        others.push_back(new Swarmer(saveData));
+    }
+}

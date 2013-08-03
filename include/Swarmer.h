@@ -35,6 +35,9 @@ class Swarmer: public Unit {
 
         void add(Swarmer* unit);
         Unit* take(int unit);
+
+        void save(std::ostream& saveData);
+        Swarmer(std::istream& saveData);
     private:
         std::vector<Swarmer*> others;
 };

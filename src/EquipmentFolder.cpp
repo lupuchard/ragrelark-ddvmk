@@ -116,3 +116,15 @@ void EquipmentFolder::setExtra(Item item) {
 void EquipmentFolder::removeExtra() {
     extra = Item(ItemType::getEmptySlot(0));
 }
+
+void EquipmentFolder::save(std::ostream& saveData) {
+    for (int i = 0; i < getNumItems(); i++) {
+        equipment[i].save(saveData);
+    }
+}
+
+void EquipmentFolder::load(std::istream& saveData) {
+    for (int i = 0; i < getNumItems(); i++) {
+        equipment[i] = Item(saveData);
+    }
+}

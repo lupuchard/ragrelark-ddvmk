@@ -28,11 +28,6 @@ enum Structures{S_WOODDOOR = 0, S_WOODDOOR_OPEN, S_WOODDOOR_BROKE, S_NORMDOOR, S
     S_SKULLDOOR, S_SKULLDOOR_OPEN, S_SKULLDOOR_BROKE, S_STONEDOOR, S_STOREDOOR_OPEN, S_STONEDOOR_BROKE, S_WOODDOOR_LOCKED, S_placeholder,
     S_STAIRUP, S_STAIRDOWN, S_LADDERUP, S_LADDERDOWN, S_ROCK = 25, S_NONE = 31};
 
-/*struct itemNode {
-    Item item;
-    itemNode* nextItem;
-};*/
-
 bool isOpen(int str);
 bool isClosedDoor(int str);
 bool isOpenDoor(int str);

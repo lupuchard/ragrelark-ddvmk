@@ -32,11 +32,13 @@
 #define Z_SPLAT 20
 #define Z_GROUND 10
 
+enum Align{LEFT, CENTER, RIGHT};
+
 class RagDrawer {
     public:
         RagDrawer();
-        RagDrawer(int tileSize, Player* player, Texture* utilTex);
-        virtual ~RagDrawer();
+        RagDrawer(int tileSize, Texture* utilTex, Texture* fontTex);
+        void setPlayer(Player* player);
 
         /// Draws a tile from a texture.
         void drawTile(int x, int y, int z, Texture* tex, int loc);
@@ -55,6 +57,9 @@ class RagDrawer {
         /// Draws a rectangle of a single color at a location.
         void drawColorBox(int x1, int y1, int z, int x2, int y2, Color c);
 
+        void renderText(String text, int size, int x, int y, int z, Align align, Color c);
+        int getTextSizeHeight(int size);
+
         Player* getPlayer();
         int getTileSize();
 
@@ -64,6 +69,7 @@ class RagDrawer {
         int tileSize;
         Player* player;
         Texture* utilTex;
+        Texture* fontTex;
 };
 
 #endif // RAGDRAWER_H

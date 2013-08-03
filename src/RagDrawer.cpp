@@ -24,17 +24,19 @@ RagDrawer::RagDrawer() {
     camX = 0;
     camY = 0;
     utilTex = NULL;
+    fontTex = NULL;
 }
-RagDrawer::RagDrawer(int ts, Player* p, Texture* utilTex) {
+RagDrawer::RagDrawer(int ts, Texture* utilTex, Texture* fontTex) {
     tileSize = ts;
-    player = p;
+    player = NULL;
     camX = 0;
     camY = 0;
     this->utilTex = utilTex;
+    this->fontTex = fontTex;
 }
 
-RagDrawer::~RagDrawer() {
-    //dtor
+void RagDrawer::setPlayer(Player* p) {
+    player = p;
 }
 
 void RagDrawer::drawTile(int x, int y, int z, Texture* tex, int loc) {
@@ -236,6 +238,43 @@ void RagDrawer::drawUnit(int x, int y, Unit* unit) {
         drawTileSuperSpe(x, y + tileSize - 4, Z_UNIT + y + i + 1, wid - 1, 4, utilTex, 96, 0, wid - 1, 4);
         drawTileSuperSpe(x + wid - 1, y + tileSize - 4, Z_UNIT + y + i + 1, 2, 4, utilTex, 126, 0, 2, 4);
     }
+}
+
+//0-tiny, 1-small, 2-normal, 3-bold, 4-skinny, 5-large
+int fontWid[] = {4, 6, 8 , 8, 6, 14};
+int fontHei[] = {6, 9, 12, 12, 12, 20};
+int offX[] = {  0, 132, 0, 128, 132, 266};
+int offY[] = {192,   0, 0, 157, 72 ,   0};
+int numX[] = {32, 16, 16, 16, 20, 16};
+
+//                    a      b     c     d           e       f        g      h          i       j     k     l     m
+Color textColors[] = {AZURE, BLUE, CYAN, CHARTREUSE, FOREST, FUCHSIA, GREEN, HARLEQUIN, INDIGO, JADE, ROSE, LIME, MAGENTA,
+//                      n     o       p       q      r    s       t    u     v       w      x     y       z
+                        NAVY, ORANGE, PURPLE, BROWN, RED, SALMON, TAN, GRAY, VIOLET, WHITE, GREY, YELLOW, BLACK};
+void RagDrawer::renderText(String text, int size, int x, int y, int z, Align align, Color c) {
+    int a = 0;
+    if (align == CENTER) {
+        a = text.size() * fontWid[size] / 2;
+    } else if (align == RIGHT) {
+        a = text.size() * fontWid[size];
+    }
+    int w = fontWid[size];
+    int h = fontHei[size];
+    c.gl();
+    int j = 0;
+    for (unsigned int i = 0; i < text.size(); i++, j++) {
+        if (text[i] == '\\') {
+            i++; j--;
+            Color newC = textColors[text[i] - 'a'];
+            newC.gl();
+        } else {
+            drawTileSuperSpe(x + j * w - a, y, z, w, h, fontTex, offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
+        }
+    }
+    WHITE.gl();
+}
+int RagDrawer::getTextSizeHeight(int size) {
+    return fontHei[size];
 }
 
 int RagDrawer::getTileSize() {

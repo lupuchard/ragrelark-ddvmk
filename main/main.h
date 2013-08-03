@@ -56,4 +56,12 @@ enum SkillE{SKL_BLUDGEON, SKL_BLADE, SKL_POLEARM, SKL_SHOOT, SKL_THROW, SKL_UNAR
             SKL_ATHLETE, SKL_SURVIVE, SKL_TRAPS, SKL_IDENTIFY, SKL_DIPLOMAT, SKL_FAITH,
             SKL_HOLY, SKL_UNHOLY, SKL_WIND, SKL_WATER, SKL_FIRE, SKL_EARTH};
 
+struct MouseState{
+    Coord pos;
+    bool leftDown;
+    bool leftPress;
+    bool rightDown;
+    bool rightPress;
+};
+
 #endif

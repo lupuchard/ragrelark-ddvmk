@@ -25,17 +25,26 @@ cleans
  */
 
 void Start::cleanup() {
+    cleanPlay();
+
     if (display) SDL_FreeSurface(display);
     IMG_Quit();
     SDL_Quit();
-    if (player) delete player;
     delete world;
     delete mobSpawner;
-    if (primeFolder) delete primeFolder;
     delete tiledLoader;
     Ability::clean();
     folders.clear();
     formulas.clear();
     deleteData();
+}
+
+void Start::cleanPlay() {
+    delete world;
+    world = new World();
+    delete player;
+    player = NULL;
+    delete primeFolder;
+    primeFolder = NULL;
     cleanFov();
 }

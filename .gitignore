@@ -1,4 +1,4 @@
-/resources/raw images/
+/resources/raw-images/
 *~
 test.cpp
 /obj/
@@ -26,3 +26,4 @@ ValgrindOut.xml
 CppCheckResults.xml
 ValgrindOut.xml
 valsupp.supp
+/Standalones/

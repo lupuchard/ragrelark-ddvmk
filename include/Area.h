@@ -40,16 +40,17 @@ typedef struct {
 
 void setAreaFormUser(FormulaUser* formUser);
 
-class Area: public StatHolder {
+class Area {
     public:
-        Area(int width);
+        Area(int width, String name);
         virtual ~Area();
 
-        void setName(String name);
+        String getName();
 
         void addZone(Zone* zone);
         unsigned int getNumZones();
         Zone* getZone(int i);
+        Zone* getZone(std::pair<int, int> dungeonTag);
 
         void addDungeonStack(DungeonStack* dungeonStack);
         unsigned int getNumDungeonStacks();
@@ -59,6 +60,9 @@ class Area: public StatHolder {
         SpeLoc moveConnection(Zone* zone, Coord where);
         void changeConnection(Zone* zone, Coord prevLoc, Coord newLoc);
         SpeLoc moveZones(Zone* z, Coord where);
+
+        void save(std::ostream& saveData);
+        Area(std::istream& saveData);
     private:
         String name;
         std::vector<Zone*> zones;

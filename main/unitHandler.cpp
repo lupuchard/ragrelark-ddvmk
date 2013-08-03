@@ -610,7 +610,7 @@ void Start::killUnit(Unit* unit, Zone* zone) {
     int split = unit->getStatValue(Stat::SPLIT);
     if (split) {
         for (int i = 0; i < split; i++) {
-            Unit* newUnit = mobSpawner->spawnMob(mobSpawner->getMob(unit->getStatValue(Stat::SPAWN)), zone, unit->pos, world->theTime);
+            Unit* newUnit = mobSpawner->spawnMob(Unit::getMob(unit->getStatValue(Stat::SPAWN)), zone, unit->pos, world->theTime);
             if (newUnit) {
                 areaUnits.insert(std::pair<Unit*, Zone*>(newUnit, zone));
                 newUnit->theTime = world->theTime;

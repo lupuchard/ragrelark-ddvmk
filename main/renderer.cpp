@@ -45,19 +45,39 @@ void Start::removeStatus(Status type) {
     statusies.erase(type);
 }
 
+void tanBox() {
+    TAN.gl();
+    glDisable(GL_TEXTURE_2D);
+    glBegin(GL_QUADS);
+    glVertex2f(20, 20);
+    glVertex2f(WIN1_WIDTH + SWIN_WIDTH - 20, 20);
+    glVertex2f(WIN1_WIDTH + SWIN_WIDTH - 20, WIN1_HEIGHT + CWIN_HEIGHT - 20);
+    glVertex2f(20, WIN1_HEIGHT + CWIN_HEIGHT - 20);
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
+    WHITE.gl();
+}
+
 void Start::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    renderGround();
-
-    glPopMatrix();
-
-    renderMenu();
-    renderMessages();
-    renderCircleSelect();
-    renderBars();
-    renderSidePanels();
+    if (state == STATE_LOAD) {
+        tanBox();
+        ragd.renderText(loadStr, 3, 100, 100, Z_MENU, LEFT, BLACK);
+    } else if (state == STATE_MAIN_MENU) {
+        tanBox();
+        startGameButton.render(&ragd);
+        continueGameButton.render(&ragd);
+    } else {
+        renderGround();
+        glPopMatrix();
+        renderMenu();
+        renderMessages();
+        renderCircleSelect();
+        renderBars();
+        renderSidePanels();
+    }
 
     glFlush();
     SDL_GL_SwapBuffers();
@@ -147,7 +167,7 @@ void Start::renderBars() {
         }
         WHITE.gl();
         ragd.drawTileSuperSpe(i, WIN1_HEIGHT - 24, Z_MENU + 4, 106, 20, menuTex, 0, 192, 106, 20);
-        renderText(strings[k], 4, i + 53, WIN1_HEIGHT - 20, Z_MENU + 5, CENTER, BLACK);
+        ragd.renderText(strings[k], 4, i + 53, WIN1_HEIGHT - 20, Z_MENU + 5, CENTER, BLACK);
         k++;
     }
 }
@@ -167,7 +187,7 @@ void Start::renderSidePanels() {
             siz = 3;
         }
         ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, 0, Z_MENU, 65, 30, menuTex, xd, 162, 65, 30);
-        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12, Z_MENU + 1, CENTER, BLACK);
+        ragd.renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12, Z_MENU + 1, CENTER, BLACK);
         k++;
     }
     k = 0;
@@ -179,7 +199,7 @@ void Start::renderSidePanels() {
             siz = 3;
         }
         ragd.drawTileSuperSpe(WIN1_WIDTH + k * 65, SWIN_HEIGHT / 2, Z_MENU, 65, 30, menuTex, xd, 162, 65, 30);
-        renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12 + SWIN_HEIGHT / 2, Z_MENU + 1, CENTER, BLACK);
+        ragd.renderText(panelNames[i], siz, WIN1_WIDTH + k * 65 + 32, 12 + SWIN_HEIGHT / 2, Z_MENU + 1, CENTER, BLACK);
         k++;
     }
 
@@ -188,18 +208,18 @@ void Start::renderSidePanels() {
     if (topPanel == PANEL_STATS) {
         static const String statNames[] = {"Str: ", "Con: ", "Aff: ", "Int: ", "Per: ", "Dex: ", "Cha: "};
         Unit* p = player->getUnit();
-        renderText("  HP: " + its(p->getStatValue(Stat::HP)) + "/" + its(p->getStatValue(Stat::MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, FOREST);
-        renderText("  MANA: " + its(p->getStatValue(Stat::MANA)) + "/" + its(p->getStatValue(Stat::MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, NAVY);
+        ragd.renderText("  HP: " + its(p->getStatValue(Stat::HP)) + "/" + its(p->getStatValue(Stat::MAXHP)), 2, loff + WIN1_WIDTH, toff, Z_MENU + 1, LEFT, FOREST);
+        ragd.renderText("  MANA: " + its(p->getStatValue(Stat::MANA)) + "/" + its(p->getStatValue(Stat::MAXMANA)), 2, loff + WIN1_WIDTH, toff + 20, Z_MENU + 1, LEFT, NAVY);
         for (int i = Stat::STR; i <= Stat::CHA; i++) {
             int main = p->getStatValue(i);
             String s = statNames[i - Stat::STR] + "\\z" + its(main);
-            renderText(s, 2, loff + WIN1_WIDTH, toff + (i - Stat::STR + 2) * 20, Z_MENU + 1, LEFT, BLACK);
+            ragd.renderText(s, 2, loff + WIN1_WIDTH, toff + (i - Stat::STR + 2) * 20, Z_MENU + 1, LEFT, BLACK);
         }
-        renderText("Defense: \\q" + its(p->getStatValue(Stat::DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, BLACK);
-        renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, TEAL.darken());
+        ragd.renderText("Defense: \\q" + its(p->getStatValue(Stat::DEFENSE)), 2, loff + WIN1_WIDTH, toff + 200, Z_MENU + 1, LEFT, BLACK);
+        ragd.renderText("Exp pool: \\q" + its(player->getXpBank()), 2, loff + WIN1_WIDTH, toff + 240, Z_MENU + 1, LEFT, TEAL.darken());
 
-        renderText("Level " + its(player->getUnit()->getStatValue(Stat::LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, BLACK);
-        renderText("\\q" + its(player->getUnit()->theTime) + "\\z ticks", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 80, Z_MENU + 1, RIGHT, RED.darken());
+        ragd.renderText("Level " + its(player->getUnit()->getStatValue(Stat::LEVEL)) + "   ", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 40, Z_MENU + 1, RIGHT, BLACK);
+        ragd.renderText("\\q" + its(player->getUnit()->theTime) + "\\z ticks", 2, WIN1_WIDTH + SWIN_WIDTH, toff + 80, Z_MENU + 1, RIGHT, RED.darken());
     } else if (topPanel == PANEL_SKILLS) {
         for (int i = 0; i < Stat::getNumSkills(); i++) {
             Skill* skill = Stat::getSkill(i);
@@ -213,13 +233,13 @@ void Start::renderSidePanels() {
             int lev = player->getSkillLevel(skill);
             int prog = player->getSkillExpPercent(skill);
             if (lev || prog) {
-                renderText(its(lev), 1, x + 1, y, Z_MENU + 4, LEFT, WHITE);
+                ragd.renderText(its(lev), 1, x + 1, y, Z_MENU + 4, LEFT, WHITE);
                 if (prog) {
                     String progs;
                     if (numDigits0(prog) == 1) progs = "0" + its(prog);
                     else progs = its(prog);
-                    renderText(progs, 1, x + 8, y, Z_MENU + 5, LEFT, SILVER);
-                    renderText(".", 1, x + 4, y, Z_MENU + 5, LEFT, SILVER);
+                    ragd.renderText(progs, 1, x + 8, y, Z_MENU + 5, LEFT, SILVER);
+                    ragd.renderText(".", 1, x + 4, y, Z_MENU + 5, LEFT, SILVER);
                 }
             }
         }
@@ -286,10 +306,10 @@ void Start::renderSidePanels() {
         glPixelZoom(3, 3);
         glDrawPixels(z->getWidth(), z->getHeight(), GL_RGB, GL_UNSIGNED_BYTE, datas);
 
-        renderText(player->getZone()->getName(), 2, loff + WIN1_WIDTH, SWIN_HEIGHT / 2 + toff + 240, Z_MENU + 1, LEFT, CHARCOAL);
+        ragd.renderText(player->getZone()->getName(), 2, loff + WIN1_WIDTH, SWIN_HEIGHT / 2 + toff + 240, Z_MENU + 1, LEFT, CHARCOAL);
     } else if (botPanel == PANEL_NOTES) {
         for (int i = 0; i < NUM_NOTELINES; i++) {
-            renderText(theNotes[i], 2, WIN1_WIDTH + loff, i * 12 + SWIN_HEIGHT / 2 + 30, Z_MENU + 1, LEFT, BLACK);
+            ragd.renderText(theNotes[i], 2, WIN1_WIDTH + loff, i * 12 + SWIN_HEIGHT / 2 + 30, Z_MENU + 1, LEFT, BLACK);
         }
         if (notesSelected && notesSelected < NUM_NOTELINES) {
             if (interval % 32 < 16) {
@@ -361,11 +381,11 @@ void Start::renderMenu() {
             String name;
             if (items[k].quantityCharge > 1 && itemType->getStack()) {
                 name = pluralize(capitalize(itemType->getName()));
-                renderText(its(items[k].quantityCharge), 1, 50 + 8 * (k % 2), d + 16, Z_MENU + i + 2, LEFT, BLACK);
+                ragd.renderText(its(items[k].quantityCharge), 1, 50 + 8 * (k % 2), d + 16, Z_MENU + i + 2, LEFT, BLACK);
             } else {
                 name = capitalize(itemType->getName());
             }
-            renderText(name, 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, BLACK);
+            ragd.renderText(name, 2, 65 + 8 * (k % 2), d + 10, Z_MENU + i + 1, LEFT, BLACK);
         }
 
         ragd.drawTileSpe(8, curArrowY, Z_MENU + 20, menuTex, ARROW_X[(interval % 40) / 4], ARROW_Y[(interval % 40) / 4], 16);
@@ -378,9 +398,9 @@ void Start::renderMenu() {
         glColor4f(1, 1, 1, .5);
         ragd.drawTileSuperSpe(2, offset + 18, Z_MENU, IM_WID + 36, 16, menuTex, 0, 80, 64, 16);
         WHITE.gl();
-        renderText(MENU_ACTION_NAMES[menuAction]    , 2, 4              , offset + 20, Z_MENU + 1, LEFT  , BLACK);
-        renderText(MENU_ACTION_NAMES[menuAction + 1], 3, 20 + IM_WID / 2, offset + 20, Z_MENU + 1, CENTER, BLACK);
-        renderText(MENU_ACTION_NAMES[menuAction + 2], 2, 36 + IM_WID    , offset + 20, Z_MENU + 1, RIGHT , BLACK);
+        ragd.renderText(MENU_ACTION_NAMES[menuAction]    , 2, 4              , offset + 20, Z_MENU + 1, LEFT  , BLACK);
+        ragd.renderText(MENU_ACTION_NAMES[menuAction + 1], 3, 20 + IM_WID / 2, offset + 20, Z_MENU + 1, CENTER, BLACK);
+        ragd.renderText(MENU_ACTION_NAMES[menuAction + 2], 2, 36 + IM_WID    , offset + 20, Z_MENU + 1, RIGHT , BLACK);
 
         Item selectedItem = items[selected];
         ItemType* selectedItemType = selectedItem.getType();
@@ -462,11 +482,11 @@ void Start::renderMenu() {
             glColor4f(1, 1, 1, .5);
             int nLen = selectedItemType->getName().size();
             ragd.drawTileSuperSpe(IM_WID + 132 - nLen * 7, offset + 9, Z_MENU + 1, 14 * nLen + 8, 32, menuTex, 0, 80, 64, 16);
-            renderText(capitalize(selectedItemType->getName()), 5, IM_WID + 136, offset + 16, Z_MENU + 2, CENTER, BLACK);
+            ragd.renderText(capitalize(selectedItemType->getName()), 5, IM_WID + 136, offset + 16, Z_MENU + 2, CENTER, BLACK);
             int f = 4;
             for (unsigned int i = 0; i < lines.size(); i++) {
                 if (i == descLen) f = 3;
-                renderText(lines[i].first, f, IM_WID + 50, offset + 46 + 12 * i, Z_MENU + 1, LEFT, lines[i].second);
+                ragd.renderText(lines[i].first, f, IM_WID + 50, offset + 46 + 12 * i, Z_MENU + 1, LEFT, lines[i].second);
             }
         }
     }
@@ -484,7 +504,7 @@ void Start::renderMessages() {
 
     for (int i = 7 - min((int)messages.size(), 7); i < 7; i++) {
         pair<string, Color> completeMess = messages[messages.size() - 7 + i];
-        renderText(completeMess.first, 2, 10, WIN1_HEIGHT + 15 + 11 * i, Z_MENU + 1, LEFT, completeMess.second);
+        ragd.renderText(completeMess.first, 2, 10, WIN1_HEIGHT + 15 + 11 * i, Z_MENU + 1, LEFT, completeMess.second);
     }
 
     int len = 1;
@@ -497,10 +517,10 @@ void Start::renderMessages() {
             len = 1;
         }
         Color c = i->second.second;
-        renderText(s, 3, len * 8, WIN1_HEIGHT - 40, Z_MENU, LEFT, c);
+        ragd.renderText(s, 3, len * 8, WIN1_HEIGHT - 40, Z_MENU, LEFT, c);
         len += s.size() + 2;
         if (++i != statusies.end()) {
-            renderText(", ", 3, len * 8, WIN1_HEIGHT - 40 - fl * 14, Z_MENU, LEFT, BLACK);
+            ragd.renderText(", ", 3, len * 8, WIN1_HEIGHT - 40 - fl * 14, Z_MENU, LEFT, BLACK);
             len += 2;
         }
     }
@@ -752,42 +772,18 @@ void Start::startRenderer() {
     attackAnimsTex  = Texture::get("attackAnims.png");
     playerTex       = Texture::get("player.png");
 
-    ragd = RagDrawer(TILE_SIZE, player, menuTex);
+    startGameButton.setGraphics(Texture::get("buttons.png"), ORIGIN, 280, 50);
+    startGameButton.setText(5, "New Game", BLACK);
+    startGameButton.setPos(Coord((WIN1_WIDTH + SWIN_WIDTH) / 2, (WIN1_HEIGHT + CWIN_HEIGHT) / 2), Z_MENU);
+    startGameButton.setFunc(boost::bind(&Start::startGame, this));
+
+    continueGameButton.setGraphics(Texture::get("buttons.png"), ORIGIN, 280, 50);
+    continueGameButton.setText(5, "Continue Game", BLACK);
+    continueGameButton.setPos(Coord((WIN1_WIDTH + SWIN_WIDTH) / 2, (WIN1_HEIGHT + CWIN_HEIGHT) / 2 + 60), Z_MENU);
+    continueGameButton.setFunc(boost::bind(&Start::continueGame, this));
+
+    ragd = RagDrawer(TILE_SIZE, menuTex, fontTex);
 	raga = RagAnim(&ragd, attackAnimsTex);
 
 	createEffect(P_ARROW, 0, 0);
-}
-
-//0-tiny, 1-small, 2-normal, 3-bold, 4-skinny, 5-large
-int fontWid[] = {4, 6, 8 , 8, 6, 14};
-int fontHei[] = {6, 9, 12, 12, 12, 20};
-int offX[] = {  0, 132, 0, 128, 132, 266};
-int offY[] = {192,   0, 0, 157, 72 ,   0};
-int numX[] = {32, 16, 16, 16, 20, 16};
-
-//                    a      b     c     d           e       f        g      h          i       j     k     l     m
-Color textColors[] = {AZURE, BLUE, CYAN, CHARTREUSE, FOREST, FUCHSIA, GREEN, HARLEQUIN, INDIGO, JADE, ROSE, LIME, MAGENTA,
-//                      n     o       p       q      r    s       t    u     v       w      x     y       z
-                        NAVY, ORANGE, PURPLE, BROWN, RED, SALMON, TAN, GRAY, VIOLET, WHITE, GREY, YELLOW, BLACK};
-void Start::renderText(String text, int size, int x, int y, int z, int align, Color c) {
-    int a = 0;
-    if (align == CENTER) {
-        a = text.size() * fontWid[size] / 2;
-    } else if (align == RIGHT) {
-        a = text.size() * fontWid[size];
-    }
-    int w = fontWid[size];
-    int h = fontHei[size];
-    c.gl();
-    int j = 0;
-    for (unsigned int i = 0; i < text.size(); i++, j++) {
-        if (text[i] == '\\') {
-            i++; j--;
-            Color newC = textColors[text[i] - 'a'];
-            newC.gl();
-        } else {
-            ragd.drawTileSuperSpe(x + j * w - a, y, z, w, h, fontTex, offX[size] + text[i] % numX[size] * w, offY[size] + text[i] / numX[size] * h, w, h);
-        }
-    }
-    WHITE.gl();
 }

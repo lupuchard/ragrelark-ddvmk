@@ -198,7 +198,89 @@ void DungeonStack::genLevel(int floor, std::vector<std::pair<Unit*, Zone*> >* un
         int numItems = (int)(wid * hei * (itemsPerSquare + iDensityChange * i));
         mobSpawner->createEncounters(zones[i], environments.size(), &environments[0], currLevel, numEnemies, possibleLocs, unitsAdded);
         mobSpawner->createItems(zones[i], environments.size(), &environments[0], currLevel, numItems, possibleLocs);
-        mobSpawner->overgrowth(zones[i], genType, ORIGIN, Coord(wid, hei));
+        //mobSpawner->overgrowth(zones[i], genType, ORIGIN, Coord(wid, hei));
     }
     depthReached = floor;
+}
+
+void DungeonStack::save(std::ostream& saveData) {
+    outSht(depth, saveData);
+    outSht(depthReached, saveData);
+    outSht(genType, saveData);
+
+    outSht(environments.size(), saveData);
+    for (unsigned int i = 0; i < environments.size(); i++) {
+        outSht(environments[i], saveData);
+    }
+
+    outStr(name, saveData);
+    outStr(tileset->name, saveData);
+    outSht(width , saveData); outFlt(widthChange , saveData);
+    outSht(height, saveData); outFlt(heightChange, saveData);
+    outSht(light , saveData); outFlt(lightChange , saveData);
+    outSht(level , saveData); outFlt(levelChange , saveData);
+    outFlt(enemyPerSquare, saveData); outFlt(eDensityChange, saveData);
+    outFlt(itemsPerSquare, saveData); outFlt(iDensityChange, saveData);
+    outSht(numStairs, saveData); outFlt(stairsChange, saveData);
+
+    for (int i = 0; i < depth; i++) {
+        zones[i]->save(saveData);
+    }
+    if (depthReached + 1 < depth) {
+        Zone* z = zones[depthReached + 1];
+        for (int j = 0; j < z->getWidth() * z->getHeight(); j++) {
+            saveData.put(skeleton[j]);
+        }
+    }
+    for (int i = 0; i < std::min(depthReached, depth - 1); i++) {
+        int currNumStairs = numStairs + (int)(i * stairsChange);
+        for (int j = 0; j < currNumStairs; j++) {
+            outPair(stairLocs[i][j], saveData);
+        }
+    }
+}
+
+DungeonStack::DungeonStack(std::istream& saveData) {
+    depth = inSht(saveData);
+    depthReached = inSht(saveData);
+    genType = (GenType)inSht(saveData);
+
+    unsigned int numEnvironments = inSht(saveData);;
+    environments.resize(numEnvironments);
+    for (unsigned int i = 0; i < numEnvironments; i++) {
+        environments[i] = inSht(saveData);
+    }
+
+    name = inStr(saveData);
+    String tilesetName = inStr(saveData);
+    tileset = Tile::getSet(tilesetName);
+
+    width  = inSht(saveData); widthChange  = inFlt(saveData);
+    height = inSht(saveData); heightChange = inFlt(saveData);
+    light  = inSht(saveData); lightChange  = inFlt(saveData);
+    level  = inSht(saveData); levelChange  = inFlt(saveData);
+    enemyPerSquare = inFlt(saveData); eDensityChange = inFlt(saveData);
+    itemsPerSquare = inFlt(saveData); iDensityChange = inFlt(saveData);
+    numStairs = inSht(saveData); stairsChange = inFlt(saveData);
+
+    zones = new Zone*[depth];
+    for (int i = 0; i < depth; i++) {
+        zones[i] = new Zone(saveData);
+    }
+    if (depthReached + 1 < depth) {
+        Zone* z = zones[depthReached + 1];
+        skeleton = new unsigned char[z->getWidth() * z->getHeight()];
+        for (int j = 0; j < z->getWidth() * z->getHeight(); j++) {
+            skeleton[j] = saveData.get();
+        }
+    } else skeleton = NULL;
+
+    stairLocs = new Coord*[depth - 1];
+    for (int i = 0; i < std::min(depthReached, depth - 1); i++) {
+        int currNumStairs = numStairs + (int)(i * stairsChange);
+        stairLocs[i] = new Coord[currNumStairs];
+        for (int j = 0; j < currNumStairs; j++) {
+            stairLocs[i][j] = inPair(saveData);
+        }
+    }
 }

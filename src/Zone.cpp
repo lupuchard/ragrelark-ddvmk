@@ -116,6 +116,79 @@ std::pair<int, int> Zone::dungeonTag() {
     return std::pair<int, int>(stackIndex, stackDepth);
 }
 
-int Zone::getFoon() {
+int Zone::getIndex() {
     return ind;
+}
+
+void Zone::saveUnit(Unit* unit, std::ostream& saveData) {
+    Swarmer* swarmer = dynamic_cast<Swarmer*>(unit);
+    if (swarmer) {
+        saveData.put('\1');
+        swarmer->save(saveData);
+    } else {
+        saveData.put('\0');
+        unit->save(saveData);
+    }
+}
+Unit* Zone::loadUnit(std::istream& saveData) {
+    unsigned char c = saveData.get();
+    if (c == '\1') {
+        return new Swarmer(saveData);
+    } else return new Unit(saveData);
+}
+void Zone::save(std::ostream& saveData) {
+    outStr(name, saveData);
+    outSht(width, saveData);
+    outSht(height, saveData);
+    outSht(lightness, saveData);
+    saveData.put(filled);
+    if (filled) {
+        for (int i = 0; i < width * height; i++) {
+            Location* loc = &locs[i];
+            outSht(loc->tile, saveData);
+            saveData.put(loc->structure);
+            saveData.put(loc->height);
+
+            unsigned char numItems = 0;
+            if (loc->items) numItems = loc->items->size();
+            saveData.put(numItems);
+            for (unsigned int i = 0; i < numItems; i++) {
+                (*loc->items)[i].save(saveData);
+            }
+
+            if (loc->hasUnit()) {
+                saveData.put('\1');
+                saveUnit(loc->unit, saveData);
+            } else saveData.put('\0');
+        }
+    }
+}
+Zone::Zone(std::istream& saveData): StatHolder(V_ZONE) {
+    name = inStr(saveData);
+    width = inSht(saveData);
+    height = inSht(saveData);
+    lightness = inSht(saveData);
+    filled = saveData.get();
+    if (filled) {
+        locs = new Location[width * height];
+        for (int i = 0; i < width * height; i++) {
+            Location* loc = &locs[i];
+            loc->tile = inSht(saveData);
+            loc->structure = saveData.get();
+            loc->height = saveData.get();
+
+            unsigned char numItems = saveData.get();
+            for (unsigned int i = 0; i < numItems; i++) {
+                loc->addItem(Item(saveData));
+            }
+
+            bool hasUnit = saveData.get();
+            if (hasUnit) loc->unit = loadUnit(saveData);
+        }
+    } else {
+        locs = NULL;
+    }
+
+    stackIndex = -1;
+    stackDepth = 0;
 }

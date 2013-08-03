@@ -18,8 +18,9 @@
 
 #include "Area.h"
 
-Area::Area(int w): StatHolder(V_AREA) {
+Area::Area(int w, String name) {
     width = w;
+    this->name = name;
 }
 
 Area::~Area() {
@@ -34,11 +35,8 @@ Area::~Area() {
 }
 
 void Area::addZone(Zone* z) {
+    z->tagDungeon(-1, zones.size());
     zones.push_back(z);
-}
-
-void Area::setName(String n) {
-    name = n;
 }
 
 SpeLoc Area::moveZones(Zone* z, Coord c) {
@@ -120,6 +118,13 @@ Zone* Area::getZone(int z) {
     return zones[z];
 }
 
+Zone* Area::getZone(std::pair<int, int> dTag) {
+    if (dTag.first == -1) {
+        return zones[dTag.second];
+    }
+    return dungeonStacks[dTag.first]->getZone(dTag.second);
+}
+
 void Area::addDungeonStack(DungeonStack* dungeonStack) {
     dungeonStacks.push_back(dungeonStack);
     for (int i = 0; i < dungeonStack->getDepth(); i++) {
@@ -133,4 +138,56 @@ unsigned int Area::getNumDungeonStacks() {
 
 DungeonStack* Area::getDungeonStack(int stackIndex) {
     return dungeonStacks[stackIndex];
+}
+
+String Area::getName() {
+    return name;
+}
+
+void Area::save(std::ostream& saveData) {
+    outStr(name, saveData);
+    outSht(width, saveData);
+
+    std::map<Zone*, unsigned int> zoneIndexMap;
+    outSht(zones.size(), saveData);
+    for (unsigned int i = 0; i < zones.size(); i++) {
+        zones[i]->save(saveData);
+    }
+
+    outSht(dungeonStacks.size(), saveData);
+    for (unsigned int i = 0; i < dungeonStacks.size(); i++) {
+        dungeonStacks[i]->save(saveData);
+    }
+
+    outSht(connections.size(), saveData);
+    for (unsigned int i = 0; i < connections.size(); i++) {
+        outPair(connections[i].loc1, saveData);
+        outPair(connections[i].loc2, saveData);
+        outPair(connections[i].z1->dungeonTag(), saveData);
+        outPair(connections[i].z2->dungeonTag(), saveData);
+    }
+}
+
+Area::Area(std::istream& saveData) {
+    name = inStr(saveData);
+    width = inSht(saveData);
+
+    unsigned int numZones = inSht(saveData);
+    for (unsigned int i = 0; i < numZones; i++) {
+        zones.push_back(new Zone(saveData));
+    }
+
+    unsigned int numDungeons = inSht(saveData);
+    for (unsigned int i = 0; i < numDungeons; i++) {
+        dungeonStacks.push_back(new DungeonStack(saveData));
+    }
+
+    unsigned int numConnections = inSht(saveData);
+    connections.resize(numConnections);
+    for (unsigned int i = 0; i < numConnections; i++) {
+        connections[i].loc1 = inPair(saveData);
+        connections[i].loc2 = inPair(saveData);
+        connections[i].z1 = getZone(inPair(saveData));
+        connections[i].z2 = getZone(inPair(saveData));
+    }
 }

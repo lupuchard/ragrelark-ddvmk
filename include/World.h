@@ -26,7 +26,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-class World: public StatHolder {
+class World {
     public:
         World();
         virtual ~World();
@@ -40,6 +40,9 @@ class World: public StatHolder {
 
         void parseArea(YAML::Node fileNode, std::ostream& lerr);
         void parseZone(YAML::Node fileNode, std::ostream& lerr, TiledLoader* tiledLoader, MobSpawner* mobSpawner);
+
+        void save(std::ostream& saveData);
+        void load(std::istream& saveData);
     private:
         std::vector<Area*> areas;
         std::map<String, Area*> areaNameMap;

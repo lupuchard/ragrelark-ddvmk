@@ -321,3 +321,57 @@ int indexYAMLInt(YAML::Node& node, int key, int def, String errorMess, std::ostr
         return def;
     }
 }
+
+union Farts {
+    int theInt;
+    short theShort;
+    float theFloat;
+    std::pair<short, short> thePair;
+    char dats[4];
+
+    Farts(): theInt(0) {}
+};
+Farts farts;
+
+void outStr(String data, std::ostream& out) {
+    outSht(data.size(), out);
+    out.write(&data[0], data.size());
+}
+void outInt(int   data, std::ostream& out) {
+    farts.theInt = data;
+    out.write(farts.dats, 4);
+}
+void outSht(short data, std::ostream& out) {
+    farts.theShort = data;
+    out.write(farts.dats, 2);
+}
+void outFlt(float data, std::ostream& out) {
+    farts.theFloat = data;
+    out.write(farts.dats, 4);
+}
+void outPair(std::pair<short, short> data, std::ostream& out) {
+    farts.thePair = data;
+    out.write(farts.dats, 4);
+}
+String inStr(std::istream& in) {
+    int len = inSht(in);
+    char str[len];
+    in.read(str, len);
+    return String(str, len);
+}
+int inInt(std::istream& in) {
+    in.read(farts.dats, 4);
+    return farts.theInt;
+}
+short inSht(std::istream& in) {
+    in.read(farts.dats, 2);
+    return farts.theShort;
+}
+float inFlt(std::istream& in) {
+    in.read(farts.dats, 4);
+    return farts.theFloat;
+}
+std::pair<short, short> inPair(std::istream& in) {
+    in.read(farts.dats, 4);
+    return farts.thePair;
+}

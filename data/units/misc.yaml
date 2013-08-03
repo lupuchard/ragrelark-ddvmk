@@ -152,9 +152,10 @@ ai: 1
 ---
 Name: plant
 level: 0
-experience: 1
-base_con: 14
-base_def: 1
+experience: 0
+base_con: 30
+base_def: 4
+base_dex: 11
 graphic_loc: [12, 15]
 graphic_tex: monsters.png
 graphic_type: 4
@@ -162,9 +163,10 @@ graphic_type: 4
 ---
 Name: cave plant
 level: 0
-experience: 1
-base_con: 10
-base_def: 1
+experience: 0
+base_con: 20
+base_def: 5
+base_dex: 10
 graphic_loc: [8, 15]
 graphic_tex: monsters.png
 graphic_type: 4

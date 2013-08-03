@@ -29,7 +29,6 @@
 #include "Swarmer.h"
 #include "Texture.h"
 
-typedef std::pair<String, StatHolder*> Mob;
 struct MobMod {
     unsigned char min;
     unsigned char max;
@@ -38,9 +37,18 @@ struct MobMod {
     MobEquipSet* mobEquipSet;
 };
 struct EncLevelEnc {
-    Mob mob;
+    Mob* mob;
     unsigned int weight;
     MobMod mobMod;
+};
+enum BlobShape{BLOB_NONE, BLOB_CIRCLE};
+struct BlobGen {
+    Mob* mob;
+    BlobShape shape;
+    unsigned short minSize;
+    unsigned short maxSize;
+    unsigned short minAmount;
+    unsigned short maxAmount;
 };
 typedef std::vector<EncLevelEnc> EncounterLevel;
 bool operator<(const RandItemType& left, const RandItemType& right);
@@ -49,6 +57,7 @@ struct Environment {
     String name;
     std::vector<EncounterLevel*> encounterLevels;
     std::vector<std::set<ItemSpawnSet*> > itemSets;
+    std::set<BlobGen*> blobgens;
 };
 
 class MobSpawner {
@@ -58,15 +67,8 @@ class MobSpawner {
 
         Location* getNear(Zone* z, Coord* pos, bool avoidMobs, int baseHeight); //returns a location near those coords, and stores the new coords in the given coords
 
-        void parseMob(YAML::Node fileNode, std::ostream& lerr);
-        void parseDefaultStats(YAML::Node fileNode, std::ostream& lerr);
-
-        void addMob(String s, StatHolder* u);
         bool placeMob(Unit* unit, Zone* z, Coord pos, bool allowAlt = true);
-        Unit* spawnMob(Mob m, Zone* z, Coord pos, int time = 0, bool allowAlt = true);
-        Mob getMob(short index);
-        Mob getMob(String name);
-        bool mobExists(String name);
+        Unit* spawnMob(Mob* m, Zone* z, Coord pos, int time = 0, bool allowAlt = true);
 
         int addEnvironment(String name);
         void addEncounters(int type, int level, EncounterLevel* encounters);
@@ -85,13 +87,9 @@ class MobSpawner {
 
         void parseSpawn(YAML::Node fileNode, std::ostream& lerr);
     private:
-        EncLevelEnc parseSpawnMob(YAML::Node fileNode, std::ostream& lerr, Mob mob);
+        EncLevelEnc parseSpawnMob(YAML::Node fileNode, std::ostream& lerr, Mob* mob);
 
         EnvironmentManager* enviroManager;
-
-        std::vector<Mob> mobs;
-        std::map<String, short> mobNameMap;
-        std::vector<Stat*> defaultStats;
 
         std::vector<Environment> spawnings;
         std::map<String, int> enviroNameMap;

@@ -25,6 +25,12 @@
 #include "Tile.h"
 #include "Item.h"
 
+struct Mob {
+    String name;
+    StatHolder* proto;
+    Mob(String name, StatHolder* proto): name(name), proto(proto) {}
+};
+
 enum PathType{PATH_NORMAL, PATH_PASSUNITS, PATH_STAIRS, PATH_FLEE};
 struct Path {
     int len;
@@ -79,9 +85,24 @@ class Unit: public StatHolder {
 
         /// The Units prototype, another StatHolder that holds stats shared among units of the same type.
         const StatHolder* getProto();
+
+        virtual void save(std::ostream& saveData);
+        Unit(std::istream& saveData);
+
+        //statics
+        static void parseMob(YAML::Node fileNode, std::ostream& lerr);
+        static void parseDefaultStats(YAML::Node fileNode, std::ostream& lerr);
+        static Mob* getMob(short index);
+        static Mob* getMob(String name);
+        static bool mobExists(String name);
     private:
         StatHolder* unitPrototype;
         Unit* currentEnemy;
+
+        //statics
+        static std::vector<Mob> mobs;
+        static std::map<String, short> mobNameMap;
+        static std::vector<Stat*> defaultStats;
 };
 
 #endif // UNIT_H

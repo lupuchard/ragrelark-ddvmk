@@ -86,4 +86,16 @@ float  readYAMLNum(  YAML::Node& node, String key,  float def, String errorMess 
 Coord  readYAMLCoord(YAML::Node& node, String key,  Coord def, String errorMess = "", std::ostream& lerr = std::cerr);
 int    indexYAMLInt( YAML::Node& node,    int key,    int def, String errorMess = "", std::ostream& lerr = std::cerr);
 
+void outStr(String data, std::ostream&);
+void outInt(int   data, std::ostream&);
+void outSht(short data, std::ostream&);
+void outFlt(float data, std::ostream&);
+void outPair(std::pair<short, short>, std::ostream&);
+
+String inStr(std::istream&);
+int   inInt(std::istream&);
+short inSht(std::istream&);
+float inFlt(std::istream&);
+std::pair<short, short> inPair(std::istream&);
+
 #endif // USEFULPARSING_H

@@ -44,3 +44,14 @@ String Item::getName() {
         return its(quantityCharge) + " " + pluralize(getType()->getName());
     } else return article(getType()->getName()) + " " + getType()->getName();
 }
+
+void Item::save(std::ostream& saveData) {
+    outSht(itemType, saveData);
+    saveData.put(form);
+    saveData.put(quantityCharge);
+}
+Item::Item(std::istream& saveData) {
+    itemType = inSht(saveData);
+    form = saveData.get();
+    quantityCharge = saveData.get();
+}

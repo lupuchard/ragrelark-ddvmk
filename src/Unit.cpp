@@ -151,3 +151,124 @@ bool Unit::hasStat(int stat, bool isFloat) {
 const StatHolder* Unit::getProto() {
     return unitPrototype;
 }
+
+void Unit::save(ostream& saveData) {
+    outStr(name, saveData);
+    outPair(pos, saveData);
+    outInt(theTime, saveData);
+
+    if (equipment) {
+        saveData.put('\1');
+        outSht(equipment->type, saveData);
+        outSht(equipment->len, saveData);
+        for (int i = 0; i < equipment->len; i++) {
+            equipment->equips[i].save(saveData);
+        }
+    } else saveData.put('\0');
+
+    StatHolder::save(saveData);
+    outSht(unitPrototype->getStatValue(Stat::INDEX), saveData);
+}
+
+Unit::Unit(std::istream& saveData): StatHolder(V_UNIT) {
+    name = inStr(saveData);
+    pos = inPair(saveData);
+    theTime = inInt(saveData);
+
+    bool isEquipment = saveData.get();
+    if (isEquipment) {
+        equipment = new MobEquips;
+        equipment->type = inSht(saveData);
+        equipment->len = inSht(saveData);
+        equipment->equips = new Item[equipment->len];
+        for (int i = 0; i < equipment->len; i++) {
+            equipment->equips[i] = Item(saveData);
+        }
+    } else equipment = NULL;
+
+    StatHolder::load(saveData);
+    int n = inSht(saveData);
+    unitPrototype = mobs[n - 1].proto;
+
+    graphic.loc = unitPrototype->getStatValue(Stat::GLOC);
+    int spe = unitPrototype->getStatValue(Stat::GTYPE);
+    if (spe) graphic.loc += rand() % spe;
+    graphic.tex = Texture::get(unitPrototype->getStatValue(Stat::GTEX));
+
+    pointOnPath = -1;
+    currentPath = NULL;
+}
+
+std::vector<Mob> Unit::mobs;
+std::map<String, short> Unit::mobNameMap;
+std::vector<Stat*> Unit::defaultStats;
+
+void Unit::parseMob(YAML::Node fileNode, std::ostream& lerr) {
+    String name = readYAMLStr(fileNode, "Name", "nil", "Unit lacks a name!", lerr);
+    StatHolder* newUnit = new StatHolder(V_UNIT);
+    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
+        String name = iter->first.as<String>();
+        if (std::islower(name[0])) {
+            if (Stat::has(name)) {
+                YAML::Node val = iter->second;
+                int statVal;
+                if (val.IsSequence()) {
+                    statVal = val[0].as<int>() + val[1].as<int>() * TEX_TILE_WIDTH;
+                } else {
+                    String s = val.as<String>();
+                    if (isNum(s)) {
+                        statVal = val.as<int>();
+                    } else {
+                        if (mobExists(s)) {
+                            statVal =  mobNameMap[s];
+                        } else if (ItemType::hasWeapType(s)) {
+                            statVal = ItemType::getWeapType(s)->index;
+                        } else {
+                            statVal = Texture::get(s)->getIndex();
+                        }
+                    }
+                }
+                Stat* stat = Stat::get(name);
+                if (stat->isItFloat()) {
+                    newUnit->addStatVF(stat->getIndex(), statVal);
+                } else {
+                    newUnit->addStatV(stat->getIndex(), statVal);
+                }
+            } else {
+                lerr << "'" + name + "' is not an existing stat name.\n";
+            }
+        }
+    }
+
+    for (unsigned int i = 0; i < defaultStats.size(); i++) {
+        if (defaultStats[i]->isItFloat()) {
+            newUnit->addStatF(defaultStats[i]->getIndex());
+        } else {
+            newUnit->addStat(defaultStats[i]->getIndex());
+        }
+    }
+    mobNameMap[name] = mobs.size();
+    mobs.push_back(Mob(name, newUnit));
+    newUnit->addStatV(Stat::INDEX, mobs.size());
+}
+
+void Unit::parseDefaultStats(YAML::Node fileNode, std::ostream& lerr) {
+    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
+        String statName = iter->as<String>();
+        if (Stat::has(statName)) {
+            defaultStats.push_back(Stat::get(iter->as<String>()));
+        } else lerr << "'" << statName << "' is not an existing stat.\n";
+    }
+}
+
+Mob* Unit::getMob(String name) {
+    return &mobs[mobNameMap[name]];
+}
+
+Mob* Unit::getMob(short index) {
+    return &mobs[index];
+}
+
+bool Unit::mobExists(String name) {
+    return mobNameMap.find(name) != mobNameMap.end();
+}

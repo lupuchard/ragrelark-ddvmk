@@ -63,6 +63,9 @@ class StatHolder: public StatHolderIntef {
         int getNumFloatStats();
 
         void print();
+
+        void save(std::ostream& saveData);
+        void load(std::istream& saveData);
     private:
         unsigned int numIntStats;
         unsigned int numFloatStats;

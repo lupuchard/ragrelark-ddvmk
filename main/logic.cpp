@@ -26,6 +26,7 @@ bool depoison(Unit* unit, int stat) {
 }
 
 void Start::logic() {
+    if (state != STATE_PLAY) return;
     Unit* pUnit = player->getUnit();
     if (pUnit->theTime > world->theTime) {
         int timePassed = pUnit->theTime - world->theTime;

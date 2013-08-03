@@ -34,6 +34,9 @@ class BagFolder: public ItemFolder {
         bool addItem(Item* item);
         int getCapacity();
         void setCapacity(int c);
+
+        void save(std::ostream& saveData);
+        void load(std::istream& saveData);
     protected:
     private:
         unsigned short size;

@@ -11,7 +11,7 @@ taste: 1
 ---
 Name: eggs ration
 Texture: items.png
-Tile: [7, 0]
+Tile: [8, 0]
 Type: food
 feed: 120
 weight: 5
@@ -20,7 +20,7 @@ taste: 1
 ---
 Name: bread ration
 Texture: items.png
-Tile: [7, 0]
+Tile: [9, 0]
 Type: food
 feed: 121
 weight: 5
@@ -30,7 +30,7 @@ alt: pie ration
 ---
 Name: pie ration
 Texture: items.png
-Tile: [7, 0]
+Tile: [10, 0]
 Type: food
 feed: 124
 weight: 5
@@ -39,7 +39,7 @@ taste: 1
 ---
 Name: fish ration
 Texture: items.png
-Tile: [7, 0]
+Tile: [11, 0]
 Type: food
 feed: 121
 weight: 5
@@ -48,7 +48,7 @@ taste: 2
 ---
 Name: meat ration
 Texture: items.png
-Tile: [7, 0]
+Tile: [12, 0]
 Type: food
 feed: 123
 weight: 5
@@ -392,9 +392,10 @@ taste: 4
 Name: grape
 Desc: Tasty.
 Texture: items.png
-Tile: [7, 1]
+Tile: [12, 7]
 Type: food
 feed: 4
 weight: 0
 taste: 1
+g_stack: 2
 ...

@@ -85,7 +85,7 @@ class Stat {
            ATTACKSPEED, MOVESPEED, HPREGEN, MANAREGEN, METABOLISM, FLY, PET,
            POIS_PHYS, POIS_MENT, POIS_REGEN, POIS_EXTRA, CONFUSION,
            AFFLICTION, AFFLICTION_POTENCY,
-           GLOC, GTEX, GTYPE;
+           GLOC, GTEX, GTYPE, INDEX;
         static int WEIGHT, VALUE, FEED, TASTE, DAM, RANGE, LIGHT, GSTACK, THRO, BREAK, ALT;
     private:
         Formula* formula;
@@ -100,7 +100,6 @@ class Stat {
         static Formula* parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& stats, std::set<Skill*>& skills, std::ostream& lerr);
         static void add(VOwner type, Stat* theStat);
         static std::vector<Stat*> unitStats;
-        static std::vector<Stat*> worldStats;
         static std::vector<Stat*> itemStats;
         static std::map<String, Stat*> statNameMap;
 

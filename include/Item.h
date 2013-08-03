@@ -32,6 +32,9 @@ struct Item {
         String getName();
 
         ItemType* getType();
+
+        void save(std::ostream& saveData);
+        Item(std::istream& saveData);
 };
 
 #endif // ITEM_H

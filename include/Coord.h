@@ -21,6 +21,8 @@
 #ifndef COORD_H
 #define COORD_H
 
+#include <utility>
+
 struct Coord {
     int x, y;
 
@@ -28,6 +30,7 @@ struct Coord {
     Coord();
     /// Creates a new Coord at that there place.
     Coord(int x, int y);
+    Coord(std::pair<int, int> p);
     /// Copy constructor.
     Coord(const Coord& c);
     /// Haha this deconstructor doesnt do anything.
@@ -43,6 +46,9 @@ struct Coord {
     bool inBounds(int width, int height);
 
     int index(int width);
+
+    Coord& operator=(std::pair<short, short> p);
+    operator std::pair<short, short>();
 
     Coord& operator=(Coord rhs);
     Coord& operator+=(const Coord& rhs);

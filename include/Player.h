@@ -22,6 +22,7 @@
 #include "Area.h"
 #include "PrimeFolder.h"
 #include "Ability.h"
+#include "World.h"
 
 struct ZoneMemory {
     unsigned char* bottomTex;
@@ -65,6 +66,9 @@ class Player: boost::noncopyable {
         int takeFromXpBank(int amount);
         void bankXp(int amount);
         int getXpBank();
+
+        void save(std::ostream& saveData);
+        void load(std::istream& saveData, World* world);
     private:
         String name;
         Unit* unit;

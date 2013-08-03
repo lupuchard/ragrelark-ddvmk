@@ -75,3 +75,13 @@ EquipmentFolder* PrimeFolder::getEquips() {
 GroundFolder* PrimeFolder::getGround() {
     return ground;
 }
+
+void PrimeFolder::save(std::ostream& saveData) {
+    bag->save(saveData);
+    equips->save(saveData);
+}
+
+void PrimeFolder::load(std::istream& saveData) {
+    bag->load(saveData);
+    equips->load(saveData);
+}

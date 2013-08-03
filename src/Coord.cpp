@@ -21,6 +21,7 @@
 
 Coord::Coord(): x(0), y(0) {}
 Coord::Coord(int x, int y): x(x), y(y) {}
+Coord::Coord(std::pair<int, int> p): x(p.first), y(p.second) {}
 Coord::Coord(const Coord& c): x(c.x), y(c.y) {}
 Coord::~Coord() {}
 
@@ -71,4 +72,14 @@ Coord& Coord::operator-=(const Coord& rhs) {
 
 Coord Coord::operator-() {
     return Coord(-x, -y);
+}
+
+Coord& Coord::operator=(std::pair<short, short> p) {
+    x = p.first;
+    y = p.second;
+    return *this;
+}
+
+Coord::operator std::pair<short, short>() {
+    return std::pair<short, short>(x, y);
 }

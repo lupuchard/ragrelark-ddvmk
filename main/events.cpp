@@ -75,16 +75,36 @@ void Start::directionPress(int direction) {
 }
 
 void Start::events() {
+    mouse.leftPress = mouse.rightPress = false;
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
-            case SDL_QUIT: done = true; break;
+            case SDL_QUIT:
+                if (state != STATE_MAIN_MENU && state != STATE_LOAD) {
+                    addMessage("Saving and quitting...", BLACK);
+                    render();
+                    save();
+                }
+                done = true;
+                break;
+            case SDL_MOUSEMOTION:
+                mouse.pos.x = event.button.x;
+                mouse.pos.y = event.button.y;
+                break;
             case SDL_MOUSEBUTTONDOWN: {
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    mouse.leftPress = true;
+                    mouse.leftDown = true;
+                } else if (event.button.button == SDL_BUTTON_RIGHT) {
+                    mouse.rightPress = true;
+                    mouse.rightDown = true;
+                }
+
                 if (notesSelected) {
                     SDL_EnableUNICODE(false);
                     notesSelected = 0;
                 }
-                int x = event.button.x;
-                int y = event.button.y;
+                int x = mouse.pos.x;
+                int y = mouse.pos.y;
                 if (x > WIN1_WIDTH) {
                     if (botPanel == PANEL_NOTES && y > SWIN_HEIGHT / 2 + 30) {
                         notesSelected = std::max((y - SWIN_HEIGHT / 2 - 26) / 12, 1);
@@ -108,7 +128,13 @@ void Start::events() {
                             k++;
                         }
                     }
-                } }break;
+                } } break;
+            case SDL_MOUSEBUTTONUP:
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    mouse.leftDown = false;
+                } else if (event.button.button == SDL_BUTTON_RIGHT) {
+                    mouse.rightDown = false;
+                } break;
             case SDL_KEYDOWN:
             if (notesSelected && notesSelected < NUM_NOTELINES) {
                 int k = event.key.keysym.sym;
@@ -197,11 +223,63 @@ void Start::events() {
                     case SDLK_LSHIFT: shiftIsDown = false; break;
                     case SDLK_RSHIFT: shiftIsDown = false; break;
                     default: break;
-                }
-
+                } break;
             default: break;
         }
     }
+    if (state == STATE_MAIN_MENU) {
+        startGameButton.mouse(&mouse);
+        continueGameButton.mouse(&mouse);
+    }
+}
+
+void Start::finishPlayStartSetUp() {
+    state = STATE_PLAY;
+
+    Item* primeFolders = primeFolder->getItems();
+    putItemFolder(primeFolders + 2, primeFolder->getGround());
+    putItemFolder(primeFolders + 1, primeFolder->getEquips());
+    putItemFolder(primeFolders, primeFolder->getBag());
+    folderStack.push(primeFolder);
+
+    primeFolder->getGround()->setLocation(player->getZone(), player->getUnit()->pos);
+    for (int i = 0; i < MAX_ZONE_SIZE; i++) {
+        visibilities[i] = 0;
+    }
+    findAreaUnits();
+    playerFieldOfView(true);
+    ragd.setPlayer(player);
+}
+
+void Start::startGame() {
+    state = STATE_LOAD;
+    if (loadData()) {
+        done = true;
+        return;
+    }
+    loadStr = "Finishing up.";
+    render();
+
+    finishPlayStartSetUp();
+
+    addMessage("Welcome to game great fun play.", BLACK);
+}
+
+void Start::continueGame() {
+    state = STATE_LOAD;
+    if (loadData1()) {
+        done = true;
+        return;
+    }
+    if (load()) {
+        state = STATE_MAIN_MENU;
+        cleanPlay();
+        return;
+    }
+
+    finishPlayStartSetUp();
+
+    addMessage("Welcome back!", BLACK);
 }
 
 void Start::closeDoors() {

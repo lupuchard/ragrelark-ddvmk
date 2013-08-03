@@ -40,6 +40,9 @@ class EquipmentFolder : public ItemFolder, public StatHolder {
         short getStatValue(int stat);
         float getStatValueF(int stat);
         void needToUpdate(int stat);
+
+        void save(std::ostream& saveData);
+        void load(std::istream& saveData);
     protected:
     private:
         Item* equipment;

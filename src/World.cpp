@@ -18,7 +18,7 @@
 
 #include "World.h"
 
-World::World(): StatHolder(V_WORLD) {
+World::World() {
     theTime = 0;
 }
 
@@ -47,7 +47,7 @@ Zone* World::getZone(String name) {
 void World::parseArea(YAML::Node fileNode, std::ostream& lerr) {
     String name = readYAMLStr(fileNode, "Name", "nil", "Name expected.", lerr);
     int width = fileNode["Dim"][0].as<int>();
-    Area* newArea = new Area(width);
+    Area* newArea = new Area(width, name);
     addArea(newArea);
     areaNameMap[name] = newArea;
 }
@@ -112,4 +112,24 @@ void World::parseZone(YAML::Node fileNode, std::ostream& lerr, TiledLoader* tile
             }
         }
     } else lerr << "Area does not exist: " << areaName << "\n";
+}
+
+void World::save(std::ostream& saveData) {
+    outInt(theTime, saveData);
+
+    outSht(areas.size(), saveData);
+    for (unsigned int i = 0; i < areas.size(); i++) {
+        areas[i]->save(saveData);
+    }
+}
+
+void World::load(std::istream& saveData) {
+    theTime = inInt(saveData);
+
+    unsigned int numAreas = inSht(saveData);
+    for (unsigned int i = 0; i < numAreas; i++) {
+        Area* area = new Area(saveData);
+        areas.push_back(area);
+        areaNameMap[area->getName()] = area;
+    }
 }

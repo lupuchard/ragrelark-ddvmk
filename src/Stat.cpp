@@ -50,7 +50,6 @@ String Stat::getDisplayName() {
 }
 
 std::vector<Stat*> Stat::unitStats;
-std::vector<Stat*> Stat::worldStats;
 std::vector<Stat*> Stat::itemStats;
 std::map<String, Stat*> Stat::statNameMap;
 FormulaUser* Stat::formUser;
@@ -69,7 +68,7 @@ int Stat::EXP, Stat::LEVEL, Stat::EXPREQ, Stat::STR, Stat::CON, Stat::AFF, Stat:
     Stat::ATTACKSPEED, Stat::MOVESPEED, Stat::HPREGEN, Stat::MANAREGEN, Stat::METABOLISM, Stat::FLY, Stat::PET,
     Stat::POIS_PHYS, Stat::POIS_MENT, Stat::POIS_REGEN, Stat::POIS_EXTRA, Stat::CONFUSION,
     Stat::AFFLICTION, Stat::AFFLICTION_POTENCY,
-    Stat::GLOC, Stat::GTEX, Stat::GTYPE;
+    Stat::GLOC, Stat::GTEX, Stat::GTYPE, Stat::INDEX;
 int Stat::WEIGHT, Stat::VALUE, Stat::FEED, Stat::TASTE, Stat::DAM, Stat::RANGE, Stat::LIGHT, Stat::GSTACK, Stat::THRO, Stat::BREAK, Stat::ALT;
 std::map<String, int*> Stat::bindMap;
 
@@ -89,7 +88,7 @@ void Stat::parseAll(YAML::Node fileNode, std::ostream& lerr) {
         bindMap["POIS_PHYS"] = &POIS_PHYS; bindMap["POIS_MENT"] = &POIS_MENT; bindMap["POIS_REGEN"] = &POIS_REGEN;
         bindMap["POIS_EXTRA"] = &POIS_EXTRA; bindMap["CONFUSION"] = &CONFUSION;
         bindMap["AFFLICTION"] = &AFFLICTION; bindMap["AFFLICTION_POTENCY"] = &AFFLICTION_POTENCY;
-        bindMap["GLOC"] = &GLOC; bindMap["GTEX"] = &GTEX; bindMap["GTYPE"] = &GTYPE;
+        bindMap["GLOC"] = &GLOC; bindMap["GTEX"] = &GTEX; bindMap["GTYPE"] = &GTYPE; bindMap["INDEX"] = &INDEX;
         bindMap["WEIGHT"] = &WEIGHT; bindMap["VALUE"] = &VALUE; bindMap["FEED"] = &FEED; bindMap["TASTE"] = &TASTE;
         bindMap["RANGE"] = &RANGE; bindMap["LIGHT"] = &LIGHT; bindMap["GSTACK"] = &GSTACK; bindMap["THRO"] = &THRO;
         bindMap["DAM"] = &DAM; bindMap["BREAK"] = &BREAK; bindMap["ALT"] = &ALT;
@@ -97,7 +96,6 @@ void Stat::parseAll(YAML::Node fileNode, std::ostream& lerr) {
             *iter->second = -1;
         }
     }
-    if (fileNode["world"]) parseSection(fileNode["world"], V_WORLD, lerr);
     if (fileNode["item"])  parseSection(fileNode["item"], V_ITEM, lerr);
     if (fileNode["unit"])  parseSection(fileNode["unit"], V_UNIT, lerr);
     for (std::map<String, int*>::iterator iter = bindMap.begin(); iter != bindMap.end(); ++iter) {
@@ -162,7 +160,6 @@ Stat* Stat::get(String name) {
 Stat* Stat::get(VOwner type, int statI) {
     switch(type) {
         case V_UNIT: return unitStats[statI]; break;
-        case V_WORLD: return worldStats[statI]; break;
         case V_ITEM: return itemStats[statI]; break;
         default: return unitStats[statI]; break;
     }
@@ -176,10 +173,6 @@ void Stat::add(VOwner type, Stat* stat) {
             stat->index = unitStats.size();
             unitStats.push_back(stat);
             break;
-        case V_WORLD:
-            stat->index = worldStats.size();
-            worldStats.push_back(stat);
-            break;
         case V_ITEM:
             stat->index = itemStats.size();
             itemStats.push_back(stat);
@@ -191,7 +184,6 @@ void Stat::add(VOwner type, Stat* stat) {
 int Stat::getNum(VOwner type) {
     switch(type) {
         case V_UNIT: return unitStats.size(); break;
-        case V_WORLD: return worldStats.size(); break;
         case V_ITEM: return itemStats.size(); break;
         default: return unitStats.size(); break;
     }
@@ -234,19 +226,15 @@ Formula* Stat::parseFormula(String line, std::set<std::pair<VOwner, Stat*> >& st
             else if (s == "E" || s == "EEE")    {newFormula->pushOperator(O_EEE); }
             else if (s == "PI" || s == "PIE")   {newFormula->pushOperator(O_PIE); }
             else {
-                VOwner target = V_WORLD;
+                VOwner target = V_UNIT;
                 VType type = V_STAT;
                 int aStatConSkill = 0;
                 switch(s[0]) {
                     case 'u': target = V_UNIT; break;
-                    case 'w': target = V_WORLD; break;
                     case 'i': target = V_ITEM; break;
                     case 'z': target = V_ZONE; break;
-                    case 't': target = V_TILE; break;
-                    case 'a': target = V_AREA; break;
                     case 'e': target = V_ENEMY; break;
                     case '$': {
-                        target = V_UNIT;
                         type = V_SKILL;
                         String skillName = s.substr(1, 100);
                         if (!hasSkill(skillName)) {
@@ -423,10 +411,6 @@ void Stat::clear() {
         delete unitStats[i];
     }
     unitStats.clear();
-    for (unsigned int i = 0; i < worldStats.size(); i++) {
-        delete worldStats[i];
-    }
-    worldStats.clear();
     for (unsigned int i = 0; i < itemStats.size(); i++) {
         delete itemStats[i];
     }

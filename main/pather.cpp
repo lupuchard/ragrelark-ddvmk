@@ -242,7 +242,7 @@ void Start::makePath(Unit* unit, Coord dest, Zone* zone, PathType pathingType) {
 }
 
 fov_settings_type fovSettings;
-Player* p;
+Player* plyr;
 unsigned char* vis;
 
 void Start::myFovCircle(Zone* zone, void* source, Coord pos, int radius) {
@@ -334,7 +334,7 @@ void Start::playerFieldOfView(bool isNew) {
             }
             int x = i % zWidth;
             int y = i / zWidth;
-            p->setMemory(Coord(x, y), texs[1], locs[1], texs[0], locs[0]);
+            player->setMemory(Coord(x, y), texs[1], locs[1], texs[0], locs[0]);
         }
         visibilities[i] = 0;
     }
@@ -356,9 +356,9 @@ void fovApply(void* map, int x, int y, int dx, int dy, void* src) {
     Zone* z = static_cast<Zone*>(map);
     if (x >= 0 && y >= 0 && x < z->getWidth() && y < z->getHeight()) {
         int index = x + y * z->getWidth();
-        if (src == p->getUnit()) {
+        if (src == plyr->getUnit()) {
             vis[index] = 2;
-        } else if (src == p) {
+        } else if (src == plyr) {
             if (z->getLocationAt(Coord(x, y))->light > 0) {
                 vis[index] = 2;
             } else if (vis[index] != 2) {
@@ -380,7 +380,7 @@ bool fovOpaque(void* map, int x, int y) {
     if (x < 0 || y < 0 || x >= zone->getWidth() || y >= zone->getHeight()) return true;
     Location* loc = zone->getLocationAt(Coord(x, y));
     if (Tile::get(loc->tile)->blocksLight()) {
-        unsigned short r = (RANDA * x + RANDB * y + RANDC * zone->getFoon() + RANDM) ^ RANDN;
+        unsigned short r = (RANDA * x + RANDB * y + RANDC * zone->getIndex() + RANDM) ^ RANDN;
         return r % 50 > 24;
     }
     if (loc->isClosedDoor() || loc->structure == S_HIDDENDOOR) return true;
@@ -388,7 +388,7 @@ bool fovOpaque(void* map, int x, int y) {
 }
 
 void Start::initFieldOfView() {
-    p = player;
+    plyr = player;
     vis = visibilities;
     fov_settings_init(&fovSettings);
     fov_settings_set_opacity_test_function(&fovSettings, fovOpaque);

@@ -29,6 +29,7 @@
 #include "graphics.h"
 #include "Ability.h"
 #include "TiledLoader.h"
+#include "Button.h"
 
 #define BOOST_IOSTREAMS_NO_LIB
 
@@ -43,7 +44,7 @@ enum Status{ST_NONE, ST_CONF, ST_POIS, ST_ENCUM, ST_HUNG, ST_DEAD};
 #define INTERVAL_3_TIM 5000
 
 enum MenuAction{MA_GRAB, MA_DROP, MA_EQUIP, MA_CONSUME, MA_THROW, NUM_MENU_ACTIONS};
-enum{STATE_PLAY, STATE_DEAD, STATE_MENU, STATE_DIR, STATE_TARGET, STATE_SPELL};
+enum{STATE_LOAD, STATE_MAIN_MENU, STATE_PLAY, STATE_DEAD, STATE_MENU, STATE_DIR, STATE_TARGET, STATE_SPELL};
 enum Panels{PANEL_EMPTY, PANEL_TOPSTART, PANEL_STATS, PANEL_SKILLS, PANEL_INVENTORY, PANEL_TOPEND, PANEL_BOTTOMSTART, PANEL_MINIMAP, PANEL_NOTES, PANEL_BOTTOMEND};
 enum UnitAI{AI_STILL = 0, AI_HOSTILE = 1, AI_HOSTILESMART = 2, AI_PASSIVE = 3, AI_NEUTRAL = 4};
 
@@ -124,7 +125,6 @@ class Start: FormulaUser, EnvironmentManager {
         void renderMessages();
         void renderCircleSelect();
         void renderBars();
-        void renderText(String text, int size, int x, int y, int z, int align, Color c);
         void startRenderer();
         void makeSplatter(Unit* unit, Zone* zone, Coord loc);
         void addStatus(String name, Color c, Status type);
@@ -184,6 +184,8 @@ class Start: FormulaUser, EnvironmentManager {
 
         /* --dataLoader.cpp-- */
         bool loadData();
+        bool loadData1();
+        bool loadData2();
         bool yamlSingle(String file, boost::function<void(YAML::Node, std::ostream&)> parseFunc);
         bool yamlMulti(String directory, boost::function<void(YAML::Node, std::ostream&)> parseFunc);
         void deleteData();
@@ -203,6 +205,12 @@ class Start: FormulaUser, EnvironmentManager {
 
         /* --cleaner.cpp-- */
         void cleanup();
+        void cleanPlay();
+        /* --- */
+
+        /* --saver.cpp-- */
+        void save();
+        bool load();
         /* --- */
     private:
         SDL_Surface* display;
@@ -235,6 +243,14 @@ class Start: FormulaUser, EnvironmentManager {
         int botPanel;
         int notesSelected;
         String theNotes[NUM_NOTELINES];
+
+        MouseState mouse;
+        Button startGameButton;
+        void startGame();
+        Button continueGameButton;
+        void continueGame();
+        String loadStr;
+        void finishPlayStartSetUp();
 
         Texture *structureTex, *menuTex, *fontTex, *splatterTex, *attackAnimsTex, *playerTex;
         TiledLoader* tiledLoader;

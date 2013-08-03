@@ -22,6 +22,7 @@
 #include "Location.h"
 #include "Tile.h"
 #include "StatHolder.h"
+#include "Swarmer.h"
 
 #define MAX_ZONE_SIZE 4096
 #define MAX_ZONE_WIDHEI 256
@@ -52,7 +53,12 @@ class Zone: public StatHolder {
         void tagDungeon(int index, int depth);
         std::pair<int, int> dungeonTag();
 
-        int getFoon();
+        int getIndex();
+
+        void save(std::ostream& saveFile);
+        void saveUnit(Unit* unit, std::ostream& saveData);
+        Zone(std::istream& saveData);
+        Unit* loadUnit(std::istream& saveData);
     private:
         Location* locs;
         bool filled;

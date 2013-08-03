@@ -37,6 +37,9 @@ class PrimeFolder: public ItemFolder {
         BagFolder* getBag();
         EquipmentFolder* getEquips();
         GroundFolder* getGround();
+
+        void save(std::ostream& saveData);
+        void load(std::istream& saveData);
     protected:
     private:
         ItemType* parseOne(YAML::Node node, std::ostream& lerr);

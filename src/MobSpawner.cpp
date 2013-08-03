@@ -49,6 +49,7 @@ MobSpawner::~MobSpawner() {
             delete spawnings[i].encounterLevels[j];
         }
     }
+    //TODO not done
 }
 
 //  TPU
@@ -168,79 +169,6 @@ void MobSpawner::addItemsToEncounterLevel(int type, int level, String itemSetNam
     e->itemSets[level].insert(itemSpawnSetNameMap[itemSetName]);
 }
 
-void MobSpawner::parseMob(YAML::Node fileNode, std::ostream& lerr) {
-    String name = readYAMLStr(fileNode, "Name", "nil", "Unit lacks a name!", lerr);
-    StatHolder* newUnit = new StatHolder(V_UNIT);
-    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
-        String name = iter->first.as<String>();
-        if (std::islower(name[0])) {
-            if (Stat::has(name)) {
-                YAML::Node val = iter->second;
-                int statVal;
-                if (val.IsSequence()) {
-                    statVal = val[0].as<int>() + val[1].as<int>() * TEX_TILE_WIDTH;
-                } else {
-                    String s = val.as<String>();
-                    if (isNum(s)) {
-                        statVal = val.as<int>();
-                    } else {
-                        if (mobExists(s)) {
-                            statVal =  mobNameMap[s];
-                        } else if (ItemType::hasWeapType(s)) {
-                            statVal = ItemType::getWeapType(s)->index;
-                        } else {
-                            statVal = Texture::get(s)->getIndex();
-                        }
-                    }
-                }
-                Stat* stat = Stat::get(name);
-                if (stat->isItFloat()) {
-                    newUnit->addStatVF(stat->getIndex(), statVal);
-                } else {
-                    newUnit->addStatV(stat->getIndex(), statVal);
-                }
-            } else {
-                lerr << "'" + name + "' is not an existing stat name.\n";
-            }
-        }
-    }
-
-    for (unsigned int i = 0; i < defaultStats.size(); i++) {
-        if (defaultStats[i]->isItFloat()) {
-            newUnit->addStatF(defaultStats[i]->getIndex());
-        } else {
-            newUnit->addStat(defaultStats[i]->getIndex());
-        }
-    }
-    addMob(name, newUnit);
-}
-
-void MobSpawner::parseDefaultStats(YAML::Node fileNode, std::ostream& lerr) {
-    for (YAML::Node::iterator iter = fileNode.begin(); iter != fileNode.end(); ++iter) {
-        String statName = iter->as<String>();
-        if (Stat::has(statName)) {
-            defaultStats.push_back(Stat::get(iter->as<String>()));
-        } else lerr << "'" << statName << "' is not an existing stat.\n";
-    }
-}
-
-void MobSpawner::addMob(String name, StatHolder* u) {
-    mobNameMap[name] = mobs.size();
-    mobs.push_back(Mob(name, u));
-}
-
-Mob MobSpawner::getMob(String name) {
-    return mobs[mobNameMap[name]];
-}
-
-Mob MobSpawner::getMob(short index) {
-    return mobs[index];
-}
-
-bool MobSpawner::mobExists(String name) {
-    return mobNameMap.find(name) != mobNameMap.end();
-}
-
 bool MobSpawner::placeMob(Unit* mob, Zone* z, Coord pos, bool allowAlt) {
     Location* loc = z->getLocationAt(pos);
     if (loc->hasUnit() || loc->height == MAX_HEIGHT) {
@@ -260,21 +188,21 @@ bool MobSpawner::placeMob(Unit* mob, Zone* z, Coord pos, bool allowAlt) {
     return false;
 }
 
-Unit* MobSpawner::spawnMob(Mob m, Zone* z, Coord pos, int time, bool allowAlt) {
+Unit* MobSpawner::spawnMob(Mob* m, Zone* z, Coord pos, int time, bool allowAlt) {
     Unit* newUnit;
     // create the unit, depending on whether its a swarmer or not
-    if (m.second->getStatValue(Stat::SWARM)) {
-        newUnit = new Swarmer(m.first, m.second);
+    if (m->proto->getStatValue(Stat::SWARM)) {
+        newUnit = new Swarmer(m->name, m->proto);
     } else {
-        newUnit = new Unit(m.first, m.second);
+        newUnit = new Unit(m->name, m->proto);
     }
     //place the unit
     newUnit->pos = pos;
     newUnit->theTime = time;
     if (placeMob(newUnit, z, pos, allowAlt)) {
         //if the unit has a pet, spawn the pet too
-        int pet = m.second->getStatValue(Stat::PET);
-        if (allowAlt && pet && !(rand() % 30)) spawnMob(getMob(pet), z, pos, time, true);
+        int pet = m->proto->getStatValue(Stat::PET);
+        if (allowAlt && pet && !(rand() % 30)) spawnMob(Unit::getMob(pet), z, pos, time, true);
         return newUnit;
     }
     // if placing failed, delete mob
@@ -283,6 +211,8 @@ Unit* MobSpawner::spawnMob(Mob m, Zone* z, Coord pos, int time, bool allowAlt) {
 }
 
 void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environments, int level, int howMany, std::vector<Coord> possibleLocs, std::vector<std::pair<Unit*, Zone*> >* unitsAdded) {
+    std::set<BlobGen*> blobs;
+
     //first it calculates the total weight by adding up the weights of all spawnable mobs
     int totalWeight = 0;
     for (int i = 0; i < numEnvironments; i++) {
@@ -292,6 +222,7 @@ void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environme
                 totalWeight += (*e)[i].weight;
             }
         }
+        blobs.insert(spawnings[environments[i]].blobgens.begin(), spawnings[environments[i]].blobgens.end());
     }
 
     //it spawns as many mobs as it needs to
@@ -344,6 +275,37 @@ void MobSpawner::createEncounters(Zone* z, int numEnvironments, short* environme
                             }
                         }
                         break;
+                    }
+                }
+            }
+        }
+    }
+
+    for (std::set<BlobGen*>::iterator iter = blobs.begin(); iter != blobs.end(); ++iter) {
+        BlobGen* b = *iter;
+        unsigned int amount;
+        if (b->minAmount == b->maxAmount) amount = b->minAmount;
+        else amount = rand() % (b->maxAmount - b->minAmount + 1) + b->minAmount;
+        for (unsigned int i = 0; i < amount; i++) {
+            Coord loc = Coord(rand() % z->getWidth(), rand() % z->getHeight());
+            unsigned int size;
+            if (b->minSize == b->maxSize) size = b->minSize;
+            else size = rand() % (b->maxSize - b->minSize + 1) + b->minSize;
+            switch(b->shape) {
+                case BLOB_CIRCLE: blobber.makeCircle(size); break;
+                default: break;
+            }
+            const bool** blob = blobber.getBlob();
+            for (int i = 0; i < blobber.getWidth(); i++) {
+                for (int j = 0; j < blobber.getHeight(); j++) {
+                    if (blob[i][j]) {
+                        Coord c = Coord(loc.x + i - size, loc.y + j - size);
+                        if (c.inBounds(z->getWidth(), z->getHeight())) {
+                            Location* locAt = z->getLocationAt(c);
+                            if (locAt->height != MAX_HEIGHT && locAt->height > MAX_HEIGHT / 4 && !locAt->hasUnit() && locAt->structure == S_NONE) {
+                                spawnMob(b->mob, z, c, 0, false);
+                            }
+                        }
                     }
                 }
             }
@@ -406,13 +368,13 @@ void MobSpawner::overgrowth(Zone* zone, GenType genType, Coord start, Coord end)
                 }
             }
         }
-    }*/ // TODO overgrowth
+    }*/
 }
 
-EncLevelEnc MobSpawner::parseSpawnMob(YAML::Node fileNode, std::ostream& lerr, Mob mob) {
+EncLevelEnc MobSpawner::parseSpawnMob(YAML::Node fileNode, std::ostream& lerr, Mob* mob) {
     EncLevelEnc ele;
     ele.mob = mob;
-    ele.weight = readYAMLInt(fileNode, "Freq", 1, "Frequency expected '" + mob.first + "'", lerr);
+    ele.weight = readYAMLInt(fileNode, "Freq", 1, "Frequency expected '" + mob->name + "'", lerr);
     YAML::Node oof = fileNode["Group"];
     if (oof.IsSequence()) {
         ele.mobMod.min = oof[0].as<int>();
@@ -463,14 +425,14 @@ void MobSpawner::parseSpawn(YAML::Node fileNode, std::ostream& lerr) {
                 EncounterLevel* encounters = new EncounterLevel;
                 for (YAML::const_iterator jter = levNode.begin(); jter != levNode.end(); ++jter) {
                     String mobName = jter->first.as<String>();
-                    if (mobExists(mobName)) {
+                    if (Unit::mobExists(mobName)) {
                         if (jter->second.IsSequence()) {
                             for (YAML::const_iterator kter = jter->second.begin(); kter != jter->second.end(); ++kter) {
                                 YAML::Node n = *kter;
-                                encounters->push_back(parseSpawnMob(n, lerr, getMob(mobName)));
+                                encounters->push_back(parseSpawnMob(n, lerr, Unit::getMob(mobName)));
                             }
                         } else {
-                            encounters->push_back(parseSpawnMob(jter->second, lerr, getMob(mobName)));
+                            encounters->push_back(parseSpawnMob(jter->second, lerr, Unit::getMob(mobName)));
                         }
                     } else {
                         lerr << "'" << mobName << "' is not an existing unit.\n";
@@ -493,6 +455,31 @@ void MobSpawner::parseSpawn(YAML::Node fileNode, std::ostream& lerr) {
             } else {
                 lerr << "'" << name << "' is not an existing item spawn set.\n";
             }
+        }
+    }
+    if (fileNode["Blobs"]) {
+        YAML::Node blobNode = fileNode["Blobs"];
+        for (YAML::const_iterator iter = blobNode.begin(); iter != blobNode.end(); ++iter) {
+            YAML::Node curNode = iter->second;
+            BlobGen* blob = new BlobGen;
+            String name = iter->first.as<String>();
+            if (Unit::mobExists(name)) {
+                blob->mob = Unit::getMob(name);
+            } else lerr << "'" << name << "' is not an exsiting mob.\n";
+            String shape = readYAMLStr(curNode, "Shape", "", "Shape expected.", lerr);
+            if (shape == "circle") blob->shape = BLOB_CIRCLE;
+            else blob->shape = BLOB_NONE;
+            if (curNode["Amount"].IsSequence()) {
+                Coord c = readYAMLCoord(curNode, "Amount", Coord(1, 1));
+                blob->minAmount = c.x;
+                blob->maxAmount = c.y;
+            } else blob->minAmount = blob->maxAmount = readYAMLInt(curNode, "Amount", 1);
+            if (curNode["Size"].IsSequence()) {
+                Coord c = readYAMLCoord(curNode, "Size", Coord(1, 1));
+                blob->minSize = c.x;
+                blob->maxSize = c.y;
+            } else blob->minSize = blob->maxSize = readYAMLInt(curNode, "Size", 1);
+            spawnings[spawnI].blobgens.insert(blob);
         }
     }
 }

@@ -30,6 +30,5 @@
 #define SWIN_HEIGHT 700
 
 enum PeType{P_NONE, P_DARKDUST, P_ARROW};
-enum Align{LEFT, CENTER, RIGHT};
 
 #endif // GRAPHICS_H_INCLUDED

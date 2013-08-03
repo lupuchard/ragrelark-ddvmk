@@ -48,6 +48,7 @@ item:
   - {Name: break, Bind: BREAK}
   - {Name: alt, Bind: ALT}
 unit:
+  - {Name: index, Bind: INDEX}
   - {Name: experience, Bind: EXP}
   - {Name: level     , Bind: LEVEL}
   -

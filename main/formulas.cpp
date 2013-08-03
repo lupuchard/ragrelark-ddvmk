@@ -18,13 +18,10 @@
 
 #include "Start.h"
 
-#define F_ITEM 1
+/*#define F_ITEM 1
 #define F_UNIT 2
-#define F_TILE 3
-#define F_CHUNK 4
 #define F_ZONE 5
-#define F_AREA 6
-#define F_ENEMY 7
+#define F_ENEMY 7*/
 
 int Start::getVarValue(VOwner target, VType type, int index, StatHolderIntef* statHolder) {
     StatHolder* foundStatHolder = findStatHolder(target, static_cast<StatHolder*>(statHolder));
@@ -82,11 +79,8 @@ StatHolder emptyStatHolder = StatHolder(V_ITEM);
 StatHolder enemyEquipStatHolder = EnemyEquipStatHolder();
 
 StatHolder* Start::findStatHolder(int target, StatHolder* statHolderFrom) {
-    using namespace std;
-
     VOwner owner = statHolderFrom->getOwner(); //step 8
     switch(target) {
-        case V_WORLD: return world; break;
         case V_ITEM: {
             switch(owner) {
                 case V_UNIT: {
@@ -98,44 +92,22 @@ StatHolder* Start::findStatHolder(int target, StatHolder* statHolderFrom) {
                     }
                 } break;
                 case V_ITEM: return statHolderFrom; break;
-                case V_TILE: cout << "*** WARNING: TILE ITEM PILE STAT OBTAINING NOT IMPLEMENTED YET ***" << endl; break;
-                default: cout << "*** WARDING: you are doing it wrong " << target << " " << owner << endl; break;
+                default: std::cout << "*** WARDING: you are doing it wrong " << target << " " << owner << std::endl; break;
             }
             return 0;
         } break;
         case V_UNIT: { //step 9
             switch(owner) {
                 case V_UNIT: return statHolderFrom; break; //step 10
-                case V_ITEM: cout << "*** WARNING: hell this wouldn't even work what am i even doing ***" << endl; break;
-                case V_WORLD: return player->getUnit(); break;
-                case V_TILE: cout << "*** WARNING: TILE UNIT STATDING STAT OBTAINING NOT IMPLEMENTED YET ***" << endl; break;
-                default: cout << "*** WARDING: you are doing it wrong " << target << " " << owner << endl; break;
-            }
-        } break;
-        case V_TILE: {
-            switch(owner) {
-                case V_UNIT: cout << "*** WARNING: this would almost work easily but it doesn't so whatever ***" << endl; break;
-                case V_ITEM: cout << "*** WARNING: ok this is impossible I hate dependencies ***" << endl; break;
-                case V_TILE: return statHolderFrom; break;
-                default: cout << "*** WARDING: you are doing it wrong " << target << " " << owner << endl; break;
+                default: std::cout << "*** WARDING: you are doing it wrong " << target << " " << owner << std::endl; break;
             }
         } break;
         case V_ZONE: {
             switch(owner) {
-                case V_UNIT: cout << "*** WARNING: i definately need to find a better way to structure this all ***" << endl; break;
-                case V_ITEM: cout << "*** WARNING: what i said above ***" << endl; break;
-                case V_TILE: cout << "*** WARNING: ill get better at planning later maybe ***" << endl; break;
                 case V_ZONE: return statHolderFrom; break;
-                case V_AREA: cout << "*** WARNING: i havent done this yet **" << endl; break;
-                default: cout << "*** WARDING: you are doing it wrong " << target << " " << owner << endl; break;
+                default: std::cout << "*** WARDING: you are doing it wrong " << target << " " << owner << std::endl; break;
             }
         } break;
-        case V_AREA:
-            if (owner == V_AREA) {
-                return statHolderFrom;
-            }
-            return activeArea;
-            break;
         case V_ENEMY:
             if (owner == V_UNIT) {
                 return (static_cast<Unit*>(statHolderFrom)->getEnemy());

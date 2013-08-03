@@ -35,8 +35,6 @@ Player::Player(PrimeFolder* pFolder) {
     area = NULL;
     currentZoneMemory = NULL;
     xpBank = 0;
-
-    //trainSpell(SPELL_LIGHT, 100);
 }
 
 Player::~Player() {
@@ -204,4 +202,81 @@ void Player::bankXp(int amount) {
 }
 int Player::getXpBank() {
     return xpBank;
+}
+
+void Player::save(std::ostream& saveData) {
+    outStr(name, saveData);
+    outPair(unit->pos, saveData);
+    outPair(zone->dungeonTag(), saveData);
+    outStr(area->getName(), saveData);
+    primeFolder->save(saveData);
+
+    outSht(memoryBank.size(), saveData);
+    for (std::map<Zone*, ZoneMemory*>::iterator iter = memoryBank.begin(); iter != memoryBank.end(); ++iter) {
+        Zone* z = iter->first;
+        ZoneMemory* m = iter->second;
+        outPair(zone->dungeonTag(), saveData);
+        int i;
+        for (i = 0; i < z->getWidth() * z->getHeight(); i++) {
+            saveData.put(m->bottomLoc[i]); saveData.put(m->bottomTex[i]);
+            saveData.put(m->topLoc[i]);    saveData.put(m->topTex[i]);
+        }
+    }
+
+    outInt(xpBank, saveData);
+    for (int i = 0; i < Stat::getNumSkills(); i++) {
+        outInt(skillExps[i], saveData);
+        outSht(skillLevels[i], saveData);
+    }
+
+    outSht(playerSpells.size(), saveData);
+    for (std::map<int, PlayerSpell>::iterator iter = playerSpells.begin(); iter != playerSpells.end(); ++iter) {
+        outSht(iter->first, saveData);
+        outInt(iter->second.exp, saveData);
+        outSht(iter->second.level, saveData);
+    }
+}
+
+void Player::load(std::istream& saveData, World* world) {
+    name = inStr(saveData);
+    Coord unitCoord = Coord(inPair(saveData));
+    std::pair<int, int> dungeonTag = inPair(saveData);
+    String areaName;
+    areaName = inStr(saveData);
+    area = world->getArea(areaName);
+    zone = area->getZone(dungeonTag);
+    primeFolder->load(saveData);
+
+    unsigned short memoryBankSize = inSht(saveData);
+    for (unsigned int i = 0; i < memoryBankSize; i++) {
+        Zone* z = area->getZone(inPair(saveData));
+        int len = z->getWidth() * z->getHeight();
+        ZoneMemory* m = new ZoneMemory;
+        m->bottomTex = new unsigned char[len];
+        m->bottomLoc = new unsigned char[len];
+        m->topTex = new unsigned char[len];
+        m->topLoc = new unsigned char[len];
+        for (int i = 0; i < len; i++) {
+            m->bottomLoc[i] = saveData.get(); m->bottomTex[i] = saveData.get();
+            m->topLoc[i] = saveData.get(); m->topTex[i] = saveData.get();
+        }
+        memoryBank[z] = m;
+    }
+
+    xpBank = inInt(saveData);
+    for (int i = 0; i < Stat::getNumSkills(); i++) {
+        skillExps[i] = inInt(saveData);
+        skillLevels[i] = inSht(saveData);
+    }
+
+    unsigned short numPlayerSpells = inSht(saveData);
+    for (unsigned int i = 0; i < numPlayerSpells; i++) {
+        short spell = inSht(saveData);
+        int exp = inInt(saveData);
+        unsigned short level = inSht(saveData);
+        playerSpells[spell] = PlayerSpell{exp, level};
+    }
+
+    unit = zone->getLocationAt(unitCoord)->unit;
+    currentZoneMemory = memoryBank[zone];
 }

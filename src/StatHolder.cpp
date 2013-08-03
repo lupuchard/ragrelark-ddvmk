@@ -155,3 +155,39 @@ void StatHolder::print() {
     }
     std::cout.flush();
 }
+
+void StatHolder::save(std::ostream& saveData) {
+    outSht(owner, saveData);
+    outSht(intStats.size(), saveData);
+    for (std::unordered_map<unsigned char, std::pair<short, bool> >::iterator iter = intStats.begin(); iter != intStats.end(); ++iter) {
+        saveData.put(iter->first);
+        outSht(iter->second.first, saveData);
+        saveData.put(iter->second.second);
+    }
+    outSht(floatStats.size(), saveData);
+    for (std::unordered_map<unsigned char, std::pair<float, bool> >::iterator iter = floatStats.begin(); iter != floatStats.end(); ++iter) {
+        saveData.put(iter->first);
+        outFlt(iter->second.first, saveData);
+        saveData.put(iter->second.second);
+    }
+}
+void StatHolder::load(std::istream& saveData) {
+    owner = (VOwner)inSht(saveData);
+    unsigned short numInts = inSht(saveData);
+    for (unsigned int i = 0; i < numInts; i++) {
+        std::pair<unsigned char, std::pair<short, bool> > p;
+        p.first = saveData.get();
+        p.second.first = inSht(saveData);
+        p.second.second = saveData.get();
+        intStats.insert(p);
+    }
+
+    unsigned short numFloats = inSht(saveData);
+    for (unsigned int i = 0; i < numFloats; i++) {
+        std::pair<unsigned char, std::pair<float, bool> > p;
+        p.first = saveData.get();
+        p.second.first = inFlt(saveData);
+        p.second.second = saveData.get();
+        floatStats.insert(p);
+    }
+}

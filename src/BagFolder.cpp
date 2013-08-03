@@ -75,3 +75,20 @@ int BagFolder::getCapacity() {
 void BagFolder::setCapacity(int c) {
     size = c;
 }
+
+void BagFolder::save(std::ostream& saveData) {
+    outSht(size, saveData);
+    outSht(items.size(), saveData);
+    for (unsigned int i = 0; i < items.size(); i++) {
+        items[i].save(saveData);
+    }
+}
+
+void BagFolder::load(std::istream& saveData) {
+    size = inSht(saveData);
+    unsigned short numItems = inSht(saveData);
+    items.resize(numItems);
+    for (unsigned int i = 0; i < numItems; i++) {
+        items[i] = Item(saveData);
+    }
+}
