@@ -19,3 +19,5 @@ __Main controls:__
 * C: close door
 * ctrl: backwards in inventory
 * space: select
+
+Picture: http://imgur.com/L2K1ohK
